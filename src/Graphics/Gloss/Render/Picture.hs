@@ -33,9 +33,10 @@ renderPicture
  = do
 	-- This GL state doesn't change during rendering, 
 	--	so we can just read it once here
-	(matProj_  :: GL.GLmatrix GL.GLdouble)	<- get $ GL.matrix (Just $ GL.Projection)
-	viewport_  				<- get $ GL.viewport
-	windowSize_				<- get GLUT.windowSize
+	(matProj_  :: GL.GLmatrix GL.GLdouble)	
+			<- get $ GL.matrix (Just $ GL.Projection)
+	viewport_  	<- get $ GL.viewport
+	windowSize_	<- get GLUT.windowSize
 
 	-- 
 	let ?modeWireframe	= optionsWireframe renderS
