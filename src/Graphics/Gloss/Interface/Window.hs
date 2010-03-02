@@ -4,6 +4,7 @@ module	Graphics.Gloss.Interface.Window
 	( createWindow )
 where
 
+import Graphics.Gloss.Color
 import Graphics.Gloss.Interface.Debug
 import Graphics.Gloss.Interface.Callback		(Callback)
 import qualified Graphics.Gloss.Interface.Callback	as Callback
@@ -21,6 +22,7 @@ createWindow
 	-> (Int, Int) 		-- ^ Initial size of the window, in pixels.
 	-> (Int, Int)		-- ^ Initial position of the window, in pixels relative to 
 				--	the top left corner of the screen.
+	-> Color		-- ^ Color to use when clearing.
 	-> [Callback]		-- ^ Callbacks to use
 	-> IO ()
 
@@ -28,6 +30,7 @@ createWindow
 	windowName
 	size@(sizeX, sizeY) 
 	pos @(posX,  posY)
+	clearColor
 	callbacks
  = do
 	-- Turn this on to spew debugging info to stdout
@@ -79,7 +82,7 @@ createWindow
 			(fromIntegral sizeY)
 	
 	-- Setup callbacks
-	GLUT.displayCallback		$= callbackDisplay callbacks
+	GLUT.displayCallback		$= callbackDisplay clearColor callbacks
 	GLUT.reshapeCallback		$= Just (callbackReshape  	callbacks)
 	GLUT.keyboardMouseCallback	$= Just (callbackKeyMouse 	callbacks)
 	GLUT.motionCallback		$= Just (callbackMotion   	callbacks)
@@ -91,7 +94,10 @@ createWindow
 	GLUT.perWindowKeyRepeat		$= GLUT.PerWindowKeyRepeatOff	
 
 	-- we don't need the depth buffer for 2d.
-	GL.depthFunc		$= Just GL.Always
+	GL.depthFunc	$= Just GL.Always
+
+	-- always clear the buffer to white
+	GL.clearColor	$= glColor4OfColor clearColor
 
 	-- Dump some debugging info
 	when debug
@@ -116,11 +122,11 @@ createWindow
 	return ()
 
 
-callbackDisplay callbacks
+callbackDisplay clearColor callbacks
  = do
 	-- clear the display
 	GL.clear [GL.ColorBuffer, GL.DepthBuffer]
-	GL.color $ GL.Color4 1 1 1 (1 :: GL.GLfloat)
+	GL.color $ GL.Color4 0 0 0 (1 :: GL.GLfloat)
 
 	-- get the display callbacks from the chain
 	let funs	= [f	| (Callback.Display f) <- callbacks]

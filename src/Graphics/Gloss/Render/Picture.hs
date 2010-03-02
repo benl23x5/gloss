@@ -93,14 +93,17 @@ drawPicture picture
 		GL.blend	$= GL.Enabled
 
 	-- colors with float components.
-	Color (RGBA r g b a) p
+	Color color p
 	 |  ?modeColor
 	 ->  {-# SCC "draw.color" #-}
    	     do
-		oldColor 	<- get GL.currentColor
-		
+		oldColor 	 <- get GL.currentColor
+
+		let (r, g, b, a) = takeRGBAOfColor color
+
 		GL.currentColor	
 			$= GL.Color4 (gf r) (gf g) (gf b) (gf a)
+
 		drawPicture p
 
 		GL.currentColor	$= oldColor		
@@ -108,20 +111,6 @@ drawPicture picture
 	 |  otherwise
 	 -> 	drawPicture p
 
-	-- colors with 8 bit integer components.
-	Color (RGBA8 r g b a) p
-	 | ?modeColor
-	 -> do
-		let rF	= fromIntegral r / 255
-		let gF	= fromIntegral g / 255
-		let bF	= fromIntegral b / 255
-		let aF	= fromIntegral a / 255
-
-		GL.color $ GL.Color4 rF gF bF (aF :: GL.GLfloat)
-		drawPicture p
-
-	 | otherwise
-	 ->	drawPicture p
 
 	-- transform
 {-	Translate posX posY (Circle radius width)

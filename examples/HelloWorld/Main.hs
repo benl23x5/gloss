@@ -1,11 +1,13 @@
 
 -- | Display "Hello World" in a window.
 import Graphics.Gloss
+import Graphics.Gloss.Color
 
 main 	= displayInWindow 
 		"Hello World" 		-- window title
 		(400, 150) 		-- window size
 		(10, 10) 		-- window position
+		white			-- background color
 		picture			-- picture to display
 
 picture	

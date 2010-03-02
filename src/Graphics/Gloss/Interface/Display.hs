@@ -3,6 +3,7 @@ module Graphics.Gloss.Interface.Display
 	(displayInWindow)
 where	
 
+import Graphics.Gloss.Color
 import Graphics.Gloss.ViewPort
 import Graphics.Gloss.Picture
 import Graphics.Gloss.Render.Picture
@@ -20,10 +21,11 @@ displayInWindow
 	:: String	-- ^ Name of the window.
 	-> (Int, Int)	-- ^ Initial size of the window, in pixels.
 	-> (Int, Int)	-- ^ Initial position of the window, in pixels.
+	-> Color	-- ^ Background color
 	-> Picture	-- ^ The picture to draw.
 	-> IO ()
 
-displayInWindow name size pos picture
+displayInWindow name size pos background picture
  =  do
 	viewSR		<- newIORef viewPortInit
 	renderSR	<- newIORef RO.optionsInit
@@ -39,4 +41,4 @@ displayInWindow name size pos picture
 	     =	[ Callback.Display renderFun 
 		, callback_exit () ]
 
-	createWindow name size pos callbacks
+	createWindow name size pos background callbacks

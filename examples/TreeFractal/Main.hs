@@ -1,10 +1,12 @@
 
 import Graphics.Gloss
+import Graphics.Gloss.Color
 
 main =  displayInWindow
 		"Tree Fractal"
-		(700, 800) 
+		(500, 650) 
 		(20,  20)
+		(greyN 0.2)
 		(picture 4)
 
 
@@ -15,15 +17,18 @@ picture degree
 	$ tree degree brown
 
 
--- Basic shape, but coloured
+-- Basic stump shape
 stump :: Color -> Picture
 stump color 
 	= Color color
 	$ Polygon [(30,0), (15,300), (-15,300), (-30,0)]
 
 
--- Tree Fractal function.  First argument is the fractal degree
-tree :: Int -> Color -> Picture
+-- Make a tree fractal.
+tree 	:: Int 		-- Fractal degree
+	-> Color 	-- Color for the stump
+	-> Picture
+
 tree 0 color = stump color
 tree n color 
  = let	smallTree 
@@ -40,10 +45,10 @@ tree n color
 
 -- A starting colour for the stump
 brown :: Color
-brown = RGBA8 139 100 35  230
+brown =  makeColor8 139 100 35  255
 
 
--- A dodgy function to change the colour by degrees
+-- Make this color a little greener
 greener :: Color -> Color
-greener (RGBA8 r g b a) = RGBA8 r (g+16) b a
+greener c = mixColors 1 8 green c
 
