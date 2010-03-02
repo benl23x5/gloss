@@ -1,7 +1,7 @@
 
--- Snowflake Fractal.
+-- | Snowflake Fractal.
 --	Based on ANUPlot code by Clem Baker-Finch.
-
+--
 import Graphics.Gloss
 
 main =	displayInWindow

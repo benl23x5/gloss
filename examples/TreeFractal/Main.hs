@@ -1,5 +1,5 @@
 
--- Tree Fractal.
+-- | Tree Fractal.
 --	Based on ANUPlot code by Clem Baker-Finch.
 --	
 import Graphics.Gloss

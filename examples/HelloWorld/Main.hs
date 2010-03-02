@@ -1,5 +1,6 @@
 
 -- | Display "Hello World" in a window.
+--
 import Graphics.Gloss
 
 main 	= displayInWindow 
