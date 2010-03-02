@@ -3,7 +3,6 @@
 --	Based on ANUPlot code by Clem Baker-Finch.
 --	
 import Graphics.Gloss
-import Graphics.Gloss.Color
 
 main =  displayInWindow
 		"Tree Fractal"

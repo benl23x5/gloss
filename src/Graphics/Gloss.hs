@@ -1,8 +1,8 @@
 
 module Graphics.Gloss 
 	( Picture (..)
-	, Color   (..)
-	, displayInWindow )
+	, displayInWindow 
+	, module Graphics.Gloss.Color)
 where
 
 import Graphics.Gloss.Picture

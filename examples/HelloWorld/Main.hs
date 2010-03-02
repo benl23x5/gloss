@@ -1,7 +1,6 @@
 
 -- | Display "Hello World" in a window.
 import Graphics.Gloss
-import Graphics.Gloss.Color
 
 main 	= displayInWindow 
 		"Hello World" 		-- window title
