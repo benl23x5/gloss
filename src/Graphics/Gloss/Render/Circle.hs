@@ -1,5 +1,8 @@
 
+module Graphics.Gloss.Render.Circle 
+where
 
+{-
 -- Circles -----------------------------------------------------------------------------------------
 -- | Render a circle with the given thickness
 renderCircle :: Float -> Float -> Float -> Float -> Float -> IO ()
@@ -80,4 +83,4 @@ renderCircleStrip_step posX posY tStep tStop r1 t1 r2 t2
 				(gf $ F# (posY `plusFloat#` (r2 `timesFloat#` (sinFloat# t2))))
 		
 		renderCircleStrip_step posX posY tStep tStop r1 (t1 `plusFloat#` tStep) r2 (t2 `plusFloat#` tStep)
-		
+-}	

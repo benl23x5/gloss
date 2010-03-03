@@ -7,10 +7,9 @@ where
 -- | Viewport state. 
 --	These transformations are applied to the whole picture.
 data State
-	= State
-
+	= State { 
 	-- | The world is scaled by this factor in both x and y directions.
-	{ stateScale		:: Float		
+	  stateScale		:: Float		
 								
 	-- | The world is translated by this vector. 
 	, stateTranslate	:: (Float, Float)

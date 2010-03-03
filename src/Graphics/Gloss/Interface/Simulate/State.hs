@@ -7,8 +7,8 @@ where
 -- | Simulation state
 data State	
  = 	State
-	-- | The iteration number we're up to.
- 	{ stateIteration	:: Integer
+	{ -- | The iteration number we're up to.
+	  stateIteration	:: Integer
 
 	-- | Whether the animation is free-running (or single step)
 	, stateRun		:: Bool

@@ -1,5 +1,5 @@
 
--- | Colors.
+-- | Predefined and custom colors.
 module Graphics.Gloss.Color
 	( Color
 	, makeColor
@@ -22,27 +22,30 @@ where
 
 import qualified Graphics.Rendering.OpenGL.GL	as GL
 
--- | An RGBA color.
+-- | A color with Red, Green Blue and Alpha components.
 --	We keep this type abstract so we can be sure the components
 --	are in the correct range. If you want to make a custom color
 --	then use makeColor. 
 data Color
-	-- | A color with floating point components.
-	--	All components lie in the range [0..1]
+	-- | Holds the color components. All components lie in the range [0..1.
 	= RGBA  Float Float Float Float
 	deriving (Show, Eq)
 
 
--- | Make a custom color using float components
---	in the range [0..1]
-makeColor :: Float -> Float -> Float -> Float -> Color
+-- | Make a custom color. All components are clamped to the range  [0..1].
+makeColor 
+	:: Float 	-- ^ Red component.
+	-> Float 	-- ^ Green component.
+	-> Float 	-- ^ Blue component.
+	-> Float 	-- ^ Alpha component.
+	-> Color
+
 makeColor r g b a
 	= clampColor 
 	$ RGBA r g b a
 
 
--- | Make a custom color using 8 bit integer components
---	in the range [0..255]
+-- | Make a custom color. All components are clamped to the range [0..255].
 makeColor8 :: Int -> Int -> Int -> Int -> Color
 makeColor8 r g b a
 	= clampColor 
@@ -58,7 +61,7 @@ takeRGBAOfColor :: Color -> (Float, Float, Float, Float)
 takeRGBAOfColor (RGBA r g b a)	= (r, g, b, a)
 		
 
--- | Convert one of our Color's to OpenGL's representation.
+-- | Convert one of our Colors to OpenGL's representation.
 glColor4OfColor :: Fractional a => Color -> GL.Color4 a
 glColor4OfColor (RGBA r g b a)
  = let	rF	= realToFrac r
@@ -86,8 +89,14 @@ normaliseColor cc
 
 -- Color functions ------------------------------------------------------------
 
--- Mix two colors with the given ratios.
-mixColors :: Float -> Float -> Color -> Color -> Color
+-- | Mix two colors with the given ratios.
+mixColors 
+	:: Float 	-- ^ Ratio of first color.
+	-> Float 	-- ^ Ratio of second color.
+	-> Color 	-- ^ First color.
+	-> Color 	-- ^ Second color.
+	-> Color	-- ^ Resulting color.
+
 mixColors ratio1 ratio2 c1 c2
  = let	RGBA r1 g1 b1 a1	= c1
 	RGBA r2 g2 b2 a2	= c2
@@ -102,8 +111,8 @@ mixColors ratio1 ratio2 c1 c2
 		(m1 * a1 + m2 * a2)
 
 
--- | Add the components of two colors, 
---	normalising their components.
+-- | Add RGB components of a color component-wise, then normalise
+--	them to the highest resulting one. The alpha components are averaged.
 addColors :: Color -> Color -> Color
 addColors c1 c2
  = let	RGBA r1 g1 b1 a1	= c1
@@ -116,13 +125,13 @@ addColors c1 c2
 		((a1 + a2) / 2)
 
 
--- | Create a dimmer version of a color, scaling towards black.
+-- | Make a dimmer version of a color, scaling towards black.
 dim :: Color -> Color
 dim (RGBA r g b a)
 	= RGBA (r / 1.2) (g / 1.2) (b / 1.2) a
 
 	
--- | Create a brighter version of a color, scaling towards white.
+-- | Make a brighter version of a color, scaling towards white.
 bright :: Color -> Color
 bright (RGBA r g b a)
 	= clampColor
@@ -144,23 +153,29 @@ dark (RGBA r g b a)
 
 
 -- Pre-defined Colors ---------------------------------------------------------
-
+white, black :: Color
 white		= RGBA 1.0 1.0 1.0 1.0
 black		= RGBA 0.0 0.0 0.0 1.0
-greyN n		= RGBA n   n   n   1.0
+
+-- | A greyness of a given manitude.
+greyN 	:: Float 	-- ^ Range 0 = Black to 1 = White.
+	-> Color
+greyN n	= RGBA n   n   n   1.0
 
 -- Colors from the additive color wheel.
--- primary
+red, green, blue :: Color
 red		= RGBA 1.0 0.0 0.0 1.0
 green		= RGBA 0.0 1.0 0.0 1.0
 blue		= RGBA 0.0 0.0 1.0 1.0
 
 -- secondary
+yellow, cyan, magenta :: Color
 yellow		= addColors red   green
 cyan		= addColors green blue
 magenta		= addColors red   blue
 
 -- tertiary
+rose, violet, azure, aquamarine, chartreuse, orange :: Color
 rose		= addColors red     magenta
 violet		= addColors magenta blue
 azure		= addColors blue    cyan

@@ -30,3 +30,7 @@ clean :
 		| xargs rm
 		
 	@rm -f bin/*
+	
+.PHONY : doc
+doc :
+	haddock -w -h -o doc --optghc=-isrc --ignore-all-exports $(src_Graphics_hs)
