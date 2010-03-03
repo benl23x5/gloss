@@ -37,7 +37,7 @@ animateInWindow name size pos backColor frameFun
 	renderSR	<- newIORef RO.optionsInit
 	animateSR	<- newIORef AN.stateInit
 
- 	let renderFun = do
+ 	let displayFun = do
 		-- extract the current time from the state
   	 	time		<- animateSR `getsIORef` AN.stateAnimateTime
 		let timeS	= (fromIntegral time / 1000)
@@ -58,7 +58,7 @@ animateInWindow name size pos backColor frameFun
 
 	let callbacks
 	     = 	[ Callback.Display	(animateBegin animateSR)
-		, Callback.Display 	renderFun
+		, Callback.Display 	displayFun
 		, Callback.Display	(animateEnd   animateSR)
 		, Callback.Idle		(GLUT.postRedisplay Nothing)
 		, callback_exit () 
@@ -67,7 +67,6 @@ animateInWindow name size pos backColor frameFun
 		, callback_viewPort_reshape ]
 
 	createWindow name size pos backColor callbacks
-
 
 
 getsIORef ref fun
