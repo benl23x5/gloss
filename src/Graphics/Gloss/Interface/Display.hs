@@ -10,6 +10,7 @@ import Graphics.Gloss.Interface.Window
 import Graphics.Gloss.Interface.Exit
 import Graphics.Gloss.Interface.ViewPort.KeyMouse
 import Graphics.Gloss.Interface.ViewPort.Motion
+import Graphics.Gloss.Interface.ViewPort.Reshape
 import qualified Graphics.Gloss.Render.Options			as RO
 import qualified Graphics.Gloss.Interface.ViewPort.State	as VP
 import qualified Graphics.Gloss.Interface.ViewPort.ControlState	as VPC
@@ -43,7 +44,8 @@ displayInWindow name size pos background picture
 	     =	[ Callback.Display renderFun 
 		, callback_exit () 
 		, callback_viewPort_keyMouse viewSR viewControlSR 
-		, callback_viewPort_motion   viewSR viewControlSR ]
+		, callback_viewPort_motion   viewSR viewControlSR 
+		, callback_viewPort_reshape ]
 
 	createWindow name size pos background callbacks
 
