@@ -2,6 +2,9 @@
 -- | Display "Hello World" in a window.
 --
 import Graphics.Gloss
+import Graphics.Gloss.Interface.Animate.State
+import Graphics.Gloss.Interface.Animate.Timing
+import Graphics.Gloss.Interface.Animate
 
 main 	= displayInWindow 
 		"Hello World" 		-- window title

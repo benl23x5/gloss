@@ -14,7 +14,6 @@ import qualified Graphics.Rendering.OpenGL.GL		as GL
 import qualified Graphics.UI.GLUT			as GLUT
 
 import Control.Monad
-import Control.Concurrent
 
 -- | Open a window and use the supplied callbacks to handle window events.
 createWindow	
@@ -154,10 +153,7 @@ callbackMotion callbacks pos
 		[f | Callback.Motion f 		<- callbacks]
 
 callbackIdle callbacks
- = do	sequence_
-	 $  	[f | Callback.Idle f 		<- callbacks]
+ 	= sequence_
+	$ [f | Callback.Idle f 			<- callbacks]
 	
-	-- Delay the thread for a bit to give the runtime
-	--	a chance to switch back to the OS.
-	threadDelay 1000
 	

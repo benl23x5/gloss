@@ -12,4 +12,7 @@ bin/TreeFractal : examples/TreeFractal/Main.hs $(src_Graphics_hs)
 
 bin/SnowFlake : examples/SnowFlake/Main.hs $(src_Graphics_hs)
 	ghc -isrc --make examples/SnowFlake/Main.hs -o bin/SnowFlake
+
+bin/TreeZen : examples/TreeZen/Main.hs $(src_Graphics_hs)
+	ghc -isrc --make examples/TreeZen/Main.hs -o bin/TreeZen
 	

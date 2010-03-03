@@ -15,8 +15,9 @@ import qualified Graphics.Gloss.Render.Options			as RO
 import qualified Graphics.Gloss.Interface.ViewPort.State	as VP
 import qualified Graphics.Gloss.Interface.ViewPort.ControlState	as VPC
 import qualified Graphics.Gloss.Interface.Callback		as Callback
-
 import Data.IORef
+import Control.Concurrent
+
 
 -- | Create a new window and display the given picture.
 displayInWindow
@@ -42,7 +43,15 @@ displayInWindow name size pos background picture
 
 	let callbacks
 	     =	[ Callback.Display renderFun 
+
+		-- Delay the thread for a bit to give the runtime
+		--	a chance to switch back to the OS.
+		, Callback.Idle	   (threadDelay 1000)
+
+		-- Escape exits the program
 		, callback_exit () 
+		
+		-- Viewport control with mouse
 		, callback_viewPort_keyMouse viewSR viewControlSR 
 		, callback_viewPort_motion   viewSR viewControlSR 
 		, callback_viewPort_reshape ]

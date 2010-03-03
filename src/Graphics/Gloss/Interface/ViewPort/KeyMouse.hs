@@ -152,10 +152,6 @@ controlZoomOut portRef controlRef
 	 	VP.stateScale = VP.stateScale s / scaleStep }
 	GLUT.postRedisplay Nothing
 
-getsIORef ref fun
- = liftM fun $ readIORef ref
-
-
 
 motionBump
 	portRef controlRef
@@ -178,3 +174,6 @@ motionBump
 			
 	GLUT.postRedisplay Nothing
  
+
+getsIORef ref fun
+ = liftM fun $ readIORef ref
