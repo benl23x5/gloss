@@ -24,7 +24,7 @@ data Actor
 		!Position	-- ^ wall ending point
 
 	| Bead 	!Index 		-- ^ unique index of this actor 
-		!Bool 		-- ^ whether the bead is stuck
+		!Int 		-- ^ whether the bead is stuck
 		!Radius 	-- ^ radius of bead
 		!Position 	-- ^ position of bead
 		!Velocity	-- ^ velocity of bead
@@ -68,6 +68,6 @@ actorSetIndex actor ix
 
 
 -- | Set whether a bead is stuck
-actorSetMode :: Bool -> Actor -> Actor
+actorSetMode :: Int -> Actor -> Actor
 actorSetMode m (Bead ix _ r p v)
 	= Bead ix m r p v

@@ -67,8 +67,8 @@ applyContact time force (ix1, ix2) actors
 		| Bead _ _ r1 p1 v1	<- a1
 		, Wall{}		<- a2
 		= let	a1'		= collideBeadWall a1 a2
-			a1_final	= actorSetMode True a1'
-		  in	Map.insert ix1 a1_final actors
+--			a1_final	= actorSetMode 100 a1'
+		  in	Map.insert ix1 a1' actors
 		
 		-- handle a collision between two beads
 		| Bead ix1 m1 r1 p1 v1	<- a1
@@ -79,7 +79,7 @@ applyContact time force (ix1, ix2) actors
 				--	with this method the beads don't transfer energy into each other
 				--	so there is less of a chance of lots of beads being crushed together
 				--	if there are many in the same place.
-				| m1 || m2
+				| m1 >= beadStuckCount || m2 >= beadStuckCount
 				= let 	a1'	= collideBeadBead_static a1 a2
 			  		a2'	= collideBeadBead_static a2 a1
 			  	  in	(a1', a2')
@@ -89,13 +89,13 @@ applyContact time force (ix1, ix2) actors
 				| otherwise
 				= collideBeadBead_elastic a1 a2
 
-			-- After two beads have collided, set them as being stuck.
-			a1_final	= actorSetMode True a1'
-			a2_final	= actorSetMode True a2'
+			-- After two beads have collided, set them as being unstuck stuck.
+--			a1_final	= actorSetMode 0 a1'
+--			a2_final	= actorSetMode 0 a2'
 
 			-- write the new data for the actors back into the map
-		  in	Map.insert ix1 a1_final 
-		   $ 	Map.insert ix2 a2_final actors
+		  in	Map.insert ix1 a1'
+		   $ 	Map.insert ix2 a2' actors
 	  
    in	resultActors		
 	
@@ -118,7 +118,12 @@ moveActor_free time force actor
 		vel'		= (vel + (time / beadMass) `mulSV` force)
 
 		-- if the bead is travelling slowly then set it as being stuck.
-		stuck'		= magnitude vel' < 5
+		stuck'		
+		 | magnitude vel' < 20
+		 = min beadStuckCount (stuck + 1)
+
+		 | otherwise				
+		 = max 0 (stuck - 2)
 
 	  in  Bead ix stuck' radius pos' vel'
 

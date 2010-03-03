@@ -69,7 +69,10 @@ drawActor actor
 		vel	= if showBeadVelocity
 				then Color red $ Line [(0, 0), mulSV 0.1 v]
 				else Blank
-			
+{-		color
+		 | mode >= beadStuckCount	= red
+		 | otherwise			= beadColor
+-}			
 	Wall _ p1 p2
 		-> Color (greyN 0.8) $ Line [p1, p2]
 

@@ -11,7 +11,7 @@ import Graphics.Gloss.Geometry
 --	at 0.8 and they look like bouncy rubber balls.
 --	at > 1 and they gain energy with each bounce and escape the box.
 --
-beadBeadLoss	= 0.9
+beadBeadLoss	= 0.95
 beadWallLoss	= 0.8
 
 

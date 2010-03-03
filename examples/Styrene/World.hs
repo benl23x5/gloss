@@ -53,7 +53,7 @@ beads :: [Actor]
 beads	
  = let	-- beads start off with their index just set to 0
 	beads_raw
-		= [Bead 0 False beadRadius (beadPos ix iy) (0, 0)
+		= [Bead 0 0 beadRadius (beadPos ix iy) (0, 0)
 			| ix <- [0 .. beadCountX - 1]
 			, iy <- [0 .. beadCountY - 1 ] ]
 	

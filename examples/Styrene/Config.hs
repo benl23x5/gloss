@@ -41,3 +41,6 @@ beadSpace		= 1
 beadBoxSize		= 2 * beadRadius + beadSpace
 beadCountX		= 20
 beadCountY		= 10
+
+beadStuckCount :: Int
+beadStuckCount		= 20
