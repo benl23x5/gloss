@@ -9,14 +9,14 @@ main =  displayInWindow
 		(500, 650) 
 		(20,  20)
 		(greyN 0.2)
-		(picture 4)
+		(picture 5)
 
 
 -- The picture is a tree fractal, graded from brown to green
 picture :: Int -> Picture	
 picture degree
 	= Translate 0 (-300)
-	$ tree degree brown
+	$ tree degree (dim $ dim brown)
 
 
 -- Basic stump shape
@@ -31,7 +31,7 @@ tree 	:: Int 		-- Fractal degree
 	-> Color 	-- Color for the stump
 	-> Picture
 
-tree 0 color = stump color
+tree 0 color = stump (dim $ dim green)
 tree n color 
  = let	smallTree 
 		= Scale 0.5 0.5 
@@ -52,5 +52,5 @@ brown =  makeColor8 139 100 35  255
 
 -- Make this color a little greener
 greener :: Color -> Color
-greener c = mixColors 1 8 green c
+greener c = mixColors 1 20 green c
 
