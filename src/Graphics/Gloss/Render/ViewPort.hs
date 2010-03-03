@@ -5,17 +5,17 @@ module Graphics.Gloss.Render.ViewPort
 	( withViewPort )
 where
 
-import	Graphics.Gloss.ViewPort
+import	qualified Graphics.Gloss.Interface.ViewPort.State	as VP
 
-import	Graphics.Rendering.OpenGL		(GLfloat)
-import 	Graphics.UI.GLUT			(($=), get)
-import	qualified Graphics.UI.GLUT		as GLUT
-import	qualified Graphics.Rendering.OpenGL.GL	as GL
+import	Graphics.Rendering.OpenGL				(GLfloat)
+import 	Graphics.UI.GLUT					(($=), get)
+import	qualified Graphics.UI.GLUT				as GLUT
+import	qualified Graphics.Rendering.OpenGL.GL			as GL
 
 
 -- | Perform a rendering action whilst using the given viewport
 withViewPort
-	:: ViewPort 		-- ^ The viewport to use.
+	:: VP.State 		-- ^ The viewport to use.
 	-> IO () 		-- ^ The rendering action to perform.
 	-> IO ()
 
@@ -37,10 +37,10 @@ withViewPort port action
 		GL.preservingMatrix
 		 $ do
 			GL.loadIdentity
-			let rotate :: GLfloat	= realToFrac $ viewPortRotate port
-			let transX :: GLfloat	= realToFrac $ fst $ viewPortTranslate port
-			let transY :: GLfloat   = realToFrac $ snd $ viewPortTranslate port
-		 	let scale  :: GLfloat	= realToFrac $ viewPortScale port
+			let rotate :: GLfloat	= realToFrac $ VP.stateRotate port
+			let transX :: GLfloat	= realToFrac $ fst $ VP.stateTranslate port
+			let transY :: GLfloat   = realToFrac $ snd $ VP.stateTranslate port
+		 	let scale  :: GLfloat	= realToFrac $ VP.stateScale port
 
 			-- apply the global view transforms
 			GL.scale     scale  scale  1

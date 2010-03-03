@@ -159,5 +159,5 @@ callbackIdle callbacks
 	
 	-- Delay the thread for a bit to give the runtime
 	--	a chance to switch back to the OS.
-	threadDelay 10000
+	threadDelay 1000
 	

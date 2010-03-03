@@ -2,17 +2,18 @@
 module Graphics.Gloss.Interface.Display
 	(displayInWindow)
 where	
-
 import Graphics.Gloss.Color
-import Graphics.Gloss.ViewPort
 import Graphics.Gloss.Picture
 import Graphics.Gloss.Render.Picture
 import Graphics.Gloss.Render.ViewPort
 import Graphics.Gloss.Interface.Window
-import qualified Graphics.Gloss.Render.Options		as RO
-
-import Graphics.Gloss.Interface.Callback.Exit
-import qualified Graphics.Gloss.Interface.Callback	as Callback
+import Graphics.Gloss.Interface.Exit
+import Graphics.Gloss.Interface.ViewPort.KeyMouse
+import Graphics.Gloss.Interface.ViewPort.Motion
+import qualified Graphics.Gloss.Render.Options			as RO
+import qualified Graphics.Gloss.Interface.ViewPort.State	as VP
+import qualified Graphics.Gloss.Interface.ViewPort.ControlState	as VPC
+import qualified Graphics.Gloss.Interface.Callback		as Callback
 
 import Data.IORef
 
@@ -27,7 +28,8 @@ displayInWindow
 
 displayInWindow name size pos background picture
  =  do
-	viewSR		<- newIORef viewPortInit
+	viewSR		<- newIORef VP.stateInit
+	viewControlSR	<- newIORef VPC.stateInit
 	renderSR	<- newIORef RO.optionsInit
 	
 	let renderFun = do
@@ -39,6 +41,10 @@ displayInWindow name size pos background picture
 
 	let callbacks
 	     =	[ Callback.Display renderFun 
-		, callback_exit () ]
+		, callback_exit () 
+		, callback_viewPort_keyMouse viewSR viewControlSR 
+		, callback_viewPort_motion   viewSR viewControlSR ]
 
 	createWindow name size pos background callbacks
+
+
