@@ -19,7 +19,7 @@ import qualified Graphics.Gloss.Interface.Callback		as Callback
 import qualified Graphics.UI.GLUT				as GLUT
 import Data.IORef
 import Control.Monad
-
+import System.Mem
 
 -- | Open a window and display an animation.
 animateInWindow
@@ -53,6 +53,9 @@ animateInWindow name size pos backColor frameFun
 			viewS
 			(renderPicture renderS viewS picture)
 
+		-- perform GC every frame to try and avoid long pauses
+		performGC
+
 	let callbacks
 	     = 	[ Callback.Display	(animateBegin animateSR)
 		, Callback.Display 	renderFun
@@ -64,6 +67,7 @@ animateInWindow name size pos backColor frameFun
 		, callback_viewPort_reshape ]
 
 	createWindow name size pos backColor callbacks
+
 
 
 getsIORef ref fun

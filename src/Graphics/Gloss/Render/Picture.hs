@@ -17,7 +17,7 @@ import	qualified Graphics.UI.GLUT				as GLUT
 
 import 	Data.IORef
 import	Control.Monad
-
+import	Unsafe.Coerce
 
 -- ^ Render a picture using the given render options and viewport.
 renderPicture
@@ -62,20 +62,19 @@ drawPicture picture
 
 	-- line
  	Line path	
-	 -> {-# SCC "draw.line" #-} 
-	    GL.renderPrimitive GL.LineStrip 
-		$ mapM_ vertexPF path
+	 -> GL.renderPrimitive GL.LineStrip 
+		$ vertexPFs path
 
 
 	-- polygon (where?)
 	Polygon path
 	 | ?modeWireframe
 	 -> GL.renderPrimitive GL.LineLoop
-	 	$ mapM_ vertexPF path
+	 	$ vertexPFs path
 		
 	 | otherwise
 	 -> GL.renderPrimitive GL.Polygon
-	 	$ mapM_ vertexPF path
+	 	$ vertexPFs path
 
 	-- circle
 	Circle diam width
@@ -117,6 +116,13 @@ drawPicture picture
 	 -> {-# SCC "draw.transCircle" #-} 
 	    renderCircle posX posY ?scale radius width
 -}
+	-- ease up on GL.perservingMatrix
+	Translate tx ty (Rotate deg p)
+	 -> GL.preservingMatrix
+	     $ do	GL.translate (GL.Vector3 (gf tx) (gf ty) 0)
+			GL.rotate (gf deg) (GL.Vector3 0 0 (-1))
+			drawPicture p
+
 	Translate tx ty	p
 	 -> GL.preservingMatrix
 	     $ do	GL.translate (GL.Vector3 (gf tx) (gf ty) 0)
@@ -153,15 +159,22 @@ setLineSmooth state
 	| otherwise	= GL.lineSmooth $= GL.Disabled
 
 
-vertexFF :: 	Float -> Float -> IO ()
-vertexFF 	x	y	
-	= GL.vertex $ GL.Vertex2 (gf x) (gf y) 
+vertexPFs ::	[(Float, Float)] -> IO ()
+{-# INLINE vertexPFs #-}
+vertexPFs []	= return ()
+vertexPFs ((x, y) : rest)
+ = do	GL.vertex $ GL.Vertex2 (gf x) (gf y)
+ 	vertexPFs rest
 
 
-vertexPF ::	(Float, Float) -> IO ()
-vertexPF	(x, y)
-	= GL.vertex $ GL.Vertex2 (gf x) (gf y)
-
+-- | The OpenGL library doesn't seem to provide a nice way convert
+--	a Float to a GLfloat, even though they're the same thing
+--	under the covers.  
+--
+--  Using realToFrac is too slow, as it doesn't get fused in at
+--	least GHC 6.12.1
+--
 gf :: Float -> GL.GLfloat
-gf = realToFrac
+{-# INLINE gf #-}
+gf x = unsafeCoerce x
 
