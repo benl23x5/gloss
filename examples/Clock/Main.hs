@@ -5,7 +5,7 @@ import Graphics.Gloss
 
 main
  =	animateInWindow
- 		"Clock Fractal"
+ 		"Clock"
 		(600, 600)
 		(20, 20)
 		black

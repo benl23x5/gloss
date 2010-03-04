@@ -5,7 +5,7 @@
 import Graphics.Gloss
 
 main =	displayInWindow
-       		"Snowflake curve"
+       		"Snowflake"
        		(500, 500)
        		(20,  20)
 		black

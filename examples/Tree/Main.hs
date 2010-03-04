@@ -5,7 +5,7 @@
 import Graphics.Gloss
 
 main =  animateInWindow
-		"Tree Fractal"
+		"Tree"
 		(500, 650) 
 		(20,  20)
 		(greyN 0.2)

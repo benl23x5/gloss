@@ -7,7 +7,7 @@ import Graphics.Gloss.Shapes
 main :: IO ()
 main 
  = 	animateInWindow 
-		"Tree Zen" 
+		"Zen" 
 		(800, 600) 
 		(5, 5)
 		(greyN 0.2)
