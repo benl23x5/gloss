@@ -1,4 +1,4 @@
-
+{-# OPTIONS_HADDOCK hide #-}
 module Graphics.Gloss.Internals.Render.Common where
 
 import qualified Graphics.Rendering.OpenGL.GL	as GL
