@@ -11,7 +11,6 @@ Category:            Graphics
 Description:         
 	Examples using the gloss graphics library.
 	A mixed bag of fractals, particle simulations and cellular automata.
-	Programs included are: hello, easy, clock, eden, flake, lifespan, styrene, tree, zen.
 
 Synopsis:            Examples using the gloss library
 

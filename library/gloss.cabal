@@ -17,7 +17,7 @@ Synopsis:            Painless 2D vector graphics, animations and simulations.
 
 Library
   Build-Depends: 
-           base       >= 3,
+           base       >= 3 && < 5,
            ghc-prim   >= 0.2,
            containers >= 0.3,
            OpenGL     >= 2.0,
