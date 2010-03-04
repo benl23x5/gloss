@@ -1,5 +1,5 @@
 Name:                gloss
-Version:             1.0
+Version:             1.0.0.0
 License:             MIT
 License-file:        LICENSE
 Author:              Ben Lippmeier
@@ -18,6 +18,7 @@ Library
            GLUT       >= 2.0
 
   hs-source-dirs: src
+  ghc-options:    -O2
 
   Exposed-modules:
            Graphics.Gloss
@@ -29,5 +30,29 @@ Library
            Graphics.Gloss.Picture
            Graphics.Gloss.Shapes
            Graphics.Gloss.ViewPort
-  ghc-options: -O2
+
+  Other-modules:
+           Graphics.Gloss.Internals.Color
+           Graphics.Gloss.Internals.Interface.Animate
+           Graphics.Gloss.Internals.Interface.Animate.State
+           Graphics.Gloss.Internals.Interface.Animate.Timing
+           Graphics.Gloss.Internals.Interface.Callback
+           Graphics.Gloss.Internals.Interface.Common.Exit
+           Graphics.Gloss.Internals.Interface.Debug
+           Graphics.Gloss.Internals.Interface.Display
+           Graphics.Gloss.Internals.Interface.Simulate
+           Graphics.Gloss.Internals.Interface.Simulate.Idle
+           Graphics.Gloss.Internals.Interface.Simulate.State
+           Graphics.Gloss.Internals.Interface.ViewPort.Command
+           Graphics.Gloss.Internals.Interface.ViewPort.ControlState
+           Graphics.Gloss.Internals.Interface.ViewPort.KeyMouse
+           Graphics.Gloss.Internals.Interface.ViewPort.Motion
+           Graphics.Gloss.Internals.Interface.ViewPort.Reshape
+           Graphics.Gloss.Internals.Interface.Window
+           Graphics.Gloss.Internals.Render.Circle
+           Graphics.Gloss.Internals.Render.Common
+           Graphics.Gloss.Internals.Render.Options
+           Graphics.Gloss.Internals.Render.Picture
+           Graphics.Gloss.Internals.Render.ViewPort
+
 

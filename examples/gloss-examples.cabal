@@ -4,29 +4,59 @@ License:             MIT
 License-file:        LICENSE
 Author:              Ben Lippmeier
 Maintainer:          gloss@ouroborus.net
-Stability:           provisional
+Stability:           experimental
 Synopsis:            Examples using the gloss library
 Build-Type:          Simple
 Cabal-Version:       >=1.8
 
-Library
-  Build-Depends: 
-           base       >= 3,
-           ghc-prim   >= 0.2,
-           containers >= 0.3,
-           OpenGL     >= 2.0,
-           GLUT       >= 2.0
+Executable gloss-easy
+  Build-depends: base >= 3 && < 5, gloss >= 1.0 && < 1.1
+  Main-is: Easy/Main.hs
+  ghc-options: -O2
 
-  hs-source-dirs: src
+Executable gloss-clock
+  Build-depends: base >= 3 && < 5, gloss >= 1.0 && < 1.1
+  Main-is: Clock/Main.hs
+  ghc-options: -O2
 
-  Exposed-modules:
-           Graphics.Gloss
-           Graphics.Gloss.Color
-           Graphics.Gloss.Geometry
-           Graphics.Gloss.Geometry.Angle
-           Graphics.Gloss.Geometry.Line
-           Graphics.Gloss.Geometry.Vector
-           Graphics.Gloss.Picture
-           Graphics.Gloss.Shapes
-           Graphics.Gloss.ViewPort
+Executable gloss-eden
+  Build-depends: base >= 3 && < 5, gloss >= 1.0 && < 1.1, random > 1.0 && < 2.0
+  Main-is: Main.hs
+  hs-source-dirs: Eden
+  ghc-options: -O2
+
+Executable gloss-flake
+  Build-depends: base >= 3 && < 5, gloss >= 1.0 && < 1.1
+  Main-is: Flake/Main.hs
+  ghc-options: -O2
+
+Executable gloss-hello
+  Build-depends: base >= 3 && < 5, gloss >= 1.0 && < 1.1
+  Main-is: Hello/Main.hs
+  ghc-options: -O2
+
+Executable gloss-lifespan
+  Build-depends: base >= 3 && < 5, gloss >= 1.0 && < 1.1, random > 1.0 && < 2.0
+  Main-is: Main.hs
+  hs-source-dirs: Lifespan
+  ghc-options: -O2
+
+Executable gloss-styrene
+  Build-depends: 
+        base            >= 3 && < 5,
+        gloss           >= 1.0 && < 1.1,
+        containers      >= 0.0 && < 1.0,
+        ghc-prim        >= 0.2 && < 1.0
+  Main-is: Main.hs
+  hs-source-dirs: Styrene
+  ghc-options: -O2
+
+Executable gloss-tree
+  Build-depends: base >= 3 && < 5, gloss >= 1.0 && < 1.1
+  Main-is: Tree/Main.hs
+  ghc-options: -O2
+
+Executable gloss-zen
+  Build-depends: base >= 3 && < 5, gloss >= 1.0 && < 1.1
+  Main-is: Zen/Main.hs
   ghc-options: -O2
