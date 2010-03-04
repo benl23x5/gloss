@@ -1,25 +1,25 @@
 
-module Graphics.Gloss.Interface.Simulate
+module Graphics.Gloss.Internals.Interface.Simulate
 	(simulateInWindow)
 where
 import Graphics.Gloss.Color
 import Graphics.Gloss.Picture
+import Graphics.Gloss.ViewPort
 import Graphics.Gloss.Render.Picture
 import Graphics.Gloss.Render.ViewPort
-import Graphics.Gloss.Interface.Exit
-import Graphics.Gloss.Interface.Window
-import Graphics.Gloss.Interface.ViewPort.KeyMouse
-import Graphics.Gloss.Interface.ViewPort.Motion
-import Graphics.Gloss.Interface.ViewPort.Reshape
-import Graphics.Gloss.Interface.Animate.Timing
-import Graphics.Gloss.Interface.Simulate.Idle
-import qualified Graphics.Gloss.Interface.Callback		as Callback
-import qualified Graphics.Gloss.Interface.ViewPort.State	as VP
-import qualified Graphics.Gloss.Interface.ViewPort.ControlState	as VPC
-import qualified Graphics.Gloss.Interface.Simulate.State	as SM
-import qualified Graphics.Gloss.Interface.Animate.State		as AN
-import qualified Graphics.Gloss.Render.Options			as RO
-import qualified Graphics.UI.GLUT				as GLUT
+import Graphics.Gloss.Internals.Interface.Exit
+import Graphics.Gloss.Internals.Interface.Window
+import Graphics.Gloss.Internals.Interface.ViewPort.KeyMouse
+import Graphics.Gloss.Internals.Interface.ViewPort.Motion
+import Graphics.Gloss.Internals.Interface.ViewPort.Reshape
+import Graphics.Gloss.Internals.Interface.Animate.Timing
+import Graphics.Gloss.Internals.Interface.Simulate.Idle
+import qualified Graphics.Gloss.Internals.Interface.Callback			as Callback
+import qualified Graphics.Gloss.Internals.Interface.ViewPort.ControlState	as VPC
+import qualified Graphics.Gloss.Internals.Interface.Simulate.State		as SM
+import qualified Graphics.Gloss.Internals.Interface.Animate.State		as AN
+import qualified Graphics.Gloss.Render.Options					as RO
+import qualified Graphics.UI.GLUT						as GLUT
 import Data.IORef
 import System.Mem
 
@@ -33,7 +33,7 @@ simulateInWindow
 	-> world 			-- ^ The initial world.
 	-> (world -> Picture)	 	-- ^ A function to convert the world a picture.
 
-	-> (VP.State -> Float -> world -> world) 	
+	-> (ViewPort -> Float -> world -> world) 	
 					-- ^ A function to step the world one iteration.
 					--	The float gives the simulation period (time step).
 	-> Float			-- ^ How much time to advance the world by in single step mode.
@@ -57,7 +57,7 @@ simulateInWindow
 	worldSR		<- newIORef worldStart
 
 	-- make the initial GL view and render states
-	viewSR		<- newIORef VP.stateInit
+	viewSR		<- newIORef viewPortInit
 	viewControlSR	<- newIORef VPC.stateInit
 	renderSR	<- newIORef RO.optionsInit
 	animateSR	<- newIORef AN.stateInit

@@ -5,15 +5,14 @@ module Graphics.Gloss.Render.Picture
 	( renderPicture )
 where
 
-import	Graphics.Gloss.Render.Options
 import	Graphics.Gloss.Picture
 import	Graphics.Gloss.Color
-import	qualified Graphics.Gloss.Interface.ViewPort.State	as VP
-
-import	Graphics.UI.GLUT					(($=), get)
-import  qualified Graphics.Rendering.OpenGL.GLU.Matrix 		as GLU
-import	qualified Graphics.Rendering.OpenGL.GL			as GL
-import	qualified Graphics.UI.GLUT				as GLUT
+import	Graphics.Gloss.ViewPort
+import	Graphics.Gloss.Render.Options
+import	Graphics.UI.GLUT						(($=), get)
+import  qualified Graphics.Rendering.OpenGL.GLU.Matrix 			as GLU
+import	qualified Graphics.Rendering.OpenGL.GL				as GL
+import	qualified Graphics.UI.GLUT					as GLUT
 
 import 	Data.IORef
 import	Control.Monad
@@ -22,7 +21,7 @@ import	Unsafe.Coerce
 -- ^ Render a picture using the given render options and viewport.
 renderPicture
 	:: Options 		-- ^ The render options to use
-	-> VP.State		-- ^ The current viewport.
+	-> ViewPort		-- ^ The current viewport.
 	-> Picture 		-- ^ The picture to render.
 	-> IO ()
 
@@ -41,7 +40,7 @@ renderPicture
 	-- 
 	let ?modeWireframe	= optionsWireframe renderS
 	    ?modeColor		= optionsColor     renderS
-	    ?scale		= VP.stateScale    viewS
+	    ?scale		= viewPortScale    viewS
 	    ?matProj		= matProj_
 	    ?viewport		= viewport_
 	    ?windowSize		= windowSize_

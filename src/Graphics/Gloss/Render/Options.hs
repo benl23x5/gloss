@@ -1,3 +1,4 @@
+{-# OPTIONS_HADDOCK hide #-}
 
 -- | Rendering options
 module Graphics.Gloss.Render.Options 

@@ -1,9 +1,9 @@
 
-module Graphics.Gloss.Interface.ViewPort.ControlState
+module Graphics.Gloss.Internals.Interface.ViewPort.ControlState
 	( State (..)
 	, stateInit )
 where
-import Graphics.Gloss.Interface.ViewPort.Command
+import Graphics.Gloss.Internals.Interface.ViewPort.Command
 import qualified Graphics.UI.GLUT		as GLUT
 import qualified Data.Map			as Map
 import Data.Map					(Map)

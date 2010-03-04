@@ -8,28 +8,30 @@ import QuadTree
 import Collide
 import Actor
 import Config
+
+import Graphics.Gloss.Geometry
+import Graphics.Gloss.ViewPort
+import Graphics.Gloss.Picture	(Point)
+
 import Data.List
 import qualified Data.Map	as Map
 import qualified Data.Set	as Set
 import Data.Set			(Set)
 import Data.Map			(Map)
 
-import Graphics.Gloss.Geometry
-import Graphics.Gloss.Picture					(Point)
-import qualified Graphics.Gloss.Interface.ViewPort.State	as VP
 
 -- Advance -------------------------------------------------------------------------------------------
 
 -- | Advance all the actors in this world by a certain time.
 advanceWorld 
-	:: VP.State 		-- ^ current viewport
+	:: ViewPort 		-- ^ current viewport
 	-> Time 		-- ^ time to advance them for.
 	-> World 		-- ^ the world to advance.
 	-> World 		-- ^ the new world.
 
 advanceWorld viewport time (World actors tree)
  = let	
- 	rot		= VP.stateRotate viewport
+ 	rot		= viewPortRotate viewport
 	force		= rotateV_deg (negate rot) (0, negate gravityCoeff)
 
 	-- move all the actors 

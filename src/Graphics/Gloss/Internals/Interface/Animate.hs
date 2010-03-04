@@ -1,21 +1,22 @@
-module Graphics.Gloss.Interface.Animate
+module Graphics.Gloss.Internals.Interface.Animate
 	(animateInWindow)
 where	
 import Graphics.Gloss.Color
 import Graphics.Gloss.Picture
+import Graphics.Gloss.ViewPort
 import Graphics.Gloss.Render.Picture
 import Graphics.Gloss.Render.ViewPort
-import Graphics.Gloss.Interface.Window
-import Graphics.Gloss.Interface.Exit
-import Graphics.Gloss.Interface.ViewPort.KeyMouse
-import Graphics.Gloss.Interface.ViewPort.Motion
-import Graphics.Gloss.Interface.ViewPort.Reshape
-import Graphics.Gloss.Interface.Animate.Timing
-import qualified Graphics.Gloss.Render.Options			as RO
-import qualified Graphics.Gloss.Interface.ViewPort.State	as VP
-import qualified Graphics.Gloss.Interface.ViewPort.ControlState	as VPC
-import qualified Graphics.Gloss.Interface.Animate.State		as AN
-import qualified Graphics.Gloss.Interface.Callback		as Callback
+import Graphics.Gloss.Internals.Interface.Window
+import Graphics.Gloss.Internals.Interface.Exit
+import Graphics.Gloss.Internals.Interface.ViewPort.KeyMouse
+import Graphics.Gloss.Internals.Interface.ViewPort.Motion
+import Graphics.Gloss.Internals.Interface.ViewPort.Reshape
+import Graphics.Gloss.Internals.Interface.Animate.Timing
+import qualified Graphics.Gloss.Render.Options					as RO
+import qualified Graphics.Gloss.Internals.Interface.ViewPort.ControlState	as VPC
+import qualified Graphics.Gloss.Internals.Interface.Animate.State		as AN
+import qualified Graphics.Gloss.Internals.Interface.Callback			as Callback
+
 import qualified Graphics.UI.GLUT				as GLUT
 import Data.IORef
 import Control.Monad
@@ -32,7 +33,7 @@ animateInWindow
 
 animateInWindow name size pos backColor frameFun
  = do	
-	viewSR		<- newIORef VP.stateInit
+	viewSR		<- newIORef viewPortInit
 	viewControlSR	<- newIORef VPC.stateInit
 	renderSR	<- newIORef RO.optionsInit
 	animateSR	<- newIORef AN.stateInit

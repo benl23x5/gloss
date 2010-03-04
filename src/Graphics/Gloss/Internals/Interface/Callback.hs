@@ -1,6 +1,6 @@
 
 -- | Event callbacks.
-module Graphics.Gloss.Interface.Callback where
+module Graphics.Gloss.Internals.Interface.Callback where
 
 import qualified Graphics.UI.GLUT	as GLUT
 

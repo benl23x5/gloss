@@ -1,20 +1,21 @@
 
-module Graphics.Gloss.Interface.Display
+module Graphics.Gloss.Internals.Interface.Display
 	(displayInWindow)
 where	
 import Graphics.Gloss.Color
 import Graphics.Gloss.Picture
+import Graphics.Gloss.ViewPort
 import Graphics.Gloss.Render.Picture
 import Graphics.Gloss.Render.ViewPort
-import Graphics.Gloss.Interface.Window
-import Graphics.Gloss.Interface.Exit
-import Graphics.Gloss.Interface.ViewPort.KeyMouse
-import Graphics.Gloss.Interface.ViewPort.Motion
-import Graphics.Gloss.Interface.ViewPort.Reshape
-import qualified Graphics.Gloss.Render.Options			as RO
-import qualified Graphics.Gloss.Interface.ViewPort.State	as VP
-import qualified Graphics.Gloss.Interface.ViewPort.ControlState	as VPC
-import qualified Graphics.Gloss.Interface.Callback		as Callback
+import Graphics.Gloss.Internals.Interface.Window
+import Graphics.Gloss.Internals.Interface.Exit
+import Graphics.Gloss.Internals.Interface.ViewPort.KeyMouse
+import Graphics.Gloss.Internals.Interface.ViewPort.Motion
+import Graphics.Gloss.Internals.Interface.ViewPort.Reshape
+import qualified Graphics.Gloss.Render.Options					as RO
+import qualified Graphics.Gloss.Internals.Interface.ViewPort.ControlState	as VPC
+import qualified Graphics.Gloss.Internals.Interface.Callback			as Callback
+
 import Data.IORef
 import Control.Concurrent
 
@@ -30,7 +31,7 @@ displayInWindow
 
 displayInWindow name size pos background picture
  =  do
-	viewSR		<- newIORef VP.stateInit
+	viewSR		<- newIORef viewPortInit
 	viewControlSR	<- newIORef VPC.stateInit
 	renderSR	<- newIORef RO.optionsInit
 	

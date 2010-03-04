@@ -1,12 +1,12 @@
 
-module Graphics.Gloss.Interface.Simulate.Idle
+module Graphics.Gloss.Internals.Interface.Simulate.Idle
 	( callback_simulate_idle )
 where
-import Graphics.UI.GLUT						(($=), get)
-import qualified Graphics.Gloss.Interface.ViewPort.State	as VP
-import qualified Graphics.Gloss.Interface.Animate.State		as AN
-import qualified Graphics.Gloss.Interface.Simulate.State	as SM
-import qualified Graphics.UI.GLUT				as GLUT
+import Graphics.Gloss.ViewPort
+import qualified Graphics.Gloss.Internals.Interface.Animate.State	as AN
+import qualified Graphics.Gloss.Internals.Interface.Simulate.State	as SM
+import qualified Graphics.UI.GLUT					as GLUT
+import Graphics.UI.GLUT							(($=), get)
 import Data.IORef
 import Control.Monad
 
@@ -16,10 +16,10 @@ import Control.Monad
 callback_simulate_idle
 	:: IORef SM.State				-- ^ the simulation state
 	-> IORef AN.State				-- ^ the animation statea
-	-> IORef VP.State				-- ^ the viewport state
+	-> IORef ViewPort				-- ^ the viewport state
 	-> IORef world					-- ^ the current world
 	-> world					-- ^ the initial world
-	-> (VP.State -> Float -> world -> world) 	-- ^ fn to advance the world
+	-> (ViewPort -> Float -> world -> world) 	-- ^ fn to advance the world
 	-> Float					-- ^ how much time to advance world by 
 							--	in single step mode
 	-> IO ()
@@ -59,9 +59,9 @@ simulate_reset simSR worldSR worldStart
 simulate_run 
 	:: IORef SM.State
 	-> IORef AN.State
-	-> IORef VP.State
+	-> IORef ViewPort
 	-> IORef world
-	-> (VP.State -> Float -> world -> world)
+	-> (ViewPort -> Float -> world -> world)
 	-> IO ()
 	
 simulate_run simSR animateSR viewSR worldSR worldAdvance
@@ -122,9 +122,9 @@ simulate_run simSR animateSR viewSR worldSR worldAdvance
 -- take a single step
 simulate_step 
 	:: IORef SM.State
-	-> IORef VP.State
+	-> IORef ViewPort
 	-> IORef world
-	-> (VP.State -> Float -> world -> world) 
+	-> (ViewPort -> Float -> world -> world) 
 	-> Float
 	-> IO ()
 

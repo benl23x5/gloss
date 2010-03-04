@@ -1,13 +1,13 @@
 
 -- | 	The main display function.
-module	Graphics.Gloss.Interface.Window
+module	Graphics.Gloss.Internals.Interface.Window
 	( createWindow )
 where
 
 import Graphics.Gloss.Color
-import Graphics.Gloss.Interface.Debug
-import Graphics.Gloss.Interface.Callback		(Callback)
-import qualified Graphics.Gloss.Interface.Callback	as Callback
+import Graphics.Gloss.Internals.Interface.Debug
+import Graphics.Gloss.Internals.Interface.Callback		(Callback)
+import qualified Graphics.Gloss.Internals.Interface.Callback	as Callback
 
 import Graphics.UI.GLUT					(($=), get)
 import qualified Graphics.Rendering.OpenGL.GL		as GL

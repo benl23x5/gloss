@@ -1,21 +1,21 @@
 
-module Graphics.Gloss.Interface.ViewPort.Motion
+module Graphics.Gloss.Internals.Interface.ViewPort.Motion
 	(callback_viewPort_motion)
 where
+import Graphics.Gloss.ViewPort
 import Graphics.Gloss.Geometry.Vector
-import Graphics.Gloss.Interface.Callback
-import qualified Graphics.Gloss.Interface.ViewPort.ControlState	as VPC
-import qualified Graphics.Gloss.Interface.ViewPort.State	as VP
-import qualified Graphics.UI.GLUT				as GLUT
-import qualified Graphics.Rendering.OpenGL.GL			as GL
-import Control.Monad
+import Graphics.Gloss.Internals.Interface.Callback
+import qualified Graphics.Gloss.Internals.Interface.ViewPort.ControlState	as VPC
+import qualified Graphics.UI.GLUT						as GLUT
+import qualified Graphics.Rendering.OpenGL.GL					as GL
+import Control.Monad	
 import Data.IORef
 
 
 -- | Callback to handle keyboard and mouse button events
 --	for controlling the viewport.
 callback_viewPort_motion 
-	:: IORef VP.State 	-- ^ ref to ViewPort state
+	:: IORef ViewPort 	-- ^ ref to ViewPort state
 	-> IORef VPC.State 	-- ^ ref to ViewPort Control state
 	-> Callback
 
@@ -55,10 +55,10 @@ motionTranslate
 	(GL.Position posX posY)
  = do
 	(transX, transY)
-		<- portRef `getsIORef` VP.stateTranslate
+		<- portRef `getsIORef` viewPortTranslate
 
-	s	<- portRef `getsIORef` VP.stateScale
-	r	<- portRef `getsIORef` VP.stateRotate
+	s	<- portRef `getsIORef` viewPortScale
+	r	<- portRef `getsIORef` viewPortRotate
 
 	let dX		= fromIntegral $ markX - posX
 	let dY		= fromIntegral $ markY - posY
@@ -68,7 +68,7 @@ motionTranslate
 	let (oX, oY)	= rotateV_deg r offset
 
 	portRef `modifyIORef` \s -> s 
-		{ VP.stateTranslate	
+		{ viewPortTranslate	
 		   = 	( transX - oX
 		 	, transY + oY) }
 		
@@ -84,11 +84,11 @@ motionRotate
 	(markX, markY)
 	(GL.Position posX posY)
  = do
- 	rotate		<- portRef    `getsIORef` VP.stateRotate
+ 	rotate		<- portRef    `getsIORef` viewPortRotate
 	rotateFactor	<- controlRef `getsIORef` VPC.stateRotateFactor
 	
 	portRef `modifyIORef` \s -> s 
-		{ VP.stateRotate
+		{ viewPortRotate
 		   = 	rotate + rotateFactor * fromIntegral (posX - markX) }
 		
 	controlRef `modifyIORef` \s -> s

@@ -33,4 +33,4 @@ clean :
 	
 .PHONY : doc
 doc :
-	haddock -w -h -o doc --optghc=-isrc --ignore-all-exports $(src_Graphics_hs)
+	haddock -w -h -o doc --optghc=-isrc $(src_Graphics_hs)

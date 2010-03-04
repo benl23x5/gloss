@@ -1,8 +1,8 @@
 
-module Graphics.Gloss.Interface.ViewPort.Reshape
+module Graphics.Gloss.Internals.Interface.ViewPort.Reshape
 	(callback_viewPort_reshape)
 where
-import Graphics.Gloss.Interface.Callback
+import Graphics.Gloss.Internals.Interface.Callback
 import Graphics.UI.GLUT					(($=), get)
 import qualified Graphics.UI.GLUT			as GLUT
 import qualified Graphics.Rendering.OpenGL.GL		as GL

@@ -1,6 +1,6 @@
 -- | Implements functions to dump portions of the GLUT and OpenGL state to stdout. 
 --	Used for debugging.
-module Graphics.Gloss.Interface.Debug
+module Graphics.Gloss.Internals.Interface.Debug
 	( dumpGlutState
 	, dumpFramebufferState
 	, dumpFragmentState )

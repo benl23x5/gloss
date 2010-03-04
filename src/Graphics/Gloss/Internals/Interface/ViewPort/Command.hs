@@ -1,6 +1,6 @@
 {-# LANGUAGE PatternGuards #-}
 
-module Graphics.Gloss.Interface.ViewPort.Command
+module Graphics.Gloss.Internals.Interface.ViewPort.Command
 	( Command (..)
 	, defaultCommandConfig
 	, isCommand )

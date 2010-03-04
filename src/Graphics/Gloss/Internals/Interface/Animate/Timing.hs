@@ -7,11 +7,11 @@
 --	We also keep track of the elapsed time since the start of the program,
 --	so we can pass this to the user's animation function.
 -- 
-module Graphics.Gloss.Interface.Animate.Timing
+module Graphics.Gloss.Internals.Interface.Animate.Timing
 	( animateBegin
 	, animateEnd )
 where
-import Graphics.Gloss.Interface.Animate.State
+import Graphics.Gloss.Internals.Interface.Animate.State
 import Control.Monad
 import Control.Concurrent
 import Data.IORef

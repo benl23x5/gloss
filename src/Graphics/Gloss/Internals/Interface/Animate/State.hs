@@ -1,5 +1,5 @@
 
-module Graphics.Gloss.Interface.Animate.State
+module Graphics.Gloss.Internals.Interface.Animate.State
 	( State (..) 
 	, stateInit )
 where
