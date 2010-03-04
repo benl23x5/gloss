@@ -1,5 +1,5 @@
 Name:                gloss-examples
-Version:             1.0
+Version:             1.0.0.0
 License:             MIT
 License-file:        LICENSE
 Author:              Ben Lippmeier
@@ -28,6 +28,7 @@ Executable gloss-clock
 Executable gloss-eden
   Build-depends: base >= 3 && < 5, gloss >= 1.0 && < 1.1, random > 1.0 && < 2.0
   Main-is: Main.hs
+  other-modules: Cell Community World
   hs-source-dirs: Eden
   ghc-options: -O2
 
@@ -44,6 +45,7 @@ Executable gloss-hello
 Executable gloss-lifespan
   Build-depends: base >= 3 && < 5, gloss >= 1.0 && < 1.1, random > 1.0 && < 2.0
   Main-is: Main.hs
+  other-modules: Cell Community World
   hs-source-dirs: Lifespan
   ghc-options: -O2
 
@@ -54,6 +56,7 @@ Executable gloss-styrene
         containers      >= 0.0 && < 1.0,
         ghc-prim        >= 0.2 && < 1.0
   Main-is: Main.hs
+  other-modules: Actor Advance Collide Config Contact QuadTree World
   hs-source-dirs: Styrene
   ghc-options: -O2
 
