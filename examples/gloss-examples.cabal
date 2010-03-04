@@ -4,10 +4,16 @@ License:             MIT
 License-file:        LICENSE
 Author:              Ben Lippmeier
 Maintainer:          gloss@ouroborus.net
-Stability:           experimental
-Synopsis:            Examples using the gloss library
 Build-Type:          Simple
 Cabal-Version:       >=1.8
+Stability:           experimental
+Category:            Graphics
+Description:         
+	Examples using the gloss graphics library.
+	A mixed bag of fractals, particle simulations and cellular automata.
+	Programs included are: hello, easy, clock, eden, flake, lifespan, styrene, tree, zen.
+
+Synopsis:            Examples using the gloss library
 
 Executable gloss-easy
   Build-depends: base >= 3 && < 5, gloss >= 1.0 && < 1.1

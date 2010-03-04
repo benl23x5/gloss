@@ -4,10 +4,16 @@ License:             MIT
 License-file:        LICENSE
 Author:              Ben Lippmeier
 Maintainer:          gloss@ouroborus.net
-Stability:           provisional
-Synopsis:            Painless 2D vector graphics, animations and simulations.
 Build-Type:          Simple
 Cabal-Version:       >=1.8
+Stability:           provisional
+Category:            Graphics
+Description:
+	Gloss hides the pain of drawing simple vector graphics behind a nice data type and
+	a few display functions. Gloss uses OpenGL and GLUT under the hood, but you won't
+	have to worry about any of that. Get something cool on the screen in under 10 minutes.
+
+Synopsis:            Painless 2D vector graphics, animations and simulations.
 
 Library
   Build-Depends: 
