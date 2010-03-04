@@ -8,7 +8,7 @@ main =  animateInWindow
 		"Tree"
 		(500, 650) 
 		(20,  20)
-		(greyN 0.2)
+		black
 		(picture 4)
 
 
