@@ -4,19 +4,19 @@
 --	
 import Graphics.Gloss
 
-main =  displayInWindow
+main =  animateInWindow
 		"Tree Fractal"
 		(500, 650) 
 		(20,  20)
 		(greyN 0.2)
-		(picture 5)
+		(picture 4)
 
 
 -- The picture is a tree fractal, graded from brown to green
-picture :: Int -> Picture	
-picture degree
+picture :: Int -> Float -> Picture	
+picture degree time
 	= Translate 0 (-300)
-	$ tree degree (dim $ dim brown)
+	$ tree degree time (dim $ dim brown)
 
 
 -- Basic stump shape
@@ -28,14 +28,16 @@ stump color
 
 -- Make a tree fractal.
 tree 	:: Int 		-- Fractal degree
+	-> Float	-- time
 	-> Color 	-- Color for the stump
 	-> Picture
 
-tree 0 color = stump (dim $ dim green)
-tree n color 
+tree 0 time color = stump color
+tree n time color 
  = let	smallTree 
-		= Scale 0.5 0.5 
-		$ tree (n-1) (greener color)
+		= Rotate (sin time)
+		$ Scale 0.5 0.5 
+		$ tree (n-1) (- time) (greener color)
    in	Pictures
 		[ stump color
 		, Translate 0 300 $ smallTree
@@ -52,5 +54,5 @@ brown =  makeColor8 139 100 35  255
 
 -- Make this color a little greener
 greener :: Color -> Color
-greener c = mixColors 1 20 green c
+greener c = mixColors 1 10 green c
 

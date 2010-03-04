@@ -113,6 +113,8 @@ drawPicture picture
 
 
 	-- ease up on GL.preservingMatrix
+	--	This is an important optimisation for the Eden example,
+	--	as it draws lots of translated circles.
 	Translate posX posY (Circle radius)
 	 -> renderCircle posX posY ?scale radius 0
 

@@ -8,7 +8,7 @@ main
  		"Clock Fractal"
 		(600, 600)
 		(20, 20)
-		(greyN 0.2)
+		black
 		frame
 
 

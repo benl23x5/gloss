@@ -16,7 +16,7 @@ import Data.Map			(Map)
 
 main 
   = 	simulateInWindow 
-		"Polystyrene"
+		"Polystyrene - right-click-drag rotates"
 		(600, 600)	-- x and y size of window (in pixels).
 		(10, 10)	-- position of window
 		(greyN 0.1)	-- background color
@@ -24,7 +24,6 @@ main
 		worldInit	-- the initial world.
 		drawWorld	-- a function to convert the world to a Picture.
 		advanceWorld	-- a function to advance the world to the next simulation step.
- 		0.1		-- time to advance simulation by in single step mode
 
 -- Draw --------------------------------------------------------------------------------------------
 

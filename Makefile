@@ -8,7 +8,7 @@ SRC_Graphics_hs		= $(shell find src -name "*.hs" -follow)
 all : $(EXAMPLE_BINS)
 
 
-bin/% : examples/%/Main.hs
+bin/% : examples/%/Main.hs $(SRC_Graphics_hs)
 	ghc -O2 -isrc -i$(<D) --make $< -o $@
 
 

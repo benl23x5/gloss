@@ -43,8 +43,6 @@ simulateInWindow
 	-> (ViewPort -> Float -> world -> world) -- ^ A function to step the world one iteration. It is passed the 
 						 --	current viewport and the amount of time for this simulation
 						 --     step (in seconds).
-	-> Float			-- ^ When in single step mode, how much time to advance the simulation for
-					--	each step (in seconds).
 	-> IO ()
 
 simulateInWindow
@@ -56,8 +54,9 @@ simulateInWindow
 	worldStart
 	worldToPicture
 	worldAdvance
-	singleStepTime
  = do
+	let singleStepTime	= 1
+
 	-- make the simulation state
 	stateSR		<- newIORef $ SM.stateInit simResolution
 
