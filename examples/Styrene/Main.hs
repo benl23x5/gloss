@@ -19,7 +19,7 @@ main
 		"Polystyrene - right-click-drag rotates"
 		(600, 600)	-- x and y size of window (in pixels).
 		(10, 10)	-- position of window
-		(greyN 0.1)	-- background color
+		black		-- background color
 		simResolution	-- simulation resolution  (number of steps to take for each second of time)
 		worldInit	-- the initial world.
 		drawWorld	-- a function to convert the world to a Picture.

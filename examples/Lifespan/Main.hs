@@ -12,7 +12,7 @@ main
 		"Lifespan"          -- window name
 		(800, 600)      -- window size
 		(10, 10)	-- window position
-		(greyN 0.15)	-- background color
+		(greyN 0.1)	-- background color
 		2               -- number of steps per second
 		(genesis' gen)  -- initial world
 		render          -- function to convert world to a Picture
