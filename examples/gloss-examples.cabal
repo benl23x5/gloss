@@ -1,0 +1,32 @@
+Name:                gloss-examples
+Version:             1.0
+License:             MIT
+License-file:        LICENSE
+Author:              Ben Lippmeier
+Maintainer:          gloss@ouroborus.net
+Stability:           provisional
+Synopsis:            Examples using the gloss library
+Build-Type:          Simple
+Cabal-Version:       >=1.8
+
+Library
+  Build-Depends: 
+           base       >= 3,
+           ghc-prim   >= 0.2,
+           containers >= 0.3,
+           OpenGL     >= 2.0,
+           GLUT       >= 2.0
+
+  hs-source-dirs: src
+
+  Exposed-modules:
+           Graphics.Gloss
+           Graphics.Gloss.Color
+           Graphics.Gloss.Geometry
+           Graphics.Gloss.Geometry.Angle
+           Graphics.Gloss.Geometry.Line
+           Graphics.Gloss.Geometry.Vector
+           Graphics.Gloss.Picture
+           Graphics.Gloss.Shapes
+           Graphics.Gloss.ViewPort
+  ghc-options: -O2
