@@ -1,8 +1,10 @@
+{-# OPTIONS_HADDOCK hide #-}
 
 module Graphics.Gloss.Internals.Interface.ViewPort.Motion
 	(callback_viewPort_motion)
 where
 import Graphics.Gloss.ViewPort
+import Graphics.Gloss.Geometry.Angle
 import Graphics.Gloss.Geometry.Vector
 import Graphics.Gloss.Internals.Interface.Callback
 import qualified Graphics.Gloss.Internals.Interface.ViewPort.ControlState	as VPC
@@ -65,7 +67,7 @@ motionTranslate
 
 	let offset	= (dX / s, dY / s)
 
-	let (oX, oY)	= rotateV_deg r offset
+	let (oX, oY)	= rotateV (degToRad r) offset
 
 	portRef `modifyIORef` \s -> s 
 		{ viewPortTranslate	

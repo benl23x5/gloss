@@ -1,9 +1,11 @@
+{-# OPTIONS_HADDOCK hide #-}
 {-# LANGUAGE PatternGuards #-}
 
 module Graphics.Gloss.Internals.Interface.ViewPort.KeyMouse
 	(callback_viewPort_keyMouse)
 where
 import Graphics.Gloss.ViewPort
+import Graphics.Gloss.Geometry.Angle
 import Graphics.Gloss.Geometry.Vector
 import Graphics.Gloss.Internals.Interface.ViewPort.Command
 import Graphics.Gloss.Internals.Interface.Callback
@@ -165,7 +167,7 @@ motionBump
 
 	let offset	= (bumpX / s, bumpY / s)
 
-	let (oX, oY)	= rotateV_deg r offset
+	let (oX, oY)	= rotateV (degToRad r) offset
 
 	portRef `modifyIORef` \s -> s 
 		{ viewPortTranslate	

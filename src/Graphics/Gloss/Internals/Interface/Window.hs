@@ -1,3 +1,4 @@
+{-# OPTIONS_HADDOCK hide #-}
 
 -- | 	The main display function.
 module	Graphics.Gloss.Internals.Interface.Window
@@ -5,6 +6,7 @@ module	Graphics.Gloss.Internals.Interface.Window
 where
 
 import Graphics.Gloss.Color
+import Graphics.Gloss.Internals.Color
 import Graphics.Gloss.Internals.Interface.Debug
 import Graphics.Gloss.Internals.Interface.Callback		(Callback)
 import qualified Graphics.Gloss.Internals.Interface.Callback	as Callback

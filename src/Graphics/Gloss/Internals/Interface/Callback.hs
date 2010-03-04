@@ -1,3 +1,4 @@
+{-# OPTIONS_HADDOCK hide #-}
 
 -- | Event callbacks.
 module Graphics.Gloss.Internals.Interface.Callback where

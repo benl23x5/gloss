@@ -1,3 +1,5 @@
+{-# OPTIONS_HADDOCK hide #-}
+
 -- | Implements functions to dump portions of the GLUT and OpenGL state to stdout. 
 --	Used for debugging.
 module Graphics.Gloss.Internals.Interface.Debug

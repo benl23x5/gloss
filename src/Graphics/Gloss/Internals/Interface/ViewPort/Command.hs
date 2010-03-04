@@ -1,3 +1,4 @@
+{-# OPTIONS_HADDOCK hide #-}
 {-# LANGUAGE PatternGuards #-}
 
 module Graphics.Gloss.Internals.Interface.ViewPort.Command

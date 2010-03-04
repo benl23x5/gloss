@@ -1,4 +1,5 @@
 
+-- | Geometric functions concerning lines.
 module Graphics.Gloss.Geometry.Line
 	( closestPointOnLine
 	, closestPointOnLine_param )
@@ -6,30 +7,38 @@ where
 import Graphics.Gloss.Picture	(Point)
 import Graphics.Gloss.Geometry.Vector
 
--- | Given an infinite line which intersects p1 and p2
---	return the point on that line which is closest to p3
-{-# INLINE closestPointOnLine #-}
+-- | Given an infinite line which intersects `P1` and `P1`,
+--	return the point on that line that is closest to `P3`
 closestPointOnLine
-	:: Point -> Point	-- p1 p2	(the line)
-	-> Point		-- p3		(the point)
-	-> Point		-- the point on the line which is closest to p3
+	:: Point 	-- ^ `P1`
+	-> Point	-- ^ `P2`
+	-> Point	-- ^ `P3`
+	-> Point	-- ^ the point on the line P1-P2 that is closest to `P3`
+
+{-# INLINE closestPointOnLine #-}
 
 closestPointOnLine p1 p2 p3
  	= p1 + (u `mulSV` (p2 - p1))
 	where	u	= closestPointOnLine_param p1 p2 p3
 
 
--- | Given an infinite line which intersects p1 and p2
---	pC is the point on the line which is closest to p3
+-- | Given an infinite line which intersects P1 and P2,
+--	let P4 be the point on the line that is closest to P3.
 --
---	u is the parameter indicating where on the line pC is relative to p1 and p2.
---	
---	ie 	if pC == p1	then u = 0
---		if pC == p2	then u = 1
---		if pC is halfway between p1 and p2 then u = 0.5
+--	Return an indication of where on the line P4 is relative to P1 and P2.
 --
+-- @	
+--	if P4 == P1	  return 0
+--	if P4 == P2	  return 1
+--	if P4 is halfway between P1 and P2 then return 0.5
+-- @
 {-# INLINE closestPointOnLine_param #-}
-closestPointOnLine_param :: Point -> Point -> Point -> Float
+closestPointOnLine_param 
+	:: Point 	-- ^ `P1`
+	-> Point 	-- ^ `P2`
+	-> Point 	-- ^ `P3`
+	-> Float
+
 closestPointOnLine_param p1 p2 p3
- 	= (p3 - p1) `dot` (p2 - p1) 
- 	/ (p2 - p1) `dot` (p2 - p1)
+ 	= (p3 - p1) `dotV` (p2 - p1) 
+ 	/ (p2 - p1) `dotV` (p2 - p1)

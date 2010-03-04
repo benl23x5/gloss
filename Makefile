@@ -1,8 +1,11 @@
 
-all : bin/HelloWorld bin/TreeFractal bin/SnowFlake bin/TreeZen bin/ClockFractal bin/Styrene
+all : bin/Easy bin/HelloWorld bin/TreeFractal bin/SnowFlake bin/TreeZen bin/ClockFractal bin/Styrene
 
 # -- files that are ready to compile
 src_Graphics_hs		=  $(shell find src -name "*.hs" -follow)
+
+bin/Easy : examples/Easy/Main.hs $(src_Graphics_hs)
+	ghc -O2 -isrc --make examples/Easy/Main.hs -o bin/Easy
 
 bin/HelloWorld : examples/HelloWorld/Main.hs $(src_Graphics_hs)
 	ghc -O2 -isrc --make examples/HelloWorld/Main.hs -o bin/HelloWorld

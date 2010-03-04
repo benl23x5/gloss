@@ -1,31 +1,36 @@
 
 -- | Predefined and custom colors.
 module Graphics.Gloss.Color
-	( Color
+	( 
+	-- ** Color data type
+	  Color
 	, makeColor
 	, makeColor8
-	, takeRGBAOfColor
-	, glColor4OfColor 
+	, rgbaOfColor
 
-	-- Color functions
+	-- ** Color functions
 	, mixColors
 	, addColors
 	, dim,   bright
 	, light, dark
 
-	-- Pre-defined Colors
-	, white,  black,  greyN 
-	, red,    green,  blue,  yellow,     cyan,       magenta
+	-- ** Pre-defined colors
+	, greyN,  black,  white
+	-- *** Primary
+	, red,    green,  blue
+	-- *** Secondary
+	, yellow,     cyan,       magenta
+	
+	-- *** Tertiary
 	, rose,   violet, azure, aquamarine, chartreuse, orange
 	)
 where
 
 import qualified Graphics.Rendering.OpenGL.GL	as GL
 
--- | A color with Red, Green Blue and Alpha components.
---	We keep this type abstract so we can be sure the components
---	are in the correct range. If you want to make a custom color
---	then use makeColor. 
+-- | An abstract color value.
+--	We keep the type abstract so we can be sure that the components
+--	are in the required range. To make a custom color use 'makeColor'.
 data Color
 	-- | Holds the color components. All components lie in the range [0..1.
 	= RGBA  Float Float Float Float
@@ -46,7 +51,13 @@ makeColor r g b a
 
 
 -- | Make a custom color. All components are clamped to the range [0..255].
-makeColor8 :: Int -> Int -> Int -> Int -> Color
+makeColor8 
+	:: Int 		-- ^ Red component.
+	-> Int 		-- ^ Green component.
+	-> Int 		-- ^ Blue component.
+	-> Int 		-- ^ Alpha component.
+	-> Color
+
 makeColor8 r g b a
 	= clampColor 
 	$ RGBA 	(fromIntegral r / 255) 
@@ -55,34 +66,23 @@ makeColor8 r g b a
 		(fromIntegral a / 255)
 
 	
--- | Take the RGBA components of a color, 
---	converting from RGBA if required.
-takeRGBAOfColor :: Color -> (Float, Float, Float, Float)
-takeRGBAOfColor (RGBA r g b a)	= (r, g, b, a)
+-- | Take the RGBA components of a color.
+rgbaOfColor :: Color -> (Float, Float, Float, Float)
+rgbaOfColor (RGBA r g b a)	= (r, g, b, a)
 		
-
--- | Convert one of our Colors to OpenGL's representation.
-glColor4OfColor :: Fractional a => Color -> GL.Color4 a
-glColor4OfColor (RGBA r g b a)
- = let	rF	= realToFrac r
-	gF	= realToFrac g
-	bF	= realToFrac b
-	aF	= realToFrac a
-   in	GL.Color4 rF gF bF aF
-
 
 -- Internal 
 
 -- | Clamp components of a color into the required range.
 clampColor :: Color -> Color
 clampColor cc
- = let	(r, g, b, a)	= takeRGBAOfColor cc
+ = let	(r, g, b, a)	= rgbaOfColor cc
    in	RGBA (min 1 r) (min 1 g) (min 1 b) (min 1 a)
 
 -- | Normalise a color to the value of its largest RGB component.
 normaliseColor :: Color -> Color
 normaliseColor cc
- = let	(r, g, b, a)	= takeRGBAOfColor cc
+ = let	(r, g, b, a)	= rgbaOfColor cc
 	m		= maximum [r, g, b]
    in	RGBA (r / m) (g / m) (b / m) a
 
@@ -153,14 +153,14 @@ dark (RGBA r g b a)
 
 
 -- Pre-defined Colors ---------------------------------------------------------
-white, black :: Color
-white		= RGBA 1.0 1.0 1.0 1.0
-black		= RGBA 0.0 0.0 0.0 1.0
-
--- | A greyness of a given manitude.
-greyN 	:: Float 	-- ^ Range 0 = Black to 1 = White.
+-- | A greyness of a given magnitude.
+greyN 	:: Float 	-- ^ Range is 0 = black, to 1 = white.
 	-> Color
-greyN n	= RGBA n   n   n   1.0
+greyN n		= RGBA n   n   n   1.0
+
+black, white :: Color
+black		= RGBA 0.0 0.0 0.0 1.0
+white		= RGBA 1.0 1.0 1.0 1.0
 
 -- Colors from the additive color wheel.
 red, green, blue :: Color

@@ -1,12 +1,36 @@
 
+-- | Gloss hides the pain of drawing simple vector graphics behind a nice data type and
+--	a few display functions. 
+--
+--   Getting something on the screen is as easy as:
+--
+--  @
+--    import Graphics.Gloss
+--    main = `displayInWindow` \"My Window\" (100, 100) (10, 10) `black` (`Circle` 40)
+--  @
+--
+--   Once the window is open you can use the following:
+--
+-- 	* Quit - esc-key.
+--
+--	* Move Viewport - left-click drag, arrow keys.
+--
+--	* Rotate Viewport - right-click drag, control-left-click drag, or home\/end-keys.
+--
+--	* Zoom Viewport - mouse wheel, or page up\/down-keys.
+--
+--   Animations and simulations can be constructed similarly using the `animateInWindow` 
+--   and `simulateInWindow` functions. 
+--
+--   Gloss uses OpenGL under the hood, but you don't have to worry about any of that.
+--
 module Graphics.Gloss 
-	( Picture (..)
+	( module Graphics.Gloss.Picture
+	, module Graphics.Gloss.Color
 	, displayInWindow 
 	, animateInWindow
-	, simulateInWindow
-	, module Graphics.Gloss.Color)
+	, simulateInWindow)
 where
-
 import Graphics.Gloss.Picture
 import Graphics.Gloss.Color
 import Graphics.Gloss.Internals.Interface.Display	(displayInWindow)

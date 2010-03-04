@@ -32,7 +32,7 @@ advanceWorld
 advanceWorld viewport time (World actors tree)
  = let	
  	rot		= viewPortRotate viewport
-	force		= rotateV_deg (negate rot) (0, negate gravityCoeff)
+	force		= rotateV (degToRad $ negate rot) (0, negate gravityCoeff)
 
 	-- move all the actors 
 	actors_moved	= Map.map (moveActor_free time force) actors
@@ -69,7 +69,6 @@ applyContact time force (ix1, ix2) actors
 		| Bead _ _ r1 p1 v1	<- a1
 		, Wall{}		<- a2
 		= let	a1'		= collideBeadWall a1 a2
---			a1_final	= actorSetMode 100 a1'
 		  in	Map.insert ix1 a1' actors
 		
 		-- handle a collision between two beads
@@ -90,10 +89,6 @@ applyContact time force (ix1, ix2) actors
 				--	this is much more realistic.
 				| otherwise
 				= collideBeadBead_elastic a1 a2
-
-			-- After two beads have collided, set them as being unstuck stuck.
---			a1_final	= actorSetMode 0 a1'
---			a2_final	= actorSetMode 0 a2'
 
 			-- write the new data for the actors back into the map
 		  in	Map.insert ix1 a1'
@@ -121,7 +116,7 @@ moveActor_free time force actor
 
 		-- if the bead is travelling slowly then set it as being stuck.
 		stuck'		
-		 | magnitude vel' < 20
+		 | magV vel' < 20
 		 = min beadStuckCount (stuck + 1)
 
 		 | otherwise				

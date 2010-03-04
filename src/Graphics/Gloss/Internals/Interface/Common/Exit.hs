@@ -1,3 +1,4 @@
+{-# OPTIONS_HADDOCK hide #-}
 {-# LANGUAGE PatternGuards #-}
 
 -- | Callback for exiting the program.

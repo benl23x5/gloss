@@ -1,3 +1,4 @@
+{-# OPTIONS_HADDOCK hide #-}
 {-# LANGUAGE ScopedTypeVariables #-}
 
 -- | Handling the current viewport during rendering.

@@ -1,3 +1,4 @@
+{-# OPTIONS_HADDOCK hide #-}
 
 -- | Handles timing of animation.
 --	The main point is that we want to restrict the framerate to something

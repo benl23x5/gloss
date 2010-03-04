@@ -1,12 +1,10 @@
 
--- | Utils concerning angles.
--- 	If not otherwise specified, all angles are in _radians_
+-- | Geometric functions concerning angles. If not otherwise specified, all angles are in radians.
 module Graphics.Gloss.Geometry.Angle
 	( degToRad
 	, radToDeg
 	, normaliseAngle )
 where
-
 
 -- | Convert degrees to radians
 {-# INLINE degToRad #-}

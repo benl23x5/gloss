@@ -1,5 +1,6 @@
+{-# OPTIONS_HADDOCK hide #-}
 
-module Graphics.Gloss.Render.Circle 
+module Graphics.Gloss.Internals.Render.Circle 
 where
 
 {-

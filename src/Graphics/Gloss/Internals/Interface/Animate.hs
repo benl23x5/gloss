@@ -1,3 +1,5 @@
+{-# OPTIONS_HADDOCK hide #-}
+
 module Graphics.Gloss.Internals.Interface.Animate
 	(animateInWindow)
 where	
@@ -22,13 +24,17 @@ import Data.IORef
 import Control.Monad
 import System.Mem
 
--- | Open a window and display an animation.
+-- | Open a new window and display the given animation.
+--
+--   Once the window is open you can use the same commands as with @displayInWindow@.
+--
 animateInWindow
 	:: String		-- ^ Name of the window.
 	-> (Int, Int)		-- ^ Initial size of the window, in pixels.
 	-> (Int, Int)		-- ^ Initial position of the window, in pixels.
 	-> Color		-- ^ Background color.
-	-> (Float -> Picture)	-- ^ New frame function. The function is passed the current animation time, in seconds.
+	-> (Float -> Picture)	-- ^ Function to produce the next frame of animation. 
+				--	It is passed the time in seconds since the program started.
 	-> IO ()
 
 animateInWindow name size pos backColor frameFun

@@ -53,8 +53,8 @@ collideBeadBead_elastic
 	vCollisionR		= (cY, -cX)
 	
 	-- the velocity component of each bead along the axis of collision
-	s1	= dot v1 vCollision
-	s2	= dot v2 vCollision
+	s1	= dotV v1 vCollision
+	s2	= dotV v2 vCollision
 
 	-- work out new velocities along the collision
 	s1'	= (s1 * (mass1 - mass2) + 2 * mass2 * s2) / (mass1 + mass2)
@@ -62,8 +62,8 @@ collideBeadBead_elastic
 	
 	-- the velocity components at right angles to the collision
 	--	there is no friction in the collision so these don't change
-	k1	= dot v1 vCollisionR
-	k2	= dot v2 vCollisionR
+	k1	= dotV v1 vCollisionR
+	k2	= dotV v2 vCollisionR
 	
 	-- new bead velocities
 	v1'	= mulSV s1' vCollision + mulSV k1 vCollisionR
@@ -151,7 +151,7 @@ collideBeadPoint_static
 	--            /                                      \
  	--           / -ve                                +ve \
 	--
-	determinant	= det vIn vNormal
+	determinant	= detV vIn vNormal
 
 	-- Use the determinant to rotate the bead's velocity vector for the bounce.
 	vOut		

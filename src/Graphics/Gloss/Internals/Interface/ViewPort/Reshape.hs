@@ -1,3 +1,4 @@
+{-# OPTIONS_HADDOCK hide #-}
 
 module Graphics.Gloss.Internals.Interface.ViewPort.Reshape
 	(callback_viewPort_reshape)

@@ -1,4 +1,5 @@
 {-# OPTIONS -fwarn-incomplete-patterns #-}
+{-# OPTIONS_HADDOCK hide #-}
 {-# LANGUAGE ImplicitParams, ScopedTypeVariables #-}
 
 module Graphics.Gloss.Internals.Render.Picture
@@ -76,7 +77,7 @@ drawPicture picture
 	 	$ vertexPFs path
 
 	-- circle
-	Circle diam width
+	Circle radius
 	 ->  {-# SCC "draw.circle" #-} 
 	     --renderCircle 0 0 ?scale diam width
 	     error "circle"
@@ -97,7 +98,7 @@ drawPicture picture
    	     do
 		oldColor 	 <- get GL.currentColor
 
-		let (r, g, b, a) = takeRGBAOfColor color
+		let (r, g, b, a) = rgbaOfColor color
 
 		GL.currentColor	
 			$= GL.Color4 (gf r) (gf g) (gf b) (gf a)

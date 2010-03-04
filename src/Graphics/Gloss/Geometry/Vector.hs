@@ -1,15 +1,14 @@
 {-# OPTIONS -fno-warn-missing-methods #-}
 {-# LANGUAGE FlexibleInstances #-}
 
--- | Utils concerning Vectors.
+-- | Geometric functions concerning vectors.
 module Graphics.Gloss.Geometry.Vector
-	( magnitude
-	, arg
-	, dot
-	, det
+	( magV
+	, argV
+	, dotV
+	, detV
 	, mulSV
 	, rotateV
-	, rotateV_deg
 	, angleVV
 	, normaliseV
 	, unitVectorAtAngle )
@@ -25,75 +24,71 @@ import Graphics.Gloss.Geometry.Angle
 --	addition and subtraction.
 --
 instance Num (Float, Float) where
- 	(+) (x1, y1) (x2, y2)	= (x1 + x2, y1 + y2)
+	(+) (x1, y1) (x2, y2)	= (x1 + x2, y1 + y2)
  	(-) (x1, y1) (x2, y2)	= (x1 - x2, y1 - y2)
 	negate (x, y)		= (negate x, negate y)	
 
 
--- | Work out the magnitude of a vector
-{-# INLINE magnitude #-}
-magnitude :: Vector -> Float
-magnitude (x, y) 	
+-- | The magnitude of a vector.
+magV :: Vector -> Float
+{-# INLINE magV #-}
+magV (x, y) 	
 	= sqrt (x * x + y * y)
 
--- | The angle of this vector
-arg :: Vector -> Float
-arg (x, y)
+-- | The angle of this vector, relative to the +ve x-axis.
+argV :: Vector -> Float
+{-# INLINE argV #-}
+argV (x, y)
 	= normaliseAngle $ atan2 y x
 
--- | The dot product for vectors
-{-# INLINE dot #-}
-dot :: Vector -> Vector -> Float
-dot (x1, x2) (y1, y2)
+-- | The dot product of two vectors.
+dotV :: Vector -> Vector -> Float
+{-# INLINE dotV #-}
+dotV (x1, x2) (y1, y2)
 	= x1 * y1 + x2 * y2
 
--- | The determinant of two vectors
-{-# INLINE det #-}
-det :: Vector -> Vector -> Float
-det (x1, y1) (x2, y2)
+-- | The determinant of two vectors.
+detV :: Vector -> Vector -> Float
+{-# INLINE detV #-}
+detV (x1, y1) (x2, y2)
 	= x1 * y2 - y1 * x2
 
-{-# INLINE mulSV #-}
--- | Multiply a vector by a scalar
+-- | Multiply a vector by a scalar.
 mulSV :: Float -> Vector -> Vector
+{-# INLINE mulSV #-}
 mulSV s (x, y)		
 	= (s * x, s * y)
 
--- | Rotate a vector by an angle (radians)
---	+ve is counter clockwise
-{-# INLINE rotateV #-}
+-- | Rotate a vector by an angle (in radians). +ve angle is counter-clockwise.
 rotateV :: Float -> Vector -> Vector
+{-# INLINE rotateV #-}
 rotateV r (x, y)
  = 	(  x * cos r - y * sin r
         ,  x * sin r + y * cos r)
 
--- | Rotate a vector by a number of degrees
-{-# INLINE rotateV_deg #-}
-rotateV_deg :: Float -> Vector -> Vector
-rotateV_deg d (x, y)
- = let	r	= degToRad d
-   in	(  x * cos r - y * sin r
-        ,  x * sin r + y * cos r)
 
--- | Compute the inner angle between two vectors
-{-# INLINE angleVV #-}
+-- | Compute the inner angle (in radians) between two vectors.
 angleVV :: Vector -> Vector -> Float
+{-# INLINE angleVV #-}
 angleVV p1@(x1, y1) p2@(x2, y2)
- = let 	m1	= magnitude p1
- 	m2	= magnitude p2
-	d	= p1 `dot` p2
+ = let 	m1	= magV p1
+ 	m2	= magV p2
+	d	= p1 `dotV` p2
 	aDiff	= acos $ d / (m1 * m2)
 
    in	aDiff	
 
 
--- | normalise a vector
-{-# INLINE normaliseV #-}
+-- | Normalise a vector, so it has a magnitude of 1.
 normaliseV :: Vector -> Vector
-normaliseV v	= mulSV (1 / magnitude v) v
+{-# INLINE normaliseV #-}
+normaliseV v	= mulSV (1 / magV v) v
 
--- | the normal vector at an angle (in radians)
-{-# INLINE unitVectorAtAngle #-}
+
+-- | Produce a unit vector at a given angle relative to the +ve x-axis.
+--	The provided angle is in radians.
 unitVectorAtAngle :: Float -> Vector
+{-# INLINE unitVectorAtAngle #-}
 unitVectorAtAngle r
 	= (cos r, sin r)
+

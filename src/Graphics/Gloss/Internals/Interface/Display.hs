@@ -1,3 +1,4 @@
+{-# OPTIONS_HADDOCK hide #-}
 
 module Graphics.Gloss.Internals.Interface.Display
 	(displayInWindow)
@@ -20,12 +21,23 @@ import Data.IORef
 import Control.Concurrent
 
 
--- | Create a new window and display the given picture.
+-- | Open a new window and display the given picture.
+--
+--   Use the following commands once the window is open:
+--
+-- 	* Quit - esc-key.
+--
+--	* Move Viewport - left-click drag, arrow keys.
+--
+--	* Rotate Viewport - right-click drag, control-left-click drag, or home\/end-keys.
+--
+--	* Zoom Viewport - mouse wheel, or page up\/down-keys.
+--
 displayInWindow
 	:: String	-- ^ Name of the window.
 	-> (Int, Int)	-- ^ Initial size of the window, in pixels.
 	-> (Int, Int)	-- ^ Initial position of the window, in pixels.
-	-> Color	-- ^ Background color
+	-> Color	-- ^ Background color.
 	-> Picture	-- ^ The picture to draw.
 	-> IO ()
 

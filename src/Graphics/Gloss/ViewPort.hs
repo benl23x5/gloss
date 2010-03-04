@@ -1,27 +1,25 @@
 
+-- | The 'ViewPort' represents the global transformation applied to the displayed picture.
+--	When the user pans, zooms, or rotates the display then this changes the 'ViewPort'.
 module Graphics.Gloss.ViewPort
 	( ViewPort(..)
 	, viewPortInit )
 where
 	
-	
--- | Viewport state. 
---	These transformations are applied to the whole picture.
 data ViewPort
 	= ViewPort { 
-	-- | The world is translated by this vector
+	-- | Global translation.
 	  viewPortTranslate	:: (Float, Float)
 
-	-- | The world is rotated by this angle, in degrees.
+	-- | Global rotation (in degrees).
 	, viewPortRotate	:: Float		
 
-	-- | The world is scaled by this factor in both x and y directions.
+	-- | Global scaling (of both x and y coordinates).
 	, viewPortScale		:: Float		
-
 	}
 	
 	
--- | The initial viewport state.
+-- | The initial state of the viewport.
 viewPortInit :: ViewPort
 viewPortInit
 	= ViewPort

@@ -1,3 +1,4 @@
+{-# OPTIONS_HADDOCK hide #-}
 
 module Graphics.Gloss.Internals.Interface.Simulate.Idle
 	( callback_simulate_idle )
