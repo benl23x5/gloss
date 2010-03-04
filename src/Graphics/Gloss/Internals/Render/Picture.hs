@@ -5,11 +5,12 @@
 module Graphics.Gloss.Internals.Render.Picture
 	( renderPicture )
 where
-
 import	Graphics.Gloss.Picture
 import	Graphics.Gloss.Color
 import	Graphics.Gloss.ViewPort
 import	Graphics.Gloss.Internals.Render.Options
+import	Graphics.Gloss.Internals.Render.Common
+import	Graphics.Gloss.Internals.Render.Circle
 import	Graphics.UI.GLUT						(($=), get)
 import  qualified Graphics.Rendering.OpenGL.GLU.Matrix 			as GLU
 import	qualified Graphics.Rendering.OpenGL.GL				as GL
@@ -17,7 +18,6 @@ import	qualified Graphics.UI.GLUT					as GLUT
 
 import 	Data.IORef
 import	Control.Monad
-import	Unsafe.Coerce
 
 -- ^ Render a picture using the given render options and viewport.
 renderPicture
@@ -78,9 +78,10 @@ drawPicture picture
 
 	-- circle
 	Circle radius
-	 ->  {-# SCC "draw.circle" #-} 
-	     --renderCircle 0 0 ?scale diam width
-	     error "circle"
+	 ->  renderCircle 0 0 ?scale radius 0
+	
+	ThickCircle radius thickness
+	 ->  renderCircle 0 0 ?scale radius thickness
 	
 	-- stroke text
 	-- 	text looks wierd when we've got blend on,
@@ -111,18 +112,20 @@ drawPicture picture
 	 -> 	drawPicture p
 
 
-	-- transform
-{-	Translate posX posY (Circle radius width)
-	 -> {-# SCC "draw.transCircle" #-} 
-	    renderCircle posX posY ?scale radius width
--}
-	-- ease up on GL.perservingMatrix
+	-- ease up on GL.preservingMatrix
+	Translate posX posY (Circle radius)
+	 -> renderCircle posX posY ?scale radius 0
+
+	Translate posX posY (ThickCircle radius thickness)
+	 -> renderCircle posX posY ?scale radius thickness
+
 	Translate tx ty (Rotate deg p)
 	 -> GL.preservingMatrix
 	     $ do	GL.translate (GL.Vector3 (gf tx) (gf ty) 0)
 			GL.rotate (gf deg) (GL.Vector3 0 0 (-1))
 			drawPicture p
 
+	-----
 	Translate tx ty	p
 	 -> GL.preservingMatrix
 	     $ do	GL.translate (GL.Vector3 (gf tx) (gf ty) 0)
@@ -167,14 +170,4 @@ vertexPFs ((x, y) : rest)
  	vertexPFs rest
 
 
--- | The OpenGL library doesn't seem to provide a nice way convert
---	a Float to a GLfloat, even though they're the same thing
---	under the covers.  
---
---  Using realToFrac is too slow, as it doesn't get fused in at
---	least GHC 6.12.1
---
-gf :: Float -> GL.GLfloat
-{-# INLINE gf #-}
-gf x = unsafeCoerce x
 

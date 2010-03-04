@@ -6,7 +6,7 @@
 --
 --  @
 --    import Graphics.Gloss
---    main = `displayInWindow` \"My Window\" (100, 100) (10, 10) `black` (`Circle` 40)
+--    main = `displayInWindow` \"My Window\" (200, 200) (10, 10) `white` (`Circle` 80)
 --  @
 --
 --   Once the window is open you can use the following:
@@ -27,12 +27,14 @@
 module Graphics.Gloss 
 	( module Graphics.Gloss.Picture
 	, module Graphics.Gloss.Color
+	, module Graphics.Gloss.ViewPort
 	, displayInWindow 
 	, animateInWindow
 	, simulateInWindow)
 where
 import Graphics.Gloss.Picture
 import Graphics.Gloss.Color
+import Graphics.Gloss.ViewPort
 import Graphics.Gloss.Internals.Interface.Display	(displayInWindow)
 import Graphics.Gloss.Internals.Interface.Animate	(animateInWindow)
 import Graphics.Gloss.Internals.Interface.Simulate	(simulateInWindow)

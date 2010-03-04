@@ -1,10 +1,15 @@
+{-# OPTIONS -fglasgow-exts #-}
 {-# OPTIONS_HADDOCK hide #-}
 
-module Graphics.Gloss.Internals.Render.Circle 
-where
+-- | Fast(ish) rendering of circles.
+module Graphics.Gloss.Internals.Render.Circle  where
 
-{-
--- Circles -----------------------------------------------------------------------------------------
+import 	Graphics.Gloss.Internals.Render.Common
+import	qualified Graphics.Rendering.OpenGL.GL		as GL
+import	GHC.Exts
+import	GHC.Prim
+
+
 -- | Render a circle with the given thickness
 renderCircle :: Float -> Float -> Float -> Float -> Float -> IO ()
 renderCircle posX posY scaleFactor radius thickness
@@ -14,12 +19,9 @@ renderCircle posX posY scaleFactor radius thickness
 		then renderCircleLine posX posY steps radius
 		else renderCircleStrip posX posY steps radius thickness
 
-f2d :: Float -> Double
-f2d f	= fromRational (toRational f)
 
-d2f :: Double -> Float
-d2f d	= fromRational (toRational d)
-
+-- | Decide how many line segments to use to render the circle
+circleSteps :: Float -> Int
 circleSteps sDiam
 	| sDiam < 1	= 1
 	| sDiam < 2	= 4
@@ -84,4 +86,4 @@ renderCircleStrip_step posX posY tStep tStop r1 t1 r2 t2
 				(gf $ F# (posY `plusFloat#` (r2 `timesFloat#` (sinFloat# t2))))
 		
 		renderCircleStrip_step posX posY tStep tStop r1 (t1 `plusFloat#` tStep) r2 (t2 `plusFloat#` tStep)
--}	
+	
