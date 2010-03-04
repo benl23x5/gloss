@@ -1,14 +1,14 @@
 {-# OPTIONS -fwarn-incomplete-patterns #-}
 {-# LANGUAGE ImplicitParams, ScopedTypeVariables #-}
 
-module Graphics.Gloss.Render.Picture
+module Graphics.Gloss.Internals.Render.Picture
 	( renderPicture )
 where
 
 import	Graphics.Gloss.Picture
 import	Graphics.Gloss.Color
 import	Graphics.Gloss.ViewPort
-import	Graphics.Gloss.Render.Options
+import	Graphics.Gloss.Internals.Render.Options
 import	Graphics.UI.GLUT						(($=), get)
 import  qualified Graphics.Rendering.OpenGL.GLU.Matrix 			as GLU
 import	qualified Graphics.Rendering.OpenGL.GL				as GL

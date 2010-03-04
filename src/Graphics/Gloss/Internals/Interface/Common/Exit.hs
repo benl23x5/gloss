@@ -1,7 +1,7 @@
 {-# LANGUAGE PatternGuards #-}
 
 -- | Callback for exiting the program.
-module Graphics.Gloss.Internals.Interface.Exit
+module Graphics.Gloss.Internals.Interface.Common.Exit
 	(callback_exit)
 where
 import	Graphics.Gloss.Internals.Interface.Callback

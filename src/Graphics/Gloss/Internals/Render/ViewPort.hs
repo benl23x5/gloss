@@ -1,7 +1,7 @@
 {-# LANGUAGE ScopedTypeVariables #-}
 
 -- | Handling the current viewport during rendering.
-module Graphics.Gloss.Render.ViewPort
+module Graphics.Gloss.Internals.Render.ViewPort
 	( withViewPort )
 where
 import	Graphics.Gloss.ViewPort

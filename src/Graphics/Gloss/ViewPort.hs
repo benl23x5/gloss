@@ -4,6 +4,7 @@ module Graphics.Gloss.ViewPort
 	, viewPortInit )
 where
 	
+	
 -- | Viewport state. 
 --	These transformations are applied to the whole picture.
 data ViewPort

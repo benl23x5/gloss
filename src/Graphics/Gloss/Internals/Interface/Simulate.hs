@@ -5,10 +5,10 @@ where
 import Graphics.Gloss.Color
 import Graphics.Gloss.Picture
 import Graphics.Gloss.ViewPort
-import Graphics.Gloss.Render.Picture
-import Graphics.Gloss.Render.ViewPort
-import Graphics.Gloss.Internals.Interface.Exit
+import Graphics.Gloss.Internals.Render.Picture
+import Graphics.Gloss.Internals.Render.ViewPort
 import Graphics.Gloss.Internals.Interface.Window
+import Graphics.Gloss.Internals.Interface.Common.Exit
 import Graphics.Gloss.Internals.Interface.ViewPort.KeyMouse
 import Graphics.Gloss.Internals.Interface.ViewPort.Motion
 import Graphics.Gloss.Internals.Interface.ViewPort.Reshape
@@ -18,7 +18,7 @@ import qualified Graphics.Gloss.Internals.Interface.Callback			as Callback
 import qualified Graphics.Gloss.Internals.Interface.ViewPort.ControlState	as VPC
 import qualified Graphics.Gloss.Internals.Interface.Simulate.State		as SM
 import qualified Graphics.Gloss.Internals.Interface.Animate.State		as AN
-import qualified Graphics.Gloss.Render.Options					as RO
+import qualified Graphics.Gloss.Internals.Render.Options			as RO
 import qualified Graphics.UI.GLUT						as GLUT
 import Data.IORef
 import System.Mem

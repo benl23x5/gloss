@@ -1,7 +1,5 @@
-{-# OPTIONS_HADDOCK hide #-}
-
 -- | Rendering options
-module Graphics.Gloss.Render.Options 
+module Graphics.Gloss.Internals.Render.Options 
 	( Options (..)
 	, optionsInit )
 where
