@@ -1,0 +1,28 @@
+
+-- 8 Coats of GLOSS -----------------------------------------------------------
+
+Gloss hides the pain of drawing simple vector graphics behind a nice
+data type and a few display functions. 
+
+EXAMPLE
+    Getting something on the screen is as easy as:
+
+      import Graphics.Gloss
+      main = displayInWindow "My Window" (200, 200) (10, 10) white (Circle 80)
+
+
+USAGE
+    Once the window is open you can use the following:
+      * Quit            - esc-key.
+      * Move Viewport   - left-click drag, arrow keys.
+      * Rotate Viewport - right-click drag, control-left-click drag, 
+                          or home/end-keys.
+      * Zoom Viewport   - mouse wheel, or page up/down-keys.
+
+OTHER THINGS
+    Animations and simulations can be constructed similarly using the
+    animateInWindow and simulateInWindow functions.
+
+    See the gloss-examples package for more.
+
+-------------------------------------------------------------------------------
