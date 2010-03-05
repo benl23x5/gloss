@@ -1,48 +1,65 @@
 Name:                gloss-examples
-Version:             1.0.0.0
+Version:             1.0.0.1
 License:             MIT
 License-file:        LICENSE
 Author:              Ben Lippmeier
 Maintainer:          gloss@ouroborus.net
 Build-Type:          Simple
-Cabal-Version:       >=1.8
+Cabal-Version:       >=1.6
 Stability:           experimental
 Category:            Graphics
+Homepage:            http://trac.haskell.org/gloss
+Bug-reports:         http://trac.haskell.org/gloss/newticket
 Description:         
 	Examples using the gloss graphics library.
-	A mixed bag of fractals, particle simulations and cellular automata.
+        A mixed bag of fractals, particle simulations and cellular automata.
 
-Synopsis:            Examples using the gloss library
+Synopsis:
+        Examples using the gloss library
 
 Executable gloss-easy
-  Build-depends: base >= 3 && < 5, gloss >= 1.0 && < 1.1
+  Build-depends: 
+        base            >= 3 && < 5, 
+        gloss           >= 1.0 && < 1.1
   Main-is: Easy/Main.hs
   ghc-options: -O2
 
 Executable gloss-clock
-  Build-depends: base >= 3 && < 5, gloss >= 1.0 && < 1.1
+  Build-depends: 
+        base            >= 3 && < 5, 
+        gloss           >= 1.0 && < 1.1
   Main-is: Clock/Main.hs
   ghc-options: -O2
 
 Executable gloss-eden
-  Build-depends: base >= 3 && < 5, gloss >= 1.0 && < 1.1, random > 1.0 && < 2.0
+  Build-depends: 
+        base            >= 3 && < 5, 
+        gloss           >= 1.0 && < 1.1, 
+        random          >  1.0 && < 1.1
   Main-is: Main.hs
   other-modules: Cell Community World
   hs-source-dirs: Eden
   ghc-options: -O2
 
 Executable gloss-flake
-  Build-depends: base >= 3 && < 5, gloss >= 1.0 && < 1.1
+  Build-depends: 
+        base            >= 3 && < 5, 
+        gloss           >= 1.0 && < 1.1
   Main-is: Flake/Main.hs
   ghc-options: -O2
 
 Executable gloss-hello
-  Build-depends: base >= 3 && < 5, gloss >= 1.0 && < 1.1
+  Build-depends: 
+        base            >= 3 && < 5, 
+        gloss           >= 1.0 && < 1.1
   Main-is: Hello/Main.hs
   ghc-options: -O2
 
 Executable gloss-lifespan
-  Build-depends: base >= 3 && < 5, gloss >= 1.0 && < 1.1, random > 1.0 && < 2.0
+  Build-depends: 
+        base            >= 3 && < 5, 
+        gloss           >= 1.0 && < 1.1, 
+        random          >  1.0 && < 1.1
   Main-is: Main.hs
   other-modules: Cell Community World
   hs-source-dirs: Lifespan
@@ -52,19 +69,23 @@ Executable gloss-styrene
   Build-depends: 
         base            >= 3 && < 5,
         gloss           >= 1.0 && < 1.1,
-        containers      >= 0.0 && < 1.0,
-        ghc-prim        >= 0.2 && < 1.0
+        containers      >= 0.2 && < 0.4,
+        ghc-prim        >= 0.1 && < 0.3
   Main-is: Main.hs
   other-modules: Actor Advance Collide Config Contact QuadTree World
   hs-source-dirs: Styrene
   ghc-options: -O2
 
 Executable gloss-tree
-  Build-depends: base >= 3 && < 5, gloss >= 1.0 && < 1.1
+  Build-depends: 
+        base            >= 3 && < 5, 
+        gloss           >= 1.0 && < 1.1
   Main-is: Tree/Main.hs
   ghc-options: -O2
 
 Executable gloss-zen
-  Build-depends: base >= 3 && < 5, gloss >= 1.0 && < 1.1
+  Build-depends: 
+        base            >= 3 && < 5, 
+        gloss           >= 1.0 && < 1.1
   Main-is: Zen/Main.hs
   ghc-options: -O2
