@@ -1,4 +1,4 @@
-{-# LANGUAGE ExplicitForAll #-}
+{-# OPTIONS -fglasgow-exts #-}
 {-# OPTIONS_HADDOCK hide #-}
 
 module Graphics.Gloss.Internals.Interface.Simulate
