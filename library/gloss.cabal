@@ -18,6 +18,8 @@ Description:
 Synopsis:
         Painless 2D vector graphics, animations and simulations.
 
+Tested-with: GHC == 6.10.4, GHC == 6.12.1
+
 Library
   Build-Depends: 
         base       >= 3 && < 5,
