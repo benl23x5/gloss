@@ -9,16 +9,16 @@ import Graphics.Gloss
 import qualified Data.Map	as Map
 import Data.Map			(Map)
 
-type Index	= (Int, Int)
+type Coord	= (Int, Int)
 data World 	
 	= World
-		{ worldCells	:: Map Index Cell 
+		{ worldCells	:: Map Coord Cell 
 		, worldLastTime	:: Float }
 
 
 
-worldIndexes :: [Index]
-worldIndexes
+worldCoords :: [Coord]
+worldCoords
  = [ (ix, iy)
 	| ix	<- [0 .. worldWidth - 1]
 	, iy	<- [0 .. worldHeight - 1] ]
@@ -35,7 +35,7 @@ startWorld bools
  	= World
  	{ worldCells	= Map.fromList 
 				[(i, cellOfBool b) 
-					| i <- worldIndexes
+					| i <- worldCoords
 					| b <- bools ] 
 	, worldLastTime	= 0 }
 
@@ -47,18 +47,18 @@ cellOfBool b
 	False	-> CellDead
 
 
-getCell :: World -> Index -> Cell
-getCell world index@(x, y)
+getCell :: World -> Coord -> Cell
+getCell world coord@(x, y)
 	| x < 0 || x >= worldWidth	= CellDead
 	| y < 0 || y >= worldHeight	= CellDead
 
 	| otherwise		
-	= case Map.lookup index (worldCells world) of
+	= case Map.lookup coord (worldCells world) of
 		Nothing		-> error "cellOfWorld: out of range"
 		Just cell	-> cell
 
 
-getNeighbourhood :: World -> Index -> [Cell]
+getNeighbourhood :: World -> Coord -> [Cell]
 getNeighbourhood world (ix, iy)
  = let	indexes	= [ (x, y) 
 			| x <- [ix - 1 .. ix + 1]
@@ -75,7 +75,7 @@ stepCell cell neighbours
 	 CellDead	-> if live == 3        then CellAlive else CellDead
 
 
-stepIndex :: World -> Index -> Cell -> Cell
+stepIndex :: World -> Coord -> Cell -> Cell
 stepIndex world index cell
 	= stepCell cell (getNeighbourhood world index)
 

@@ -28,11 +28,11 @@ drawWorld world
 		(- fromIntegral windowWidth  / 2)
 		(- fromIntegral windowHeight / 2)
 	$ Pictures
-	$ map (drawCell world) worldIndexes
+	$ map (drawCell world) worldCoords
 
-drawCell :: World -> Index -> Picture
-drawCell world index@(x, y)
- = let	cell	= getCell world index
+drawCell :: World -> Coord -> Picture
+drawCell world coord@(x, y)
+ = let	cell	= getCell world coord
 	cs	= fromIntegral cellSize
 	cp	= fromIntegral cellSpace
 	fx	= fromIntegral x * (cs + cp) + 1
