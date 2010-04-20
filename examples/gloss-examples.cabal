@@ -89,3 +89,10 @@ Executable gloss-zen
         gloss           >= 1.0 && < 1.1
   Main-is: Zen/Main.hs
   ghc-options: -O2
+
+Executable gloss-machina
+  Build-depends: 
+        base            >= 3 && < 5, 
+        gloss           >= 1.0 && < 1.1
+  Main-is: Machina/Main.hs
+  ghc-options: -O2

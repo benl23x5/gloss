@@ -31,7 +31,7 @@ circleSteps sDiam
 	| otherwise	= 40
 
 
--- | Render a circle with as a line.
+-- | Render a circle as a line.
 renderCircleLine :: Float -> Float -> Int -> Float -> IO ()
 renderCircleLine (F# posX) (F# posY) steps (F# rad)
  = let 	n		= fromIntegral steps
@@ -48,9 +48,9 @@ renderCircleLine_step posX posY tStep tStop rad tt
 	
 	| otherwise
 	= do	GL.vertex 
-			$ GL.Vertex2 
-				(gf $ F# (posX `plusFloat#` (rad `timesFloat#` (cosFloat# tt))))
-				(gf $ F# (posY `plusFloat#` (rad `timesFloat#` (sinFloat# tt))))
+		 $ GL.Vertex2 
+			(gf $ F# (posX `plusFloat#` (rad `timesFloat#` (cosFloat# tt))))
+			(gf $ F# (posY `plusFloat#` (rad `timesFloat#` (sinFloat# tt))))
 
 		renderCircleLine_step posX posY tStep tStop rad (tt `plusFloat#` tStep)
  
@@ -65,7 +65,8 @@ renderCircleStrip (F# posX) (F# posY) steps r width
 	!(F# r2)	= r + width / 2
 
    in	GL.renderPrimitive GL.TriangleStrip
-   		$ renderCircleStrip_step posX posY tStep tStop r1 0.0# r2 (tStep `divideFloat#` 2.0#)
+   		$ renderCircleStrip_step posX posY tStep tStop r1 0.0# r2 
+			(tStep `divideFloat#` 2.0#)
    
 renderCircleStrip_step 
 	:: Float# -> Float# 
@@ -77,13 +78,16 @@ renderCircleStrip_step posX posY tStep tStop r1 t1 r2 t2
 	= return ()
 	
 	| otherwise
-	= do	GL.vertex $ GL.Vertex2 
-				(gf $ F# (posX `plusFloat#` (r1 `timesFloat#` (cosFloat# t1)))) 
-				(gf $ F# (posY `plusFloat#` (r1 `timesFloat#` (sinFloat# t1))))
+	= do	GL.vertex 
+	 	 $ GL.Vertex2 
+			(gf $ F# (posX `plusFloat#` (r1 `timesFloat#` (cosFloat# t1)))) 
+			(gf $ F# (posY `plusFloat#` (r1 `timesFloat#` (sinFloat# t1))))
 
-		GL.vertex $ GL.Vertex2 
-				(gf $ F# (posX `plusFloat#` (r2 `timesFloat#` (cosFloat# t2))))
-				(gf $ F# (posY `plusFloat#` (r2 `timesFloat#` (sinFloat# t2))))
+		GL.vertex 
+		 $ GL.Vertex2 
+			(gf $ F# (posX `plusFloat#` (r2 `timesFloat#` (cosFloat# t2))))
+			(gf $ F# (posY `plusFloat#` (r2 `timesFloat#` (sinFloat# t2))))
 		
-		renderCircleStrip_step posX posY tStep tStop r1 (t1 `plusFloat#` tStep) r2 (t2 `plusFloat#` tStep)
+		renderCircleStrip_step posX posY tStep tStop r1 
+			(t1 `plusFloat#` tStep) r2 (t2 `plusFloat#` tStep)
 	

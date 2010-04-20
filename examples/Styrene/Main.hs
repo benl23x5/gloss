@@ -15,15 +15,17 @@ import qualified Data.Map	as Map
 import Data.Map			(Map)
 
 main 
-  = 	simulateInWindow 
-		"Polystyrene - right-click-drag rotates"
-		(600, 600)	-- x and y size of window (in pixels).
-		(10, 10)	-- position of window
-		black		-- background color
-		simResolution	-- simulation resolution  (number of steps to take for each second of time)
-		worldInit	-- the initial world.
-		drawWorld	-- a function to convert the world to a Picture.
-		advanceWorld	-- a function to advance the world to the next simulation step.
+  = simulateInWindow 
+	"Polystyrene - right-click-drag rotates"
+	(600, 600)	-- x and y size of window (in pixels).
+	(10, 10)	-- position of window
+	black		-- background color
+	simResolution	-- simulation resolution  
+			-- (number of steps to take for each second of time)
+	worldInit	-- the initial world.
+	drawWorld	-- a function to convert the world to a Picture.
+	advanceWorld	-- a function to advance the world to
+			--	the next simulation step.
 
 -- Draw --------------------------------------------------------------------------------------------
 
