@@ -50,9 +50,12 @@ drawCell world index cell
 	fx	= fromIntegral x * (cs + cp) + 1
 	fy	= fromIntegral y * (cs + cp) + 1
 
-	shape	= cellShape (worldCellSize world)	
-
-   in	Translate fx fy	$ pictureOfCell (worldCellOldAge world) shape cell
+   in	pictureOfCell
+		(worldCellOldAge world)
+		(worldCellSize   world)
+		fx
+		fy
+		cell
 		
 
 -- | Get the size of the window needed to display a world.

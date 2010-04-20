@@ -21,19 +21,25 @@ isAlive cell
 
 
 -- | The basic shape of a cell.
-cellShape :: Int -> Picture
-cellShape cellSize
+cellShape :: Int -> Int -> Int -> Picture
+cellShape cellSize posXi posYi
  = let 	cs	= fromIntegral cellSize
-   in	Polygon [(0, 0), (cs, 0), (cs, cs), (0, cs)]
-
+	posX	= fromIntegral posXi
+	posY	= fromIntegral posYi
+	x1	= posX
+	x2	= posX + cs
+	y1	= posY 
+	y2	= posY + cs
+   in	Polygon [(x1, y1), (x1, y2), (x2, y2), (x2, y1)]
+		
 
 -- | Convert a cell to a picture, based on a primitive shape.
 --	We pass the shape in to avoid recomputing it for each cell.
-pictureOfCell :: Int -> Picture -> Cell -> Picture
-pictureOfCell oldAge cellShape' cell
+pictureOfCell :: Int -> Int -> Int -> Int -> Cell -> Picture
+pictureOfCell oldAge cellSize posX posY cell
  = case cell of
-	CellAlive age 	-> Color (ageColor oldAge age)	cellShape'
-	CellDead  	-> Color (greyN 0.8) 	cellShape'
+	CellAlive age 	-> Color (ageColor oldAge age)	(cellShape cellSize posX posY)
+	CellDead  	-> Color (greyN 0.8) 		(cellShape cellSize posX posY)
 
 ageColor :: Int -> Int -> Color
 ageColor oldAge age
