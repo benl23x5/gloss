@@ -3,7 +3,9 @@ module Main where
 import World
 import Cell
 import Graphics.Gloss
+import qualified Data.Vector	as Vec
 
+main :: IO ()
 main 	
  = do	
 	let width	= 150
@@ -11,7 +13,7 @@ main
 	world	<- randomWorld (width, height)
 	
 	simulateInWindow 
-		"Conway" 
+		"Conway's Game of Life" 
 		(windowSizeOfWorld world)
 		(5, 5) 
 		white
@@ -21,7 +23,7 @@ main
 		simulateWorld
 	
 
--- | Draw a world as a picture.
+-- | Convert a world to a picture.
 drawWorld
 	:: World 
 	-> Picture
@@ -33,19 +35,27 @@ drawWorld world
 	offsetX	= - fromIntegral windowWidth  / 2
 	offsetY	= - fromIntegral windowHeight / 2 
    in	Translate offsetX offsetY
-		$ Pictures $ map (drawCell world) (worldCoords world)
+		$ Pictures 
+		$ Vec.toList 
+		$ Vec.imap (drawCell world) (worldCells world)
 
-drawCell :: World -> Coord -> Picture
-drawCell world coord@(x, y)
- = let	cell	= getCell world coord
-	cs	= fromIntegral (worldCellSize world)
+
+-- | Convert a cell at a particular coordinate to a picture.
+drawCell :: World -> Index -> Cell -> Picture
+drawCell world index cell 
+ = let	cs	= fromIntegral (worldCellSize world)
 	cp	= fromIntegral (worldCellSpace world)
+
+	(x, y)	= coordOfIndex world index
 	fx	= fromIntegral x * (cs + cp) + 1
 	fy	= fromIntegral y * (cs + cp) + 1
+
 	shape	= cellShape (worldCellSize world)	
+
    in	Translate fx fy	$ pictureOfCell shape cell
 		
 
+-- | Get the size of the window needed to display a world.
 windowSizeOfWorld :: World -> (Int, Int)
 windowSizeOfWorld world
  = let	cellSize	= worldCellSize world

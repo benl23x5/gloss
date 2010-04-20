@@ -96,3 +96,13 @@ Executable gloss-machina
         gloss           >= 1.0 && < 1.1
   Main-is: Machina/Main.hs
   ghc-options: -O2
+
+Executable gloss-conway
+  Build-depends: 
+        base            >= 3 && < 5, 
+        gloss           >= 1.0 && < 1.1,
+        vector          >= 0.5 && < 0.6
+  Main-is: Main.hs
+  other-modules: Cell World
+  hs-source-dirs: Conway
+  ghc-options: -O2 -Wall -Werror
