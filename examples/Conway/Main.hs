@@ -13,7 +13,7 @@ main
 	world	<- randomWorld (width, height)
 	
 	simulateInWindow 
-		"Conway's Game of Life" 
+		"John Conway's Game of Life" 
 		(windowSizeOfWorld world)
 		(5, 5) 
 		white
@@ -52,7 +52,7 @@ drawCell world index cell
 
 	shape	= cellShape (worldCellSize world)	
 
-   in	Translate fx fy	$ pictureOfCell shape cell
+   in	Translate fx fy	$ pictureOfCell (worldCellOldAge world) shape cell
 		
 
 -- | Get the size of the window needed to display a world.

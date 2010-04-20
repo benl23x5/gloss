@@ -38,6 +38,9 @@ data World
 	-- | Number of pixels to leave between each cell.
 	, worldCellSpace	:: Int
 
+	-- | Cells less than this age are drawn with the color ramp
+	, worldCellOldAge	:: Int
+
 	-- | Seconds to wait between each simulation step.
 	, worldSimulationPeriod	:: Float 
 	
@@ -55,6 +58,7 @@ randomWorld (width, height)
 		, worldHeight		= height
 		, worldCellSize		= 5
 		, worldCellSpace	= 1 
+		, worldCellOldAge	= 20
 		, worldSimulationPeriod	= 0.1 
 		, worldElapsedTime	= 0 }
 
@@ -63,7 +67,7 @@ randomWorld (width, height)
 cellOfBool :: Bool -> Cell
 cellOfBool b
  = case b of
-	True	-> CellAlive
+	True	-> CellAlive 0
 	False	-> CellDead
 
 
@@ -92,8 +96,8 @@ stepCell :: Cell -> [Cell] -> Cell
 stepCell cell neighbours
  = let 	live	= length (filter isAlive neighbours)
    in	case cell of
-	 CellAlive	-> if elem live [2, 3] then CellAlive else CellDead
-	 CellDead	-> if live == 3        then CellAlive else CellDead
+	 CellAlive age	-> if elem live [2, 3] then CellAlive (age + 1) else CellDead
+	 CellDead	-> if live == 3        then CellAlive 0         else CellDead
 
 
 -- | Compute the next state of the cell at this index in the world.
