@@ -1,5 +1,5 @@
 Name:                gloss-examples
-Version:             1.0.0.1
+Version:             1.0.1.0
 License:             MIT
 License-file:        LICENSE
 Author:              Ben Lippmeier
@@ -105,4 +105,4 @@ Executable gloss-conway
   Main-is: Main.hs
   other-modules: Cell World
   hs-source-dirs: Conway
-  ghc-options: -O2 -Wall -Werror
+  ghc-options: -O2
