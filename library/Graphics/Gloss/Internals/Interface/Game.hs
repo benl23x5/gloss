@@ -2,7 +2,8 @@
 {-# OPTIONS_HADDOCK hide #-}
 
 module Graphics.Gloss.Internals.Interface.Game
-	(gameInWindow)
+	( gameInWindow
+	, Event(..))
 where
 import Graphics.Gloss.Color
 import Graphics.Gloss.Picture
@@ -23,13 +24,14 @@ import qualified Graphics.Gloss.Internals.Interface.Simulate.State		as SM
 import qualified Graphics.Gloss.Internals.Interface.Animate.State		as AN
 import qualified Graphics.Gloss.Internals.Render.Options			as RO
 import qualified Graphics.UI.GLUT						as GLUT
+import qualified Graphics.Rendering.OpenGL.GL					as GL
 import Data.IORef
 import System.Mem
 
 -- | Possible input events.
 data Event
-	= EventKey    GLUT.Key GLUT.KeyState GLUT.Modifiers (Int, Int)
-	| EventMotion (Int, Int)
+	= EventKey    GLUT.Key GLUT.KeyState GLUT.Modifiers (Float, Float)
+	| EventMotion (Float, Float)
 	deriving (Eq, Show)
 
 -- | Run a game in a window. 
@@ -106,7 +108,7 @@ gameInWindow
 						worldSR worldStart (\_ -> worldAdvance)
 						singleStepTime)
 		, callback_exit () 
-		, callback_keyMouse worldSR worldHandleEvent
+		, callback_keyMouse worldSR viewSR worldHandleEvent
 		, callback_motion   worldSR worldHandleEvent
 		, callback_viewPort_reshape ]
 
@@ -116,16 +118,26 @@ gameInWindow
 -- | Callback for KeyMouse events.
 callback_keyMouse 
 	:: IORef world	 		-- ^ ref to world state
+	-> IORef ViewPort
 	-> (Event -> world -> world)	-- ^ fn to handle input events
 	-> Callback
 
-callback_keyMouse worldRef eventFn
- 	= KeyMouse (handle_keyMouse worldRef eventFn)
+callback_keyMouse worldRef viewRef eventFn
+ 	= KeyMouse (handle_keyMouse worldRef viewRef eventFn)
 
-handle_keyMouse worldRef eventFn key keyState keyMods pos
- = let	GLUT.Position x y	= pos
-	pos'			= (fromIntegral x, fromIntegral y)
-   in	worldRef `modifyIORef` \world -> eventFn (EventKey key keyState keyMods pos') world
+handle_keyMouse worldRef viewRef eventFn key keyState keyMods pos
+ = do	size@(GLUT.Size sizeX_ sizeY_)	<- GL.get GLUT.windowSize
+	let (sizeX, sizeY)		= (fromIntegral sizeX_, fromIntegral sizeY_)
+
+	let GLUT.Position px_ py_	= pos
+	let px		= fromIntegral px_
+	let py		= sizeY - fromIntegral py_
+	
+	let px'		= px - sizeX / 2
+	let py' 	= py - sizeY / 2
+	let pos'	= (px', py')
+  
+	worldRef `modifyIORef` \world -> eventFn (EventKey key keyState keyMods pos') world
 
 
 -- | Callback for Motion events.

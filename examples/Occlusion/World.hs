@@ -37,7 +37,7 @@ loadWorld fileName
 		, worldHeight		= height
 		, worldTree		= makeWorldTree extent cells
 		, worldCellSize		= 20
-		, worldCellSpace	= 1 }
+		, worldCellSpace	= 0 }
 
 
 readLine :: Int -> String -> [Cell]
@@ -59,8 +59,8 @@ makeWorldTree extent cells
 		= sizeOfExtent extent
 	
 	posCells	
-		= zip	[(x, y) | x <- [0 .. width - 1]
-				, y <- [0 .. height - 1]]
+		= zip	[(x, y) | y <- [0 .. height - 1]
+				, x <- [0 .. width - 1]]
 			cells
 	
 	nonEmptyPosCells 

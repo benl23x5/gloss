@@ -2,7 +2,8 @@
 module Cell
 	( Cell (..)
 	, readCell 
-	, pictureOfCell)
+	, pictureOfCell
+	, cellShape)
 where
 import Data.Char
 import Graphics.Gloss
@@ -28,9 +29,9 @@ cellShape cellSize posXi posYi
 	posX	= fromIntegral posXi
 	posY	= fromIntegral posYi
 	x1	= posX
-	x2	= posX + cs
+	x2	= posX + 1
 	y1	= posY 
-	y2	= posY + cs
+	y2	= posY + 1
    in	Polygon [(x1, y1), (x1, y2), (x2, y2), (x2, y1)]
 		
 

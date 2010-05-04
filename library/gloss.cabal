@@ -53,6 +53,7 @@ Library
         Graphics.Gloss.Internals.Interface.Simulate
         Graphics.Gloss.Internals.Interface.Simulate.Idle
         Graphics.Gloss.Internals.Interface.Simulate.State
+        Graphics.Gloss.Internals.Interface.Game
         Graphics.Gloss.Internals.Interface.ViewPort.Command
         Graphics.Gloss.Internals.Interface.ViewPort.ControlState
         Graphics.Gloss.Internals.Interface.ViewPort.KeyMouse

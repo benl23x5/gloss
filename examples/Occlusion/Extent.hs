@@ -33,14 +33,14 @@ squareExtent i
 -- | Get the width and height of an extent.
 sizeOfExtent :: Extent -> (Int, Int)
 sizeOfExtent (Extent n s e w)
-	= (n - s, e - w)
+	= (e - w, n - s)
 
 
 -- | Get the position of the center of an extent.
 centerCoordOfExtent :: Extent -> (Int, Int)
 centerCoordOfExtent (Extent n s e w)
- = 	( s + (n - s) `div` 2
-	, w + (e - w) `div` 2)
+ = 	( w + (e - w) `div` 2
+	, s + (n - s) `div` 2)
 	
 	
 -- | Check if an extent is a square with a width and height of 1
@@ -110,16 +110,6 @@ flattenQuadTree extentInit treeInit
 		Just tree'	= takeQuad quad tree
 		coord'		= centerCoordOfExtent extent'
    	   in	flatten' extent' tree' coord'
-
-
-
-
-
-
-
-
-
-
 
 
 
