@@ -1,10 +1,10 @@
 {-# LANGUAGE PatternGuards #-}
 
 module Cast
-	( Pos, Ray
+	( Ray
 	, cast
 	, rayClearsBox
-	, rayIntersectsExtent
+	, rayTouchesExtent
 	, rayIntersectsHorzSeg
 	, rayIntersectsVertSeg)
 where
@@ -13,7 +13,6 @@ import QuadTree
 import Data.Maybe
 
 
-type Pos 	= (Float, Float)
 type Ray	= (Pos, Pos)
 
 
@@ -21,33 +20,44 @@ cast :: Ray -> Extent -> QuadTree a -> [(Pos, Extent, a)]
 cast ray extent tree
  = case tree of
 	TNil	-> []
-	TLeaf x
+	TLeaf a
 	 -> case rayIntersectsExtent ray extent of
+		Just pos	-> [(pos, extent, a)]
 		Nothing		-> []
-		Just pos	-> [(pos, extent, x)]
-		
+					
 	TNode nw ne sw se
+	 | rayTouchesExtent ray extent 
 	 -> concat
 	 	[ cast ray (cutQuadExtent NW extent) nw
 		, cast ray (cutQuadExtent NE extent) ne
 		, cast ray (cutQuadExtent SW extent) sw
 		, cast ray (cutQuadExtent SE extent) se ]
-		 
 	
+	_ -> []
+		
 	
 rayIntersectsExtent :: Ray -> Extent -> Maybe Pos
-rayIntersectsExtent ray (Extent n' s' e' w')
- = let	n	= fromIntegral n'
-	s	= fromIntegral s'
-	e	= fromIntegral e'
-	w	= fromIntegral w'
-	
-  in	listToMaybe $ catMaybes
-		[ rayIntersectsHorzSeg ray s w e
-		, rayIntersectsHorzSeg ray n w e 
-		, rayIntersectsVertSeg ray w s n
-		, rayIntersectsVertSeg ray e s n ]
+rayIntersectsExtent ray@((x0, y0), _) extent@(Extent n' s' e' w')
+	= listToMaybe 
+	$ catMaybes
+		[ if y0 < s then rayIntersectsHorzSeg ray s w e else Nothing
+     	 	, if y0 > n then rayIntersectsHorzSeg ray n w e else Nothing
+     	 	, if x0 < w then rayIntersectsVertSeg ray w s n else Nothing
+		, if x0 > e then rayIntersectsVertSeg ray e s n else Nothing ]
 
+	where	n	= fromIntegral n'
+		s	= fromIntegral s'
+		e	= fromIntegral e'
+		w	= fromIntegral w'
+
+		
+	
+rayTouchesExtent :: Ray -> Extent -> Bool
+rayTouchesExtent ray@(p1, p2) extent@(Extent n' s' e' w')
+	=   posInExtent extent p1
+       	 || posInExtent extent p2
+	 || isJust (rayIntersectsExtent ray extent)
+	
 
 -- | Check if a ray clears a box by being well outside it.
 rayClearsBox :: Ray -> Float -> Float -> Float -> Float -> Bool

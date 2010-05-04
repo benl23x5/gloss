@@ -1,11 +1,14 @@
 
 module Extent
 	( Extent (..)
-	, Coord
+	, Coord, Pos
 	, squareExtent
-	, cutQuadExtent
-	, isInExtent 
 	, sizeOfExtent
+	, centerCoordOfExtent
+	, centerPosOfExtent
+	, cutQuadExtent
+	, coordInExtent
+	, posInExtent
 	, insertNodeByCoord
 	, flattenQuadTree)
 where
@@ -20,8 +23,8 @@ data Extent
 	, extentWest	:: Int }
 	deriving (Eq, Show)
 
-type Coord
-	= (Int, Int)
+type Pos 	= (Float, Float)
+type Coord	= (Int, Int)
 
 
 -- | Make a square extent of a given size.
@@ -41,6 +44,11 @@ centerCoordOfExtent :: Extent -> (Int, Int)
 centerCoordOfExtent (Extent n s e w)
  = 	( w + (e - w) `div` 2
 	, s + (n - s) `div` 2)
+
+centerPosOfExtent :: Extent -> (Float, Float)
+centerPosOfExtent extent
+ = let	(x, y)	= centerCoordOfExtent extent
+   in	(fromIntegral x, fromIntegral y)
 	
 	
 -- | Check if an extent is a square with a width and height of 1
@@ -62,17 +70,27 @@ cutQuadExtent quad (Extent n s e w)
 	
 	
 -- | Check if a position lies inside an extent.
-isInExtent :: Extent -> Coord -> Bool
-isInExtent (Extent n s e w) (x, y)
-	=  x >= w && x < e
-	&& y >= s && y < n
+coordInExtent :: Extent -> Coord -> Bool
+coordInExtent (Extent n s e w) (x, y)
+	=  x >= w && x <= e
+	&& y >= s && y <= n
+
+posInExtent :: Extent -> Pos -> Bool
+posInExtent (Extent n s e w) (x, y)
+ = let	n'	= fromIntegral n
+	s'	= fromIntegral s
+	e'	= fromIntegral e
+	w'	= fromIntegral w
+	
+   in	x >= w' && x <= e'
+     && y >= s' && y <= n'
 
 
 -- | Get the quadrant that this position lies in, if any.
 quadOfCoord :: Extent -> Coord -> Maybe Quad
 quadOfCoord extent coord
  	= listToMaybe 
-	$ filter (\q -> isInExtent (cutQuadExtent q extent) coord)
+	$ filter (\q -> coordInExtent (cutQuadExtent q extent) coord)
 	$ allQuads
 
 	
