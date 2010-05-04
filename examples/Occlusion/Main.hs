@@ -2,8 +2,8 @@
 import Graphics.Gloss
 import World
 import Cell
-import qualified Data.Vector	as V
-
+import QuadTree
+import Extent
 
 main 
  = do	world		<- loadWorld "world.dat"
@@ -11,7 +11,7 @@ main
 	displayInWindow 
 		"Occlusion"
 		(windowSizeOfWorld world)
-		(10, 10)
+		(1200, 10)
 		black 
 		picture
 		
@@ -31,22 +31,21 @@ drawWorld world
 	offsetY	= - fromIntegral windowHeight / 2 
    in	Translate offsetX offsetY
 		$ Pictures 
-		$ V.toList 
-		$ V.imap (drawCell world) (worldCells world)
+		$ map (uncurry (drawCell world)) 
+		$ flattenQuadTree (worldExtent world) (worldTree world)
 		
 		
 -- | Convert a cell at a particular coordinate to a picture.
-drawCell :: World -> Index -> Cell -> Picture
-drawCell world index cell 
+drawCell :: World -> Pos -> Cell -> Picture
+drawCell world (x, y) cell 
  = let	cs	= fromIntegral (worldCellSize world)
 	cp	= fromIntegral (worldCellSpace world)
 
-	(x, y)	= coordOfIndex world index
 	fx	= fromIntegral x * (cs + cp) + 1
 	fy	= fromIntegral y * (cs + cp) + 1
 
    in	pictureOfCell
-		(worldCellSize   world)
+		(worldCellSize world)
 		fx
 		fy
 		cell

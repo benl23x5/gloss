@@ -106,3 +106,13 @@ Executable gloss-conway
   other-modules: Cell World
   hs-source-dirs: Conway
   ghc-options: -O2
+
+Executable gloss-occlusion
+  Build-depends: 
+        base            >= 3 && < 5, 
+        gloss           >= 1.0 && < 1.1,
+        vector          >= 0.5 && < 0.6
+  Main-is: Main.hs
+  other-modules: Cell Extent World BlockTree
+  hs-source-dirs: Occlusion
+  ghc-options: -O2
