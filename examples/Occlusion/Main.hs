@@ -4,10 +4,13 @@ import World
 import Cell
 import QuadTree
 import Extent
+import Cast
 
 main 
  = do	world		<- loadWorld "world.dat"
-	let picture	= drawWorld world
+--	let picture	= drawWorld world
+	let picture	= drawIntersectsHorzSeg ((10, 10), (20, 50)) 40 10 20
+
 	displayInWindow 
 		"Occlusion"
 		(windowSizeOfWorld world)
@@ -36,7 +39,7 @@ drawWorld world
 		
 		
 -- | Convert a cell at a particular coordinate to a picture.
-drawCell :: World -> Pos -> Cell -> Picture
+drawCell :: World -> Coord -> Cell -> Picture
 drawCell world (x, y) cell 
  = let	cs	= fromIntegral (worldCellSize world)
 	cp	= fromIntegral (worldCellSpace world)
@@ -59,3 +62,15 @@ windowSizeOfWorld world
  	height		= cellPad * (worldHeight world) + cellSpace
 	width		= cellPad * (worldWidth  world) + cellSpace
    in	(width, height)
+
+
+
+drawIntersectsHorzSeg :: Ray -> Float -> Float -> Float -> Picture
+drawIntersectsHorzSeg ray@(p1, p2) y0 xa xb
+ = let color	= if rayIntersectsHorzSeg ray y0 xa xb 
+			then red
+			else blue
+   in  Scale 5 5
+	$ Pictures
+		[ Color color $ Line [p1, p2]
+		, Color white $ Line [(xa, y0), (xb, y0)] ]

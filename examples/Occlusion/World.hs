@@ -51,7 +51,7 @@ makeWorldTree extent cells
  = foldr insert' emptyTree nonEmptyPosCells
  where 
 	insert' (pos, cell) tree
-	 = case insertNodeByPos extent pos cell tree of
+	 = case insertNodeByCoord extent pos cell tree of
 		Nothing		-> tree
 		Just tree'	-> tree'
 	
