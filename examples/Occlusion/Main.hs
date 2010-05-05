@@ -6,12 +6,14 @@ import Cell
 import Graphics.Gloss.Game
 import Graphics.Gloss.Data.QuadTree
 import Graphics.Gloss.Data.Extent
+import System.Environment
 import Data.Maybe
 import Data.List
 import Data.Function
 
 main 
- = do	world		<- loadWorld "world.dat"
+ = do	[fileName]	<- getArgs
+	world		<- loadWorld fileName
 	let gameState	= initState world
 	print $ windowSizeOfWorld world
 	gameInWindow 
@@ -19,7 +21,7 @@ main
 		(windowSizeOfWorld world)
 		(10, 10)
 		black 
-		100 
+		10
 		gameState
 		drawState
 		(handleInput world)
@@ -38,13 +40,14 @@ drawState state
 
 	-- The cells
 	cDude		= (truncate xDude, truncate yDude)
+	cellsAll	= flattenQuadTree (worldExtent world) (worldTree world)
+	picCellsAll	= Pictures $ map (uncurry (drawCell False world)) cellsAll
+
 	cellsSeen	= [ (coord, cell)
 				| (coord, cell)	<- flattenQuadTree (worldExtent world) (worldTree world)
 				, cellAtCoordIsVisible world cDude coord ]
 
-	picCells	= Pictures 
-			$ map (uncurry (drawCell world)) 
-			$ cellsSeen
+	picCells	= Pictures $ map (uncurry (drawCell True world)) cellsSeen
 
 	-- The seen cell (if any)
 	mSeenCell	= castSegIntoWorld world p1 p2
@@ -64,7 +67,7 @@ drawState state
 
    in	Translate offsetX offsetY
 		$ Scale scale scale
-		$ Pictures [ picCells, picHot, picRay ]
+		$ Pictures [ picCellsAll, picCells, picHot, picRay ]
 
 
 	
@@ -84,7 +87,7 @@ drawRay :: World -> Point -> Point -> Picture
 drawRay world p1@(x, y) p2
  = Pictures
 	[ Color red $ Line [p1, p2]
-	, Color red 
+	, Color cyan 
 		$ Translate x y 
 		$ Pictures 
 			[ Line [(-0.3, -0.3), (0.3,  0.3)]
@@ -93,8 +96,8 @@ drawRay world p1@(x, y) p2
 
 		
 -- | Convert a cell at a particular coordinate to a picture.
-drawCell :: World -> Coord -> Cell -> Picture
-drawCell world (x, y) cell 
+drawCell :: Bool -> World -> Coord -> Cell -> Picture
+drawCell seen world (x, y) cell 
  = let	
 	cs	= fromIntegral (worldCellSize world)
 	cp	= fromIntegral (worldCellSpace world)
@@ -102,11 +105,16 @@ drawCell world (x, y) cell
 	posX	= fromIntegral x 
 	posY	= fromIntegral y
 
-   in	pictureOfCell
-		(worldCellSize world)
-		posX
-		posY
-		cell
+   in	case seen of
+	 True	-> pictureOfCell
+			(worldCellSize world)
+			posX
+			posY
+			cell
+
+	 False	-> case cell of
+			CellEmpty -> Color (greyN 0.4)	(cellShape cs posX posY)
+			CellWall  -> Color (greyN 0.4)	(cellShape cs posX posY)
 
 
 

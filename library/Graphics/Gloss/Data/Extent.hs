@@ -85,8 +85,8 @@ isUnitExtent extent
 -- | Check whether a coordinate lies inside an extent.
 coordInExtent :: Extent -> Coord -> Bool
 coordInExtent (Extent n s e w) (x, y)
-	=  x >= w && x <= e
-	&& y >= s && y <= n
+	=  x >= w && x < e
+	&& y >= s && y < n
 
 
 -- | Check whether a point lies inside an extent.

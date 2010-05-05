@@ -14,7 +14,8 @@ module Graphics.Gloss.Data.QuadTree
 	, lookupNodeByPath
 	, lookupByPath
 	, lookupByCoord
-	, flattenQuadTree)
+	, flattenQuadTree
+	, flattenQuadTreeWithExtents)
 where
 import Graphics.Gloss.Data.Quad
 import Graphics.Gloss.Data.Extent
@@ -149,17 +150,42 @@ flattenQuadTree
 	-> [(Coord, a)]
 	
 flattenQuadTree extentInit treeInit
- = flatten' extentInit treeInit (centerCoordOfExtent extentInit)
- where	flatten' extent tree coord
+ = flatten' extentInit treeInit
+ where	flatten' extent tree
  	 = case tree of
 		TNil	-> []
-		TLeaf x	-> [(coord, x)]
-		TNode{}	-> concat $ map (flattenQuad extent tree coord) allQuads
+		TLeaf x	
+		 -> let (n, s, e, w) = takeExtent extent
+		    in  [((w, s), x)]
+
+		TNode{}	-> concat $ map (flattenQuad extent tree) allQuads
 			
-	flattenQuad extent tree coord quad
+	flattenQuad extent tree quad
  	 = let	extent'		= cutQuadOfExtent quad extent
 		Just tree'	= takeQuadOfTree quad tree
-		coord'		= centerCoordOfExtent extent'
-   	   in	flatten' extent' tree' coord'
+   	   in	flatten' extent' tree'
+
+
+-- | Flatten a QuadTree into a list of its contained values, with coordinates.
+flattenQuadTreeWithExtents
+	:: forall a
+	.  Extent 	-- ^ Extent that covers the whole tree.
+	-> QuadTree a 
+	-> [(Extent, a)]
+	
+flattenQuadTreeWithExtents extentInit treeInit
+ = flatten' extentInit treeInit
+ where	flatten' extent tree
+ 	 = case tree of
+		TNil	-> []
+		TLeaf x	
+		 -> [(extent, x)]
+
+		TNode{}	-> concat $ map (flattenQuad extent tree) allQuads
+			
+	flattenQuad extent tree quad
+ 	 = let	extent'		= cutQuadOfExtent quad extent
+		Just tree'	= takeQuadOfTree quad tree
+   	   in	flatten' extent' tree'
 
 

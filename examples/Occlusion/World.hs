@@ -37,7 +37,7 @@ loadWorld fileName
 	let rows	= take height $ dat'
 
 	let cells	= concat $ map (readLine width) $ reverse rows
-	let extent	= makeExtent width 0 height 0
+	let extent	= makeExtent height 0 width 0
 	return World
 		{ worldWidth		= width
 		, worldHeight		= height
