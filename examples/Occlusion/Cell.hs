@@ -14,6 +14,7 @@ data Cell
 	deriving (Show, Eq)
 
 
+-- | Read a cell from a characted.
 readCell :: Char -> Cell
 readCell c
  = case c of

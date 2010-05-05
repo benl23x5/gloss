@@ -1,19 +1,19 @@
 {-# LANGUAGE PatternGuards #-}
 
-import Graphics.Gloss
 import World
+import State
 import Cell
-import QuadTree
-import Extent
-import Cast
+import Graphics.Gloss.Game
+import Graphics.Gloss.Data.QuadTree
+import Graphics.Gloss.Data.Extent
 import Data.Maybe
 import Data.List
 import Data.Function
 
 main 
  = do	world		<- loadWorld "world.dat"
-	let gameState	= initGameState world
-
+	let gameState	= initState world
+	print $ windowSizeOfWorld world
 	gameInWindow 
 		"Occlusion"
 		(windowSizeOfWorld world)
@@ -25,81 +25,29 @@ main
 		(handleInput world)
 		(\_ -> id)
 				
-
-data GameState
-	= GameState
-	{ gameStateWorld	:: World
-	, gameStateLineStart	:: Pos
-	, gameStateLineEnd	:: Pos }
-
-
-initGameState world
-	= GameState
-	{ gameStateWorld	= world
-	, gameStateLineStart	= (10, 10)
-	, gameStateLineEnd	= (10, 10) }
-	
-
-handleInput :: World -> Event -> GameState -> GameState
-handleInput world (EventKey key keyState mods pos) state
-	| MouseButton LeftButton	<- key
-	, Down				<- keyState
-	, shift mods == Down	
-	= state { gameStateLineEnd = worldPosOfWindowPos world pos }
-
-	| MouseButton LeftButton	<- key
-	, Down				<- keyState
-	= state { gameStateLineStart 	= worldPosOfWindowPos world pos 
-		, gameStateLineEnd	= worldPosOfWindowPos world pos }
-
-	| MouseButton RightButton	<- key
-	, Down				<- keyState
-	= state { gameStateLineEnd = worldPosOfWindowPos world pos }
-
-
-	
-handleInput _ _ state
-	= state
-
-worldPosOfWindowPos :: World -> Pos -> Pos
-worldPosOfWindowPos world (x, y)
- = let	(windowSizeX, windowSizeY)
-		= windowSizeOfWorld world
-		
-	offsetX	= fromIntegral $ windowSizeX `div` 2
-	offsetY	= fromIntegral $ windowSizeY `div` 2
-	
-	scale	= fromIntegral $ worldCellSize world
-	
-	x'	= (x + offsetX) / scale
-	y'	= (y + offsetY) / scale
-
-  in	(x', y')
-
-
 -- | Convert the state to a picture.
-drawState :: GameState -> Picture
+drawState :: State -> Picture
 drawState state
  = let	
-	world		= gameStateWorld state
+	world		= stateWorld state
 
 	-- The ray
-	p1		= gameStateLineStart state
-	p2		= gameStateLineEnd   state
-	ray		= (p1, p2)
-	picRay		= drawRay world ray
+	p1@(xDude, yDude) = stateLineStart state
+	p2		  = stateLineEnd   state
+	picRay		  = drawRay world p1 p2
 
 	-- The cells
+	cDude		= (truncate xDude, truncate yDude)
 	cellsSeen	= [ (coord, cell)
 				| (coord, cell)	<- flattenQuadTree (worldExtent world) (worldTree world)
-				, canSeeCellAtCoord world p1 coord ]
+				, cellAtCoordIsVisible world cDude coord ]
 
 	picCells	= Pictures 
 			$ map (uncurry (drawCell world)) 
 			$ cellsSeen
 
 	-- The seen cell (if any)
-	mSeenCell	= castRayIntoWorld world ray
+	mSeenCell	= castSegIntoWorld world p1 p2
 	hotCells	= maybeToList mSeenCell
 	picHot		= Pictures $ map (drawHot world) hotCells
 
@@ -109,7 +57,7 @@ drawState state
 
 	(windowSizeX, windowSizeY)	
 		= windowSizeOfWorld
-		$ gameStateWorld state
+		$ stateWorld state
 		
 	offsetX	= - (fromIntegral $ windowSizeX `div` 2)
 	offsetY	= - (fromIntegral $ windowSizeY `div` 2)
@@ -119,39 +67,10 @@ drawState state
 		$ Pictures [ picCells, picHot, picRay ]
 
 
-canSeeCellAtCoord :: World -> Pos -> Coord -> Bool
-canSeeCellAtCoord world posFrom coord@(x', y')
- = let	x	= fromIntegral x' + 0.5
-	y	= fromIntegral y' + 0.5
 	
-	p1	= (x - 0.5, y)
-	p2	= (x + 0.5, y)
-	p3	= (x, y - 0.5)
-	p4	= (x, y + 0.5)
-	
-   in	or $ map (canSeeCell world posFrom) [p1, p2, p3, p4]
-	
-canSeeCell world posFrom posTo
- = let	mOccluder	= castRayIntoWorld world (posFrom, posTo)	
-   in	case mOccluder of
-	 Nothing 			-> False
-	 Just (pos, extent, cell)	-> posInExtent extent posTo
-
-
-castRayIntoWorld :: World -> Ray -> Maybe (Pos, Extent, Cell)
-castRayIntoWorld world ray@(p1, _)
- = let	hitCells	= cast ray (worldExtent world) (worldTree world)
-	hitCells_sorted	= sortBy ((compareDistanceTo p1) `on` (\(a, b, c) -> a)) hitCells
-	
-   in	case hitCells_sorted of
-	 (x:_)	-> Just x
-	 _	-> Nothing
-	
-	
-
-drawHot :: World -> (Pos, Extent, Cell) -> Picture
+drawHot :: World -> (Point, Extent, Cell) -> Picture
 drawHot world (pos, extent, cell)
- = let	Extent n s e w	= extent
+ = let	(n, s, e, w)	= takeExtent extent
 	x		= w
 	y		= s
 
@@ -161,8 +80,8 @@ drawHot world (pos, extent, cell)
    in	Color blue  $ cellShape 1 posX posY
 
 
-drawRay :: World -> Ray -> Picture 
-drawRay world ray@(p1@(x, y), p2)
+drawRay :: World -> Point -> Point -> Picture 
+drawRay world p1@(x, y) p2
  = Pictures
 	[ Color red $ Line [p1, p2]
 	, Color red 
@@ -189,15 +108,6 @@ drawCell world (x, y) cell
 		posY
 		cell
 
--- | Get the size of the window needed to display a world.
-windowSizeOfWorld :: World -> (Int, Int)
-windowSizeOfWorld world
- = let	cellSize	= worldCellSize world
-	cellSpace	= worldCellSpace world
- 	cellPad		= cellSize + cellSpace
- 	height		= cellPad * (worldHeight world) + cellSpace
-	width		= cellPad * (worldWidth  world) + cellSpace
-   in	(width, height)
 
 
 		    

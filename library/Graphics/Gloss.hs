@@ -22,7 +22,18 @@
 --   Animations and simulations can be constructed similarly using the `animateInWindow` 
 --   and `simulateInWindow` functions. 
 --
+--   If you want to manage your own key\/mouse events then use gameInWindow from the
+--   Graphics.Gloss.Game module.
+--
 --   Gloss uses OpenGL under the hood, but you don't have to worry about any of that.
+--
+-- @
+--   Release Notes:
+--   Since 1.0.0.2:
+--     Added game mode.
+--     Added QuadTree and Extent structures.
+--     Added simple ray casting.
+-- @
 --
 module Graphics.Gloss 
 	( module Graphics.Gloss.Picture
