@@ -113,10 +113,10 @@ cellAtCoordIsVisible world cFrom coord@(x', y')
 
  	x :: Float	= fromIntegral x' + 0.5
 	y :: Float	= fromIntegral y' + 0.5
-	pa	= (x - 0.5, y)
-	pb	= (x + 0.5, y)
-	pc	= (x, y - 0.5)
-	pd	= (x, y + 0.5)
+	pa	= (x - 0.49, y)
+	pb	= (x + 0.49, y)
+	pc	= (x, y - 0.49)
+	pd	= (x, y + 0.49)
 	
 	
 -- | Check if a point on some cell (P2) is visible from some other point (P1).
