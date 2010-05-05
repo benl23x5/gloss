@@ -1,5 +1,5 @@
 Name:                gloss
-Version:             1.0.1.0
+Version:             1.1.0.0
 License:             MIT
 License-file:        LICENSE
 Author:              Ben Lippmeier
@@ -33,13 +33,18 @@ Library
   Exposed-modules:
         Graphics.Gloss
         Graphics.Gloss.Color
+        Graphics.Gloss.Picture
+        Graphics.Gloss.Shapes
+        Graphics.Gloss.ViewPort
         Graphics.Gloss.Geometry
         Graphics.Gloss.Geometry.Angle
         Graphics.Gloss.Geometry.Line
         Graphics.Gloss.Geometry.Vector
-        Graphics.Gloss.Picture
-        Graphics.Gloss.Shapes
-        Graphics.Gloss.ViewPort
+        Graphics.Gloss.Data
+        Graphics.Gloss.Data.Quad
+        Graphics.Gloss.Data.Extent
+        Graphics.Gloss.Data.QuadTree
+        Graphics.Gloss.Algorithms.RayCast
 
   Other-modules:
         Graphics.Gloss.Internals.Color

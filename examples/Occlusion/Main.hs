@@ -148,17 +148,6 @@ castRayIntoWorld world ray@(p1, _)
 	 _	-> Nothing
 	
 	
-compareDistanceTo :: Pos -> Pos -> Pos -> Ordering
-compareDistanceTo p0 p1 p2
- = let	d1	= distance p0 p1
-	d2	= distance p0 p2
-   in	compare d1 d2
-
-distance :: Pos -> Pos -> Float
-distance (x1, y1) (x2, y2)	
- = let	xd	= x2 - x1
-	yd	= y2 - y1
-   in	sqrt (xd * xd + yd * yd)
 
 drawHot :: World -> (Pos, Extent, Cell) -> Picture
 drawHot world (pos, extent, cell)

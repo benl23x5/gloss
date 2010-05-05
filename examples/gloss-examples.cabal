@@ -20,21 +20,21 @@ Synopsis:
 Executable gloss-easy
   Build-depends: 
         base            >= 3 && < 5, 
-        gloss           >= 1.0 && < 1.1
+        gloss           >= 1.0 && < 1.2
   Main-is: Easy/Main.hs
   ghc-options: -O2
 
 Executable gloss-clock
   Build-depends: 
         base            >= 3 && < 5, 
-        gloss           >= 1.0 && < 1.1
+        gloss           >= 1.0 && < 1.2
   Main-is: Clock/Main.hs
   ghc-options: -O2
 
 Executable gloss-eden
   Build-depends: 
         base            >= 3 && < 5, 
-        gloss           >= 1.0 && < 1.1, 
+        gloss           >= 1.0 && < 1.2, 
         random          >  1.0 && < 1.1
   Main-is: Main.hs
   other-modules: Cell Community World
@@ -44,21 +44,21 @@ Executable gloss-eden
 Executable gloss-flake
   Build-depends: 
         base            >= 3 && < 5, 
-        gloss           >= 1.0 && < 1.1
+        gloss           >= 1.0 && < 1.2
   Main-is: Flake/Main.hs
   ghc-options: -O2
 
 Executable gloss-hello
   Build-depends: 
         base            >= 3 && < 5, 
-        gloss           >= 1.0 && < 1.1
+        gloss           >= 1.0 && < 1.2
   Main-is: Hello/Main.hs
   ghc-options: -O2
 
 Executable gloss-lifespan
   Build-depends: 
         base            >= 3 && < 5, 
-        gloss           >= 1.0 && < 1.1, 
+        gloss           >= 1.0 && < 1.2, 
         random          >  1.0 && < 1.1
   Main-is: Main.hs
   other-modules: Cell Community World
@@ -68,7 +68,7 @@ Executable gloss-lifespan
 Executable gloss-styrene
   Build-depends: 
         base            >= 3 && < 5,
-        gloss           >= 1.0 && < 1.1,
+        gloss           >= 1.0 && < 1.2,
         containers      >= 0.2 && < 0.4,
         ghc-prim        >= 0.1 && < 0.3
   Main-is: Main.hs
@@ -79,28 +79,28 @@ Executable gloss-styrene
 Executable gloss-tree
   Build-depends: 
         base            >= 3 && < 5, 
-        gloss           >= 1.0 && < 1.1
+        gloss           >= 1.0 && < 1.2
   Main-is: Tree/Main.hs
   ghc-options: -O2
 
 Executable gloss-zen
   Build-depends: 
         base            >= 3 && < 5, 
-        gloss           >= 1.0 && < 1.1
+        gloss           >= 1.0 && < 1.2
   Main-is: Zen/Main.hs
   ghc-options: -O2
 
 Executable gloss-machina
   Build-depends: 
         base            >= 3 && < 5, 
-        gloss           >= 1.0 && < 1.1
+        gloss           >= 1.0 && < 1.2
   Main-is: Machina/Main.hs
   ghc-options: -O2
 
 Executable gloss-conway
   Build-depends: 
         base            >= 3 && < 5, 
-        gloss           >= 1.0 && < 1.1,
+        gloss           >= 1.0 && < 1.2,
         vector          >= 0.5 && < 0.6
   Main-is: Main.hs
   other-modules: Cell World
@@ -109,10 +109,9 @@ Executable gloss-conway
 
 Executable gloss-occlusion
   Build-depends: 
-        base            >= 3 && < 5, 
-        gloss           >= 1.0 && < 1.1,
-        vector          >= 0.5 && < 0.6
+        base            >= 3    && < 5, 
+        gloss           >= 1.1  && < 1.2,
   Main-is: Main.hs
-  other-modules: Cell Extent World BlockTree
+  other-modules: Cell World
   hs-source-dirs: Occlusion
   ghc-options: -O2
