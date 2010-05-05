@@ -35,14 +35,6 @@ data Event
 	deriving (Eq, Show)
 
 -- | Run a game in a window. 
---	You decide how the world is represented,
---	how to convert the world to a picture, 
---	how to advance the world for each unit of time
---	and how to handle input.
---
---   This function comes with no baked-in commands for controlling the viewport, 
---	but you can still press escape to quit the program.
---
 gameInWindow 
 	:: forall world
 	.  String			-- ^ Name of the window.
@@ -53,7 +45,8 @@ gameInWindow
 	-> world 			-- ^ The initial world.
 	-> (world -> Picture)	 	-- ^ A function to convert the world a picture.
 	-> (Event -> world -> world)	-- ^ A function to handle input events.
-	-> (Float -> world -> world)    -- ^ A function to step the world one iteration.
+	-> (Float -> world -> world)   	-- ^ A function to step the world one iteration.
+					--   It is passed the period of time (in seconds) needing to be advanced.
 	-> IO ()
 
 gameInWindow

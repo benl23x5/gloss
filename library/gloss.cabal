@@ -32,6 +32,7 @@ Library
 
   Exposed-modules:
         Graphics.Gloss
+        Graphics.Gloss.Game
         Graphics.Gloss.Color
         Graphics.Gloss.Picture
         Graphics.Gloss.Shapes

@@ -30,11 +30,7 @@ module Graphics.Gloss
 	, module Graphics.Gloss.ViewPort
 	, displayInWindow 
 	, animateInWindow
-	, simulateInWindow
-
-	-- * TODO: split this into another module.
-	, gameInWindow
-	, Event(..), Key(..), SpecialKey(..), MouseButton(..), KeyState(..), Modifiers(..))
+	, simulateInWindow)
 where
 import Graphics.Gloss.Picture
 import Graphics.Gloss.Color
@@ -42,6 +38,3 @@ import Graphics.Gloss.ViewPort
 import Graphics.Gloss.Internals.Interface.Display	(displayInWindow)
 import Graphics.Gloss.Internals.Interface.Animate	(animateInWindow)
 import Graphics.Gloss.Internals.Interface.Simulate	(simulateInWindow)
-import Graphics.Gloss.Internals.Interface.Game		(gameInWindow, Event(..))
-
-import Graphics.UI.GLUT.Callbacks.Window
