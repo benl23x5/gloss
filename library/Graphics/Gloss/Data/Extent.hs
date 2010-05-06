@@ -162,7 +162,7 @@ intersectSegExtent p1@(x1, y1) p2 extent@(Extent n' s' e' w')
 	= Just pos
 	
 	-- starts above extent
-	| y1 > s
+	| y1 > n
 	, Just pos	<- intersectSegHorzSeg p1 p2 n w e
 	= Just pos
 
@@ -172,7 +172,7 @@ intersectSegExtent p1@(x1, y1) p2 extent@(Extent n' s' e' w')
 	= Just pos
 	
 	-- starts right of extent
-	| x1 > w
+	| x1 > e
 	, Just pos	<- intersectSegVertSeg p1 p2 e s n
 	= Just pos
 

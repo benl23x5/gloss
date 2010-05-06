@@ -8,13 +8,14 @@ where
 import Data.Char
 import Graphics.Gloss
 
+-- | A terrain cell in the world.
 data Cell
 	= CellEmpty
 	| CellWall
 	deriving (Show, Eq)
 
 
--- | Read a cell from a characted.
+-- | Read a cell from a character.
 readCell :: Char -> Cell
 readCell c
  = case c of

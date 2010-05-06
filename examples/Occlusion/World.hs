@@ -9,6 +9,7 @@ import Graphics.Gloss.Algorithms.RayCast
 import System.IO
 import Control.Monad
 
+
 -- | The game world.
 data World	
 	= World
@@ -85,7 +86,6 @@ makeWorldTree extent cells
 	 	= filter (\x -> snd x /= CellEmpty) posCells
 
 
-
 -- | Get the world position coresponding to a point in the window.
 worldPosOfWindowPos :: World -> Point -> Point
 worldPosOfWindowPos world (x, y)
@@ -104,24 +104,29 @@ worldPosOfWindowPos world (x, y)
 
 
 -- | Check if a the cell at a given coordinate is visible from a point.
-cellAtCoordIsVisible :: World -> Coord -> Coord -> Bool
-cellAtCoordIsVisible world cFrom coord@(x', y')
- = or $ map (cellAtPointIsVisible world pFrom) [pa, pb, pc, pd]
- where
-	(cx, cy)	= cFrom
+cellAtCoordIsVisibleFromCoord :: World -> Coord -> Coord -> Bool
+cellAtCoordIsVisibleFromCoord world cFrom cTo
+ = let	(cx, cy)	= cFrom
 	pFrom		= (fromIntegral cx + 0.5 , fromIntegral cy + 0.5)
+   in	cellAtCoordIsVisibleFromPoint world pFrom cTo
 
- 	x :: Float	= fromIntegral x' + 0.5
+
+-- | Check if a cell at a given coordinate is visible from a point.
+--	We say it's visible if the center of any of its faces is visible.
+cellAtCoordIsVisibleFromPoint :: World -> Point -> Coord -> Bool
+cellAtCoordIsVisibleFromPoint world pFrom (x', y')
+ = or $ map (cellAtPointIsVisibleFromPoint world pFrom) [pa, pb, pc, pd]
+ where 	x :: Float	= fromIntegral x' + 0.5
 	y :: Float	= fromIntegral y' + 0.5
-	pa	= (x - 0.49, y)
-	pb	= (x + 0.49, y)
-	pc	= (x, y - 0.49)
-	pd	= (x, y + 0.49)
-	
-	
+	pa	= (x - 0.4999, y)
+	pb	= (x + 0.4999, y)
+	pc	= (x, y - 0.4999)
+	pd	= (x, y + 0.4999)
+ 
+		
 -- | Check if a point on some cell (P2) is visible from some other point (P1).
-cellAtPointIsVisible :: World -> Point -> Point -> Bool
-cellAtPointIsVisible world p1 p2
+cellAtPointIsVisibleFromPoint :: World -> Point -> Point -> Bool
+cellAtPointIsVisibleFromPoint world p1 p2
  = let	mOccluder	= castSegIntoWorld world p1 p2
    in	case mOccluder of
 	 Nothing 			-> False

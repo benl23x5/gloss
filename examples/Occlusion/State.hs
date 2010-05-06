@@ -4,6 +4,7 @@ module State where
 import World
 import Graphics.Gloss.Game
 
+-- | The game state.
 data State
 	= State
 	{ stateWorld		:: World
@@ -11,6 +12,7 @@ data State
 	, stateLineEnd		:: Point }
 
 
+-- | Initial game state.
 initState world
 	= State
 	{ stateWorld		= world
@@ -18,6 +20,7 @@ initState world
 	, stateLineEnd		= (10, 10) }
 	
 
+-- | Handle an input event.
 handleInput :: World -> Event -> State -> State
 handleInput world (EventKey key keyState mods pos) state
 	| MouseButton LeftButton	<- key
@@ -36,3 +39,4 @@ handleInput world (EventKey key keyState mods pos) state
 
 handleInput _ _ state
 	= state
+

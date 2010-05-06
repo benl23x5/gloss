@@ -13,8 +13,18 @@ import Data.List
 import Data.Function
 
 main 
- = do	[fileName]	<- getArgs
-	world		<- loadWorld fileName
+ = do	args	<- getArgs
+	case args of
+	 [fileName] 	-> mainWithArgs fileName
+	 _		
+		-> putStr 
+		$  unlines 
+			[ "usage: gloss-occlusion <world.dat>"
+			, "There are example data files in the gloss-examples darcs repository" ]
+
+	
+mainWithArgs fileName
+ = do	world		<- loadWorld fileName
 	let gameState	= initState world
 	print $ windowSizeOfWorld world
 	gameInWindow 
@@ -28,52 +38,53 @@ main
 		(handleInput world)
 		(\_ -> id)
 				
+				
 -- | Convert the state to a picture.
 drawState :: State -> Picture
 drawState state
  = let	
 	world		= stateWorld state
 
-	-- The ray
-	p1@(xDude, yDude) = stateLineStart state
-	p2		  = stateLineEnd   state
-	picRay		  = drawRay world p1 p2
+	-- The ray cast by the user.
+	p1		= stateLineStart state
+	p2		= stateLineEnd   state
+	picRay		= drawRay world p1 p2
 
-	-- The cells
-	cDude		= (truncate xDude, truncate yDude)
+	-- The cell hit by the ray (if any)
+	mHitCell	= castSegIntoWorld world p1 p2
+	hitCells	= maybeToList mHitCell
+	picCellsHit	= Pictures $ map (drawHitCell world) hitCells
+
+	-- All the cells in the world.
 	cellsAll	= flattenQuadTree (worldExtent world) (worldTree world)
 	picCellsAll	= Pictures $ map (uncurry (drawCell False world)) cellsAll
 
-	cellsSeen	= [ (coord, cell)
+	-- The cells visible from the designated point.
+	cellsVisible	= [ (coord, cell)
 				| (coord, cell)	<- flattenQuadTree (worldExtent world) (worldTree world)
-				, cellAtCoordIsVisible world cDude coord ]
+				, cellAtCoordIsVisibleFromPoint world p1 coord ]
 
-	picCellsSeen	= Pictures $ map (uncurry (drawCell True world)) cellsSeen
+	picCellsVisible	= Pictures $ map (uncurry (drawCell True world)) cellsVisible
 
-	-- The seen cell (if any)
---	mSeenCell	= castSegIntoWorld world p1 p2
---	hotCells	= maybeToList mSeenCell
-	hotCells	= traceSegIntoWorld world p1 p2
-	picHot		= Pictures $ map (drawHot world) hotCells
-
-	-- Scale the world so it fits nicely in the window.
+	-- How big to draw the cells.
 	scale		= fromIntegral $ worldCellSize world
 
 	(windowSizeX, windowSizeY)	
 		= windowSizeOfWorld
 		$ stateWorld state
 		
+	-- Shift the cells so they are centered in the window.
 	offsetX	= - (fromIntegral $ windowSizeX `div` 2)
 	offsetY	= - (fromIntegral $ windowSizeY `div` 2)
 
    in	Translate offsetX offsetY
 		$ Scale scale scale
-		$ Pictures [ picCellsAll, picCellsSeen, picHot, picRay ]
+		$ Pictures [ picCellsAll, picCellsVisible, picCellsHit, picRay ]
 
 
-	
-drawHot :: World -> (Point, Extent, Cell) -> Picture
-drawHot world (pos@(px, py), extent, cell)
+-- | Draw the cell hit by the ray defined by the user.
+drawHitCell :: World -> (Point, Extent, Cell) -> Picture
+drawHitCell world (pos@(px, py), extent, cell)
  = let	(n, s, e, w)	= takeExtent extent
 	x		= w
 	y		= s
@@ -81,15 +92,10 @@ drawHot world (pos@(px, py), extent, cell)
 	posX	= fromIntegral x 
 	posY	= fromIntegral y
 	
-   in	Pictures 
-	 [ Color blue 	$ cellShape 1 posX posY
-	 , Color green  
-		$ Translate px py 
-		$ Pictures 
-			[ Line [(-0.2, -0.2), (0.2,  0.2)]
-			, Line [(-0.2,  0.2), (0.2, -0.2)]]]
+   in	Pictures [ Color blue $ cellShape 1 posX posY ]
 
 
+-- | Draw the ray defined by the user.
 drawRay :: World -> Point -> Point -> Picture 
 drawRay world p1@(x, y) p2
  = Pictures
@@ -101,28 +107,16 @@ drawRay world p1@(x, y) p2
 			, Line [(-0.3,  0.3), (0.3, -0.3)] ] ]
 
 
-		
--- | Convert a cell at a particular coordinate to a picture.
+-- | Draw a cell in the world.
 drawCell :: Bool -> World -> Coord -> Cell -> Picture
-drawCell seen world (x, y) cell 
- = let	
-	cs	= fromIntegral (worldCellSize world)
+drawCell visible world (x, y) cell 
+ = let	cs	= fromIntegral (worldCellSize world)
 	cp	= fromIntegral (worldCellSpace world)
 
 	posX	= fromIntegral x 
 	posY	= fromIntegral y
 
-   in	case seen of
-	 True	-> pictureOfCell
-			(worldCellSize world)
-			posX
-			posY
-			cell
-
-	 False	-> case cell of
-			CellEmpty -> Color (greyN 0.4)	(cellShape cs posX posY)
-			CellWall  -> Color (greyN 0.4)	(cellShape cs posX posY)
-
-
-
-		    
+   in	if visible
+	  then pictureOfCell (worldCellSize world) posX posY cell
+	  else Color (greyN 0.4) (cellShape cs posX posY)
+ 	
