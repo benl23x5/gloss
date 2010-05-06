@@ -102,7 +102,7 @@ inContact_beadWall
 	closeEnough	= distancePP_contact pBead pClosest `ltFloat#` radius#
 
 	-- uParam gives where pClosest is relative to the endponts of the wall
-	uParam		= closestPointOnLine_param pWall1 pWall2 pBead
+	uParam		= closestPointOnLineParam pWall1 pWall2 pBead
 
 	-- pClosest needs to lie on the line segment between pWal1 and pWall2
 	inSegment	= uParam >= 0 && uParam <= 1

@@ -1,5 +1,5 @@
 Name:                gloss-examples
-Version:             1.0.1.0
+Version:             1.1.0.0
 License:             MIT
 License-file:        LICENSE
 Author:              Ben Lippmeier
@@ -112,6 +112,6 @@ Executable gloss-occlusion
         base            >= 3    && < 5, 
         gloss           >= 1.1  && < 1.2
   Main-is: Main.hs
-  other-modules: Cell World State
+  other-modules: Cell World State Data
   hs-source-dirs: Occlusion
   ghc-options: -O2
