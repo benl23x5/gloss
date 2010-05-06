@@ -134,3 +134,9 @@ castSegIntoWorld world p1 p2
 	= castSegIntoCellularQuadTree p1 p2 (worldExtent world) (worldTree world)
 
 
+-- | Given a line segment (P1-P2) get the cell closest to P1 that intersects the segment.
+traceSegIntoWorld :: World -> Point -> Point -> [(Point, Extent, Cell)]
+traceSegIntoWorld world p1 p2
+	= traceSegIntoCellularQuadTree p1 p2 (worldExtent world) (worldTree world)
+
+

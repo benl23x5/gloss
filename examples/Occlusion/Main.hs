@@ -6,6 +6,7 @@ import Cell
 import Graphics.Gloss.Game
 import Graphics.Gloss.Data.QuadTree
 import Graphics.Gloss.Data.Extent
+import Graphics.Gloss.Shapes
 import System.Environment
 import Data.Maybe
 import Data.List
@@ -47,13 +48,13 @@ drawState state
 				| (coord, cell)	<- flattenQuadTree (worldExtent world) (worldTree world)
 				, cellAtCoordIsVisible world cDude coord ]
 
-	picCells	= Pictures $ map (uncurry (drawCell True world)) cellsSeen
+	picCellsSeen	= Pictures $ map (uncurry (drawCell True world)) cellsSeen
 
 	-- The seen cell (if any)
-	mSeenCell	= castSegIntoWorld world p1 p2
-	hotCells	= maybeToList mSeenCell
+--	mSeenCell	= castSegIntoWorld world p1 p2
+--	hotCells	= maybeToList mSeenCell
+	hotCells	= traceSegIntoWorld world p1 p2
 	picHot		= Pictures $ map (drawHot world) hotCells
-
 
 	-- Scale the world so it fits nicely in the window.
 	scale		= fromIntegral $ worldCellSize world
@@ -67,12 +68,12 @@ drawState state
 
    in	Translate offsetX offsetY
 		$ Scale scale scale
-		$ Pictures [ picCellsAll, picCells, picHot, picRay ]
+		$ Pictures [ picCellsAll, picCellsSeen, picHot, picRay ]
 
 
 	
 drawHot :: World -> (Point, Extent, Cell) -> Picture
-drawHot world (pos, extent, cell)
+drawHot world (pos@(px, py), extent, cell)
  = let	(n, s, e, w)	= takeExtent extent
 	x		= w
 	y		= s
@@ -80,7 +81,13 @@ drawHot world (pos, extent, cell)
 	posX	= fromIntegral x 
 	posY	= fromIntegral y
 	
-   in	Color blue  $ cellShape 1 posX posY
+   in	Pictures 
+	 [ Color blue 	$ cellShape 1 posX posY
+	 , Color green  
+		$ Translate px py 
+		$ Pictures 
+			[ Line [(-0.2, -0.2), (0.2,  0.2)]
+			, Line [(-0.2,  0.2), (0.2, -0.2)]]]
 
 
 drawRay :: World -> Point -> Point -> Picture 
