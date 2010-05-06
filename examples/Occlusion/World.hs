@@ -30,17 +30,26 @@ worldExtent world
 -- | Load a world from a file.	
 loadWorld :: FilePath -> IO World
 loadWorld fileName
- = do	h		<- openFile fileName ReadMode
-	"WORLD"		<- hGetLine h
-	[width, height]	<- liftM (map read . words) $ hGetLine h
-	dat		<- hGetContents h
-	let (h:dat')	= lines dat
-	let rows	= take height $ dat'
+ = do	str	<- readFile fileName
+	return	$ readWorld str
+	
+	
+-- | Read a world from a string.
+readWorld :: String -> World
+readWorld str
+ = let	("WORLD" : strWidthHeight : skip : cellLines)	
+			= lines str
+	
+	[width, height]	= map read $ words strWidthHeight
+	rows	= take height $ cellLines
 
-	let cells	= concat $ map (readLine width) $ reverse rows
-	let extent	= makeExtent height 0 width 0
-	return World
-		{ worldWidth		= width
+	cells	= concat 
+		$ map (readLine width) 
+		$ reverse rows
+
+	extent	= makeExtent height 0 width 0
+
+   in	World	{ worldWidth		= width
 		, worldHeight		= height
 		, worldTree		= makeWorldTree extent cells
 		, worldCellSize		= 20

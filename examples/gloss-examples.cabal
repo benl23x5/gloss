@@ -110,8 +110,8 @@ Executable gloss-conway
 Executable gloss-occlusion
   Build-depends: 
         base            >= 3    && < 5, 
-        gloss           >= 1.1  && < 1.2,
+        gloss           >= 1.1  && < 1.2
   Main-is: Main.hs
-  other-modules: Cell World
+  other-modules: Cell World State
   hs-source-dirs: Occlusion
   ghc-options: -O2

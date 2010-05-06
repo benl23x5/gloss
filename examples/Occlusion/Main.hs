@@ -1,6 +1,7 @@
 {-# LANGUAGE PatternGuards #-}
 
 import World
+import Data
 import State
 import Cell
 import Graphics.Gloss.Game
@@ -15,18 +16,17 @@ import Data.Function
 main 
  = do	args	<- getArgs
 	case args of
-	 [fileName] 	-> mainWithArgs fileName
-	 _		
-		-> putStr 
-		$  unlines 
-			[ "usage: gloss-occlusion <world.dat>"
-			, "There are example data files in the gloss-examples darcs repository" ]
-
+	 [fileName] 	
+	  -> do	world	<- loadWorld fileName
+		mainWithWorld world
+		
+	 _ -> do
+		let world = readWorld worldData
+		mainWithWorld world
 	
-mainWithArgs fileName
- = do	world		<- loadWorld fileName
-	let gameState	= initState world
-	print $ windowSizeOfWorld world
+	
+mainWithWorld world
+ = do	let gameState	= initState world
 	gameInWindow 
 		"Occlusion"
 		(windowSizeOfWorld world)
