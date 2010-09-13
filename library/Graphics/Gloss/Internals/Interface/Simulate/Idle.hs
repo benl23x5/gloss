@@ -108,7 +108,8 @@ simulate_run simSR animateSR viewSR worldSR worldAdvance
 			(nStart, worldS)
 	
 	-- write the world back into its IORef
-	writeIORef worldSR world'
+	-- We need to seq on the world to avoid space leaks when the window is not showing.
+	world' `seq` writeIORef worldSR world'
 
 	-- update the control state
 	simSR `modifyIORef` \c -> c
