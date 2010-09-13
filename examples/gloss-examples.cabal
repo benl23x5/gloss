@@ -1,5 +1,5 @@
 Name:                gloss-examples
-Version:             1.1.0.0
+Version:             1.1.1.0
 License:             MIT
 License-file:        LICENSE
 Author:              Ben Lippmeier
@@ -19,47 +19,47 @@ Synopsis:
 
 Executable gloss-easy
   Build-depends: 
-        base            >= 3 && < 5, 
-        gloss           >= 1.0 && < 1.2
+        base            == 4.*,
+        gloss           == 1.1.*
   Main-is: Easy/Main.hs
   ghc-options: -O2
 
 Executable gloss-clock
   Build-depends: 
-        base            >= 3 && < 5, 
-        gloss           >= 1.0 && < 1.2
+        base            == 4.*,
+        gloss           == 1.1.*
   Main-is: Clock/Main.hs
   ghc-options: -O2
 
 Executable gloss-eden
   Build-depends: 
-        base            >= 3 && < 5, 
-        gloss           >= 1.0 && < 1.2, 
-        random          >  1.0 && < 1.1
+        base            == 4.*,
+        gloss           == 1.1.*,
+        random          == 1.0.*
   Main-is: Main.hs
   other-modules: Cell Community World
   hs-source-dirs: Eden
   ghc-options: -O2
 
 Executable gloss-flake
-  Build-depends: 
-        base            >= 3 && < 5, 
-        gloss           >= 1.0 && < 1.2
+  Build-depends:
+        base            == 4.*,
+        gloss           == 1.1.*
   Main-is: Flake/Main.hs
   ghc-options: -O2
 
 Executable gloss-hello
   Build-depends: 
-        base            >= 3 && < 5, 
-        gloss           >= 1.0 && < 1.2
+        base            == 4.*, 
+        gloss           == 1.1.*
   Main-is: Hello/Main.hs
   ghc-options: -O2
 
 Executable gloss-lifespan
   Build-depends: 
-        base            >= 3 && < 5, 
-        gloss           >= 1.0 && < 1.2, 
-        random          >  1.0 && < 1.1
+        base            == 4.*, 
+        gloss           == 1.1.*, 
+        random          == 1.0.*
   Main-is: Main.hs
   other-modules: Cell Community World
   hs-source-dirs: Lifespan
@@ -67,10 +67,10 @@ Executable gloss-lifespan
 
 Executable gloss-styrene
   Build-depends: 
-        base            >= 3 && < 5,
-        gloss           >= 1.0 && < 1.2,
-        containers      >= 0.2 && < 0.4,
-        ghc-prim        >= 0.1 && < 0.3
+        base            == 4.*,
+        gloss           == 1.1.*,
+        containers      == 0.3.*,
+        ghc-prim        == 0.2.*
   Main-is: Main.hs
   other-modules: Actor Advance Collide Config Contact QuadTree World
   hs-source-dirs: Styrene
@@ -78,30 +78,30 @@ Executable gloss-styrene
 
 Executable gloss-tree
   Build-depends: 
-        base            >= 3 && < 5, 
-        gloss           >= 1.0 && < 1.2
+        base            == 4.*, 
+        gloss           == 1.1.*
   Main-is: Tree/Main.hs
   ghc-options: -O2
 
 Executable gloss-zen
   Build-depends: 
-        base            >= 3 && < 5, 
-        gloss           >= 1.0 && < 1.2
+        base            == 4.*, 
+        gloss           == 1.1.*
   Main-is: Zen/Main.hs
   ghc-options: -O2
 
 Executable gloss-machina
   Build-depends: 
-        base            >= 3 && < 5, 
-        gloss           >= 1.0 && < 1.2
+        base            == 4.*, 
+        gloss           == 1.1.*
   Main-is: Machina/Main.hs
   ghc-options: -O2
 
 Executable gloss-conway
   Build-depends: 
-        base            >= 3 && < 5, 
-        gloss           >= 1.0 && < 1.2,
-        vector          >= 0.5 && < 0.6
+        base            == 4.*,
+        gloss           == 1.1.*,
+        vector          >= 0.5 && < 0.7
   Main-is: Main.hs
   other-modules: Cell World
   hs-source-dirs: Conway
@@ -109,8 +109,8 @@ Executable gloss-conway
 
 Executable gloss-occlusion
   Build-depends: 
-        base            >= 3    && < 5, 
-        gloss           >= 1.1  && < 1.2
+        base            == 4.*, 
+        gloss           == 1.1.*
   Main-is: Main.hs
   other-modules: Cell World State Data
   hs-source-dirs: Occlusion

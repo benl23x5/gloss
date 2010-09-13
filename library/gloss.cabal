@@ -22,7 +22,7 @@ Tested-with: GHC == 6.10.4, GHC == 6.12.1
 
 Library
   Build-Depends: 
-        base       == 4.2.*,
+        base       == 4.*,
         ghc-prim   == 0.2.*,
         containers == 0.3.*,
         OpenGL     == 2.4.*,
