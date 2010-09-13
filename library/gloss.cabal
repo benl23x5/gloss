@@ -1,5 +1,5 @@
 Name:                gloss
-Version:             1.1.0.0
+Version:             1.1.1.0
 License:             MIT
 License-file:        LICENSE
 Author:              Ben Lippmeier
@@ -22,11 +22,11 @@ Tested-with: GHC == 6.10.4, GHC == 6.12.1
 
 Library
   Build-Depends: 
-        base       >= 3 && < 5,
-        ghc-prim   >= 0.1 && < 0.3,
-        containers >= 0.2 && < 0.4, 
-        OpenGL     >= 2.3 && < 2.5,
-        GLUT       >= 2.2 && < 2.3
+        base       == 4.2.*,
+        ghc-prim   == 0.2.*,
+        containers == 0.3.*,
+        OpenGL     == 2.4.*,
+        GLUT       == 2.2.*
 
   ghc-options:      -O2
 
