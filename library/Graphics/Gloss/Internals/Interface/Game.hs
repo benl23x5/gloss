@@ -128,7 +128,7 @@ handle_keyMouse worldRef viewRef eventFn key keyState keyMods pos
 	return pos'
 
 handle_keyMouse worldRef viewRef eventFn key keyState keyMods pos
- = do	pos' <- convertPoint
+ = do	pos' <- convertPoint pos
 	worldRef `modifyIORef` \world -> eventFn (EventKey key keyState keyMods pos') world
 
 
