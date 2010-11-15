@@ -1,4 +1,4 @@
-{-# OPTIONS -fglasgow-exts #-}
+{-# LANGUAGE BangPatterns, MagicHash #-}
 {-# OPTIONS_HADDOCK hide #-}
 
 -- | Fast(ish) rendering of circles.
@@ -31,16 +31,6 @@ circleSteps sDiam
 	| otherwise	= 40
 
 
--- | Render a circle as a line.
-renderCircleLine :: Float -> Float -> Int -> Float -> IO ()
-renderCircleLine (F# posX) (F# posY) steps (F# rad)
- = let 	n		= fromIntegral steps
- 	!(F# tStep)	= (2 * pi) / n
-	!(F# tStop)	= (2 * pi)
-
-   in	GL.renderPrimitive GL.LineLoop
-   		$ renderCircleLine_step posX posY tStep tStop rad 0.0#
-
 renderCircleLine_step :: Float# -> Float# -> Float# -> Float# -> Float# -> Float# -> IO ()
 renderCircleLine_step posX posY tStep tStop rad tt
 	| tt `geFloat#` tStop
@@ -53,7 +43,17 @@ renderCircleLine_step posX posY tStep tStop rad tt
 			(gf $ F# (posY `plusFloat#` (rad `timesFloat#` (sinFloat# tt))))
 
 		renderCircleLine_step posX posY tStep tStop rad (tt `plusFloat#` tStep)
- 
+
+-- | Render a circle as a line.
+renderCircleLine :: Float -> Float -> Int -> Float -> IO ()
+renderCircleLine (F# posX) (F# posY) steps (F# rad)
+ = let 	n		= fromIntegral steps
+	!(F# tStep)	= (2 * pi) / n
+	!(F# tStop)	= (2 * pi)
+
+   in	GL.renderPrimitive GL.LineLoop
+   		$ renderCircleLine_step posX posY tStep tStop rad 0.0#
+
 
 -- | Render a circle with a given thickness as a triangle strip
 renderCircleStrip :: Float -> Float -> Int -> Float -> Float -> IO ()

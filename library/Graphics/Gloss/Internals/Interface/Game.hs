@@ -1,4 +1,4 @@
-{-# OPTIONS -fglasgow-exts #-}
+{-# LANGUAGE RankNTypes #-}
 {-# OPTIONS_HADDOCK hide #-}
 
 module Graphics.Gloss.Internals.Interface.Game
