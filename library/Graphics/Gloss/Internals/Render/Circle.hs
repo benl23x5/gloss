@@ -1,4 +1,4 @@
-{-# LANGUAGE BangPatterns, MagicHash #-}
+{-# LANGUAGE BangPatterns, MagicHash, PatternGuards #-}
 {-# OPTIONS_HADDOCK hide #-}
 
 -- | Fast(ish) rendering of circles.

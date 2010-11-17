@@ -143,9 +143,18 @@ callback_motion worldRef eventFn
  	= Motion (handle_motion worldRef eventFn)
 
 handle_motion worldRef eventFn pos
- = let	GLUT.Position x y	= pos
-	pos'			= (fromIntegral x, fromIntegral y)
-   in	worldRef `modifyIORef` \world -> eventFn (EventMotion pos') world
+ = do	size@(GLUT.Size sizeX_ sizeY_)	<- GL.get GLUT.windowSize
+	let (sizeX, sizeY)		= (fromIntegral sizeX_, fromIntegral sizeY_)
+	
+	let GLUT.Position px_ py_	= pos
+	let px		= fromIntegral px_
+	let py		= sizeY - fromIntegral py_
+	
+	let px'		= px - sizeX / 2
+	let py' 	= py - sizeY / 2
+	let pos'	= (px', py')
+  
+ 	worldRef `modifyIORef` \world -> eventFn (EventMotion pos') world
 
 
 
