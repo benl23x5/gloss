@@ -4,9 +4,9 @@
 module Graphics.Gloss.Internals.Interface.ViewPort.KeyMouse
 	(callback_viewPort_keyMouse)
 where
-import Graphics.Gloss.ViewPort
+import Graphics.Gloss.Interface.ViewPort
+import Graphics.Gloss.Data.Vector
 import Graphics.Gloss.Geometry.Angle
-import Graphics.Gloss.Geometry.Vector
 import Graphics.Gloss.Internals.Interface.ViewPort.Command
 import Graphics.Gloss.Internals.Interface.Callback
 import qualified Graphics.Gloss.Internals.Interface.ViewPort.ControlState	as VPC

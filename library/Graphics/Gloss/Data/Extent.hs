@@ -1,7 +1,7 @@
 {-# LANGUAGE PatternGuards #-}
 
--- | Represents a rectangular area of the 2D plane.
---	The bounds are represented as integers so that we can compare extents for equality.
+-- | Represents an integral rectangular area of the 2D plane.
+--   Using `Int`s (instead of `Float`s) for the bounds means we can safely compare extents for equality.
 module Graphics.Gloss.Data.Extent
 	( Extent
 	, Coord
@@ -19,7 +19,7 @@ module Graphics.Gloss.Data.Extent
 	, intersectSegExtent
 	, touchesSegExtent)
 where
-import Graphics.Gloss.Picture	(Point)
+import Graphics.Gloss.Data.Point
 import Graphics.Gloss.Data.Quad
 import Graphics.Gloss.Geometry.Line
 import Data.Maybe

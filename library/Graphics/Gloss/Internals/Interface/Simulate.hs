@@ -4,9 +4,9 @@
 module Graphics.Gloss.Internals.Interface.Simulate
 	(simulateInWindow)
 where
-import Graphics.Gloss.Color
-import Graphics.Gloss.Picture
-import Graphics.Gloss.ViewPort
+import Graphics.Gloss.Data.Color
+import Graphics.Gloss.Data.Picture
+import Graphics.Gloss.Interface.ViewPort
 import Graphics.Gloss.Internals.Render.Picture
 import Graphics.Gloss.Internals.Render.ViewPort
 import Graphics.Gloss.Internals.Interface.Window

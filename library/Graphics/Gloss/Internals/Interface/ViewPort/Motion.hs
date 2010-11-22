@@ -3,9 +3,9 @@
 module Graphics.Gloss.Internals.Interface.ViewPort.Motion
 	(callback_viewPort_motion)
 where
-import Graphics.Gloss.ViewPort
+import Graphics.Gloss.Interface.ViewPort
+import Graphics.Gloss.Data.Vector
 import Graphics.Gloss.Geometry.Angle
-import Graphics.Gloss.Geometry.Vector
 import Graphics.Gloss.Internals.Interface.Callback
 import qualified Graphics.Gloss.Internals.Interface.ViewPort.ControlState	as VPC
 import qualified Graphics.UI.GLUT						as GLUT

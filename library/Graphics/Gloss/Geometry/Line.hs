@@ -25,9 +25,8 @@ module Graphics.Gloss.Geometry.Line
 	, intersectSegVertSeg)
 	
 where
-import Graphics.Gloss.Picture	(Point)
-import Graphics.Gloss.Geometry.Point
-import Graphics.Gloss.Geometry.Vector
+import Graphics.Gloss.Data.Point
+import Graphics.Gloss.Data.Vector
 
 
 -- | Check if line segment (P1-P2) clears a box (P3-P4) by being well outside it.

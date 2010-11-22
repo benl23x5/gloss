@@ -1,9 +1,10 @@
 {-# OPTIONS -fno-warn-missing-methods #-}
-{-# LANGUAGE FlexibleInstances #-}
+{-# LANGUAGE TypeSynonymInstances #-}
 
 -- | Geometric functions concerning vectors.
-module Graphics.Gloss.Geometry.Vector
-	( magV
+module Graphics.Gloss.Data.Vector
+	( Vector
+	, magV
 	, argV
 	, dotV
 	, detV
@@ -13,20 +14,11 @@ module Graphics.Gloss.Geometry.Vector
 	, normaliseV
 	, unitVectorAtAngle )
 where
-import Graphics.Gloss.Picture		(Vector)
+import Graphics.Gloss.Data.Point
 import Graphics.Gloss.Geometry.Angle
 
-
--- | Pretend a vector is a number.
---	Vectors aren't real numbes according to Haskell, because they don't
---	support the multiply and divide field operators. We can pretend they
---	are though, and use the (+) and (-) operators as component-wise
---	addition and subtraction.
---
-instance Num (Float, Float) where
-	(+) (x1, y1) (x2, y2)	= (x1 + x2, y1 + y2)
- 	(-) (x1, y1) (x2, y2)	= (x1 - x2, y1 - y2)
-	negate (x, y)		= (negate x, negate y)	
+-- | A vector can be treated as a point, and vis-versa.
+type Vector	= Point
 
 
 -- | The magnitude of a vector.

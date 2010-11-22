@@ -1,6 +1,6 @@
 
 -- | Predefined and custom colors.
-module Graphics.Gloss.Color
+module Graphics.Gloss.Data.Color
 	( 
 	-- ** Color data type
 	  Color

@@ -2,7 +2,7 @@
 
 module Graphics.Gloss.Internals.Color where
 
-import Graphics.Gloss.Color
+import Graphics.Gloss.Data.Color
 import qualified Graphics.Rendering.OpenGL.GL		as GL
 
 import Unsafe.Coerce

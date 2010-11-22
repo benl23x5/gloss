@@ -7,7 +7,6 @@ module Graphics.Gloss.Internals.Interface.Debug
 	, dumpFramebufferState
 	, dumpFragmentState )
 where
-
 import qualified Graphics.Rendering.OpenGL.GL	as GL
 import qualified Graphics.UI.GLUT		as GLUT
 import Graphics.UI.GLUT			(($=), get)

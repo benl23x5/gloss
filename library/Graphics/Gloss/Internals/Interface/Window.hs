@@ -4,8 +4,7 @@
 module	Graphics.Gloss.Internals.Interface.Window
 	( createWindow )
 where
-
-import Graphics.Gloss.Color
+import Graphics.Gloss.Data.Color
 import Graphics.Gloss.Internals.Color
 import Graphics.Gloss.Internals.Interface.Debug
 import Graphics.Gloss.Internals.Interface.Callback		(Callback)

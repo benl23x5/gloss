@@ -36,16 +36,14 @@
 -- @
 --
 module Graphics.Gloss 
-	( module Graphics.Gloss.Picture
-	, module Graphics.Gloss.Color
-	, module Graphics.Gloss.ViewPort
+	( module Graphics.Gloss.Data.Picture
+	, module Graphics.Gloss.Data.Color
 	, displayInWindow 
 	, animateInWindow
 	, simulateInWindow)
 where
-import Graphics.Gloss.Picture
-import Graphics.Gloss.Color
-import Graphics.Gloss.ViewPort
+import Graphics.Gloss.Data.Picture
+import Graphics.Gloss.Data.Color
 import Graphics.Gloss.Internals.Interface.Display	(displayInWindow)
 import Graphics.Gloss.Internals.Interface.Animate	(animateInWindow)
 import Graphics.Gloss.Internals.Interface.Simulate	(simulateInWindow)

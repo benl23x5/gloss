@@ -5,7 +5,7 @@ module Graphics.Gloss.Algorithms.RayCast
 	( castSegIntoCellularQuadTree
 	, traceSegIntoCellularQuadTree)
 where
-import Graphics.Gloss.Picture
+import Graphics.Gloss.Data.Picture
 import Graphics.Gloss.Data.Quad
 import Graphics.Gloss.Data.Extent
 import Graphics.Gloss.Data.QuadTree

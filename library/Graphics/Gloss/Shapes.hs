@@ -5,7 +5,7 @@ module Graphics.Gloss.Shapes
 	, rectangleWire, 	rectangleSolid, 	rectanglePath
 	, rectangleUpperWire, 	rectangleUpperSolid,	rectangleUpperPath )
 where
-import Graphics.Gloss.Picture
+import Graphics.Gloss.Data.Picture
 
 -- | A closed loop along this path.
 lineLoop :: Path -> Picture

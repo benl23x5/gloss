@@ -1,19 +1,14 @@
 
 -- | Data types for representing pictures.
-module Graphics.Gloss.Picture
+module Graphics.Gloss.Data.Picture
 	( Point
 	, Vector
 	, Path
 	, Picture(..))
 where
-
-import Graphics.Gloss.Color
-
--- | A point on the x-y plane.
-type Point	= (Float, Float)			
-
--- | A vector can be treated as a point, and vis-versa.
-type Vector	= Point
+import Graphics.Gloss.Data.Color
+import Graphics.Gloss.Data.Point
+import Graphics.Gloss.Data.Vector
 
 -- | A path through the x-y plane.
 type Path	= [Point]				

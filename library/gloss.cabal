@@ -28,23 +28,24 @@ Library
         OpenGL     == 2.4.*,
         GLUT       == 2.2.*
 
-  ghc-options:      -O2
+  ghc-options:      -O2 -Wall -Werror
 
   Exposed-modules:
         Graphics.Gloss
-        Graphics.Gloss.Game
-        Graphics.Gloss.Color
-        Graphics.Gloss.Picture
         Graphics.Gloss.Shapes
-        Graphics.Gloss.ViewPort
         Graphics.Gloss.Geometry
         Graphics.Gloss.Geometry.Angle
         Graphics.Gloss.Geometry.Line
-        Graphics.Gloss.Geometry.Vector
+        Graphics.Gloss.Data.Point
+        Graphics.Gloss.Data.Vector
         Graphics.Gloss.Data.Quad
         Graphics.Gloss.Data.Extent
         Graphics.Gloss.Data.QuadTree
+        Graphics.Gloss.Data.Color
+        Graphics.Gloss.Data.Picture
         Graphics.Gloss.Algorithms.RayCast
+        Graphics.Gloss.Interface.ViewPort
+        Graphics.Gloss.Interface.Game
 
   Other-modules:
         Graphics.Gloss.Internals.Color

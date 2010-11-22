@@ -5,9 +5,9 @@
 module Graphics.Gloss.Internals.Render.Picture
 	( renderPicture )
 where
-import	Graphics.Gloss.Picture
-import	Graphics.Gloss.Color
-import	Graphics.Gloss.ViewPort
+import	Graphics.Gloss.Data.Picture
+import	Graphics.Gloss.Data.Color
+import	Graphics.Gloss.Interface.ViewPort
 import	Graphics.Gloss.Internals.Render.Options
 import	Graphics.Gloss.Internals.Render.Common
 import	Graphics.Gloss.Internals.Render.Circle
