@@ -29,7 +29,7 @@
 --
 -- @
 --   Release Notes:
---   Since 1.0.0.2:
+--   For 1.1.0.0:
 --     Added game mode.
 --     Added QuadTree and Extent structures.
 --     Added simple ray casting.
