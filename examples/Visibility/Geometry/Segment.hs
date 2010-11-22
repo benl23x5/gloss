@@ -78,3 +78,5 @@ chooseSplitX segments
  = let	Just (_, (x1, _), _)	= segments A.!? (A.length segments `div` 2)
    in	x1
 
+
+

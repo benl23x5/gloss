@@ -6,6 +6,10 @@
 --         Draw lines in random shades of color depending on the index.
 --         Make a key to swap between rectangular and polar projections.
 --         Allow viewpoint to be set with the mouse.
+--
+--  TODO:  To start with just do brute force visibility by dividing field into cells
+--	   and doing vis based on center point of cell.
+--
 
 import Interface
 import Draw
@@ -20,7 +24,7 @@ main
 	
 	gameInWindow
 		"Visibility"
-		(700, 700)
+		(1000, 1000)
 		(10,  10)
 		black
 		100
