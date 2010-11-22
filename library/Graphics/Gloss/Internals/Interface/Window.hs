@@ -28,8 +28,8 @@ createWindow
 
 createWindow
 	windowName
-	size@(sizeX, sizeY) 
-	pos @(posX,  posY)
+	(sizeX, sizeY) 
+	(posX,  posY)
 	clearColor
 	callbacks
  = do
@@ -37,7 +37,7 @@ createWindow
 	let debug	= False
 
 	-- Initialize GLUT
- 	(progName, args)	<- GLUT.getArgsAndInitialize
+ 	(_progName, _args)	<- GLUT.getArgsAndInitialize
 	glutVersion		<- get GLUT.glutVersion
 
 	when debug
@@ -75,7 +75,7 @@ createWindow
 	when debug
 	 $ do	putStr	$ "* creating window\n\n"
 
-	GLUT.createWindow windowName
+	_ <- GLUT.createWindow windowName
 	GLUT.windowSize	
 	 $= 	GL.Size 
 			(fromIntegral sizeX)
@@ -122,7 +122,8 @@ createWindow
 	return ()
 
 
-callbackDisplay clearColor callbacks
+callbackDisplay :: t -> [Callback] -> IO ()
+callbackDisplay _ callbacks
  = do
 	-- clear the display
 	GL.clear [GL.ColorBuffer, GL.DepthBuffer]
@@ -138,20 +139,41 @@ callbackDisplay clearColor callbacks
  	return ()
 
 
+callbackReshape :: [Callback] -> GLUT.Size -> IO ()
 callbackReshape callbacks size
  	= sequence_
 	$ map 	(\f -> f size)
 		[f | Callback.Reshape f 	<- callbacks]
+
+
+callbackKeyMouse
+	:: [Callback]
+	-> GLUT.Key
+	-> GLUT.KeyState
+	-> GLUT.Modifiers
+	-> GLUT.Position
+	-> IO ()
 
 callbackKeyMouse callbacks key keystate modifiers pos
  	= sequence_ 
 	$ map 	(\f -> f key keystate modifiers pos) 
 		[f | Callback.KeyMouse f 	<- callbacks]
 
+
+callbackMotion
+	:: [Callback]
+	-> GLUT.Position
+	-> IO ()
+
 callbackMotion callbacks pos
  	= sequence_
 	$ map	(\f -> f pos)
 		[f | Callback.Motion f 		<- callbacks]
+
+
+callbackIdle
+	:: [Callback]
+	-> IO ()
 
 callbackIdle callbacks
  	= sequence_

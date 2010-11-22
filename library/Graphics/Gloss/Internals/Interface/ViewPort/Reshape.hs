@@ -4,7 +4,7 @@ module Graphics.Gloss.Internals.Interface.ViewPort.Reshape
 	(callback_viewPort_reshape)
 where
 import Graphics.Gloss.Internals.Interface.Callback
-import Graphics.UI.GLUT					(($=), get)
+import Graphics.UI.GLUT					(($=))
 import qualified Graphics.UI.GLUT			as GLUT
 import qualified Graphics.Rendering.OpenGL.GL		as GL
 
@@ -12,10 +12,11 @@ import qualified Graphics.Rendering.OpenGL.GL		as GL
 -- | Callback to handle keyboard and mouse button events
 --	for controlling the viewport.
 callback_viewPort_reshape :: Callback
-
 callback_viewPort_reshape
  	= Reshape (viewPort_reshape)
 
+
+viewPort_reshape :: GL.Size -> IO ()
 viewPort_reshape size
  = do
 	-- Setup the viewport

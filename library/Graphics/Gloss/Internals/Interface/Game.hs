@@ -13,13 +13,10 @@ import Graphics.Gloss.Internals.Render.ViewPort
 import Graphics.Gloss.Internals.Interface.Window
 import Graphics.Gloss.Internals.Interface.Callback
 import Graphics.Gloss.Internals.Interface.Common.Exit
-import Graphics.Gloss.Internals.Interface.ViewPort.KeyMouse
-import Graphics.Gloss.Internals.Interface.ViewPort.Motion
 import Graphics.Gloss.Internals.Interface.ViewPort.Reshape
 import Graphics.Gloss.Internals.Interface.Animate.Timing
 import Graphics.Gloss.Internals.Interface.Simulate.Idle
 import qualified Graphics.Gloss.Internals.Interface.Callback			as Callback
-import qualified Graphics.Gloss.Internals.Interface.ViewPort.ControlState	as VPC
 import qualified Graphics.Gloss.Internals.Interface.Simulate.State		as SM
 import qualified Graphics.Gloss.Internals.Interface.Animate.State		as AN
 import qualified Graphics.Gloss.Internals.Render.Options			as RO
@@ -70,7 +67,6 @@ gameInWindow
 
 	-- make the initial GL view and render states
 	viewSR		<- newIORef viewPortInit
-	viewControlSR	<- newIORef VPC.stateInit
 	renderSR	<- newIORef RO.optionsInit
 	animateSR	<- newIORef AN.stateInit
 
@@ -118,8 +114,19 @@ callback_keyMouse
 callback_keyMouse worldRef viewRef eventFn
  	= KeyMouse (handle_keyMouse worldRef viewRef eventFn)
 
-handle_keyMouse worldRef viewRef eventFn key keyState keyMods pos
- = do	size@(GLUT.Size sizeX_ sizeY_)	<- GL.get GLUT.windowSize
+
+handle_keyMouse 
+	:: IORef a
+	-> t
+	-> (Event -> a -> a)
+	-> GLUT.Key
+	-> GLUT.KeyState
+	-> GLUT.Modifiers
+	-> GL.Position
+	-> IO ()
+
+handle_keyMouse worldRef _ eventFn key keyState keyMods pos
+ = do	(GLUT.Size sizeX_ sizeY_)	<- GL.get GLUT.windowSize
 	let (sizeX, sizeY)		= (fromIntegral sizeX_, fromIntegral sizeY_)
 
 	let GLUT.Position px_ py_	= pos
@@ -142,8 +149,14 @@ callback_motion
 callback_motion worldRef eventFn
  	= Motion (handle_motion worldRef eventFn)
 
+handle_motion 
+	:: IORef a
+	-> (Event -> a -> a)
+	-> GL.Position
+	-> IO ()
+
 handle_motion worldRef eventFn pos
- = do	size@(GLUT.Size sizeX_ sizeY_)	<- GL.get GLUT.windowSize
+ = do	(GLUT.Size sizeX_ sizeY_)	<- GL.get GLUT.windowSize
 	let (sizeX, sizeY)		= (fromIntegral sizeX_, fromIntegral sizeY_)
 	
 	let GLUT.Position px_ py_	= pos

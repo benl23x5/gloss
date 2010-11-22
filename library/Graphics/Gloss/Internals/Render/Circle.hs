@@ -7,8 +7,6 @@ module Graphics.Gloss.Internals.Render.Circle  where
 import 	Graphics.Gloss.Internals.Render.Common
 import	qualified Graphics.Rendering.OpenGL.GL		as GL
 import	GHC.Exts
-import	GHC.Prim
-
 
 -- | Render a circle with the given thickness
 renderCircle :: Float -> Float -> Float -> Float -> Float -> IO ()

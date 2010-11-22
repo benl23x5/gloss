@@ -31,6 +31,7 @@ data State
 	
 
 -- | Initial control state
+stateInit :: Int -> State
 stateInit resolution
  	= State
  	{ stateIteration		= 0

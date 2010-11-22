@@ -21,7 +21,6 @@ import qualified Graphics.Gloss.Internals.Interface.ViewPort.ControlState	as VPC
 import qualified Graphics.Gloss.Internals.Interface.Simulate.State		as SM
 import qualified Graphics.Gloss.Internals.Interface.Animate.State		as AN
 import qualified Graphics.Gloss.Internals.Render.Options			as RO
-import qualified Graphics.UI.GLUT						as GLUT
 import Data.IORef
 import System.Mem
 

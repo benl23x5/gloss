@@ -75,6 +75,6 @@ animateInWindow name size pos backColor frameFun
 
 	createWindow name size pos backColor callbacks
 
-
+getsIORef :: IORef a -> (a -> r) -> IO r
 getsIORef ref fun
  = liftM fun $ readIORef ref

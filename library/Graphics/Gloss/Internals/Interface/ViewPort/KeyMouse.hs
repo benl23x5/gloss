@@ -27,6 +27,15 @@ callback_viewPort_keyMouse portRef controlRef
  	= KeyMouse (viewPort_keyMouse portRef controlRef)
 
 
+viewPort_keyMouse
+	:: IORef ViewPort
+	-> IORef VPC.State
+	-> GLUT.Key
+	-> GLUT.KeyState
+	-> GLUT.Modifiers
+	-> GL.Position
+	-> IO ()
+
 viewPort_keyMouse portRef controlRef key keyState keyMods pos
  = do	commands	<- controlRef `getsIORef` VPC.stateCommands 
 
@@ -34,13 +43,9 @@ viewPort_keyMouse portRef controlRef key keyState keyMods pos
 		++ "keyMouse keyState = " ++ show keyState	++ "\n"
 		++ "keyMouse keyMods  = " ++ show keyMods 	++ "\n"
 -}
-	viewPort_keyMouse2 commands portRef controlRef key keyState keyMods pos
-	
-viewPort_keyMouse2
-	commands portRef controlRef
-	key keyState keyMods
-	pos
-
+	viewPort_keyMouse2 commands
+ where
+   viewPort_keyMouse2 commands
 	-- restore viewport
 	| isCommand commands CRestore key keyMods
 	, keyState	== GLUT.Down
@@ -65,22 +70,22 @@ viewPort_keyMouse2
 	-- bump left
 	| isCommand commands CBumpLeft key keyMods
 	, keyState	== GLUT.Down
-	= 	motionBump portRef controlRef (20, 0)
+	= 	motionBump portRef (20, 0)
 
 	-- bump right
 	| isCommand commands CBumpRight key keyMods
 	, keyState	== GLUT.Down
-	= 	motionBump portRef controlRef (-20, 0)
+	= 	motionBump portRef (-20, 0)
 
 	-- bump up
 	| isCommand commands CBumpUp key keyMods
 	, keyState	== GLUT.Down
-	= 	motionBump portRef controlRef (0, 20)
+	= 	motionBump portRef (0, 20)
 
 	-- bump down
 	| isCommand commands CBumpDown key keyMods
 	, keyState	== GLUT.Down
-	= 	motionBump portRef controlRef (0, -20)
+	= 	motionBump portRef (0, -20)
 
 	-- bump clockwise
 	| isCommand commands CBumpClockwise key keyMods
@@ -141,6 +146,7 @@ viewPort_keyMouse2
 	= return ()
 
 
+controlZoomIn :: IORef ViewPort -> IORef VPC.State -> IO ()
 controlZoomIn portRef controlRef
  = do	scaleStep	<- controlRef `getsIORef` VPC.stateScaleStep
 	portRef `modifyIORef` \s -> s { 
@@ -148,6 +154,7 @@ controlZoomIn portRef controlRef
 	GLUT.postRedisplay Nothing
 
 
+controlZoomOut :: IORef ViewPort -> IORef VPC.State -> IO ()
 controlZoomOut portRef controlRef
  = do	scaleStep	<- controlRef `getsIORef` VPC.stateScaleStep 
 	portRef `modifyIORef` \s -> s {
@@ -155,17 +162,18 @@ controlZoomOut portRef controlRef
 	GLUT.postRedisplay Nothing
 
 
+motionBump :: IORef ViewPort -> (Float, Float) -> IO ()
 motionBump
-	portRef controlRef
+	portRef
 	(bumpX, bumpY)
  = do
 	(transX, transY)
 		<- portRef `getsIORef` viewPortTranslate
 
-	s	<- portRef `getsIORef` viewPortScale
+	scale	<- portRef `getsIORef` viewPortScale
 	r	<- portRef `getsIORef` viewPortRotate
 
-	let offset	= (bumpX / s, bumpY / s)
+	let offset	= (bumpX / scale, bumpY / scale)
 
 	let (oX, oY)	= rotateV (degToRad r) offset
 
@@ -175,7 +183,8 @@ motionBump
 		 	, transY + oY) }
 			
 	GLUT.postRedisplay Nothing
- 
 
+ 
+getsIORef :: IORef a -> (a -> r) -> IO r
 getsIORef ref fun
  = liftM fun $ readIORef ref

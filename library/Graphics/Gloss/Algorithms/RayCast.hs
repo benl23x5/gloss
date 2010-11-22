@@ -32,7 +32,7 @@ castSegIntoCellularQuadTree
 
 castSegIntoCellularQuadTree p1 p2 extent tree
 	| cells@(_:_)	<- traceSegIntoCellularQuadTree p1 p2 extent tree
-	, c : _		<- sortBy ((compareDistanceTo p1) `on` (\(a, b, c) -> a) ) cells
+	, c : _		<- sortBy ((compareDistanceTo p1) `on` (\(a, _, _) -> a) ) cells
 	= Just c
 	
 	| otherwise

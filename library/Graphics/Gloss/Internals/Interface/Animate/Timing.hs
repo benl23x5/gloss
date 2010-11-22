@@ -17,8 +17,7 @@ import Control.Monad
 import Control.Concurrent
 import Data.IORef
 import qualified Graphics.UI.GLUT			as GLUT
-import qualified Graphics.Rendering.OpenGL.GL		as GL
-import Graphics.UI.GLUT					(($=), get)
+import Graphics.UI.GLUT					(get)
 
 
 -- | Handles animation timing details.
@@ -77,5 +76,6 @@ animateEnd stateRef
 		, stateGateTimeElapsed	= gateTimeElapsed }
 
 
+getsIORef :: IORef a -> (a -> r) -> IO r
 getsIORef ref fun
  = liftM fun $ readIORef ref

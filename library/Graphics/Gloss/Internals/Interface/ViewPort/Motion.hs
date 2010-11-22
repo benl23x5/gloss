@@ -1,4 +1,5 @@
 {-# OPTIONS_HADDOCK hide #-}
+{-# LANGUAGE ScopedTypeVariables #-}
 
 module Graphics.Gloss.Internals.Interface.ViewPort.Motion
 	(callback_viewPort_motion)
@@ -24,6 +25,12 @@ callback_viewPort_motion
 callback_viewPort_motion portRef controlRef 
  	= Motion (viewPort_motion portRef controlRef)
 
+viewPort_motion
+	:: IORef ViewPort
+	-> IORef VPC.State
+	-> GL.Position
+	-> IO ()
+	
 viewPort_motion
 	portRef controlRef
 	pos
@@ -51,21 +58,28 @@ viewPort_motion
 		pos )
 
 
+motionTranslate
+	:: IORef ViewPort
+        -> IORef VPC.State
+        -> (GL.GLint, GL.GLint)
+        -> GL.Position
+	-> IO ()
+ 
 motionTranslate 
 	portRef controlRef
-	(markX, markY)
+	(markX :: GL.GLint, markY :: GL.GLint)
 	(GL.Position posX posY)
  = do
 	(transX, transY)
 		<- portRef `getsIORef` viewPortTranslate
 
-	s	<- portRef `getsIORef` viewPortScale
+	scale	<- portRef `getsIORef` viewPortScale
 	r	<- portRef `getsIORef` viewPortRotate
 
 	let dX		= fromIntegral $ markX - posX
 	let dY		= fromIntegral $ markY - posY
 
-	let offset	= (dX / s, dY / s)
+	let offset	= (dX / scale, dY / scale)
 
 	let (oX, oY)	= rotateV (degToRad r) offset
 
@@ -81,9 +95,16 @@ motionTranslate
 	GLUT.postRedisplay Nothing
 
 
+motionRotate
+	:: IORef ViewPort
+	-> IORef VPC.State
+	-> (GL.GLint, GL.GLint)
+	-> GL.Position
+	-> IO ()
+
 motionRotate 
 	portRef controlRef
-	(markX, markY)
+	(markX :: GL.GLint, _markY :: GL.GLint)
 	(GL.Position posX posY)
  = do
  	rotate		<- portRef    `getsIORef` viewPortRotate
@@ -100,5 +121,6 @@ motionRotate
 	GLUT.postRedisplay Nothing
 
 
+getsIORef :: IORef a -> (a -> r) -> IO r
 getsIORef ref fun
  = liftM fun $ readIORef ref

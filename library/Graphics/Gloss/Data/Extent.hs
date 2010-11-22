@@ -28,11 +28,7 @@ import Data.Maybe
 -- | A rectangular area of the 2D plane.
 --   We keep the type abstract to ensure that invalid extents cannot be constructed.
 data Extent
-	= Extent
-	{ extentNorth	:: Int
-	, extentSouth	:: Int
-	, extentEast	:: Int
-	, extentWest	:: Int }
+	= Extent Int Int Int Int
 	deriving (Eq, Show)
 
 
@@ -155,7 +151,7 @@ pathToCoord extent coord
 --   @
 -- 
 intersectSegExtent :: Point -> Point -> Extent -> Maybe Point
-intersectSegExtent p1@(x1, y1) p2 extent@(Extent n' s' e' w')
+intersectSegExtent p1@(x1, y1) p2 (Extent n' s' e' w')
 	-- starts below extent
 	| y1 < s
 	, Just pos	<- intersectSegHorzSeg p1 p2 s w e
@@ -188,7 +184,7 @@ intersectSegExtent p1@(x1, y1) p2 extent@(Extent n' s' e' w')
 
 -- | Check whether a line segment's endpoints are inside an extent, or if it intersects with the boundary.
 touchesSegExtent :: Point -> Point -> Extent -> Bool
-touchesSegExtent p1 p2 extent@(Extent n' s' e' w')
+touchesSegExtent p1 p2 extent
 	=   pointInExtent extent p1
        	 || pointInExtent extent p2
 	 || isJust (intersectSegExtent p1 p2 extent)

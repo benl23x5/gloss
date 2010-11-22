@@ -38,6 +38,7 @@ data State
 	, stateGateTimeElapsed		:: Int }
 
 
+stateInit :: State
 stateInit
 	= State
 	{ stateAnimate			= True

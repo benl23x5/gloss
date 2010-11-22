@@ -9,7 +9,7 @@ module Graphics.Gloss.Internals.Interface.Debug
 where
 import qualified Graphics.Rendering.OpenGL.GL	as GL
 import qualified Graphics.UI.GLUT		as GLUT
-import Graphics.UI.GLUT			(($=), get)
+import Graphics.UI.GLUT			(get)
 
 
 -- | Dump the internal state of GLUT

@@ -24,6 +24,7 @@ data Options
 	
 
 -- | Default render options
+optionsInit :: Options
 optionsInit
 	= Options
 	{ optionsColor		= True

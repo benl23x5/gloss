@@ -26,8 +26,6 @@ module Graphics.Gloss.Data.Color
 	)
 where
 
-import qualified Graphics.Rendering.OpenGL.GL	as GL
-
 -- | An abstract color value.
 --	We keep the type abstract so we can be sure that the components
 --	are in the required range. To make a custom color use 'makeColor'.

@@ -25,7 +25,7 @@ withViewPort port action
 	 $ do
 		-- setup the co-ordinate system
 	 	GL.loadIdentity
-		size@(GL.Size sizeX sizeY) 
+		(GL.Size sizeX sizeY) 
 				<- get GLUT.windowSize
 		let (sx, sy)	= (fromIntegral sizeX / 2, fromIntegral sizeY / 2)
 

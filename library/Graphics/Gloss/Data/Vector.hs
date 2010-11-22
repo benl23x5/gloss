@@ -62,7 +62,7 @@ rotateV r (x, y)
 -- | Compute the inner angle (in radians) between two vectors.
 angleVV :: Vector -> Vector -> Float
 {-# INLINE angleVV #-}
-angleVV p1@(x1, y1) p2@(x2, y2)
+angleVV p1 p2
  = let 	m1	= magV p1
  	m2	= magV p2
 	d	= p1 `dotV` p2

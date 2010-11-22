@@ -5,17 +5,19 @@
 module Graphics.Gloss.Internals.Interface.Common.Exit
 	(callback_exit)
 where
-import	Graphics.Gloss.Internals.Interface.Callback
-import	qualified Graphics.UI.GLUT		as GLUT
-import	qualified System.Exit			as System
+import Graphics.Gloss.Internals.Interface.Callback
+import qualified Graphics.UI.GLUT		as GLUT
+import qualified System.Exit			as System
 
+callback_exit :: a -> Callback
 callback_exit stateRef
  =	KeyMouse (keyMouse_exit stateRef)
 
+keyMouse_exit :: a -> GLUT.KeyboardMouseCallback
 keyMouse_exit
-	stateRef
-	key keyState keyMods
-	pos
+	_
+	key keyState _
+	_
 
 	-- exit
 	| key		== GLUT.Char '\27'

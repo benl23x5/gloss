@@ -28,7 +28,7 @@ Library
         OpenGL     == 2.4.*,
         GLUT       == 2.2.*
 
-  ghc-options:      -O2 -Wall -Werror
+  ghc-options:      -O2 -Wall
 
   Exposed-modules:
         Graphics.Gloss

@@ -7,7 +7,7 @@ import Graphics.Gloss.Interface.ViewPort
 import qualified Graphics.Gloss.Internals.Interface.Animate.State	as AN
 import qualified Graphics.Gloss.Internals.Interface.Simulate.State	as SM
 import qualified Graphics.UI.GLUT					as GLUT
-import Graphics.UI.GLUT							(($=), get)
+import Graphics.UI.GLUT							(get)
 import Data.IORef
 import Control.Monad
 
@@ -45,6 +45,7 @@ callback_simulate_idle simSR animateSR viewSR worldSR worldStart worldAdvance si
  
 
 -- reset the world to 
+simulate_reset :: IORef SM.State -> IORef a -> a -> IO ()
 simulate_reset simSR worldSR worldStart
  = do	writeIORef worldSR worldStart
 
@@ -65,7 +66,7 @@ simulate_run
 	-> (ViewPort -> Float -> world -> world)
 	-> IO ()
 	
-simulate_run simSR animateSR viewSR worldSR worldAdvance
+simulate_run simSR _ viewSR worldSR worldAdvance
  = do	
 	simS		<- readIORef simSR
 	viewS		<- readIORef viewSR
@@ -103,7 +104,7 @@ simulate_run simSR animateSR viewSR worldSR worldAdvance
 
 	-- keep advancing the world until we get to the final iteration number
 	let (_, world')	= 
-		until 	(\(n, w) 	-> n >= nFinal)
+		until 	(\(n, _) 	-> n >= nFinal)
 			(\(n, w)	-> (n+1, worldAdvance viewS timePerStep w))
 			(nStart, worldS)
 	
@@ -132,9 +133,7 @@ simulate_step
 
 simulate_step simSR viewSR worldSR worldAdvance singleStepTime
  = do
-	simS		<- readIORef simSR
 	viewS		<- readIORef viewSR
-	
  	world		<- readIORef worldSR
 	let world'	= worldAdvance viewS singleStepTime world
 	
@@ -146,5 +145,6 @@ simulate_step simSR viewSR worldSR worldAdvance singleStepTime
 	GLUT.postRedisplay Nothing
 
 
+getsIORef :: IORef a -> (a -> r) -> IO r
 getsIORef ref fun
  = liftM fun $ readIORef ref

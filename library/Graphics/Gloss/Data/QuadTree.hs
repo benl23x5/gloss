@@ -86,7 +86,7 @@ liftToQuad quad f tree
 --   If the path intersects an existing `TLeaf` then return the original tree.
 insertByPath :: [Quad] -> a -> QuadTree a -> QuadTree a
 	
-insertByPath [] x tree
+insertByPath [] x _
 	= TLeaf x
 	
 insertByPath (q:qs) x tree
@@ -155,7 +155,7 @@ flattenQuadTree extentInit treeInit
  	 = case tree of
 		TNil	-> []
 		TLeaf x	
-		 -> let (n, s, e, w) = takeExtent extent
+		 -> let (_, s, _, w) = takeExtent extent
 		    in  [((w, s), x)]
 
 		TNode{}	-> concat $ map (flattenQuad extent tree) allQuads

@@ -1,4 +1,5 @@
 {-# OPTIONS_HADDOCK hide #-}
+{-# OPTIONS -fno-warn-missing-signatures #-}
 {-# LANGUAGE PatternGuards #-}
 
 module Graphics.Gloss.Internals.Interface.ViewPort.Command
@@ -6,7 +7,6 @@ module Graphics.Gloss.Internals.Interface.ViewPort.Command
 	, defaultCommandConfig
 	, isCommand )
 where
-import Data.Map					(Map)
 import qualified Graphics.UI.GLUT		as GLUT
 import qualified Data.Map			as Map
 
@@ -89,7 +89,7 @@ isCommand commands c key keyMods
 	| otherwise
 	= False
 
-isCommand2 c key keyMods cMatch
+isCommand2 _ key keyMods cMatch
 	| (keyC, mModsC)	<- cMatch
 	, keyC == key
 	, case mModsC of

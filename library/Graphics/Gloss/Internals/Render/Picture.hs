@@ -12,12 +12,9 @@ import	Graphics.Gloss.Internals.Render.Options
 import	Graphics.Gloss.Internals.Render.Common
 import	Graphics.Gloss.Internals.Render.Circle
 import	Graphics.UI.GLUT						(($=), get)
-import  qualified Graphics.Rendering.OpenGL.GLU.Matrix 			as GLU
 import	qualified Graphics.Rendering.OpenGL.GL				as GL
 import	qualified Graphics.UI.GLUT					as GLUT
 
-import 	Data.IORef
-import	Control.Monad
 
 -- ^ Render a picture using the given render options and viewport.
 renderPicture
@@ -51,7 +48,13 @@ renderPicture
 	setBlendAlpha	(optionsBlendAlpha renderS)
 	
 	drawPicture picture
-	  
+
+drawPicture 
+	:: ( ?modeWireframe::Bool
+	   , ?scale::Float
+	   , ?modeColor::Bool) 
+	=> Picture -> IO ()	  
+
 drawPicture picture
  = {-# SCC "drawComponent" #-}
    case picture of
@@ -149,6 +152,7 @@ drawPicture picture
 
 -- Utils ------------------------------------------------------------------------------------------
 -- | Turn alpha blending on or off
+setBlendAlpha :: Bool -> IO ()
 setBlendAlpha state
  	| state	
  	= do	GL.blend	$= GL.Enabled
@@ -159,6 +163,7 @@ setBlendAlpha state
 		GL.blendFunc	$= (GL.One, GL.Zero) 	
 
 -- | Turn line smoothing on or off
+setLineSmooth :: Bool -> IO ()
 setLineSmooth state
 	| state		= GL.lineSmooth	$= GL.Enabled
 	| otherwise	= GL.lineSmooth $= GL.Disabled
