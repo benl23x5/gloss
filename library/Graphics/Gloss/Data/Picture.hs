@@ -6,7 +6,7 @@ module Graphics.Gloss.Data.Picture
 	, Path
 	, Picture(..)
 
-	-- * Primitive Picture constructors.
+	-- * Aliases for Picture constructors
 	, blank, polygon, line, circle, thickCircle, text
 	, color, translate, rotate, scale
 	, pictures
@@ -15,8 +15,8 @@ module Graphics.Gloss.Data.Picture
  	, lineLoop
 	
 	-- * Rectangles
-	, rectangleWire, 	rectangleSolid, 	rectanglePath
-	, rectangleUpperWire, 	rectangleUpperSolid,	rectangleUpperPath)
+	, rectanglePath, 	rectangleWire, 		rectangleSolid
+	, rectangleUpperPath,	rectangleUpperWire, 	rectangleUpperSolid)
 where
 import Graphics.Gloss.Data.Color
 import Graphics.Gloss.Data.Point
