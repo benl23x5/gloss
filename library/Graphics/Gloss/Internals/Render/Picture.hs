@@ -96,13 +96,13 @@ drawPicture picture
 		GL.blend	$= GL.Enabled
 
 	-- colors with float components.
-	Color color p
+	Color col p
 	 |  ?modeColor
 	 ->  {-# SCC "draw.color" #-}
    	     do
 		oldColor 	 <- get GL.currentColor
 
-		let (r, g, b, a) = rgbaOfColor color
+		let (r, g, b, a) = rgbaOfColor col
 
 		GL.currentColor	
 			$= GL.Color4 (gf r) (gf g) (gf b) (gf a)
