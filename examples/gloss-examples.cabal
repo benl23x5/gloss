@@ -101,7 +101,7 @@ Executable gloss-conway
   Build-depends: 
         base            == 4.*,
         gloss           == 1.1.*,
-        vector          >= 0.5 && < 0.7
+        vector          >= 0.5 && < 0.8
   Main-is: Main.hs
   other-modules: Cell World
   hs-source-dirs: Conway

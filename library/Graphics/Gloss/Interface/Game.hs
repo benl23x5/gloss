@@ -7,12 +7,10 @@
 module Graphics.Gloss.Interface.Game
  	( module Graphics.Gloss.Data.Picture
 	, module Graphics.Gloss.Data.Color
-	, module Graphics.Gloss.Interface.ViewPort
 	, gameInWindow
 	, Event(..), Key(..), SpecialKey(..), MouseButton(..), KeyState(..), Modifiers(..))
 where
 import Graphics.Gloss.Data.Picture
 import Graphics.Gloss.Data.Color
-import Graphics.Gloss.Interface.ViewPort
 import Graphics.Gloss.Internals.Interface.Game		(gameInWindow, Event(..))
 import Graphics.UI.GLUT.Callbacks.Window

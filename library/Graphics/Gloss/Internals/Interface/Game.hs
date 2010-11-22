@@ -7,12 +7,12 @@ module Graphics.Gloss.Internals.Interface.Game
 where
 import Graphics.Gloss.Data.Color
 import Graphics.Gloss.Data.Picture
-import Graphics.Gloss.Interface.ViewPort
 import Graphics.Gloss.Internals.Render.Picture
 import Graphics.Gloss.Internals.Render.ViewPort
 import Graphics.Gloss.Internals.Interface.Window
 import Graphics.Gloss.Internals.Interface.Callback
 import Graphics.Gloss.Internals.Interface.Common.Exit
+import Graphics.Gloss.Internals.Interface.ViewPort
 import Graphics.Gloss.Internals.Interface.ViewPort.Reshape
 import Graphics.Gloss.Internals.Interface.Animate.Timing
 import Graphics.Gloss.Internals.Interface.Simulate.Idle

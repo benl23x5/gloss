@@ -7,7 +7,7 @@ module Graphics.Gloss.Internals.Render.Picture
 where
 import	Graphics.Gloss.Data.Picture
 import	Graphics.Gloss.Data.Color
-import	Graphics.Gloss.Interface.ViewPort
+import	Graphics.Gloss.Internals.Interface.ViewPort
 import	Graphics.Gloss.Internals.Render.Options
 import	Graphics.Gloss.Internals.Render.Common
 import	Graphics.Gloss.Internals.Render.Circle

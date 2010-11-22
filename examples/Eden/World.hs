@@ -1,6 +1,5 @@
 module World where
 
-
 import Graphics.Gloss
 import System.Random
 import Community

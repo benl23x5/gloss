@@ -19,11 +19,13 @@
 --
 --	* Zoom Viewport - mouse wheel, or page up\/down-keys.
 --
---   Animations and simulations can be constructed similarly using the `animateInWindow` 
---   and `simulateInWindow` functions. 
+--   Animations can be constructed similarly using the `animateInWindow`.
 --
---   If you want to manage your own key\/mouse events then use gameInWindow from the
---   Graphics.Gloss.Game module.
+--   If you want to run a simulation based around finite time steps then try
+--   `simulateInWindow` from "Graphics.Gloss.Interface.Simulate".
+--
+--   If you want to manage your own key\/mouse events then use `gameInWindow` from
+--   "Graphics.Gloss.Interface.Game".
 --
 --   Gloss uses OpenGL under the hood, but you don't have to worry about any of that.
 --
@@ -39,11 +41,9 @@ module Graphics.Gloss
 	( module Graphics.Gloss.Data.Picture
 	, module Graphics.Gloss.Data.Color
 	, displayInWindow 
-	, animateInWindow
-	, simulateInWindow)
+	, animateInWindow)
 where
 import Graphics.Gloss.Data.Picture
 import Graphics.Gloss.Data.Color
 import Graphics.Gloss.Internals.Interface.Display	(displayInWindow)
 import Graphics.Gloss.Internals.Interface.Animate	(animateInWindow)
-import Graphics.Gloss.Internals.Interface.Simulate	(simulateInWindow)

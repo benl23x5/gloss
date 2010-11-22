@@ -5,7 +5,7 @@
 module Graphics.Gloss.Internals.Render.ViewPort
 	( withViewPort )
 where
-import	Graphics.Gloss.Interface.ViewPort
+import	Graphics.Gloss.Internals.Interface.ViewPort
 import	Graphics.Rendering.OpenGL					(GLfloat)
 import 	Graphics.UI.GLUT						(($=), get)
 import	qualified Graphics.UI.GLUT					as GLUT

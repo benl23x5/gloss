@@ -6,11 +6,11 @@ module Graphics.Gloss.Internals.Interface.Simulate
 where
 import Graphics.Gloss.Data.Color
 import Graphics.Gloss.Data.Picture
-import Graphics.Gloss.Interface.ViewPort
 import Graphics.Gloss.Internals.Render.Picture
 import Graphics.Gloss.Internals.Render.ViewPort
 import Graphics.Gloss.Internals.Interface.Window
 import Graphics.Gloss.Internals.Interface.Common.Exit
+import Graphics.Gloss.Internals.Interface.ViewPort
 import Graphics.Gloss.Internals.Interface.ViewPort.KeyMouse
 import Graphics.Gloss.Internals.Interface.ViewPort.Motion
 import Graphics.Gloss.Internals.Interface.ViewPort.Reshape
@@ -24,22 +24,22 @@ import qualified Graphics.Gloss.Internals.Render.Options			as RO
 import Data.IORef
 import System.Mem
 
--- | Run a finite-time-step simulation in a window. You decide how the world is represented,
---	how to convert the world to a picture, and how to advance the world for each unit of time. 
+-- | Run a finite-time-step simulation in a window. You decide how the model is represented,
+--	how to convert the model to a picture, and how to advance the model for each unit of time. 
 --	This function does the rest.
 --
 --   Once the window is open you can use the same commands as with @displayInWindow@.
 --
 simulateInWindow 
-	:: forall world
+	:: forall model
 	.  String			-- ^ Name of the window.
 	-> (Int, Int)			-- ^ Initial size of the window, in pixels.
 	-> (Int, Int)			-- ^ Initial position of the window, in pixels.
 	-> Color			-- ^ Background color.
 	-> Int				-- ^ Number of simulation steps to take for each second of real time.
-	-> world 			-- ^ The initial world.
-	-> (world -> Picture)	 	-- ^ A function to convert the world a picture.
-	-> (ViewPort -> Float -> world -> world) -- ^ A function to step the world one iteration. It is passed the 
+	-> model 			-- ^ The initial model.
+	-> (model -> Picture)	 	-- ^ A function to convert the model to a picture.
+	-> (ViewPort -> Float -> model -> model) -- ^ A function to step the model one iteration. It is passed the 
 						 --	current viewport and the amount of time for this simulation
 						 --     step (in seconds).
 	-> IO ()

@@ -1,5 +1,5 @@
 Name:                gloss
-Version:             1.1.2.0
+Version:             1.2.0.0
 License:             MIT
 License-file:        LICENSE
 Author:              Ben Lippmeier
@@ -32,7 +32,6 @@ Library
 
   Exposed-modules:
         Graphics.Gloss
-        Graphics.Gloss.Shapes
         Graphics.Gloss.Geometry
         Graphics.Gloss.Geometry.Angle
         Graphics.Gloss.Geometry.Line
@@ -44,7 +43,7 @@ Library
         Graphics.Gloss.Data.Color
         Graphics.Gloss.Data.Picture
         Graphics.Gloss.Algorithms.RayCast
-        Graphics.Gloss.Interface.ViewPort
+        Graphics.Gloss.Interface.Simulate
         Graphics.Gloss.Interface.Game
 
   Other-modules:
@@ -60,6 +59,7 @@ Library
         Graphics.Gloss.Internals.Interface.Simulate.Idle
         Graphics.Gloss.Internals.Interface.Simulate.State
         Graphics.Gloss.Internals.Interface.Game
+        Graphics.Gloss.Internals.Interface.ViewPort
         Graphics.Gloss.Internals.Interface.ViewPort.Command
         Graphics.Gloss.Internals.Interface.ViewPort.ControlState
         Graphics.Gloss.Internals.Interface.ViewPort.KeyMouse

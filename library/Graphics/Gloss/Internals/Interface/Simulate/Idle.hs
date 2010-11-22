@@ -3,7 +3,7 @@
 module Graphics.Gloss.Internals.Interface.Simulate.Idle
 	( callback_simulate_idle )
 where
-import Graphics.Gloss.Interface.ViewPort
+import Graphics.Gloss.Internals.Interface.ViewPort
 import qualified Graphics.Gloss.Internals.Interface.Animate.State	as AN
 import qualified Graphics.Gloss.Internals.Interface.Simulate.State	as SM
 import qualified Graphics.UI.GLUT					as GLUT
