@@ -1,5 +1,5 @@
 Name:                gloss
-Version:             1.2.0.0
+Version:             1.2.0.1
 License:             MIT
 License-file:        LICENSE
 Author:              Ben Lippmeier
@@ -18,7 +18,7 @@ Description:
 Synopsis:
         Painless 2D vector graphics, animations and simulations.
 
-Tested-with: GHC == 6.10.4, GHC == 6.12.1
+Tested-with: GHC == 6.12.1, GHC == 7.0.1
 
 Library
   Build-Depends: 

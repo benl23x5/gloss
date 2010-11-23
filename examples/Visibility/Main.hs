@@ -24,7 +24,7 @@ main
 	
 	gameInWindow
 		"Visibility"
-		(1000, 1000)
+		(800, 800)
 		(10,  10)
 		black
 		100

@@ -30,8 +30,16 @@
 --   Gloss uses OpenGL under the hood, but you don't have to worry about any of that.
 --
 -- @
---   Release Notes:
---   For 1.1.0.0:
+-- Release Notes:
+-- For 1.2.0:
+--     Cleaned up module hierarchy.
+--     Added line-line intersection utils.
+--     Fixed a bug causing motion events to give the wrong position.   (Thanks to Thomas DuBuisson)
+--     Fixed a space leak in simulate mode when the window was hidden. (Thanks to Stephan Maka)
+--     Enabled -Wall and fixed all warnings.
+--     Various wibbles for GHC 7.0
+--
+-- For 1.1.0:
 --     Added game mode.
 --     Added QuadTree and Extent structures.
 --     Added simple ray casting.
