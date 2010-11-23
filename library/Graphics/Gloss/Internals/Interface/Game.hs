@@ -114,20 +114,18 @@ callback_keyMouse
 callback_keyMouse worldRef viewRef eventFn
  	= KeyMouse (handle_keyMouse worldRef viewRef eventFn)
 
-handle_keyMouse worldRef viewRef eventFn key keyState keyMods pos
- = do	size@(GLUT.Size sizeX_ sizeY_)	<- GL.get GLUT.windowSize
-	let (sizeX, sizeY)		= (fromIntegral sizeX_, fromIntegral sizeY_)
 
-	let GLUT.Position px_ py_	= pos
-	let px		= fromIntegral px_
-	let py		= sizeY - fromIntegral py_
-	
-	let px'		= px - sizeX / 2
-	let py' 	= py - sizeY / 2
-	let pos'	= (px', py')
-	return pos'
+handle_keyMouse 
+	:: IORef a
+	-> t
+	-> (Event -> a -> a)
+	-> GLUT.Key
+	-> GLUT.KeyState
+	-> GLUT.Modifiers
+	-> GL.Position
+	-> IO ()
 
-handle_keyMouse worldRef viewRef eventFn key keyState keyMods pos
+handle_keyMouse worldRef _ eventFn key keyState keyMods pos
  = do	pos' <- convertPoint pos
 	worldRef `modifyIORef` \world -> eventFn (EventKey key keyState keyMods pos') world
 
@@ -141,6 +139,7 @@ callback_motion
 callback_motion worldRef eventFn
  	= Motion (handle_motion worldRef eventFn)
 
+
 handle_motion 
 	:: IORef a
 	-> (Event -> a -> a)
@@ -148,13 +147,21 @@ handle_motion
 	-> IO ()
 
 handle_motion worldRef eventFn pos
- = let	GLUT.Position x y	= pos
-	pos'			= (fromIntegral x, fromIntegral y)
-   in	worldRef `modifyIORef` \world -> eventFn (EventMotion pos') world
+ = do pos' <- convertPoint pos
+      worldRef `modifyIORef` \world -> eventFn (EventMotion pos') world
 
 
+convertPoint :: GL.Position -> IO (Float,Float)
+convertPoint pos
+ = do	(GLUT.Size sizeX_ sizeY_) <- GL.get GLUT.windowSize
+	let (sizeX, sizeY)		= (fromIntegral sizeX_, fromIntegral sizeY_)
 
-
-
-
+	let GLUT.Position px_ py_	= pos
+	let px		= fromIntegral px_
+	let py		= sizeY - fromIntegral py_
+	
+	let px'		= px - sizeX / 2
+	let py' 	= py - sizeY / 2
+	let pos'	= (px', py')
+	return pos'
 
