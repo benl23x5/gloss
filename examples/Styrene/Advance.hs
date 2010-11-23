@@ -10,8 +10,9 @@ import Actor
 import Config
 
 import Graphics.Gloss.Geometry
-import Graphics.Gloss.ViewPort
-import Graphics.Gloss.Picture	(Point)
+import Graphics.Gloss.Interface.Simulate
+import Graphics.Gloss.Data.Point
+import Graphics.Gloss.Data.Vector
 
 import Data.List
 import qualified Data.Map	as Map

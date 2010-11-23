@@ -2,7 +2,7 @@
 
 module State where
 import World
-import Graphics.Gloss.Game
+import Graphics.Gloss.Interface.Game
 
 -- | The game state.
 data State

@@ -1,11 +1,11 @@
-{-# OPTIONS -fglasgow-exts #-}
+{-# LANGUAGE MagicHash #-}
 
 -- | Find actors in the world that are in contact with each other.
 module Contact where
 import World
 import QuadTree
 import Actor
-import Graphics.Gloss.Picture		(Point)
+import Graphics.Gloss.Data.Point
 import Graphics.Gloss.Geometry.Line
 import Data.Maybe
 import Data.List

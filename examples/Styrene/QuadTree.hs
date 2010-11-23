@@ -5,7 +5,7 @@ module QuadTree
 	, treeInsert
 	, treeElems )
 where
-import Graphics.Gloss.Picture	(Point)
+import Graphics.Gloss.Data.Point
 
 data QuadTree a
 	-- Nil cells take up space in the world, but don't contain any elements.

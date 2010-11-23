@@ -2,7 +2,6 @@
 -- A nifty animated fractal of a tree, superimposed on a background 
 --	of three red rectangles.
 import Graphics.Gloss
-import Graphics.Gloss.Shapes
 
 main :: IO ()
 main 

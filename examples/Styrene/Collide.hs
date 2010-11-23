@@ -2,7 +2,8 @@
 module Collide where
 import World
 import Actor
-import Graphics.Gloss.Picture	(Point)
+import Graphics.Gloss.Data.Point
+import Graphics.Gloss.Data.Vector
 import Graphics.Gloss.Geometry
 
 -- Config -----------------------------------------------------------------------------------------

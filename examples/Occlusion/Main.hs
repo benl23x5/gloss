@@ -4,10 +4,9 @@ import World
 import Data
 import State
 import Cell
-import Graphics.Gloss.Game
+import Graphics.Gloss.Interface.Game
 import Graphics.Gloss.Data.QuadTree
 import Graphics.Gloss.Data.Extent
-import Graphics.Gloss.Shapes
 import System.Environment
 import Data.Maybe
 import Data.List
