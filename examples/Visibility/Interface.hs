@@ -42,7 +42,6 @@ handleInput (G.EventKey key keyState _ _) state
 	, G.Down			<- keyState
 	= state	{ stateTargetPos	= Nothing }
 
-
 -- w : Display the whole world.
 handleInput (G.EventKey key keyState _ _) state
 	| G.Char 'w'			<- key
@@ -55,12 +54,14 @@ handleInput (G.EventKey key keyState _ _) state
 	, G.Down			<- keyState
 	= state	{ stateModeDisplay	= ModeDisplayNormalised }
 
--- p : Display world in polar coordinates.
+-- a : Toggle approximate visibility
 handleInput (G.EventKey key keyState _ _) state
-	| G.Char 'p'			<- key
+	| G.Char 'a'			<- key
 	, G.Down			<- keyState
-	= state	{ stateModeDisplay	= ModeDisplayPolar }
-	
+	= state { stateModeOverlay
+			= case stateModeOverlay state of
+				ModeOverlayVisApprox	-> ModeOverlayNone
+				_			-> ModeOverlayVisApprox }	
 
 handleInput _ state
 	= state

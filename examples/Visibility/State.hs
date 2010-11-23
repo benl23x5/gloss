@@ -11,6 +11,7 @@ data State
 	{ stateWorld		:: World
 	, stateModeInterface	:: ModeInterface
 	, stateModeDisplay	:: ModeDisplay
+	, stateModeOverlay	:: ModeOverlay
 	, stateViewPos		:: Point 
 	, stateTargetPos	:: Maybe Point }
 
@@ -32,9 +33,16 @@ data ModeDisplay
 
 	-- | Show the world normalised so the view position is at the origin.
 	| ModeDisplayNormalised
+	deriving (Show, Eq)
 
-	-- | Show the world in polar coordinates.
-	| ModeDisplayPolar
+
+-- | What overlay to display.
+data ModeOverlay
+	-- | No overlay
+	= ModeOverlayNone
+	
+	-- | Brute force, approximate visibility
+	| ModeOverlayVisApprox
 	deriving (Show, Eq)
 
 
@@ -45,6 +53,7 @@ initialState world
 	{ stateWorld		= world
 	, stateModeInterface	= ModeInterfaceIdle
 	, stateModeDisplay	= ModeDisplayWorld
+	, stateModeOverlay	= ModeOverlayVisApprox
 	, stateViewPos		= (0, 0) 
 	, stateTargetPos	= Nothing }
 

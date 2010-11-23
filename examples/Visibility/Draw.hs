@@ -17,12 +17,14 @@ drawState :: State -> Picture
 drawState state
  	| ModeDisplayWorld 	<- stateModeDisplay state
  	= drawWorldWithViewPos 
-		(stateViewPos state) 
-		(stateTargetPos state)
-		(stateWorld state)
+		(stateModeOverlay state)
+		(stateViewPos     state) 
+		(stateTargetPos   state)
+		(stateWorld       state)
 
 	| ModeDisplayNormalised <- stateModeDisplay state
 	= drawWorldWithViewPos 
+		(stateModeOverlay state)
 		(0, 0) 
 		Nothing
 		$ normaliseWorld (stateViewPos state)
@@ -32,8 +34,9 @@ drawState state
 	= Blank
 	
 
-drawWorldWithViewPos :: Point -> Maybe Point -> World -> Picture
+drawWorldWithViewPos :: ModeOverlay -> Point -> Maybe Point -> World -> Picture
 drawWorldWithViewPos 
+	modeOverlay
 	pView@(vx, vy) 
 	mTarget
 	world
@@ -49,30 +52,35 @@ drawWorldWithViewPos
 
 	-- target position indicator
 	picTargets
-	 | Just pTarget@(px, py) <- mTarget
-	 = let	picTarget	= Translate px py $ ThickCircle 2 4
+		| Just pTarget@(px, py) <- mTarget
+		= let	picTarget	= Translate px py $ ThickCircle 2 4
 
-		-- line between view and target pos
-		picLine		= Line [pView, pTarget]
+			-- line between view and target pos
+			picLine		= Line [pView, pTarget]
+			
+			picSegsHit	= Pictures
+					$ [ Line [p1, p2]
+						| (_, p1, p2)	<- A.toList $ worldSegments world
+						, isJust $ intersectSegSeg p1 p2 pView pTarget ]
+	   	  in	Color red $ Pictures [picTarget, picLine, picSegsHit]
 
-		picSegsHit	= Pictures
-				$ [ Line [p1, p2]
-					| (_, p1, p2)	<- A.toList $ worldSegments world
-					, isJust $ intersectSegSeg p1 p2 pView pTarget ]
-	   in	Color red $ Pictures [picTarget, picLine, picSegsHit]
+		| otherwise
+		= blank
 
-	 | otherwise
-	 = blank
+	-- overlay
+	picOverlay
+		| ModeOverlayVisApprox	<- modeOverlay
+		= drawVisGrid 10 pView world
 
-	-- visibility grid
-	picGrid		= drawVisGrid pView world
+		| otherwise
+		= blank
 
-   in	Pictures [picGrid, picWorld, picView, picTargets]
+   in	Pictures [picOverlay, picWorld, picView, picTargets]
 
 
 -- | Draw a grid of points showing what is visible from a view position
-drawVisGrid :: Point -> World -> Picture
-drawVisGrid pView world
+drawVisGrid :: Float -> Point -> World -> Picture
+drawVisGrid cellSize pView world
  = let	
 	visible pTarget	= not $ any isJust
 			$ map (\(_, p1, p2) -> intersectSegSeg pView pTarget p1 p2)
@@ -81,10 +89,10 @@ drawVisGrid pView world
 			
 	picGrid		= Pictures
 			$ [ if visible (x, y) 
-				then Color (dim green) $ Translate x y $ rectangleSolid 5 5
-				else Color (greyN 0.2) $ Translate x y $ rectangleSolid 5 5
-				| x	<- [-400, -395 .. 400]
-				, y	<- [-400, -395 .. 400] ]
+				then Color (dim green) $ Translate x y $ rectangleSolid cellSize cellSize
+				else Color (greyN 0.2) $ Translate x y $ rectangleSolid cellSize cellSize
+				| x	<- [-400, -400 + cellSize .. 400]
+				, y	<- [-400, -400 + cellSize .. 400] ]
 
    in	picGrid
 
