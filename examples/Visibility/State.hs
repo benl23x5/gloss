@@ -11,7 +11,8 @@ data State
 	{ stateWorld		:: World
 	, stateModeInterface	:: ModeInterface
 	, stateModeDisplay	:: ModeDisplay
-	, stateViewPos		:: Point }
+	, stateViewPos		:: Point 
+	, stateTargetPos	:: Maybe Point }
 
 
 -- | What mode the interface interaction is in.
@@ -44,5 +45,6 @@ initialState world
 	{ stateWorld		= world
 	, stateModeInterface	= ModeInterfaceIdle
 	, stateModeDisplay	= ModeDisplayWorld
-	, stateViewPos		= (0, 0) }
+	, stateViewPos		= (0, 0) 
+	, stateTargetPos	= Nothing }
 

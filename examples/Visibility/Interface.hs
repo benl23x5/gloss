@@ -4,20 +4,27 @@ module Interface
 	, stepState)
 where
 import State
-import qualified Graphics.Gloss.Game	as G
+import qualified Graphics.Gloss.Interface.Game	as G
 
-
+-- Input ------------------------------------------------------------------------------------------
 -- | Handle an input event.
 handleInput :: G.Event -> State -> State
 
--- Move the view position
 handleInput (G.EventKey key keyState _ (x, y)) state
+	-- move the view position.
 	| G.MouseButton G.LeftButton	<- key
 	, G.Down			<- keyState
 	= state	{ stateModeInterface	= ModeInterfaceMove 
 		, stateViewPos
 			= ( fromRational $ toRational x
 			  , fromRational $ toRational y) }
+
+	-- set the target position.
+	| G.MouseButton G.RightButton	<- key
+	, G.Down			<- keyState
+	= state	{ stateTargetPos
+			= Just ( fromRational $ toRational x
+			       , fromRational $ toRational y) }
 
 	| G.MouseButton G.LeftButton	<- key
 	, G.Up				<- keyState
@@ -29,17 +36,26 @@ handleInput (G.EventMotion (x, y)) state
 			= ( fromRational $ toRational x
 			  , fromRational $ toRational y) }
 
--- Set the display mode
+-- t : Turn target indicator off.
+handleInput (G.EventKey key keyState _ _) state
+	| G.Char 't'			<- key
+	, G.Down			<- keyState
+	= state	{ stateTargetPos	= Nothing }
+
+
+-- w : Display the whole world.
 handleInput (G.EventKey key keyState _ _) state
 	| G.Char 'w'			<- key
 	, G.Down			<- keyState
 	= state	{ stateModeDisplay	= ModeDisplayWorld }
 
+-- n : Display the normalised world.
 handleInput (G.EventKey key keyState _ _) state
 	| G.Char 'n'			<- key
 	, G.Down			<- keyState
 	= state	{ stateModeDisplay	= ModeDisplayNormalised }
 
+-- p : Display world in polar coordinates.
 handleInput (G.EventKey key keyState _ _) state
 	| G.Char 'p'			<- key
 	, G.Down			<- keyState
@@ -49,6 +65,7 @@ handleInput (G.EventKey key keyState _ _) state
 handleInput _ state
 	= state
 
-
+-- Step -------------------------------------------------------------------------------------------
+-- | Advance the state one iteration
 stepState :: Float -> State -> State
 stepState _ state = state

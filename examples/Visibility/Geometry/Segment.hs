@@ -7,7 +7,7 @@ module Geometry.Segment
 	, chooseSplitX)
 where
 import Graphics.Gloss
-import Geometry.Intersection
+import Graphics.Gloss.Geometry.Line
 import Data.Maybe
 import Data.Function
 import qualified Array		as A

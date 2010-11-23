@@ -5,9 +5,9 @@ module Draw
 where
 import State
 import World
-import Graphics.Gloss
-import Geometry.Intersection
 import Geometry.Segment
+import Graphics.Gloss
+import Graphics.Gloss.Geometry.Line
 import qualified Array		as A
 import Array			(Array)
 import Data.Maybe
@@ -16,50 +16,87 @@ import Data.Maybe
 drawState :: State -> Picture
 drawState state
  	| ModeDisplayWorld 	<- stateModeDisplay state
- 	= drawWorldWithViewPos (stateViewPos state) (stateWorld state)
+ 	= drawWorldWithViewPos 
+		(stateViewPos state) 
+		(stateTargetPos state)
+		(stateWorld state)
 
 	| ModeDisplayNormalised <- stateModeDisplay state
-	= drawWorldWithViewPos (0, 0) 
-	$ normaliseWorld (stateViewPos state)
-	$ stateWorld state
+	= drawWorldWithViewPos 
+		(0, 0) 
+		Nothing
+		$ normaliseWorld (stateViewPos state)
+		$ stateWorld state
 
 	| otherwise
 	= Blank
 	
 
-drawWorldWithViewPos :: Point -> World -> Picture
-drawWorldWithViewPos (px, py) world
+drawWorldWithViewPos :: Point -> Maybe Point -> World -> Picture
+drawWorldWithViewPos 
+	pView@(vx, vy) 
+	mTarget
+	world
  = let	
 	-- the world 
 	picWorld	= Color white
 			$ drawWorld world
 
 	-- view position indicator
-	picDude		= Color green
-			$ Translate px py
+	picView		= Color red
+			$ Translate vx vy
 			$ ThickCircle 2 4
 
-	-- crossings
-	ptCrossings
-		= catMaybes
-		$ [ intersectSegHorzLine p1 p2 py
-				| (_, p1, p2) <- A.toList $ worldSegments world ]
+	-- target position indicator
+	picTargets
+	 | Just pTarget@(px, py) <- mTarget
+	 = let	picTarget	= Translate px py $ ThickCircle 2 4
 
-	picCrossings	= Pictures
-			$ [ Color red
-				$ Translate x y
-				$ ThickCircle 1 2 | (x, y)	<- ptCrossings]
+		-- line between view and target pos
+		picLine		= Line [pView, pTarget]
+
+		picSegsHit	= Pictures
+				$ [ Line [p1, p2]
+					| (_, p1, p2)	<- A.toList $ worldSegments world
+					, isJust $ intersectSegSeg p1 p2 pView pTarget ]
+	   in	Color red $ Pictures [picTarget, picLine, picSegsHit]
+
+	 | otherwise
+	 = blank
+
+	-- visibility grid
+	picGrid		= drawVisGrid pView world
+
+   in	Pictures [picGrid, picWorld, picView, picTargets]
 
 
-   in	Pictures [picWorld, picDude, picCrossings]
+-- | Draw a grid of points showing what is visible from a view position
+drawVisGrid :: Point -> World -> Picture
+drawVisGrid pView world
+ = let	
+	visible pTarget	= not $ any isJust
+			$ map (\(_, p1, p2) -> intersectSegSeg pView pTarget p1 p2)
+			$ A.toList 
+			$ worldSegments world
+			
+	picGrid		= Pictures
+			$ [ if visible (x, y) 
+				then Color (dim green) $ Translate x y $ rectangleSolid 5 5
+				else Color (greyN 0.2) $ Translate x y $ rectangleSolid 5 5
+				| x	<- [-400, -395 .. 400]
+				, y	<- [-400, -395 .. 400] ]
+
+   in	picGrid
 
 
+-- | Draw the segments in the world.
 drawWorld :: World -> Picture
 drawWorld world
 	= drawSegments
 	$ worldSegments world
 
 
+-- | Draw an array of segments.
 drawSegments :: Array Segment -> Picture
 drawSegments segments
 	= Pictures
@@ -68,7 +105,9 @@ drawSegments segments
 	$ segments
 
 
+-- | Draw a single segment.
 drawSegment :: Segment -> Picture
 drawSegment (_, (x1, y1), (x2, y2))
 	= Line [(f x1, f y1), (f x2, f y2)]
 	where	f	= fromRational . toRational
+

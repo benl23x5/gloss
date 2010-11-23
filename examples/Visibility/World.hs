@@ -27,7 +27,7 @@ initialWorld
 	let maxZ	= 300
 	
 	let minDelta	= -100
-	let maxDelta	= 100
+	let maxDelta	=  100
 	
 	let centers	= randomishPoints 1234 n minZ     maxZ
 	let deltas	= randomishPoints 4321 n minDelta maxDelta
