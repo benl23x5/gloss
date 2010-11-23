@@ -149,8 +149,10 @@ intersectSegLine
 	-> Maybe Point
 
 intersectSegLine p1 p2 p3 p4
+	-- TODO: merge closest point check with intersection, reuse subterms.
 	| Just p0	<- intersectLineLine p1 p2 p3 p4
-	, pointInBox p0 p1 p2
+	, t12		<- closestPointOnLineParam p1 p2 p0
+	, t12 >= 0 && t12 <= 1
 	= Just p0
 	
 	| otherwise
@@ -246,9 +248,12 @@ intersectSegSeg
 	-> Maybe Point
 
 intersectSegSeg p1 p2 p3 p4
+	-- TODO: merge closest point checks with intersection, reuse subterms.
 	| Just p0	<- intersectLineLine p1 p2 p3 p4
-	, pointInBox p0 p1 p2
-	, pointInBox p0 p3 p4
+	, t12		<- closestPointOnLineParam p1 p2 p0
+	, t23		<- closestPointOnLineParam p3 p4 p0
+	, t12 >= 0 && t12 <= 1
+	, t23 >= 0 && t23 <= 1
 	= Just p0
 	
 	| otherwise
