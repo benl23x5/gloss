@@ -14,3 +14,8 @@ import Unsafe.Coerce
 gf :: Float -> GL.GLfloat
 {-# INLINE gf #-}
 gf x = unsafeCoerce x
+
+-- | Used for similar reasons to above
+gi :: Int -> GL.GLsizei
+{-# INLINE gi #-}
+gi x = unsafeCoerce x

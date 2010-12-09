@@ -22,6 +22,7 @@ import Graphics.Gloss.Data.Color
 import Graphics.Gloss.Data.Point
 import Graphics.Gloss.Data.Vector
 import Data.Monoid
+import Data.ByteString
 
 
 -- | A path through the x-y plane.
@@ -64,6 +65,9 @@ data Picture
 	| Scale		Float	Float	Picture
 
 	-- More Pictures ----------------------------------
+
+	-- | A bitmap image with a width, height and a ByteString holding the 32 bit RGBA bitmap data
+	| Bitmap Float Float ByteString
 
 	-- | A picture consisting of several others.
 	| Pictures	[Picture]

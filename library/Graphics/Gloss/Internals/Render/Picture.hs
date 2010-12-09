@@ -14,7 +14,9 @@ import	Graphics.Gloss.Internals.Render.Circle
 import	Graphics.UI.GLUT						(($=), get)
 import	qualified Graphics.Rendering.OpenGL.GL				as GL
 import	qualified Graphics.UI.GLUT					as GLUT
-
+import   Data.ByteString
+import   Control.Monad
+import   Foreign.Marshal.Array
 
 -- ^ Render a picture using the given render options and viewport.
 renderPicture
@@ -146,6 +148,49 @@ drawPicture picture
 	     $ do	GL.scale (gf sx) (gf sy) 1
 			drawPicture p
 			
+	-----
+
+	Bitmap width height imgData
+	 -> do
+		  -- Convert imgData from ByteString to Ptr Word8
+			imgData' <- newArray $ unpack imgData
+		  -- Allocate texture handle for texture
+			[texObject] <- GL.genObjectNames 1
+			GL.textureBinding GL.Texture2D $= Just texObject
+		  -- Sets the texture in imgData as the current texture
+			GL.texImage2D
+				Nothing
+				GL.NoProxy
+				0
+				GL.RGBA8
+				(GL.TextureSize2D
+					(gi $ truncate width)
+					(gi $ truncate height))
+				0
+				(GL.PixelData GL.RGBA GL.UnsignedInt8888 imgData')
+		  -- Set up wrap and filtering mode
+			GL.textureWrapMode GL.Texture2D GL.S $= (GL.Repeated, GL.Repeat)
+			GL.textureWrapMode GL.Texture2D GL.T $= (GL.Repeated, GL.Repeat)
+			GL.textureFilter   GL.Texture2D      $= ((GL.Nearest, Nothing), GL.Nearest)
+		  -- Enable texturing
+			GL.texture GL.Texture2D $= GL.Enabled
+			GL.textureFunction      $= GL.Combine
+		  -- Set current texture
+			GL.textureBinding GL.Texture2D $= Just texObject
+		  -- Set to opaque
+			GL.currentColor $= GL.Color4 1.0 1.0 1.0 1.0
+		  -- Draw textured polygon
+			GL.renderPrimitive GL.Polygon
+			 $ do zipWithM_
+			        (\(pX, pY) (tX, tY)
+				       -> do
+			           GL.texCoord $ GL.TexCoord2 (gf tX) (gf tY)
+			           GL.vertex   $ GL.Vertex2   (gf pX) (gf pY))
+			        [(0,0), (width,0), (width,height), (0,height)]
+			        [(0,0), (1.0,0), (1.0,1.0), (0,1.0)]
+		  -- Disable texturing
+			GL.texture GL.Texture2D $= GL.Disabled
+
 	Pictures ps
 	 -> mapM_ drawPicture ps
 	
