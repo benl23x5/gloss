@@ -1,5 +1,5 @@
 {-# OPTIONS -fno-warn-missing-methods #-}
-{-# LANGUAGE TypeSynonymInstances #-}
+{-# LANGUAGE TypeSynonymInstances, FlexibleInstances #-}
 module Graphics.Gloss.Data.Point
 	( Point
 	, pointInBox)
