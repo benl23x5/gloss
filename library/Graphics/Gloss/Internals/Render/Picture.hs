@@ -11,6 +11,7 @@ import	Graphics.Gloss.Internals.Interface.ViewPort
 import	Graphics.Gloss.Internals.Render.Options
 import	Graphics.Gloss.Internals.Render.Common
 import	Graphics.Gloss.Internals.Render.Circle
+import   Graphics.Gloss.Internals.Render.Bitmap
 import	Graphics.UI.GLUT						(($=), get)
 import	qualified Graphics.Rendering.OpenGL.GL				as GL
 import	qualified Graphics.UI.GLUT					as GLUT
@@ -152,8 +153,10 @@ drawPicture picture
 
 	Bitmap width height imgData
 	 -> do
-		  -- Convert imgData from ByteString to Ptr Word8
-			imgData' <- newArray $ unpack imgData
+        -- Because openGL reads texture pixels as ABGR (instead of RGBA)
+        --  each pixel's value needs to be reversed we also need to
+		  --  Convert imgData from ByteString to Ptr Word8
+			imgData' <- newArray $ reverseRGBA $ unpack imgData
 		  -- Allocate texture handle for texture
 			[texObject] <- GL.genObjectNames 1
 			GL.textureBinding GL.Texture2D $= Just texObject
@@ -164,8 +167,8 @@ drawPicture picture
 				0
 				GL.RGBA8
 				(GL.TextureSize2D
-					(gi $ truncate width)
-					(gi $ truncate height))
+					(gsizei $ truncate width)
+					(gsizei $ truncate height))
 				0
 				(GL.PixelData GL.RGBA GL.UnsignedInt8888 imgData')
 		  -- Set up wrap and filtering mode

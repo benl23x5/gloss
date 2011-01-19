@@ -67,6 +67,7 @@ Library
         Graphics.Gloss.Internals.Interface.ViewPort.Motion
         Graphics.Gloss.Internals.Interface.ViewPort.Reshape
         Graphics.Gloss.Internals.Interface.Window
+        Graphics.Gloss.Internals.Render.Bitmap
         Graphics.Gloss.Internals.Render.Circle
         Graphics.Gloss.Internals.Render.Common
         Graphics.Gloss.Internals.Render.Options

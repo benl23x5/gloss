@@ -16,6 +16,6 @@ gf :: Float -> GL.GLfloat
 gf x = unsafeCoerce x
 
 -- | Used for similar reasons to above
-gi :: Int -> GL.GLsizei
-{-# INLINE gi #-}
-gi x = unsafeCoerce x
+gsizei :: Int -> GL.GLsizei
+{-# INLINE gsizei #-}
+gsizei x = unsafeCoerce x
