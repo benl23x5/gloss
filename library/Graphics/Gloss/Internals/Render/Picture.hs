@@ -15,9 +15,7 @@ import   Graphics.Gloss.Internals.Render.Bitmap
 import	Graphics.UI.GLUT						(($=), get)
 import	qualified Graphics.Rendering.OpenGL.GL				as GL
 import	qualified Graphics.UI.GLUT					as GLUT
-import   Data.ByteString
 import   Control.Monad
-import   Foreign.Marshal.Array
 
 -- ^ Render a picture using the given render options and viewport.
 renderPicture
@@ -156,7 +154,7 @@ drawPicture picture
         -- Because openGL reads texture pixels as ABGR (instead of RGBA)
         --  each pixel's value needs to be reversed we also need to
 		  --  Convert imgData from ByteString to Ptr Word8
-			imgData' <- newArray $ reverseRGBA $ unpack imgData
+			imgData' <- reverseRGBA $ imgData
 		  -- Allocate texture handle for texture
 			[texObject] <- GL.genObjectNames 1
 			GL.textureBinding GL.Texture2D $= Just texObject
@@ -189,7 +187,8 @@ drawPicture picture
 				       -> do
 			           GL.texCoord $ GL.TexCoord2 (gf tX) (gf tY)
 			           GL.vertex   $ GL.Vertex2   (gf pX) (gf pY))
-			        [(0,0), (width,0), (width,height), (0,height)]
+			        (bitmapPath width height)
+--			        [(0,0), (width,0), (width,height), (0,height)]
 			        [(0,0), (1.0,0), (1.0,1.0), (0,1.0)]
 		  -- Disable texturing
 			GL.texture GL.Texture2D $= GL.Disabled
