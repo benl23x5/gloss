@@ -165,8 +165,8 @@ drawPicture picture
 			0
 			GL.RGBA8
 			(GL.TextureSize2D
-				(gsizei $ truncate width)
-				(gsizei $ truncate height))
+				(gsizei width)
+				(gsizei height))
 			0
 			(GL.PixelData GL.RGBA GL.UnsignedInt8888 imgData')
 		-- Set up wrap and filtering mode
@@ -190,7 +190,8 @@ drawPicture picture
 		        (\(pX, pY) (tX, tY)
 			  -> do GL.texCoord $ GL.TexCoord2 (gf tX) (gf tY)
 		           	GL.vertex   $ GL.Vertex2   (gf pX) (gf pY))
-			(bitmapPath width height)
+
+			(bitmapPath (fromIntegral width) (fromIntegral height))
 			        [(0,0), (1.0,0), (1.0,1.0), (0,1.0)]
 
 		-- Disable texturing

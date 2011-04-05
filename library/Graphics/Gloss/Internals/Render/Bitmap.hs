@@ -24,6 +24,7 @@ reverseRGBA orig
       ptr' <- reverseRGBA' (B.length orig `div` 4) (castPtr ptr) 0
       return $ castPtr ptr'
 
+
 -- | Parses through pixel values, shifting the bytes into OpenGL ABGR order
 reverseRGBA' :: Int -> Ptr Word32 -> Int -> IO (Ptr Word32)
 reverseRGBA' len ptr count

@@ -7,7 +7,7 @@ module Graphics.Gloss.Data.Picture
 	, Picture(..)
 
 	-- * Aliases for Picture constructors
-	, blank, polygon, line, circle, thickCircle, text
+	, blank, polygon, line, circle, thickCircle, text, bitmap
 	, color, translate, rotate, scale
 	, pictures
 
@@ -50,6 +50,9 @@ data Picture
 	-- | Some text to draw with a vector font.
 	| Text		String
 
+	-- | A bitmap image with a width, height and a ByteString holding the 32 bit RGBA bitmap data.
+	| Bitmap	Int	Int 	ByteString
+
 	-- Color ------------------------------------------
 	-- | A picture drawn with this color.
 	| Color		Color  		Picture
@@ -65,10 +68,6 @@ data Picture
 	| Scale		Float	Float	Picture
 
 	-- More Pictures ----------------------------------
-
-	-- | A bitmap image with a width, height and a ByteString holding the 32 bit RGBA bitmap data
-	| Bitmap Float Float ByteString
-
 	-- | A picture consisting of several others.
 	| Pictures	[Picture]
 	deriving (Show, Eq)
@@ -100,6 +99,9 @@ thickCircle = ThickCircle
 
 text :: String -> Picture
 text = Text
+
+bitmap :: Int -> Int -> ByteString -> Picture
+bitmap = Bitmap
 
 color :: Color -> Picture -> Picture
 color = Color
