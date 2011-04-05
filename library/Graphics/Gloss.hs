@@ -31,6 +31,10 @@
 --
 -- @
 -- Release Notes:
+-- For 1.3.0:
+--     New support for displaying bitmap files. (Thanks to Ben Lambert-Smith)
+--     Various wibbles for GHC 7.1   
+--
 -- For 1.2.0:
 --     Cleaned up module hierarchy.
 --     Added line-line intersection utils.
