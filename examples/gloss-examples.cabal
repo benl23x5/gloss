@@ -124,3 +124,14 @@ Executable gloss-visibility
   other-modules: Array Draw Interface State World Geometry.Randomish Geometry.Segment
   hs-source-dirs: Visibility 
   ghc-options: -O2
+
+Executable gloss-bitmap
+  Build-depends:
+        base           == 4.*,
+        gloss          == 1.2.*,
+        bytestring     == 0.9.*,
+        bmp            == 1.1.*
+  Main-is: Main.hs
+  hs-source-dirs: Bitmap
+  ghc-options: -O2
+
