@@ -6,10 +6,9 @@ module Geometry.Randomish
 	, randomishDoubles)
 where
 import Data.Word
-import qualified Array				as A
 import qualified Data.Vector.Generic		as G
 import qualified Data.Vector.Unboxed.Mutable	as MV
-import Array					(Array)
+import qualified Data.Vector.Unboxed		as V
 
 -- | Some uniformly distributed points
 randomishPoints
@@ -17,13 +16,13 @@ randomishPoints
 	-> Int			-- ^ number of points
 	-> Float		-- ^ minimum coordinate
 	-> Float		-- ^ maximum coordinate
-        -> Array (Float, Float)
+        -> V.Vector (Float, Float)
 
 randomishPoints seed' n pointMin pointMax
  = let  pts      = randomishFloats (n*2) pointMin pointMax seed'
         xs       = G.slice 0 n pts
         ys       = G.slice n n pts
-   in   A.zip xs ys
+   in   V.zip xs ys
 
 
 -- | Use the "minimal standard" Lehmer generator to quickly generate some random
@@ -40,7 +39,7 @@ randomishInts
 	-> Int 			-- Minumum value in output.
 	-> Int 			-- Maximum value in output.
 	-> Int 			-- Random seed.	
-	-> Array Int		-- Vector of random numbers.
+	-> V.Vector Int		-- Vector of random numbers.
 
 randomishInts !len !valMin' !valMax' !seed'
 	
@@ -85,7 +84,7 @@ randomishDoubles
 	-> Double		-- Minimum value in output
 	-> Double		-- Maximum value in output
 	-> Int			-- Random seed.
-	-> Array Double		-- Vector of randomish doubles.
+	-> V.Vector Double	-- Vector of randomish doubles.
 
 randomishDoubles !len !valMin !valMax !seed
  = let	range	= valMax - valMin
@@ -94,7 +93,7 @@ randomishDoubles !len !valMin !valMax !seed
 	mxf	= fromIntegral mx
 	ints	= randomishInts len 0 mx seed
 	
-   in	A.map (\n -> valMin + (fromIntegral n / mxf) * range) ints
+   in	V.map (\n -> valMin + (fromIntegral n / mxf) * range) ints
 
 
 -- | Generate some randomish doubles with terrible statistical properties.
@@ -104,7 +103,7 @@ randomishFloats
 	-> Float		-- Minimum value in output
 	-> Float		-- Maximum value in output
 	-> Int			-- Random seed.
-	-> Array Float		-- Vector of randomish doubles.
+	-> V.Vector Float	-- Vector of randomish doubles.
 
 randomishFloats !len !valMin !valMax !seed
  = let	range	= valMax - valMin
@@ -113,4 +112,4 @@ randomishFloats !len !valMin !valMax !seed
 	mxf	= fromIntegral mx
 	ints	= randomishInts len 0 mx seed
 	
-   in	A.map (\n -> valMin + (fromIntegral n / mxf) * range) ints
+   in	V.map (\n -> valMin + (fromIntegral n / mxf) * range) ints

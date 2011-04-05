@@ -1,5 +1,5 @@
 Name:                gloss-examples
-Version:             1.3.0.1
+Version:             1.3.1.1
 License:             MIT
 License-file:        LICENSE
 Author:              Ben Lippmeier
@@ -101,7 +101,7 @@ Executable gloss-conway
   Build-depends: 
         base            == 4.*,
         gloss           == 1.3.*,
-        vector          >= 0.5 && < 0.8
+        vector          == 0.7.*
   Main-is: Main.hs
   other-modules: Cell World
   hs-source-dirs: Conway
@@ -119,9 +119,10 @@ Executable gloss-occlusion
 Executable gloss-visibility
   Build-depends: 
         base            == 4.*, 
-        gloss           == 1.3.*
+        gloss           == 1.3.*,
+        vector          == 0.7.*
   Main-is: Main.hs
-  other-modules: Array Draw Interface State World Geometry.Randomish Geometry.Segment
+  other-modules: Draw Interface State World Geometry.Randomish Geometry.Segment
   hs-source-dirs: Visibility 
   ghc-options: -O2
 

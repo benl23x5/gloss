@@ -1,4 +1,4 @@
-
+{-# LANGUAGE PatternGuards #-}
 module Interface
 	( handleInput
 	, stepState)

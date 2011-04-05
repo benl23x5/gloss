@@ -8,15 +8,14 @@ where
 import Graphics.Gloss
 import Geometry.Randomish
 import Geometry.Segment
-import qualified Array	as A
-import Array		(Array)
+import qualified Data.Vector.Unboxed as V
 
 
 -- We keep this unpacked so we can use unboxed vector.
 -- index, x1, y1, x2, y2
 data World 
 	= World
-	{ worldSegments	:: Array Segment }
+	{ worldSegments	:: V.Vector Segment }
 
 
 -- | Generate the initial world.
@@ -35,7 +34,7 @@ initialWorld
 	let makePoint n' (cX, cY) (dX, dY)
 			= (n', (cX, cY), (cX + dX, cY + dY))
 
-	let segs	= A.zipWith3 makePoint (A.enumFromTo 0 (n - 1)) centers deltas
+	let segs	= V.zipWith3 makePoint (V.enumFromTo 0 (n - 1)) centers deltas
 	
 	return $ World segs
 
@@ -44,7 +43,7 @@ initialWorld
 --   and split segements that cross the y=0 line.
 normaliseWorld :: Point -> World -> World 
 normaliseWorld (px, py) world
- = let	segments_trans	= A.map (translateSegment (-px) (-py)) 
+ = let	segments_trans	= V.map (translateSegment (-px) (-py)) 
 			$ worldSegments world
 			
 	segments_split	= splitSegmentsOnY 0 segments_trans

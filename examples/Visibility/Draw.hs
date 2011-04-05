@@ -8,8 +8,7 @@ import World
 import Geometry.Segment
 import Graphics.Gloss
 import Graphics.Gloss.Geometry.Line
-import qualified Array		as A
-import Array			(Array)
+import qualified Data.Vector.Unboxed	as V
 import Data.Maybe
 
 
@@ -60,7 +59,7 @@ drawWorldWithViewPos
 			
 			picSegsHit	= Pictures
 					$ [ Line [p1, p2]
-						| (_, p1, p2)	<- A.toList $ worldSegments world
+						| (_, p1, p2)	<- V.toList $ worldSegments world
 						, isJust $ intersectSegSeg p1 p2 pView pTarget ]
 	   	  in	Color red $ Pictures [picTarget, picLine, picSegsHit]
 
@@ -84,7 +83,7 @@ drawVisGrid cellSize pView world
  = let	
 	visible pTarget	= not $ any isJust
 			$ map (\(_, p1, p2) -> intersectSegSeg pView pTarget p1 p2)
-			$ A.toList 
+			$ V.toList 
 			$ worldSegments world
 			
 	picGrid		= Pictures
@@ -105,11 +104,11 @@ drawWorld world
 
 
 -- | Draw an array of segments.
-drawSegments :: Array Segment -> Picture
+drawSegments :: V.Vector Segment -> Picture
 drawSegments segments
 	= Pictures
 	$ map drawSegment
-	$ A.toList 
+	$ V.toList 
 	$ segments
 
 
