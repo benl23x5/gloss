@@ -55,7 +55,7 @@ clockFractal n s	= Pictures [circ1, circ2, circ3, lines]
 	--
 	circNm1 
 	 = Pictures
-		[ circle' 1 50
+		[ circle 1
 		, Scale (a/2.5) (a/2.5) $ clockFractal (n-1) s
 		, if n > 2
 		    then Color cyan	
@@ -75,18 +75,3 @@ clockFractal n s	= Pictures [circ1, circ2, circ3, lines]
 		[ Line [(0, 0), ( 0,  a)]
 		, Line [(0, 0), ( 1, -b)]
 		, Line [(0, 0), (-1, -b)] ]
-
-
--- Make a circle of radius r consisting of n lines.
-circle' :: Float -> Float -> Picture
-circle' r n
- 	= Scale r r
-	$ Line (circlePoints n)
-	
-
--- A list of n points spaced equally around the unit circle.
-circlePoints :: Float -> [(Float, Float)]
-circlePoints n
- =	map 	(\d -> (cos d, sin d))
-		[0, 2*pi / n .. 2*pi]
-
