@@ -1,29 +1,35 @@
-import Codec.BMP
-import Data.ByteString
+
 import Graphics.Gloss
-import System.IO.Unsafe
+import Codec.BMP
+import System.Environment
 
+-- | Displays uncompressed 24/32 bit BMP images.
 main
-   = displayInWindow
-      "Lena 202x202"
-      (202, 202)
-      (10,  10)
-      white
-      $ Scale 2 2 (unsafePerformIO bitmap)
+ = do	args	<- getArgs
+	case args of
+	 [fileName] -> run fileName
+	 _ -> putStr 
+	   $  unlines [ "usage: bitmap <file.bmp>"
+		      , "  file.bmp should be a 24 or 32-bit uncompressed BMP file" ]
 
-bitmap :: IO (Picture)
-bitmap
-   = do
-      img <- getImage
-      let (width, height) = bmpDimensions img
-      let bs = unpackBMPToRGBA32 img
-      return $ Bitmap (fromIntegral width) (fromIntegral height) bs
+run fileName
+ = do	(bitmap, width, height)	<- loadBitmap fileName
+	displayInWindow
+		fileName
+		(width * 3, height * 3)
+      		(10,  10)
+      		white
+      		(Scale 2 2 bitmap)
 
--- Reads a bitmap file and outputs any errors
-getImage :: IO (BMP)
-getImage
-   = do
-      possibleImg <- readBMP "lena-101x101.bmp"
-      case possibleImg of
-         Left  a -> error $ show a
-         Right b -> return b
+
+loadBitmap :: FilePath -> IO (Picture, Int,  Int)
+loadBitmap fileName
+ = do	eImg	<- readBMP fileName
+	case eImg of
+	 Left err 	-> error  $ show err
+	 Right img	
+	  -> let (width, height)	= bmpDimensions img
+		 bytestring		= unpackBMPToRGBA32 img
+	     in	 return ( Bitmap width height bytestring
+			, width, height)
+	
