@@ -39,7 +39,6 @@ renderPicture
 	-- 
 	let ?modeWireframe	= optionsWireframe renderS
 	    ?modeColor		= optionsColor     renderS
-	    ?scale		= viewPortScale    viewS
 	    ?matProj		= matProj_
 	    ?viewport		= viewport_
 	    ?windowSize		= windowSize_
@@ -48,15 +47,14 @@ renderPicture
 	setLineSmooth	(optionsLineSmooth renderS)
 	setBlendAlpha	(optionsBlendAlpha renderS)
 	
-	drawPicture picture
+	drawPicture (viewPortScale viewS) picture
 
-drawPicture 
-	:: ( ?modeWireframe::Bool
-	   , ?scale::Float
-	   , ?modeColor::Bool) 
-	=> Picture -> IO ()	  
+drawPicture
+	:: ( ?modeWireframe :: Bool
+	   , ?modeColor :: Bool) 
+	=> Float -> Picture -> IO ()	  
 
-drawPicture picture
+drawPicture circScale picture
  = {-# SCC "drawComponent" #-}
    case picture of
 
@@ -82,10 +80,10 @@ drawPicture picture
 
 	-- circle
 	Circle radius
-	 ->  renderCircle 0 0 ?scale radius 0
+	 ->  renderCircle 0 0 circScale radius 0
 	
 	ThickCircle radius thickness
-	 ->  renderCircle 0 0 ?scale radius thickness
+	 ->  renderCircle 0 0 circScale radius thickness
 	
 	-- stroke text
 	-- 	text looks wierd when we've got blend on,
@@ -100,52 +98,49 @@ drawPicture picture
 	Color col p
 	 |  ?modeColor
 	 ->  {-# SCC "draw.color" #-}
-   	     do
-		oldColor 	 <- get GL.currentColor
+   	     do	oldColor 	 <- get GL.currentColor
 
 		let (r, g, b, a) = rgbaOfColor col
 
-		GL.currentColor	
-			$= GL.Color4 (gf r) (gf g) (gf b) (gf a)
-
-		drawPicture p
-
+		GL.currentColor	 $= GL.Color4 (gf r) (gf g) (gf b) (gf a)
+		drawPicture circScale p
 		GL.currentColor	$= oldColor		
 
 	 |  otherwise
-	 -> 	drawPicture p
+	 -> 	drawPicture circScale p
 
 
 	-- ease up on GL.preservingMatrix
 	--	This is an important optimisation for the Eden example,
 	--	as it draws lots of translated circles.
 	Translate posX posY (Circle radius)
-	 -> renderCircle posX posY ?scale radius 0
+	 -> renderCircle posX posY circScale radius 0
 
 	Translate posX posY (ThickCircle radius thickness)
-	 -> renderCircle posX posY ?scale radius thickness
+	 -> renderCircle posX posY circScale radius thickness
 
 	Translate tx ty (Rotate deg p)
 	 -> GL.preservingMatrix
-	     $ do	GL.translate (GL.Vector3 (gf tx) (gf ty) 0)
-			GL.rotate (gf deg) (GL.Vector3 0 0 (-1))
-			drawPicture p
+	  $ do	GL.translate (GL.Vector3 (gf tx) (gf ty) 0)
+		GL.rotate (gf deg) (GL.Vector3 0 0 (-1))
+		drawPicture circScale p
 
 	-----
 	Translate tx ty	p
 	 -> GL.preservingMatrix
-	     $ do	GL.translate (GL.Vector3 (gf tx) (gf ty) 0)
-			drawPicture p
+	  $ do	GL.translate (GL.Vector3 (gf tx) (gf ty) 0)
+		drawPicture circScale p
 
 	Rotate deg p
 	 -> GL.preservingMatrix
-	     $ do	GL.rotate (gf deg) (GL.Vector3 0 0 (-1))
-			drawPicture p
+	  $ do	GL.rotate (gf deg) (GL.Vector3 0 0 (-1))
+		drawPicture circScale p
 
 	Scale sx sy p
 	 -> GL.preservingMatrix
-	     $ do	GL.scale (gf sx) (gf sy) 1
-			drawPicture p
+	  $ do	GL.scale (gf sx) (gf sy) 1
+		let mscale	= max sx sy
+		drawPicture (circScale * mscale) p
 			
 	-----
 	Bitmap width height imgData
@@ -198,7 +193,7 @@ drawPicture picture
 		GL.texture GL.Texture2D $= GL.Disabled
 
 	Pictures ps
-	 -> mapM_ drawPicture ps
+	 -> mapM_ (drawPicture circScale) ps
 	
 
 -- Utils ------------------------------------------------------------------------------------------
