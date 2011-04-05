@@ -1,4 +1,4 @@
-{-# LANGUAGE MagicHash #-}
+{-# LANGUAGE MagicHash, BangPatterns #-}
 
 -- | Find actors in the world that are in contact with each other.
 module Contact where
