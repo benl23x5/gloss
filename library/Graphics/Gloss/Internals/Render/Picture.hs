@@ -148,7 +148,6 @@ drawPicture circScale picture
 		--  each pixel's value needs to be reversed we also need to
 		--  Convert imgData from ByteString to Ptr Word8
 		imgData' <- reverseRGBA $ imgData
-
 		-- Allocate texture handle for texture
 		[texObject] <- GL.genObjectNames 1
 		GL.textureBinding GL.Texture2D $= Just texObject
@@ -191,6 +190,12 @@ drawPicture circScale picture
 
 		-- Disable texturing
 		GL.texture GL.Texture2D $= GL.Disabled
+
+		-- Delete texture
+		GL.deleteObjectNames [texObject]
+
+		-- Free image data
+		freeBitmapData imgData'
 
 	Pictures ps
 	 -> mapM_ (drawPicture circScale) ps
