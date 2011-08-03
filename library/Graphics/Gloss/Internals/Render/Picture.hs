@@ -86,12 +86,12 @@ drawPicture circScale picture
 	 ->  renderCircle 0 0 circScale radius thickness
 	
 	-- stroke text
-	-- 	text looks wierd when we've got blend on,
+	-- 	text looks weird when we've got blend on,
 	--	so disable it during the renderString call.
 	Text str 
 	 -> do
 	 	GL.blend	$= GL.Disabled
-		GLUT.renderString GLUT.Roman str
+                GL.preservingMatrix $ GLUT.renderString GLUT.Roman str
 		GL.blend	$= GL.Enabled
 
 	-- colors with float components.
