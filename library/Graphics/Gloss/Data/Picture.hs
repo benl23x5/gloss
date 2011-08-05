@@ -165,7 +165,7 @@ rectangleSolid sizeX sizeY
 	= Polygon $ rectanglePath sizeX sizeY
 
 
--- | A sold rectangle in the y > 0 half of the x-y plane,
+-- | A solid rectangle in the y > 0 half of the x-y plane,
 --	with the given width and height.
 rectangleUpperSolid :: Float -> Float -> Picture
 rectangleUpperSolid sizeX sizeY
