@@ -169,3 +169,8 @@ rectangleSolid sizeX sizeY
 rectangleUpperSolid :: Float -> Float -> Picture
 rectangleUpperSolid sizeX sizeY
 	= Polygon  $ rectangleUpperPath sizeX sizeY
+
+-- | A solid circle with the given radius.
+circleSolid :: Float -> Picture
+circleSolid r = thickCircle (r/2) r
+
