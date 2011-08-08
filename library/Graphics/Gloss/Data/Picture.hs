@@ -11,8 +11,9 @@ module Graphics.Gloss.Data.Picture
 	, color, translate, rotate, scale
 	, pictures
 
-	-- * Line loops
+	-- * Miscellaneous
  	, lineLoop
+ 	, circleSolid
 	
 	-- * Rectangles
 	, rectanglePath, 	rectangleWire, 		rectangleSolid
