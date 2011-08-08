@@ -12,6 +12,7 @@ module Graphics.Gloss.Data.Picture
 	, pictures
 
 	-- * Miscellaneous
+	, loadBMPFile
  	, lineLoop
  	, circleSolid
 	
@@ -22,8 +23,11 @@ where
 import Graphics.Gloss.Data.Color
 import Graphics.Gloss.Data.Point
 import Graphics.Gloss.Data.Vector
+import Control.Monad
 import Data.Monoid
-import Data.ByteString
+
+import Data.ByteString (ByteString)
+import qualified Data.ByteString as B
 
 
 -- | A path through the x-y plane.
@@ -118,6 +122,32 @@ scale = Scale
 
 pictures :: [Picture] -> Picture
 pictures = Pictures
+
+
+-- BMP file loader ------------------------------------------------------------
+-- | An IO action that loads a BMP format file from the given path, and
+-- produces a picture.
+loadBMPFile :: FilePath -> IO Picture
+loadBMPFile fname = do
+    bs <- B.readFile fname
+    when (not (isBmp bs)) $ error (fname ++ ": not a bmp file"                      )
+    when (bpp  bs < 32)   $ error (fname ++ ": must be saved in 32-bit RGBA format" )
+    when (comp bs /= 0)   $ error (fname ++ ": must be saved in uncompressed format")
+    return (Bitmap (width bs) (height bs) (dat bs))
+  where range s n bs    = B.unpack (B.take n (B.drop s bs))
+        littleEndian ds = sum [ fromIntegral b * 256^k | (b,k) <- zip ds [(0 :: Int) ..] ]
+        isBmp bs        = littleEndian (range  0 2 bs) == (19778 :: Int)
+        pxOff bs        = littleEndian (range 10 4 bs) :: Int
+        width bs        = littleEndian (range 18 4 bs) :: Int
+        height bs       = littleEndian (range 22 4 bs) :: Int
+        bpp bs          = littleEndian (range 28 2 bs) :: Int
+        comp bs         = littleEndian (range 30 4 bs) :: Int
+        dat bs          = swapRB (B.take (4 * width bs * height bs)
+                                         (B.drop (pxOff bs) bs))
+        swapRB bs
+          | B.null bs   = B.empty
+          | otherwise   = let [b,g,r,a] = B.unpack (B.take 4 bs)
+                          in  B.pack [r,g,b,a] `B.append` swapRB (B.drop 4 bs)
 
 
 -- Shapes ----------------------------------------------------------------------------------------
