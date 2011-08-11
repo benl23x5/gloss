@@ -1,4 +1,4 @@
-{-# OPTIONS -fno-warn-missing-methods #-}
+{-# OPTIONS -fno-warn-missing-methods -fno-warn-orphans #-}
 {-# LANGUAGE TypeSynonymInstances, FlexibleInstances #-}
 module Graphics.Gloss.Data.Point
 	( Point

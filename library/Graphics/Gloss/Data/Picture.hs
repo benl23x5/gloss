@@ -12,7 +12,7 @@ module Graphics.Gloss.Data.Picture
 	, pictures
 
 	-- * Miscellaneous
-	, loadBMPFile
+	, loadBMP
  	, lineLoop
  	, circleSolid
 	
@@ -126,9 +126,10 @@ pictures = Pictures
 
 -- BMP file loader ------------------------------------------------------------
 -- | An IO action that loads a BMP format file from the given path, and
--- produces a picture.
-loadBMPFile :: FilePath -> IO Picture
-loadBMPFile fname = do
+--   produces a picture.
+--   TODO: Use Codec.BMP library instead.
+loadBMP :: FilePath -> IO Picture
+loadBMP fname = do
     bs <- B.readFile fname
     when (not (isBmp bs)) $ error (fname ++ ": not a bmp file"                      )
     when (bpp  bs < 32)   $ error (fname ++ ": must be saved in 32-bit RGBA format" )
