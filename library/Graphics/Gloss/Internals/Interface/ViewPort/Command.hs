@@ -7,7 +7,7 @@ module Graphics.Gloss.Internals.Interface.ViewPort.Command
 	, defaultCommandConfig
 	, isCommand )
 where
-import qualified Graphics.UI.GLUT		as GLUT
+import Graphics.Gloss.Internals.Interface.Backend
 import qualified Data.Map			as Map
 
 -- | The commands suported by the view controller
@@ -36,48 +36,48 @@ data Command
 -- | The default commands
 defaultCommandConfig
  =	[ (CRestore, 	
-		[ (GLUT.Char 'r', 			Nothing) ])
+		[ (Char 'r', 			Nothing) ])
 
 	, (CTranslate,
-		[ ( GLUT.MouseButton GLUT.LeftButton
-		  , Just (GLUT.Modifiers { GLUT.shift = GLUT.Up, GLUT.ctrl = GLUT.Up, GLUT.alt = GLUT.Up }))
+		[ ( MouseButton LeftButton
+		  , Just (Modifiers { shift = Up, ctrl = Up, alt = Up }))
 		])
 	
 	, (CRotate,
-		[ ( GLUT.MouseButton GLUT.RightButton
+		[ ( MouseButton RightButton
 		  , Nothing)
-		, ( GLUT.MouseButton GLUT.LeftButton
-		  , Just (GLUT.Modifiers { GLUT.shift = GLUT.Up, GLUT.ctrl = GLUT.Down, GLUT.alt = GLUT.Up }))
+		, ( MouseButton LeftButton
+		  , Just (Modifiers { shift = Up, ctrl = Down, alt = Up }))
 	 	])
 	
 	-- bump zoom
 	, (CBumpZoomOut,	
-		[ (GLUT.MouseButton GLUT.WheelDown,	Nothing)
-		, (GLUT.SpecialKey  GLUT.KeyPageDown,	Nothing) ])
+		[ (MouseButton WheelDown,	Nothing)
+		, (SpecialKey  KeyPageDown,	Nothing) ])
 
 	, (CBumpZoomIn,
-		[ (GLUT.MouseButton GLUT.WheelUp, 	Nothing)
-		, (GLUT.SpecialKey  GLUT.KeyPageUp,	Nothing)] )
+		[ (MouseButton WheelUp, 	Nothing)
+		, (SpecialKey  KeyPageUp,	Nothing)] )
 	
 	-- bump translate
 	, (CBumpLeft,
-		[ (GLUT.SpecialKey  GLUT.KeyLeft,	Nothing) ])
+		[ (SpecialKey  KeyLeft,	Nothing) ])
 
 	, (CBumpRight,
-		[ (GLUT.SpecialKey  GLUT.KeyRight,	Nothing) ])
+		[ (SpecialKey  KeyRight,	Nothing) ])
 
 	, (CBumpUp,
-		[ (GLUT.SpecialKey  GLUT.KeyUp,		Nothing) ])
+		[ (SpecialKey  KeyUp,		Nothing) ])
 
 	, (CBumpDown,
-		[ (GLUT.SpecialKey  GLUT.KeyDown,	Nothing) ])
+		[ (SpecialKey  KeyDown,	Nothing) ])
 
 	-- bump rotate
 	, (CBumpClockwise,
-		[ (GLUT.SpecialKey  GLUT.KeyHome,	Nothing) ])
+		[ (SpecialKey  KeyHome,	Nothing) ])
 	
 	, (CBumpCClockwise,
-		[ (GLUT.SpecialKey  GLUT.KeyEnd,	Nothing) ])
+		[ (SpecialKey  KeyEnd,	Nothing) ])
 
 	]
 

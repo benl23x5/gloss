@@ -68,7 +68,7 @@ simulateInWindow
 	renderSR	<- newIORef RO.optionsInit
 	animateSR	<- newIORef AN.stateInit
 
-	let displayFun
+	let displayFun backendRef
 	     = do
 		-- convert the world to a picture
 		world		<- readIORef worldSR
@@ -80,8 +80,9 @@ simulateInWindow
 
 		-- render the frame
 		withViewPort 
+			backendRef
 			viewS
-	 	 	(renderPicture renderS viewS picture)
+	 	 	(renderPicture backendRef renderS viewS picture)
  
 		-- perform garbage collection
 		performGC

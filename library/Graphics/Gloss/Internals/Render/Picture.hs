@@ -7,24 +7,28 @@ module Graphics.Gloss.Internals.Render.Picture
 where
 import	Graphics.Gloss.Data.Picture
 import	Graphics.Gloss.Data.Color
+import	Graphics.Gloss.Internals.Interface.Backend
 import	Graphics.Gloss.Internals.Interface.ViewPort
 import	Graphics.Gloss.Internals.Render.Options
 import	Graphics.Gloss.Internals.Render.Common
 import	Graphics.Gloss.Internals.Render.Circle
 import	Graphics.Gloss.Internals.Render.Bitmap
-import	Graphics.UI.GLUT			(($=), get)
+import	Graphics.Rendering.OpenGL		(($=), get)
 import	qualified Graphics.Rendering.OpenGL.GL	as GL
 import	qualified Graphics.UI.GLUT		as GLUT
 import   Control.Monad
 
 -- ^ Render a picture using the given render options and viewport.
 renderPicture
-	:: Options 		-- ^ The render options to use
+	:: forall a . Backend a
+	=> IORef a
+	-> Options 		-- ^ The render options to use
 	-> ViewPort		-- ^ The current viewport.
 	-> Picture 		-- ^ The picture to render.
 	-> IO ()
 
 renderPicture
+	backendRef
 	renderS
 	viewS
 	picture
@@ -34,7 +38,7 @@ renderPicture
 	(matProj_  :: GL.GLmatrix GL.GLdouble)	
 			<- get $ GL.matrix (Just $ GL.Projection)
 	viewport_  	<- get $ GL.viewport
-	windowSize_	<- get GLUT.windowSize
+	windowSize_	<- getWindowDimensions backendRef
 
 	-- 
 	let ?modeWireframe	= optionsWireframe renderS

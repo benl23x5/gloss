@@ -7,6 +7,7 @@ import Graphics.Gloss.Data.Color
 import Graphics.Gloss.Data.Picture
 import Graphics.Gloss.Internals.Render.Picture
 import Graphics.Gloss.Internals.Render.ViewPort
+import Graphics.Gloss.Internals.Interface.Backend
 import Graphics.Gloss.Internals.Interface.Window
 import Graphics.Gloss.Internals.Interface.Common.Exit
 import Graphics.Gloss.Internals.Interface.ViewPort
@@ -19,10 +20,10 @@ import qualified Graphics.Gloss.Internals.Interface.ViewPort.ControlState	as VPC
 import qualified Graphics.Gloss.Internals.Interface.Animate.State		as AN
 import qualified Graphics.Gloss.Internals.Interface.Callback			as Callback
 
-import qualified Graphics.UI.GLUT				as GLUT
 import Data.IORef
 import Control.Monad
 import System.Mem
+import GHC.Float (double2Float)
 
 -- | Open a new window and display the given animation.
 --
@@ -44,21 +45,21 @@ animateInWindow name size pos backColor frameFun
 	renderSR	<- newIORef RO.optionsInit
 	animateSR	<- newIORef AN.stateInit
 
- 	let displayFun = do
+ 	let displayFun backendRef = do
 		-- extract the current time from the state
-  	 	time		<- animateSR `getsIORef` AN.stateAnimateTime
-		let timeS	= (fromIntegral time / 1000)
+  	 	timeS		<- animateSR `getsIORef` AN.stateAnimateTime
 
 		-- call the user function to get the animation frame
-		let picture	= frameFun timeS 
+		let picture	= frameFun (double2Float timeS)
 
 		renderS		<- readIORef renderSR
 		viewS		<- readIORef viewSR
 
 		-- render the frame
 		withViewPort
+			backendRef
 			viewS
-			(renderPicture renderS viewS picture)
+			(renderPicture backendRef renderS viewS picture)
 
 		-- perform GC every frame to try and avoid long pauses
 		performGC
@@ -67,7 +68,7 @@ animateInWindow name size pos backColor frameFun
 	     = 	[ Callback.Display	(animateBegin animateSR)
 		, Callback.Display 	displayFun
 		, Callback.Display	(animateEnd   animateSR)
-		, Callback.Idle		(GLUT.postRedisplay Nothing)
+		, Callback.Idle		(\s -> postRedisplay s)
 		, callback_exit () 
 		, callback_viewPort_keyMouse viewSR viewControlSR 
 		, callback_viewPort_motion   viewSR viewControlSR 

@@ -13,4 +13,4 @@ where
 import Graphics.Gloss.Data.Picture
 import Graphics.Gloss.Data.Color
 import Graphics.Gloss.Internals.Interface.Game		(gameInWindow, Event(..))
-import Graphics.UI.GLUT.Callbacks.Window
+import Graphics.Gloss.Internals.Interface.Backend

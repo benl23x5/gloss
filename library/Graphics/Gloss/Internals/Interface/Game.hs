@@ -9,6 +9,7 @@ import Graphics.Gloss.Data.Color
 import Graphics.Gloss.Data.Picture
 import Graphics.Gloss.Internals.Render.Picture
 import Graphics.Gloss.Internals.Render.ViewPort
+import Graphics.Gloss.Internals.Interface.Backend
 import Graphics.Gloss.Internals.Interface.Window
 import Graphics.Gloss.Internals.Interface.Callback
 import Graphics.Gloss.Internals.Interface.Common.Exit
@@ -20,14 +21,12 @@ import qualified Graphics.Gloss.Internals.Interface.Callback			as Callback
 import qualified Graphics.Gloss.Internals.Interface.Simulate.State		as SM
 import qualified Graphics.Gloss.Internals.Interface.Animate.State		as AN
 import qualified Graphics.Gloss.Internals.Render.Options			as RO
-import qualified Graphics.UI.GLUT						as GLUT
-import qualified Graphics.Rendering.OpenGL.GL					as GL
 import Data.IORef
 import System.Mem
 
 -- | Possible input events.
 data Event
-	= EventKey    GLUT.Key GLUT.KeyState GLUT.Modifiers (Float, Float)
+	= EventKey    Key KeyState Modifiers (Float, Float)
 	| EventMotion (Float, Float)
 	deriving (Eq, Show)
 
@@ -70,7 +69,7 @@ gameInWindow
 	renderSR	<- newIORef RO.optionsInit
 	animateSR	<- newIORef AN.stateInit
 
-	let displayFun
+	let displayFun backendRef
 	     = do
 		-- convert the world to a picture
 		world		<- readIORef worldSR
@@ -81,9 +80,10 @@ gameInWindow
 		viewS		<- readIORef viewSR
 
 		-- render the frame
-		withViewPort 
+		withViewPort
+			backendRef
 			viewS
-	 	 	(renderPicture renderS viewS picture)
+	 	 	(renderPicture backendRef renderS viewS picture)
  
 		-- perform garbage collection
 		performGC
@@ -119,14 +119,10 @@ handle_keyMouse
 	:: IORef a
 	-> t
 	-> (Event -> a -> a)
-	-> GLUT.Key
-	-> GLUT.KeyState
-	-> GLUT.Modifiers
-	-> GL.Position
-	-> IO ()
+	-> KeyboardMouseCallback
 
-handle_keyMouse worldRef _ eventFn key keyState keyMods pos
- = do	pos' <- convertPoint pos
+handle_keyMouse worldRef _ eventFn backendRef key keyState keyMods pos
+ = do	pos' <- convertPoint backendRef pos
 	worldRef `modifyIORef` \world -> eventFn (EventKey key keyState keyMods pos') world
 
 
@@ -143,20 +139,23 @@ callback_motion worldRef eventFn
 handle_motion 
 	:: IORef a
 	-> (Event -> a -> a)
-	-> GL.Position
-	-> IO ()
+	-> MotionCallback
 
-handle_motion worldRef eventFn pos
- = do pos' <- convertPoint pos
+handle_motion worldRef eventFn backendRef pos
+ = do pos' <- convertPoint backendRef pos
       worldRef `modifyIORef` \world -> eventFn (EventMotion pos') world
 
 
-convertPoint :: GL.Position -> IO (Float,Float)
-convertPoint pos
- = do	(GLUT.Size sizeX_ sizeY_) <- GL.get GLUT.windowSize
+convertPoint ::
+	forall a . Backend a
+	=> IORef a
+	-> (Int, Int)
+	-> IO (Float,Float)
+convertPoint backendRef pos
+ = do	(sizeX_, sizeY_) 		<- getWindowDimensions backendRef
 	let (sizeX, sizeY)		= (fromIntegral sizeX_, fromIntegral sizeY_)
 
-	let GLUT.Position px_ py_	= pos
+	let (px_, py_)	= pos
 	let px		= fromIntegral px_
 	let py		= sizeY - fromIntegral py_
 	

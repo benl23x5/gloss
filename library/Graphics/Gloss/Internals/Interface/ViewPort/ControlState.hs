@@ -5,7 +5,7 @@ module Graphics.Gloss.Internals.Interface.ViewPort.ControlState
 	, stateInit )
 where
 import Graphics.Gloss.Internals.Interface.ViewPort.Command
-import qualified Graphics.UI.GLUT		as GLUT
+import Graphics.Gloss.Internals.Interface.Backend
 import qualified Data.Map			as Map
 import Data.Map					(Map)
 
@@ -17,7 +17,7 @@ data State
 	-- | The command list for the viewport controller.
 	--	These can be safely overwridden at any time by deleting / adding entries to the list.
 	--	Entries at the front of the list take precedence.
-	  stateCommands		:: Map Command [(GLUT.Key, Maybe GLUT.Modifiers)]
+	  stateCommands		:: Map Command [(Key, Maybe Modifiers)]
 
 	-- | How much to scale the world by for each step of the mouse wheel.
 	, stateScaleStep	:: Float	

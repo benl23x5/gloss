@@ -7,6 +7,7 @@ import Graphics.Gloss.Data.Color
 import Graphics.Gloss.Data.Picture
 import Graphics.Gloss.Internals.Render.Picture
 import Graphics.Gloss.Internals.Render.ViewPort
+import Graphics.Gloss.Internals.Interface.Backend
 import Graphics.Gloss.Internals.Interface.Window
 import Graphics.Gloss.Internals.Interface.Common.Exit
 import Graphics.Gloss.Internals.Interface.ViewPort
@@ -18,8 +19,6 @@ import qualified Graphics.Gloss.Internals.Interface.ViewPort.ControlState	as VPC
 import qualified Graphics.Gloss.Internals.Interface.Callback			as Callback
 
 import Data.IORef
-import Control.Concurrent
-
 
 -- | Open a new window and display the given picture.
 --
@@ -47,19 +46,20 @@ displayInWindow name size pos background picture
 	viewControlSR	<- newIORef VPC.stateInit
 	renderSR	<- newIORef RO.optionsInit
 	
-	let renderFun = do
+	let renderFun backendRef = do
 		view	<- readIORef viewSR
 		options	<- readIORef renderSR
 	 	withViewPort
+			backendRef
 	 		view
-			(renderPicture options view picture)
+			(renderPicture backendRef options view picture)
 
 	let callbacks
 	     =	[ Callback.Display renderFun 
 
 		-- Delay the thread for a bit to give the runtime
 		--	a chance to switch back to the OS.
-		, Callback.Idle	   (threadDelay 1000)
+		, Callback.Idle	   (\stateRef -> sleep stateRef 0.001 >> postRedisplay stateRef)
 
 		-- Escape exits the program
 		, callback_exit () 

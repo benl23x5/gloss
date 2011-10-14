@@ -5,28 +5,21 @@
 module Graphics.Gloss.Internals.Interface.Common.Exit
 	(callback_exit)
 where
-import Graphics.Gloss.Internals.Interface.Callback
-import qualified Graphics.UI.GLUT		as GLUT
-import qualified System.Exit			as System
+import Graphics.Gloss.Internals.Interface.Backend.Types
 
 callback_exit :: a -> Callback
 callback_exit stateRef
  =	KeyMouse (keyMouse_exit stateRef)
 
-keyMouse_exit :: a -> GLUT.KeyboardMouseCallback
+keyMouse_exit :: a -> KeyboardMouseCallback
 keyMouse_exit
 	_
+	backend
 	key keyState _
 	_
-
-	-- exit
-	| key		== GLUT.Char '\27'
-	, keyState	== GLUT.Down
-	= do
-		-- non-freeglut doesn't like this
-		-- GLUT.leaveMainLoop
+	| key		== SpecialKey KeyEsc
+	, keyState	== Down
+	= exitBackend backend
 		
-		System.exitWith System.ExitSuccess
-
 	| otherwise
 	= return ()

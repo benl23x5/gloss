@@ -1,50 +1,13 @@
 {-# OPTIONS_HADDOCK hide #-}
 
--- | Implements functions to dump portions of the GLUT and OpenGL state to stdout. 
+-- | Implements functions to dump portions of the OpenGL state to stdout.
 --	Used for debugging.
 module Graphics.Gloss.Internals.Interface.Debug
-	( dumpGlutState
-	, dumpFramebufferState
+	( dumpFramebufferState
 	, dumpFragmentState )
 where
 import qualified Graphics.Rendering.OpenGL.GL	as GL
-import qualified Graphics.UI.GLUT		as GLUT
-import Graphics.UI.GLUT			(get)
-
-
--- | Dump the internal state of GLUT
-dumpGlutState :: IO ()
-dumpGlutState 
- = do
-	wbw		<- get GLUT.windowBorderWidth
- 	whh		<- get GLUT.windowHeaderHeight
-	rgba		<- get GLUT.rgba
-
-	rgbaBD		<- get GLUT.rgbaBufferDepths
-	colorBD		<- get GLUT.colorBufferDepth
-	depthBD		<- get GLUT.depthBufferDepth
-	accumBD		<- get GLUT.accumBufferDepths
-	stencilBD	<- get GLUT.stencilBufferDepth
-
-	doubleBuffered	<- get GLUT.doubleBuffered
-
-	colorMask	<- get GLUT.colorMask
-	depthMask	<- get GLUT.depthMask
-	
-	putStr	$  "* dumpGlutState\n"
-		++ "  windowBorderWidth  = " ++ show wbw		++ "\n"
-		++ "  windowHeaderHeight = " ++ show whh		++ "\n"
-		++ "  rgba               = " ++ show rgba		++ "\n"
-		++ "  depth      rgba    = " ++ show rgbaBD		++ "\n"
-		++ "             color   = " ++ show colorBD		++ "\n"
-		++ "             depth   = " ++ show depthBD		++ "\n"
-		++ "             accum   = " ++ show accumBD		++ "\n"
-		++ "             stencil = " ++ show stencilBD		++ "\n"
-		++ "  doubleBuffered     = " ++ show doubleBuffered	++ "\n"
-		++ "  mask         color = " ++ show colorMask		++ "\n"
-		++ "               depth = " ++ show depthMask		++ "\n"
-		++ "\n"
-		
+import Graphics.Rendering.OpenGL		(get)
 		
 -- | Dump internal state of the OpenGL framebuffer
 dumpFramebufferState :: IO ()

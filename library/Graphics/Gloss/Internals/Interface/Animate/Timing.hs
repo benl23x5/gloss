@@ -12,21 +12,20 @@ module Graphics.Gloss.Internals.Interface.Animate.Timing
 	( animateBegin
 	, animateEnd )
 where
+import Graphics.Gloss.Internals.Interface.Backend
+import Graphics.Gloss.Internals.Interface.Callback
 import Graphics.Gloss.Internals.Interface.Animate.State
 import Control.Monad
-import Control.Concurrent
 import Data.IORef
-import qualified Graphics.UI.GLUT			as GLUT
-import Graphics.UI.GLUT					(get)
 
 
 -- | Handles animation timing details.
 --	Call this function at the start of each frame.
-animateBegin :: IORef State -> IO ()
-animateBegin stateRef
+animateBegin :: IORef State -> DisplayCallback
+animateBegin stateRef backendRef
  = do
 	-- write the current time into the display state
-	displayTime		<- get GLUT.elapsedTime
+	displayTime		<- elapsedTime backendRef
 	displayTimeLast		<- stateRef `getsIORef` stateDisplayTime
 	let displayTimeElapsed	= displayTime - displayTimeLast
 
@@ -55,21 +54,21 @@ animateBegin stateRef
 
 -- | Handles animation timing details.
 --	Call this function at the end of each frame.
-animateEnd :: IORef State -> IO ()
-animateEnd stateRef
+animateEnd :: IORef State -> DisplayCallback
+animateEnd stateRef backendRef
  = do
 	-- timing gate, limits the maximum frame frequency (FPS)
 	timeClamp	<- stateRef `getsIORef` stateDisplayTimeClamp
 
-	gateTimeStart	<- get GLUT.elapsedTime				-- the start of this gate
+	gateTimeStart	<- elapsedTime backendRef			-- the start of this gate
 	gateTimeEnd	<- stateRef `getsIORef` stateGateTimeEnd	-- end of the previous gate
 	let gateTimeElapsed	
 			= gateTimeStart - gateTimeEnd
 	
 	when (gateTimeElapsed < timeClamp)
-	 $ do	threadDelay ((timeClamp - gateTimeElapsed) * 1000)
+	 $ do	sleep backendRef (timeClamp - gateTimeElapsed)
 
-	gateTimeFinal	<- get GLUT.elapsedTime
+	gateTimeFinal	<- elapsedTime backendRef
 
 	stateRef `modifyIORef` \s -> s 
 		{ stateGateTimeEnd	= gateTimeFinal 

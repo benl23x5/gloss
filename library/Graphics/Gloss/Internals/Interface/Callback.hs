@@ -1,14 +1,10 @@
 {-# OPTIONS_HADDOCK hide #-}
 
 -- | Event callbacks.
-module Graphics.Gloss.Internals.Interface.Callback where
+module Graphics.Gloss.Internals.Interface.Callback
+  ( module Graphics.Gloss.Internals.Interface.Backend.Types
+  )
+where
 
-import qualified Graphics.UI.GLUT	as GLUT
-
--- | Holds callback functions.
-data Callback
-	= Display	GLUT.DisplayCallback
-	| KeyMouse	GLUT.KeyboardMouseCallback
-	| Idle		GLUT.IdleCallback
-	| Motion	GLUT.MotionCallback	
-	| Reshape	GLUT.ReshapeCallback
+import Graphics.Gloss.Internals.Interface.Backend.Types
+  (Callback(..), DisplayCallback, KeyboardMouseCallback, MotionCallback, IdleCallback, ReshapeCallback)

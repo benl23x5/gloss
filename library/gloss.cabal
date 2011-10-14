@@ -20,6 +20,10 @@ Synopsis:
 
 Tested-with: GHC == 6.12.1, GHC == 7.0.1
 
+Flag GLUT
+  Description: Enable the GLUT backend
+  Default:     True
+
 Library
   Build-Depends: 
         base       == 4.*,
@@ -52,6 +56,8 @@ Library
         Graphics.Gloss.Internals.Interface.Animate
         Graphics.Gloss.Internals.Interface.Animate.State
         Graphics.Gloss.Internals.Interface.Animate.Timing
+        Graphics.Gloss.Internals.Interface.Backend
+        Graphics.Gloss.Internals.Interface.Backend.Types
         Graphics.Gloss.Internals.Interface.Callback
         Graphics.Gloss.Internals.Interface.Common.Exit
         Graphics.Gloss.Internals.Interface.Debug
@@ -74,3 +80,7 @@ Library
         Graphics.Gloss.Internals.Render.Picture
         Graphics.Gloss.Internals.Render.ViewPort
 
+  If flag(GLUT)
+    CPP-Options: -DWITHGLUT
+    Other-modules:
+        Graphics.Gloss.Internals.Interface.Backend.GLUT

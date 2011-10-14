@@ -4,12 +4,13 @@ module Graphics.Gloss.Internals.Interface.Simulate.Idle
 	( callback_simulate_idle )
 where
 import Graphics.Gloss.Internals.Interface.ViewPort
+import Graphics.Gloss.Internals.Interface.Callback
+import qualified Graphics.Gloss.Internals.Interface.Backend		as Backend
 import qualified Graphics.Gloss.Internals.Interface.Animate.State	as AN
 import qualified Graphics.Gloss.Internals.Interface.Simulate.State	as SM
-import qualified Graphics.UI.GLUT					as GLUT
-import Graphics.UI.GLUT							(get)
 import Data.IORef
 import Control.Monad
+import GHC.Float (double2Float)
 
 
 -- | The graphics library calls back on this function when it's finished drawing
@@ -23,9 +24,9 @@ callback_simulate_idle
 	-> (ViewPort -> Float -> world -> world) 	-- ^ fn to advance the world
 	-> Float					-- ^ how much time to advance world by 
 							--	in single step mode
-	-> IO ()
+	-> IdleCallback
 	
-callback_simulate_idle simSR animateSR viewSR worldSR worldStart worldAdvance singleStepTime
+callback_simulate_idle simSR animateSR viewSR worldSR worldStart worldAdvance singleStepTime backendRef
  = {-# SCC "callbackIdle" #-}
    do	simS		<- readIORef simSR
 	let result
@@ -39,14 +40,14 @@ callback_simulate_idle simSR animateSR viewSR worldSR worldStart worldAdvance si
 		= simulate_step  simSR viewSR worldSR worldAdvance singleStepTime
 		
 		| otherwise
-		= return ()
+		= \_ -> return ()
 		
-	result
+	result backendRef
  
 
 -- reset the world to 
-simulate_reset :: IORef SM.State -> IORef a -> a -> IO ()
-simulate_reset simSR worldSR worldStart
+simulate_reset :: IORef SM.State -> IORef a -> a -> IdleCallback
+simulate_reset simSR worldSR worldStart backendRef
  = do	writeIORef worldSR worldStart
 
  	simSR `modifyIORef` \c -> c 	
@@ -54,7 +55,7 @@ simulate_reset simSR worldSR worldStart
 	 	, SM.stateIteration	= 0 
 		, SM.stateSimTime	= 0 }
 	 
-	GLUT.postRedisplay Nothing
+	Backend.postRedisplay backendRef
 	 
  
 -- take the number of steps specified by controlWarp
@@ -64,17 +65,16 @@ simulate_run
 	-> IORef ViewPort
 	-> IORef world
 	-> (ViewPort -> Float -> world -> world)
-	-> IO ()
+	-> IdleCallback
 	
-simulate_run simSR _ viewSR worldSR worldAdvance
+simulate_run simSR _ viewSR worldSR worldAdvance backendRef
  = do	
 	simS		<- readIORef simSR
 	viewS		<- readIORef viewSR
 	worldS		<- readIORef worldSR
 
 	-- get the elapsed time since the start simulation (wall clock)
- 	elapsedTime_msec	<- get GLUT.elapsedTime
-	let elapsedTime		= fromIntegral elapsedTime_msec / 1000
+ 	elapsedTime	<- fmap double2Float $ Backend.elapsedTime backendRef
 
 	-- get how far along the simulation is
 	simTime			<- simSR `getsIORef` SM.stateSimTime
@@ -119,7 +119,7 @@ simulate_run simSR _ viewSR worldSR worldAdvance
 		, SM.stateStepsPerFrame	= fromIntegral thisSteps }
 	
 	-- tell glut we want to draw the window after returning
-	GLUT.postRedisplay Nothing
+	Backend.postRedisplay backendRef
 
 
 -- take a single step
@@ -129,9 +129,9 @@ simulate_step
 	-> IORef world
 	-> (ViewPort -> Float -> world -> world) 
 	-> Float
-	-> IO ()
+	-> IdleCallback
 
-simulate_step simSR viewSR worldSR worldAdvance singleStepTime
+simulate_step simSR viewSR worldSR worldAdvance singleStepTime backendRef
  = do
 	viewS		<- readIORef viewSR
  	world		<- readIORef worldSR
@@ -142,7 +142,7 @@ simulate_step simSR viewSR worldSR worldAdvance singleStepTime
 		{ SM.stateIteration 	= SM.stateIteration c + 1 
 	 	, SM.stateStep		= False }
 	 
-	GLUT.postRedisplay Nothing
+	Backend.postRedisplay backendRef
 
 
 getsIORef :: IORef a -> (a -> r) -> IO r
