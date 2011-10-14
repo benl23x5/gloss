@@ -24,6 +24,10 @@ Flag GLUT
   Description: Enable the GLUT backend
   Default:     True
 
+Flag GLFW
+  Description: Enable the GLFW backend
+  Default:     True
+
 Library
   Build-Depends: 
         base       == 4.*,
@@ -84,3 +88,10 @@ Library
     CPP-Options: -DWITHGLUT
     Other-modules:
         Graphics.Gloss.Internals.Interface.Backend.GLUT
+
+  If flag(GLFW)
+    Build-Depends:
+        GLFW-b == 0.0.2.*
+    CPP-Options: -DWITHGLFW
+    Other-modules:
+        Graphics.Gloss.Internals.Interface.Backend.GLFW
