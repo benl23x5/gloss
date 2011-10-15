@@ -1,7 +1,9 @@
 {-# OPTIONS_HADDOCK hide #-}
 
 module Graphics.Gloss.Internals.Interface.Display
-	(displayInWindow)
+	(displayInWindow
+	,displayInWindowB
+	)
 where	
 import Graphics.Gloss.Data.Color
 import Graphics.Gloss.Data.Picture
@@ -39,8 +41,18 @@ displayInWindow
 	-> Color	-- ^ Background color.
 	-> Picture	-- ^ The picture to draw.
 	-> IO ()
+displayInWindow = displayInWindowB defaultBackendState
 
-displayInWindow name size pos background picture
+displayInWindowB
+	:: Backend a
+	=> a		-- ^ Initial State of the backend
+	-> String	-- ^ Name of the window.
+	-> (Int, Int)	-- ^ Initial size of the window, in pixels.
+	-> (Int, Int)	-- ^ Initial position of the window, in pixels.
+	-> Color	-- ^ Background color.
+	-> Picture	-- ^ The picture to draw.
+	-> IO ()
+displayInWindowB backend name size pos background picture
  =  do
 	viewSR		<- newIORef viewPortInit
 	viewControlSR	<- newIORef VPC.stateInit
@@ -69,6 +81,6 @@ displayInWindow name size pos background picture
 		, callback_viewPort_motion   viewSR viewControlSR 
 		, callback_viewPort_reshape ]
 
-	createWindow name size pos background callbacks
+	createWindow backend name size pos background callbacks
 
 

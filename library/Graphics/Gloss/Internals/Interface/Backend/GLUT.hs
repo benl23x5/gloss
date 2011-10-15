@@ -3,6 +3,7 @@ module Graphics.Gloss.Internals.Interface.Backend.GLUT
   (GLUTState)
 where
 
+import Data.IORef                          (IORef)
 import Control.Monad                       (when)
 import Control.Concurrent                  (threadDelay)
 import qualified Graphics.Rendering.OpenGL as GL

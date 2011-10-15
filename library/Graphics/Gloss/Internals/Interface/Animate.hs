@@ -1,7 +1,8 @@
 {-# OPTIONS_HADDOCK hide #-}
 
 module Graphics.Gloss.Internals.Interface.Animate
-	(animateInWindow)
+	(animateInWindow
+	,animateInWindowB)
 where	
 import Graphics.Gloss.Data.Color
 import Graphics.Gloss.Data.Picture
@@ -37,8 +38,19 @@ animateInWindow
 	-> (Float -> Picture)	-- ^ Function to produce the next frame of animation. 
 				--	It is passed the time in seconds since the program started.
 	-> IO ()
+animateInWindow = animateInWindowB defaultBackendState
 
-animateInWindow name size pos backColor frameFun
+animateInWindowB
+	:: Backend a
+	=> a			-- ^ Initial State of the backend
+	-> String		-- ^ Name of the window.
+	-> (Int, Int)		-- ^ Initial size of the window, in pixels.
+	-> (Int, Int)		-- ^ Initial position of the window, in pixels.
+	-> Color		-- ^ Background color.
+	-> (Float -> Picture)	-- ^ Function to produce the next frame of animation.
+				--	It is passed the time in seconds since the program started.
+	-> IO ()
+animateInWindowB backend name size pos backColor frameFun
  = do	
 	viewSR		<- newIORef viewPortInit
 	viewControlSR	<- newIORef VPC.stateInit
@@ -74,7 +86,7 @@ animateInWindow name size pos backColor frameFun
 		, callback_viewPort_motion   viewSR viewControlSR 
 		, callback_viewPort_reshape ]
 
-	createWindow name size pos backColor callbacks
+	createWindow backend name size pos backColor callbacks
 
 getsIORef :: IORef a -> (a -> r) -> IO r
 getsIORef ref fun

@@ -18,7 +18,9 @@ import Control.Monad
 
 -- | Open a window and use the supplied callbacks to handle window events.
 createWindow
-	:: String 		-- ^ Name of the window.
+	:: Backend a
+	=> a
+	-> String 		-- ^ Name of the window.
 	-> (Int, Int) 		-- ^ Initial size of the window, in pixels.
 	-> (Int, Int)		-- ^ Initial position of the window, in pixels relative to
 				--	the top left corner of the screen.
@@ -27,6 +29,7 @@ createWindow
 	-> IO ()
 
 createWindow
+	backend
 	windowName
 	(sizeX, sizeY)
 	(posX,  posY)
@@ -37,7 +40,7 @@ createWindow
 	let debug	= False
 
 	-- Initialize backend state
-	backendStateRef <- newIORef defaultBackendState
+	backendStateRef <- newIORef backend
 
 	when debug
 	 $ do 	putStr	$ "* displayInWindow\n"

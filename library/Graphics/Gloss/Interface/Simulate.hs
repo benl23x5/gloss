@@ -9,9 +9,10 @@ module Graphics.Gloss.Interface.Simulate
  	( module Graphics.Gloss.Data.Picture
 	, module Graphics.Gloss.Data.Color
 	, ViewPort(..)
-	, simulateInWindow)
+	, simulateInWindow
+	, simulateInWindowB)
 where
 import Graphics.Gloss.Data.Picture
 import Graphics.Gloss.Data.Color
 import Graphics.Gloss.Internals.Interface.ViewPort
-import Graphics.Gloss.Internals.Interface.Simulate	(simulateInWindow)
+import Graphics.Gloss.Internals.Interface.Simulate	(simulateInWindow,simulateInWindowB)

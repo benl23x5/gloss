@@ -3,6 +3,7 @@
 
 module Graphics.Gloss.Internals.Interface.Game
 	( gameInWindow
+	, gameInWindowB
 	, Event(..))
 where
 import Graphics.Gloss.Data.Color
@@ -44,8 +45,26 @@ gameInWindow
 	-> (Float -> world -> world)   	-- ^ A function to step the world one iteration.
 					--   It is passed the period of time (in seconds) needing to be advanced.
 	-> IO ()
+gameInWindow = gameInWindowB defaultBackendState
 
-gameInWindow
+gameInWindowB
+	:: forall world a
+	.  Backend a
+	=> a				-- ^ Initial state of the backend
+	-> String			-- ^ Name of the window.
+	-> (Int, Int)			-- ^ Initial size of the window, in pixels.
+	-> (Int, Int)			-- ^ Initial position of the window, in pixels.
+	-> Color			-- ^ Background color.
+	-> Int				-- ^ Number of simulation steps to take for each second of real time.
+	-> world 			-- ^ The initial world.
+	-> (world -> Picture)	 	-- ^ A function to convert the world a picture.
+	-> (Event -> world -> world)	-- ^ A function to handle input events.
+	-> (Float -> world -> world)   	-- ^ A function to step the world one iteration.
+					--   It is passed the period of time (in seconds) needing to be advanced.
+	-> IO ()
+
+gameInWindowB
+	backend
 	windowName
 	windowSize
 	windowPos
@@ -101,7 +120,7 @@ gameInWindow
 		, callback_motion   worldSR worldHandleEvent
 		, callback_viewPort_reshape ]
 
-	createWindow windowName windowSize windowPos backgroundColor callbacks
+	createWindow backend windowName windowSize windowPos backgroundColor callbacks
 
 
 -- | Callback for KeyMouse events.

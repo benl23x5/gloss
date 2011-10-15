@@ -52,10 +52,12 @@
 module Graphics.Gloss 
 	( module Graphics.Gloss.Data.Picture
 	, module Graphics.Gloss.Data.Color
-	, displayInWindow 
-	, animateInWindow)
+	, displayInWindow
+	, displayInWindowB
+	, animateInWindow
+	, animateInWindowB)
 where
 import Graphics.Gloss.Data.Picture
 import Graphics.Gloss.Data.Color
-import Graphics.Gloss.Internals.Interface.Display	(displayInWindow)
-import Graphics.Gloss.Internals.Interface.Animate	(animateInWindow)
+import Graphics.Gloss.Internals.Interface.Display	(displayInWindow,displayInWindowB)
+import Graphics.Gloss.Internals.Interface.Animate	(animateInWindow,animateInWindowB)

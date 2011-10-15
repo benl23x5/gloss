@@ -54,6 +54,7 @@ Library
         Graphics.Gloss.Algorithms.RayCast
         Graphics.Gloss.Interface.Simulate
         Graphics.Gloss.Interface.Game
+        Graphics.Gloss.Interface.Backend
 
   Other-modules:
         Graphics.Gloss.Internals.Color

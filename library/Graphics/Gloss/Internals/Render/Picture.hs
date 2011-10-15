@@ -17,6 +17,7 @@ import	Graphics.Rendering.OpenGL		(($=), get)
 import	qualified Graphics.Rendering.OpenGL.GL	as GL
 import	qualified Graphics.UI.GLUT		as GLUT
 import   Control.Monad
+import	Data.IORef				(IORef)
 
 -- ^ Render a picture using the given render options and viewport.
 renderPicture

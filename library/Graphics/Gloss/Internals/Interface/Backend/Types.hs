@@ -3,16 +3,15 @@
 {-# LANGUAGE Rank2Types #-}
 module Graphics.Gloss.Internals.Interface.Backend.Types
   ( module Graphics.Gloss.Internals.Interface.Backend.Types
-  , module Data.IORef
   )
 where
 
-import Data.IORef (IORef,modifyIORef,readIORef,writeIORef)
+import Data.IORef (IORef)
 
 -- | The functions every backend needs to support
 class Backend a where
   -- | Initialize the state used by the backend. If you don't use any state,
-  -- make a "Unit" type; see the GLUT backend for an example.
+  -- make a Unit-like type; see the GLUT backend for an example.
   initBackendState           :: a
   -- | Perform any initialization that needs to happen before opening a window
   -- The Boolean flag indicates if any debug information should be printed to
@@ -57,7 +56,7 @@ class Backend a where
 -- | Display callback has no arguments
 type DisplayCallback       = forall a . Backend a => IORef a -> IO ()
 
--- | Arguments: KeyType, Key Up/Down, Ctrl/Alt/Shift pressed, latest mouse location
+-- | Arguments: KeyType, Key Up \/ Down, Ctrl \/ Alt \/ Shift pressed, latest mouse location
 type KeyboardMouseCallback = forall a . Backend a => IORef a -> Key -> KeyState -> Modifiers -> (Int,Int) -> IO ()
 
 -- | Arguments: (PosX,PosY) in pixels

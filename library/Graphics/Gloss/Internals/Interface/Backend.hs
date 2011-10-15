@@ -14,7 +14,7 @@ module Graphics.Gloss.Internals.Interface.Backend
 where
 
 import Graphics.Gloss.Internals.Interface.Backend.Types
-  (Backend(..),Key(..),MouseButton(..),KeyState(..),SpecialKey(..),Modifiers(..),IORef)
+  (Backend(..),Key(..),MouseButton(..),KeyState(..),SpecialKey(..),Modifiers(..))
 #ifdef WITHGLFW
 import Graphics.Gloss.Internals.Interface.Backend.GLFW
 #endif

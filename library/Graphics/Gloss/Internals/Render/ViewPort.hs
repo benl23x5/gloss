@@ -10,6 +10,7 @@ import	Graphics.Gloss.Internals.Interface.ViewPort
 import	Graphics.Rendering.OpenGL					(GLfloat, ($=))
 import	qualified Graphics.Rendering.OpenGL.GL				as GL
 
+import	Data.IORef							(IORef)
 
 -- | Perform a rendering action whilst using the given viewport
 withViewPort

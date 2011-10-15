@@ -4,6 +4,7 @@ module Graphics.Gloss.Internals.Interface.Backend.GLFW
   (GLFWState)
 where
 
+import Data.IORef                          (IORef,modifyIORef,readIORef,writeIORef)
 import Control.Monad                       (unless,when)
 import qualified Graphics.Rendering.OpenGL as GL
 import Graphics.UI.GLFW                    (WindowValue(..))
