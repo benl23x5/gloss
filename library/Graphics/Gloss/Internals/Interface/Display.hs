@@ -57,7 +57,9 @@ displayInWindowWithBackend
 displayInWindowWithBackend backend name size pos background picture
  =  do	viewSR		<- newIORef viewPortInit
 	viewControlSR	<- newIORef VPC.stateInit
-	renderSR	<- newIORef RS.stateInit
+
+        renderS         <- RS.stateInit
+	renderSR	<- newIORef renderS
 	
 	let renderFun backendRef = do
 		view	<- readIORef viewSR

@@ -30,6 +30,6 @@ loadBitmap fileName
 	 Right img	
 	  -> let (width, height)	= bmpDimensions img
 		 bytestring		= unpackBMPToRGBA32 img
-	     in	 return ( Bitmap width height bytestring
+	     in	 return ( Bitmap width height bytestring True
 			, width, height)
 	

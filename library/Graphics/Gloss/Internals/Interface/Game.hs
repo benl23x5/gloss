@@ -85,8 +85,9 @@ gameInWindowWithBackend
 
 	-- make the initial GL view and render states
 	viewSR		<- newIORef viewPortInit
-	renderSR	<- newIORef RS.stateInit
 	animateSR	<- newIORef AN.stateInit
+        renderS_        <- RS.stateInit
+	renderSR	<- newIORef renderS_
 
 	let displayFun backendRef
 	     = do

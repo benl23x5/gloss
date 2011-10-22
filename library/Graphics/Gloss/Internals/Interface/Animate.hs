@@ -57,8 +57,9 @@ animateInWindowWithBackend backend name size pos backColor frameFun
  = do	
 	viewSR		<- newIORef viewPortInit
 	viewControlSR	<- newIORef VPC.stateInit
-	renderSR	<- newIORef RS.stateInit
 	animateSR	<- newIORef AN.stateInit
+        renderS_        <- RS.stateInit
+	renderSR	<- newIORef renderS_
 
  	let displayFun backendRef = do
 		-- extract the current time from the state

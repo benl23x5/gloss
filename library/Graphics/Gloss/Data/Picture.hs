@@ -56,7 +56,8 @@ data Picture
 	| Text		String
 
 	-- | A bitmap image with a width, height and a ByteString holding the 32 bit RGBA bitmap data.
-	| Bitmap	Int	Int 	ByteString
+	--   The boolean flag controls whether Gloss should cache the bitmap between frames.
+	| Bitmap	Int	Int 	ByteString      Bool
 
 	-- Color ------------------------------------------
 	-- | A picture drawn with this color.
@@ -105,7 +106,7 @@ thickCircle = ThickCircle
 text :: String -> Picture
 text = Text
 
-bitmap :: Int -> Int -> ByteString -> Picture
+bitmap :: Int -> Int -> ByteString -> Bool -> Picture
 bitmap = Bitmap
 
 color :: Color -> Picture -> Picture
@@ -134,7 +135,7 @@ loadBMP fname = do
     when (not (isBmp bs)) $ error (fname ++ ": not a bmp file"                      )
     when (bpp  bs < 32)   $ error (fname ++ ": must be saved in 32-bit RGBA format" )
     when (comp bs /= 0)   $ error (fname ++ ": must be saved in uncompressed format")
-    return (Bitmap (width bs) (height bs) (dat bs))
+    return (Bitmap (width bs) (height bs) (dat bs) True)
   where range s n bs    = B.unpack (B.take n (B.drop s bs))
         littleEndian ds = sum [ fromIntegral b * 256^k | (b,k) <- zip ds [(0 :: Int) ..] ]
         isBmp bs        = littleEndian (range  0 2 bs) == (19778 :: Int)

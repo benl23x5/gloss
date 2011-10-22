@@ -16,8 +16,12 @@ import	Graphics.Gloss.Internals.Render.Bitmap
 import	Graphics.Rendering.OpenGL		(($=), get)
 import	qualified Graphics.Rendering.OpenGL.GL	as GL
 import	qualified Graphics.UI.GLUT		as GLUT
-import   Control.Monad
-import	Data.IORef				(IORef)
+import  System.Mem.StableName
+import	Data.IORef
+import  Data.List
+import  Data.ByteString                         (ByteString)
+import  Control.Monad
+
 
 -- ^ Render a picture using the given render options and viewport.
 renderPicture
@@ -44,6 +48,7 @@ renderPicture
 	-- 
 	let ?modeWireframe	= stateWireframe renderS
 	    ?modeColor		= stateColor     renderS
+	    ?refTextures        = stateTextures  renderS
 	    ?matProj		= matProj_
 	    ?viewport		= viewport_
 	    ?windowSize		= windowSize_
@@ -55,8 +60,9 @@ renderPicture
 	drawPicture (viewPortScale viewS) picture
 
 drawPicture
-	:: ( ?modeWireframe :: Bool
-	   , ?modeColor :: Bool) 
+	:: ( ?modeWireframe     :: Bool
+	   , ?modeColor         :: Bool
+	   , ?refTextures       :: IORef [Texture])
 	=> Float -> Picture -> IO ()	  
 
 drawPicture circScale picture
@@ -148,28 +154,12 @@ drawPicture circScale picture
 		drawPicture (circScale * mscale) p
 			
 	-----
-	Bitmap width height imgData
-	 -> do	-- As OpenGL reads texture pixels as ABGR (instead of RGBA)
-		--  each pixel's value needs to be reversed we also need to
-		--  Convert imgData from ByteString to Ptr Word8
-		imgData' <- reverseRGBA $ imgData
-
-		-- Allocate texture handle for texture
-		[texObject] <- GL.genObjectNames 1
-		GL.textureBinding GL.Texture2D $= Just texObject
-
-		-- Sets the texture in imgData as the current texture
-		GL.texImage2D
-			Nothing
-			GL.NoProxy
-			0
-			GL.RGBA8
-			(GL.TextureSize2D
-				(gsizei width)
-				(gsizei height))
-			0
-			(GL.PixelData GL.RGBA GL.UnsignedInt8888 imgData')
-
+	Bitmap width height imgData cacheMe
+	 -> do	
+                -- Load the image data into a texture,
+                -- or grab it from the cache if we've already done that before.
+	        tex     <- loadTexture ?refTextures width height imgData cacheMe
+	 
 		-- Set up wrap and filtering mode
 		GL.textureWrapMode GL.Texture2D GL.S $= (GL.Repeated, GL.Repeat)
 		GL.textureWrapMode GL.Texture2D GL.T $= (GL.Repeated, GL.Repeat)
@@ -180,7 +170,7 @@ drawPicture circScale picture
 		GL.textureFunction      $= GL.Combine
 		
 		-- Set current texture
-		GL.textureBinding GL.Texture2D $= Just texObject
+		GL.textureBinding GL.Texture2D $= Just (texObject tex)
 		
 		-- Set to opaque
 		GL.currentColor $= GL.Color4 1.0 1.0 1.0 1.0
@@ -198,15 +188,106 @@ drawPicture circScale picture
 		-- Disable texturing
 		GL.texture GL.Texture2D $= GL.Disabled
 
-		-- Delete texture
-		GL.deleteObjectNames [texObject]
-
-		-- Free image data
-		freeBitmapData imgData'
+                -- Free uncachable texture objects.
+                freeTexture tex
+                
 
 	Pictures ps
 	 -> mapM_ (drawPicture circScale) ps
 	
+-- Textures ---------------------------------------------------------------------------------------
+-- | Load a texture.
+--   If we've seen it before then use the pre-installed one from the texture cache,
+--   otherwise load it into OpenGL.
+loadTexture
+        :: IORef [Texture]
+        -> Int -> Int -> ByteString
+        -> Bool
+        -> IO Texture
+
+loadTexture refTextures width height imgData cacheMe
+ = do   textures        <- readIORef refTextures
+
+        -- Try and find this same texture in the cache.
+        name            <- makeStableName imgData
+        let mTexCached      
+                = find (\tex -> texName   tex == name
+                             && texWidth  tex == width
+                             && texHeight tex == height)
+                $ textures
+                
+        case mTexCached of
+         Just tex
+          ->    return tex
+                
+         Nothing
+          -> do tex     <- installTexture width height imgData cacheMe
+                when cacheMe
+                 $ writeIORef refTextures (tex : textures)
+                return tex
+
+
+-- | Install a texture into OpenGL.
+installTexture     
+        :: Int -> Int
+        -> ByteString
+        -> Bool
+        -> IO Texture
+
+installTexture width height imgData cacheMe
+ = do   
+        -- As OpenGL reads texture pixels as ABGR (instead of RGBA)
+	--  each pixel's value needs to be reversed we also need to
+	--  Convert imgData from ByteString to Ptr Word8
+	ptrData <- reverseRGBA $ imgData
+
+	-- Allocate texture handle for texture
+	[tex] <- GL.genObjectNames 1
+	GL.textureBinding GL.Texture2D $= Just tex
+
+	-- Sets the texture in imgData as the current texture
+	GL.texImage2D
+		Nothing
+		GL.NoProxy
+		0
+		GL.RGBA8
+		(GL.TextureSize2D
+			(gsizei width)
+			(gsizei height))
+		0
+		(GL.PixelData GL.RGBA GL.UnsignedInt8888 ptrData)
+
+        -- Make a stable name that we can use to identify this data again.
+        -- If the user gives us the same texture data at the same size then we
+        -- can avoid loading it into texture memory again.
+        name    <- makeStableName imgData
+
+        return  Texture
+                { texName       = name
+                , texWidth      = width
+                , texHeight     = height
+                , texData       = ptrData
+                , texObject     = tex
+                , texCacheMe    = cacheMe }
+
+
+-- | If this texture does not have its `cacheMe` flag set then delete it from 
+--   OpenGL and free the memory.
+freeTexture :: Texture -> IO ()
+freeTexture tex
+ | texCacheMe tex       = return ()
+ | otherwise            = deleteTexture tex
+
+
+-- | Delete a texture object from OpenGL.
+deleteTexture :: Texture -> IO ()
+deleteTexture tex
+ = do   -- Delete texture
+	GL.deleteObjectNames [texObject tex]
+
+	-- Free image data
+	freeBitmapData (texData tex)
+
 
 -- Utils ------------------------------------------------------------------------------------------
 -- | Turn alpha blending on or off

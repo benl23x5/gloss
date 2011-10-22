@@ -86,8 +86,9 @@ simulateInWindowWithBackend
 	-- make the initial GL view and render states
 	viewSR		<- newIORef viewPortInit
 	viewControlSR	<- newIORef VPC.stateInit
-	renderSR	<- newIORef RS.stateInit
 	animateSR	<- newIORef AN.stateInit
+        renderS_        <- RS.stateInit
+	renderSR	<- newIORef renderS_
 
 	let displayFun backendRef
 	     = do
