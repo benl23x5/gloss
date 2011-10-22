@@ -40,7 +40,7 @@ data Picture
 	-- | A blank picture, with nothing in it.
 	= Blank
 
-	-- | A polygon filled with a solid color.
+	-- | A convex polygon filled with a solid color.
 	| Polygon 	Path
 	
 	-- | A line along an arbitrary path.
