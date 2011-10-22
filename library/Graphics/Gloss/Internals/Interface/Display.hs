@@ -1,4 +1,3 @@
-{-# OPTIONS_HADDOCK hide #-}
 
 module Graphics.Gloss.Internals.Interface.Display
 	( displayInWindow

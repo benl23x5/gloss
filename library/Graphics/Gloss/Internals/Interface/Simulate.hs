@@ -1,5 +1,4 @@
 {-# LANGUAGE RankNTypes #-}
-{-# OPTIONS_HADDOCK hide #-}
 
 module Graphics.Gloss.Internals.Interface.Simulate
 	( simulateInWindow

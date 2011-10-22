@@ -1,4 +1,4 @@
-{-# OPTIONS_HADDOCK hide #-}
+
 {-# OPTIONS -fspec-constr-count=5 #-}
 {-# LANGUAGE Rank2Types #-}
 module Graphics.Gloss.Internals.Interface.Backend.Types

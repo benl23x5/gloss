@@ -28,6 +28,11 @@ Flag GLFW
   Description: Enable the GLFW backend
   Default:     True
 
+Flag ExplicitBackend
+  Description: Expose versions of displayInWindow and friends that allow
+               you to choose what window manager backend to use.
+  Default:     False
+
 Library
   Build-Depends: 
         base       == 4.*,
@@ -59,19 +64,14 @@ Library
 
   Other-modules:
         Graphics.Gloss.Internals.Color
-        Graphics.Gloss.Internals.Interface.Animate
         Graphics.Gloss.Internals.Interface.Animate.State
         Graphics.Gloss.Internals.Interface.Animate.Timing
-        Graphics.Gloss.Internals.Interface.Backend
         Graphics.Gloss.Internals.Interface.Backend.Types
         Graphics.Gloss.Internals.Interface.Callback
         Graphics.Gloss.Internals.Interface.Common.Exit
         Graphics.Gloss.Internals.Interface.Debug
-        Graphics.Gloss.Internals.Interface.Display
-        Graphics.Gloss.Internals.Interface.Simulate
         Graphics.Gloss.Internals.Interface.Simulate.Idle
         Graphics.Gloss.Internals.Interface.Simulate.State
-        Graphics.Gloss.Internals.Interface.Game
         Graphics.Gloss.Internals.Interface.ViewPort
         Graphics.Gloss.Internals.Interface.ViewPort.Command
         Graphics.Gloss.Internals.Interface.ViewPort.ControlState
@@ -97,3 +97,18 @@ Library
     CPP-Options: -DWITHGLFW
     Other-modules:
         Graphics.Gloss.Internals.Interface.Backend.GLFW
+
+  If flag(ExplicitBackend)
+    Exposed-modules:
+        Graphics.Gloss.Internals.Interface.Display
+        Graphics.Gloss.Internals.Interface.Animate
+        Graphics.Gloss.Internals.Interface.Simulate
+        Graphics.Gloss.Internals.Interface.Game
+        Graphics.Gloss.Internals.Interface.Backend
+  Else
+    Other-modules:
+        Graphics.Gloss.Internals.Interface.Display
+        Graphics.Gloss.Internals.Interface.Animate
+        Graphics.Gloss.Internals.Interface.Simulate
+        Graphics.Gloss.Internals.Interface.Game
+        Graphics.Gloss.Internals.Interface.Backend
