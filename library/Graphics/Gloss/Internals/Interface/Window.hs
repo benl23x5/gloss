@@ -8,8 +8,6 @@ import Graphics.Gloss.Data.Color
 import Graphics.Gloss.Internals.Color
 import Graphics.Gloss.Internals.Interface.Backend
 import Graphics.Gloss.Internals.Interface.Debug
-import Graphics.Gloss.Internals.Interface.Callback	(Callback)
-
 import Graphics.Rendering.OpenGL			(($=))
 import qualified Graphics.Rendering.OpenGL.GL		as GL
 import Data.IORef (newIORef)

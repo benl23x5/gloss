@@ -61,7 +61,7 @@ defaultCommandConfig
 	
 	-- bump translate
 	, (CBumpLeft,
-		[ (SpecialKey  KeyLeft,	Nothing) ])
+		[ (SpecialKey  KeyLeft,	        Nothing) ])
 
 	, (CBumpRight,
 		[ (SpecialKey  KeyRight,	Nothing) ])
@@ -70,14 +70,14 @@ defaultCommandConfig
 		[ (SpecialKey  KeyUp,		Nothing) ])
 
 	, (CBumpDown,
-		[ (SpecialKey  KeyDown,	Nothing) ])
+		[ (SpecialKey  KeyDown,	        Nothing) ])
 
 	-- bump rotate
 	, (CBumpClockwise,
-		[ (SpecialKey  KeyHome,	Nothing) ])
+		[ (SpecialKey  KeyHome,	        Nothing) ])
 	
 	, (CBumpCClockwise,
-		[ (SpecialKey  KeyEnd,	Nothing) ])
+		[ (SpecialKey  KeyEnd,	        Nothing) ])
 
 	]
 

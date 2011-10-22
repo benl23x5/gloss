@@ -13,7 +13,6 @@ module Graphics.Gloss.Internals.Interface.Animate.Timing
 	, animateEnd )
 where
 import Graphics.Gloss.Internals.Interface.Backend
-import Graphics.Gloss.Internals.Interface.Callback
 import Graphics.Gloss.Internals.Interface.Animate.State
 import Control.Monad
 import Data.IORef

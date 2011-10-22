@@ -1,10 +1,12 @@
 {-# OPTIONS_HADDOCK hide #-}
 
--- | Event callbacks.
+-- | Re-export event callbacks.
 module Graphics.Gloss.Internals.Interface.Callback
-  ( module Graphics.Gloss.Internals.Interface.Backend.Types
-  )
+        ( Callback(..)
+        , DisplayCallback
+        , KeyboardMouseCallback
+        , MotionCallback
+        , IdleCallback
+        , ReshapeCallback)
 where
-
 import Graphics.Gloss.Internals.Interface.Backend.Types
-  (Callback(..), DisplayCallback, KeyboardMouseCallback, MotionCallback, IdleCallback, ReshapeCallback)

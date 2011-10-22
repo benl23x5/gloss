@@ -9,7 +9,6 @@ import Graphics.Gloss.Geometry.Angle
 import Graphics.Gloss.Internals.Interface.ViewPort
 import Graphics.Gloss.Internals.Interface.ViewPort.Command
 import Graphics.Gloss.Internals.Interface.Backend
-import Graphics.Gloss.Internals.Interface.Callback
 import qualified Graphics.Gloss.Internals.Interface.ViewPort.ControlState	as VPC
 import Data.IORef
 import Control.Monad
@@ -54,33 +53,39 @@ viewPort_keyMouse portRef controlRef stateRef key keyState keyMods pos
 	-- zoom out
 	| isCommand commands CBumpZoomOut key keyMods
 	, keyState	== Down
-	= 	controlZoomOut portRef controlRef >> postRedisplay stateRef
+	= do	controlZoomOut portRef controlRef
+	        postRedisplay stateRef
 
 	-- zoom in
 	| isCommand commands CBumpZoomIn key keyMods
 	, keyState	== Down
-	= 	controlZoomIn portRef controlRef >> postRedisplay stateRef
+	= do	controlZoomIn portRef controlRef 
+	        postRedisplay stateRef
 	
 	-- bump -------------------------------------
 	-- bump left
 	| isCommand commands CBumpLeft key keyMods
 	, keyState	== Down
-	= 	motionBump portRef (20, 0) >> postRedisplay stateRef
+	= do	motionBump portRef (20, 0)
+	        postRedisplay stateRef
 
 	-- bump right
 	| isCommand commands CBumpRight key keyMods
 	, keyState	== Down
-	= 	motionBump portRef (-20, 0) >> postRedisplay stateRef
+	= do	motionBump portRef (-20, 0)
+	        postRedisplay stateRef
 
 	-- bump up
 	| isCommand commands CBumpUp key keyMods
 	, keyState	== Down
-	= 	motionBump portRef (0, 20) >> postRedisplay stateRef
+	= do    motionBump portRef (0, 20)
+	        postRedisplay stateRef
 
 	-- bump down
 	| isCommand commands CBumpDown key keyMods
 	, keyState	== Down
-	= 	motionBump portRef (0, -20) >> postRedisplay stateRef
+	= do    motionBump portRef (0, -20)
+	        postRedisplay stateRef
 
 	-- bump clockwise
 	| isCommand commands CBumpClockwise key keyMods
