@@ -28,24 +28,33 @@
 --
 --   Gloss uses OpenGL under the hood, but you don't have to worry about any of that.
 --
--- @
--- Release Notes:
+-- @Release Notes:
+--
+-- For 1.4.0:
+--   Thanks to Christiaan Baaij: 
+--   * Support for using GLFW as the window library instead of GLUT.
+--     GLUT is still the default, but to use GLFW install gloss with:
+--        cabal install gloss --flags=\"GLFW -GLUT\"
+--    
 -- For 1.3.0:
---     New support for displaying bitmap files. (Thanks to Ben Lambert-Smith)
---     Various wibbles for GHC 7.1   
+--   * Various wibbles for GHC 7.1   
+--   Thanks to Ben Lambert-Smith:
+--   * Support for displaying bitmap files.
 --
 -- For 1.2.0:
---     Cleaned up module hierarchy.
---     Added line-line intersection utils.
---     Fixed a bug causing motion events to give the wrong position.   (Thanks to Thomas DuBuisson)
---     Fixed a space leak in simulate mode when the window was hidden. (Thanks to Stephan Maka)
---     Enabled -Wall and fixed all warnings.
---     Various wibbles for GHC 7.0
+--   * Cleaned up module hierarchy.
+--   * Added line-line intersection utils.
+--   * Enabled -Wall and fixed all warnings.
+--   * Various wibbles for GHC 7.0
+--   Thanks to Thomas DuBuisson:
+--   * Fixed a bug causing motion events to give the wrong position.
+--   Thanks to Stephan Maka:
+--   * Fixed a space leak in simulate mode when the window was hidden.
 --
 -- For 1.1.0:
---     Added game mode.
---     Added QuadTree and Extent structures.
---     Added simple ray casting.
+--   * Added game mode.
+--   * Added QuadTree and Extent structures.
+--   * Added simple ray casting.
 -- @
 --
 module Graphics.Gloss 
