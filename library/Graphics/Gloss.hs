@@ -22,10 +22,9 @@
 --   Animations can be constructed similarly using the `animateInWindow`.
 --
 --   If you want to run a simulation based around finite time steps then try
---   `simulateInWindow` from "Graphics.Gloss.Interface.Simulate".
+--   `simulateInWindow`.
 --
---   If you want to manage your own key\/mouse events then use `gameInWindow` from
---   "Graphics.Gloss.Interface.Game".
+--   If you want to manage your own key\/mouse events then use `gameInWindow`.
 --
 --   Gloss uses OpenGL under the hood, but you don't have to worry about any of that.
 --
@@ -53,11 +52,13 @@ module Graphics.Gloss
 	( module Graphics.Gloss.Data.Picture
 	, module Graphics.Gloss.Data.Color
 	, displayInWindow
-	, displayInWindowB
 	, animateInWindow
-	, animateInWindowB)
+        , simulateInWindow
+	, gameInWindow)
 where
 import Graphics.Gloss.Data.Picture
 import Graphics.Gloss.Data.Color
-import Graphics.Gloss.Internals.Interface.Display	(displayInWindow,displayInWindowB)
-import Graphics.Gloss.Internals.Interface.Animate	(animateInWindow,animateInWindowB)
+import Graphics.Gloss.Internals.Interface.Display
+import Graphics.Gloss.Internals.Interface.Animate
+import Graphics.Gloss.Internals.Interface.Simulate
+import Graphics.Gloss.Internals.Interface.Game

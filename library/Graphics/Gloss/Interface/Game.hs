@@ -8,10 +8,9 @@ module Graphics.Gloss.Interface.Game
  	( module Graphics.Gloss.Data.Picture
 	, module Graphics.Gloss.Data.Color
 	, gameInWindow
-	, gameInWindowB
 	, Event(..), Key(..), SpecialKey(..), MouseButton(..), KeyState(..), Modifiers(..))
 where
 import Graphics.Gloss.Data.Picture
 import Graphics.Gloss.Data.Color
-import Graphics.Gloss.Internals.Interface.Game		(gameInWindow, gameInWindowB, Event(..))
+import Graphics.Gloss.Internals.Interface.Game
 import Graphics.Gloss.Internals.Interface.Backend

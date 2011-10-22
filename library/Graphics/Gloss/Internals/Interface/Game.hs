@@ -3,7 +3,7 @@
 
 module Graphics.Gloss.Internals.Interface.Game
 	( gameInWindow
-	, gameInWindowB
+	, gameInWindowWithBackend
 	, Event(..))
 where
 import Graphics.Gloss.Data.Color
@@ -45,9 +45,11 @@ gameInWindow
 	-> (Float -> world -> world)   	-- ^ A function to step the world one iteration.
 					--   It is passed the period of time (in seconds) needing to be advanced.
 	-> IO ()
-gameInWindow = gameInWindowB defaultBackendState
 
-gameInWindowB
+gameInWindow
+        = gameInWindowWithBackend defaultBackendState
+
+gameInWindowWithBackend
 	:: forall world a
 	.  Backend a
 	=> a				-- ^ Initial state of the backend
@@ -63,7 +65,7 @@ gameInWindowB
 					--   It is passed the period of time (in seconds) needing to be advanced.
 	-> IO ()
 
-gameInWindowB
+gameInWindowWithBackend
 	backend
 	windowName
 	windowSize

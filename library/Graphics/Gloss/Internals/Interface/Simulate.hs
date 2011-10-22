@@ -2,8 +2,8 @@
 {-# OPTIONS_HADDOCK hide #-}
 
 module Graphics.Gloss.Internals.Interface.Simulate
-	(simulateInWindow
-	,simulateInWindowB)
+	( simulateInWindow
+	, simulateInWindowWithBackend)
 where
 import Graphics.Gloss.Data.Color
 import Graphics.Gloss.Data.Picture
@@ -45,9 +45,11 @@ simulateInWindow
 						 --	current viewport and the amount of time for this simulation
 						 --     step (in seconds).
 	-> IO ()
-simulateInWindow = simulateInWindowB defaultBackendState
 
-simulateInWindowB
+simulateInWindow
+        = simulateInWindowWithBackend defaultBackendState
+
+simulateInWindowWithBackend
 	:: forall model a
 	.  Backend a
 	=> a				-- ^ Initial state of the backend
@@ -62,7 +64,8 @@ simulateInWindowB
 						 --	current viewport and the amount of time for this simulation
 						 --     step (in seconds).
 	-> IO ()
-simulateInWindowB
+
+simulateInWindowWithBackend
 	backend
 	windowName
 	windowSize
