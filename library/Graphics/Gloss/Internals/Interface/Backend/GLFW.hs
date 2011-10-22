@@ -53,6 +53,19 @@ data GLFWState
         }
 
 
+-- | Initial GLFW state.
+glfwStateInit :: GLFWState
+glfwStateInit
+        = GLFWState
+        { modifiers      = Modifiers Up Up Up
+        , mousePosition = (0, 0)
+        , mouseWheelPos = 0
+        , dirtyScreen   = True
+        , display       = return ()
+        , idle          = return () }
+
+
+
 instance Backend GLFWState where
         initBackendState           = glfwStateInit
         initializeBackend          = initializeGLFW
@@ -70,18 +83,6 @@ instance Backend GLFWState where
         getWindowDimensions        = (\_     -> GLFW.getWindowDimensions)
         elapsedTime                = (\_     -> GLFW.getTime)
         sleep                      = (\_ sec -> GLFW.sleep sec)
-
-
--- | Initial GLFW state.
-glfwStateInit :: GLFWState
-glfwStateInit
-        = GLFWState
-        { modifiers      = Modifiers Up Up Up
-        , mousePosition = (0, 0)
-        , mouseWheelPos = 0
-        , dirtyScreen   = True
-        , display       = return ()
-        , idle          = return () }
 
 
 -- Initialise -----------------------------------------------------------------

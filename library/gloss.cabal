@@ -12,8 +12,8 @@ Homepage:            http://gloss.ouroborus.net
 Bug-reports:         gloss@ouroborus.net
 Description:
 	Gloss hides the pain of drawing simple vector graphics behind a nice data type and
-	a few display functions. Gloss uses OpenGL and GLUT under the hood, but you won't
-	have to worry about any of that. Get something cool on the screen in under 10 minutes.
+	a few display functions. Gloss uses OpenGL under the hood, but you won't need to
+	worry about any of that. Get something cool on the screen in under 10 minutes.
 
 Synopsis:
         Painless 2D vector graphics, animations and simulations.

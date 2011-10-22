@@ -32,6 +32,7 @@
 --
 -- For 1.4.0:
 --   Thanks to Christiaan Baaij: 
+--   * Refactoring of Gloss internals to support multiple window manager backends.
 --   * Support for using GLFW as the window library instead of GLUT.
 --     GLUT is still the default, but to use GLFW install gloss with:
 --        cabal install gloss --flags=\"GLFW -GLUT\"
