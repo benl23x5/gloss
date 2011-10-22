@@ -275,11 +275,11 @@ callbackIdle ref callbacks
 glutKeyToKey :: GLUT.Key -> Key
 glutKeyToKey key 
  = case key of
-        GLUT.Char '\27'                            -> SpecialKey KeyEsc
         GLUT.Char '\32'                            -> SpecialKey KeySpace
         GLUT.Char '\13'                            -> SpecialKey KeyEnter
         GLUT.Char '\9'                             -> SpecialKey KeyTab
-        GLUT.Char '\127'                           -> SpecialKey KeyBackspace
+        GLUT.Char '\ESC'                           -> SpecialKey KeyEsc
+        GLUT.Char '\DEL'                           -> SpecialKey KeyDelete
         GLUT.Char c                                -> Char c
         GLUT.SpecialKey GLUT.KeyF1                 -> SpecialKey KeyF1
         GLUT.SpecialKey GLUT.KeyF2                 -> SpecialKey KeyF2
