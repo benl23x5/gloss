@@ -15,7 +15,7 @@ import Graphics.Gloss.Internals.Interface.ViewPort.KeyMouse
 import Graphics.Gloss.Internals.Interface.ViewPort.Motion
 import Graphics.Gloss.Internals.Interface.ViewPort.Reshape
 import Graphics.Gloss.Internals.Interface.Animate.Timing
-import qualified Graphics.Gloss.Internals.Render.Options			as RO
+import qualified Graphics.Gloss.Internals.Render.State	        		as RS
 import qualified Graphics.Gloss.Internals.Interface.ViewPort.ControlState	as VPC
 import qualified Graphics.Gloss.Internals.Interface.Animate.State		as AN
 import qualified Graphics.Gloss.Internals.Interface.Callback			as Callback
@@ -57,7 +57,7 @@ animateInWindowWithBackend backend name size pos backColor frameFun
  = do	
 	viewSR		<- newIORef viewPortInit
 	viewControlSR	<- newIORef VPC.stateInit
-	renderSR	<- newIORef RO.optionsInit
+	renderSR	<- newIORef RS.stateInit
 	animateSR	<- newIORef AN.stateInit
 
  	let displayFun backendRef = do

@@ -82,7 +82,7 @@ Library
         Graphics.Gloss.Internals.Render.Bitmap
         Graphics.Gloss.Internals.Render.Circle
         Graphics.Gloss.Internals.Render.Common
-        Graphics.Gloss.Internals.Render.Options
+        Graphics.Gloss.Internals.Render.State
         Graphics.Gloss.Internals.Render.Picture
         Graphics.Gloss.Internals.Render.ViewPort
 

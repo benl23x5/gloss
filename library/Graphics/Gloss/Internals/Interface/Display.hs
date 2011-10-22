@@ -14,7 +14,7 @@ import Graphics.Gloss.Internals.Interface.ViewPort
 import Graphics.Gloss.Internals.Interface.ViewPort.KeyMouse
 import Graphics.Gloss.Internals.Interface.ViewPort.Motion
 import Graphics.Gloss.Internals.Interface.ViewPort.Reshape
-import qualified Graphics.Gloss.Internals.Render.Options			as RO
+import qualified Graphics.Gloss.Internals.Render.State	        		as RS
 import qualified Graphics.Gloss.Internals.Interface.ViewPort.ControlState	as VPC
 import qualified Graphics.Gloss.Internals.Interface.Callback			as Callback
 
@@ -57,7 +57,7 @@ displayInWindowWithBackend
 displayInWindowWithBackend backend name size pos background picture
  =  do	viewSR		<- newIORef viewPortInit
 	viewControlSR	<- newIORef VPC.stateInit
-	renderSR	<- newIORef RO.optionsInit
+	renderSR	<- newIORef RS.stateInit
 	
 	let renderFun backendRef = do
 		view	<- readIORef viewSR

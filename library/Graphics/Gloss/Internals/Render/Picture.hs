@@ -9,7 +9,7 @@ import	Graphics.Gloss.Data.Picture
 import	Graphics.Gloss.Data.Color
 import	Graphics.Gloss.Internals.Interface.Backend
 import	Graphics.Gloss.Internals.Interface.ViewPort
-import	Graphics.Gloss.Internals.Render.Options
+import	Graphics.Gloss.Internals.Render.State
 import	Graphics.Gloss.Internals.Render.Common
 import	Graphics.Gloss.Internals.Render.Circle
 import	Graphics.Gloss.Internals.Render.Bitmap
@@ -23,7 +23,7 @@ import	Data.IORef				(IORef)
 renderPicture
 	:: forall a . Backend a
 	=> IORef a
-	-> Options 		-- ^ The render options to use
+	-> State		-- ^ The render state
 	-> ViewPort		-- ^ The current viewport.
 	-> Picture 		-- ^ The picture to render.
 	-> IO ()
@@ -42,15 +42,15 @@ renderPicture
 	windowSize_	<- getWindowDimensions backendRef
 
 	-- 
-	let ?modeWireframe	= optionsWireframe renderS
-	    ?modeColor		= optionsColor     renderS
+	let ?modeWireframe	= stateWireframe renderS
+	    ?modeColor		= stateColor     renderS
 	    ?matProj		= matProj_
 	    ?viewport		= viewport_
 	    ?windowSize		= windowSize_
 	
 	-- setup render state for world
-	setLineSmooth	(optionsLineSmooth renderS)
-	setBlendAlpha	(optionsBlendAlpha renderS)
+	setLineSmooth	(stateLineSmooth renderS)
+	setBlendAlpha	(stateBlendAlpha renderS)
 	
 	drawPicture (viewPortScale viewS) picture
 
@@ -153,6 +153,7 @@ drawPicture circScale picture
 		--  each pixel's value needs to be reversed we also need to
 		--  Convert imgData from ByteString to Ptr Word8
 		imgData' <- reverseRGBA $ imgData
+
 		-- Allocate texture handle for texture
 		[texObject] <- GL.genObjectNames 1
 		GL.textureBinding GL.Texture2D $= Just texObject
@@ -168,6 +169,7 @@ drawPicture circScale picture
 				(gsizei height))
 			0
 			(GL.PixelData GL.RGBA GL.UnsignedInt8888 imgData')
+
 		-- Set up wrap and filtering mode
 		GL.textureWrapMode GL.Texture2D GL.S $= (GL.Repeated, GL.Repeat)
 		GL.textureWrapMode GL.Texture2D GL.T $= (GL.Repeated, GL.Repeat)

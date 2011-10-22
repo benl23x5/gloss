@@ -21,7 +21,7 @@ import qualified Graphics.Gloss.Internals.Interface.Callback			as Callback
 import qualified Graphics.Gloss.Internals.Interface.ViewPort.ControlState	as VPC
 import qualified Graphics.Gloss.Internals.Interface.Simulate.State		as SM
 import qualified Graphics.Gloss.Internals.Interface.Animate.State		as AN
-import qualified Graphics.Gloss.Internals.Render.Options			as RO
+import qualified Graphics.Gloss.Internals.Render.State	        		as RS
 import Data.IORef
 import System.Mem
 
@@ -86,7 +86,7 @@ simulateInWindowWithBackend
 	-- make the initial GL view and render states
 	viewSR		<- newIORef viewPortInit
 	viewControlSR	<- newIORef VPC.stateInit
-	renderSR	<- newIORef RO.optionsInit
+	renderSR	<- newIORef RS.stateInit
 	animateSR	<- newIORef AN.stateInit
 
 	let displayFun backendRef

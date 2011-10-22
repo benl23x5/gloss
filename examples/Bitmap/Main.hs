@@ -16,10 +16,10 @@ run fileName
  = do	(bitmap, width, height)	<- loadBitmap fileName
 	displayInWindow
 		fileName
-		(width * 3, height * 3)
+		(width, height)
       		(10,  10)
       		white
-      		(Scale 2 2 bitmap)
+      		(bitmap)
 
 
 loadBitmap :: FilePath -> IO (Picture, Int,  Int)

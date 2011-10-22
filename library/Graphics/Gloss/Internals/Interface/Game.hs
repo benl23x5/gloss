@@ -16,10 +16,10 @@ import Graphics.Gloss.Internals.Interface.ViewPort
 import Graphics.Gloss.Internals.Interface.ViewPort.Reshape
 import Graphics.Gloss.Internals.Interface.Animate.Timing
 import Graphics.Gloss.Internals.Interface.Simulate.Idle
-import qualified Graphics.Gloss.Internals.Interface.Callback			as Callback
-import qualified Graphics.Gloss.Internals.Interface.Simulate.State		as SM
-import qualified Graphics.Gloss.Internals.Interface.Animate.State		as AN
-import qualified Graphics.Gloss.Internals.Render.Options			as RO
+import qualified Graphics.Gloss.Internals.Interface.Callback		as Callback
+import qualified Graphics.Gloss.Internals.Interface.Simulate.State	as SM
+import qualified Graphics.Gloss.Internals.Interface.Animate.State	as AN
+import qualified Graphics.Gloss.Internals.Render.State	        	as RS
 import Data.IORef
 import System.Mem
 
@@ -85,7 +85,7 @@ gameInWindowWithBackend
 
 	-- make the initial GL view and render states
 	viewSR		<- newIORef viewPortInit
-	renderSR	<- newIORef RO.optionsInit
+	renderSR	<- newIORef RS.stateInit
 	animateSR	<- newIORef AN.stateInit
 
 	let displayFun backendRef
