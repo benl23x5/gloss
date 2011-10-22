@@ -107,6 +107,14 @@ Executable gloss-conway
   hs-source-dirs: Conway
   ghc-options: -O2
 
+Executable gloss-gameevent
+  Build-depends: 
+        base            == 4.*,
+        gloss           == 1.4.*
+  Main-is: Main.hs
+  hs-source-dirs: GameEvent
+  ghc-options: -O2
+
 Executable gloss-occlusion
   Build-depends: 
         base            == 4.*, 
