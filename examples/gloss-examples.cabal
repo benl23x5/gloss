@@ -101,7 +101,7 @@ Executable gloss-conway
   Build-depends: 
         base            == 4.*,
         gloss           == 1.4.*,
-        vector          == 0.7.*
+        vector          >= 0.7 && < 1.0
   Main-is: Main.hs
   other-modules: Cell World
   hs-source-dirs: Conway
@@ -128,7 +128,7 @@ Executable gloss-visibility
   Build-depends: 
         base            == 4.*, 
         gloss           == 1.4.*,
-        vector          == 0.7.*
+        vector          >= 0.7 && < 1.0
   Main-is: Main.hs
   other-modules: Draw Interface State World Geometry.Randomish Geometry.Segment
   hs-source-dirs: Visibility 
