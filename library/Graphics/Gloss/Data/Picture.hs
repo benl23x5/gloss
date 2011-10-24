@@ -33,6 +33,7 @@ import qualified Data.ByteString as B
 -- | A path through the x-y plane.
 type Path	= [Point]				
 
+
 -- | A 2D picture
 data Picture
 	-- Primitives -------------------------------------
@@ -49,14 +50,18 @@ data Picture
 	-- | A circle with the given radius.
 	| Circle	Float
 
-	-- | A circle with the given thickness and radius. If the thickness is 0 then this is equivalent to `Circle`.
+	-- | A circle with the given thickness and radius.
+	--   If the thickness is 0 then this is equivalent to `Circle`.
 	| ThickCircle	Float		Float
 
 	-- | Some text to draw with a vector font.
 	| Text		String
 
 	-- | A bitmap image with a width, height and a ByteString holding the 32 bit RGBA bitmap data.
-	--   The boolean flag controls whether Gloss should cache the bitmap between frames.
+	-- 
+	--  The boolean flag controls whether Gloss should cache the data between frames
+	--  for speed. If you are programatically generating the image for each frame then use
+	--  `False`.  If you have loaded it from a file then use `True`.
 	| Bitmap	Int	Int 	ByteString      Bool
 
 	-- Color ------------------------------------------
@@ -84,7 +89,6 @@ instance Monoid Picture where
 	mempty		= blank
 	mappend a b	= Pictures [a, b]
 	mconcat		= Pictures
-
 
 
 -- Constructors ----------------------------------------------------------------------------------
