@@ -26,7 +26,7 @@ Flag GLUT
 
 Flag GLFW
   Description: Enable the GLFW backend
-  Default:     True
+  Default:     False
 
 Flag ExplicitBackend
   Description: Expose versions of displayInWindow and friends that allow
