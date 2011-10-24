@@ -87,6 +87,12 @@ Library
         Graphics.Gloss.Internals.Render.Picture
         Graphics.Gloss.Internals.Render.ViewPort
 
+        Graphics.Gloss.Internals.Interface.Display
+        Graphics.Gloss.Internals.Interface.Animate
+        Graphics.Gloss.Internals.Interface.Simulate
+        Graphics.Gloss.Internals.Interface.Game
+        Graphics.Gloss.Internals.Interface.Backend
+
   If flag(GLUT)
     CPP-Options: -DWITHGLUT
     Other-modules:
@@ -99,17 +105,3 @@ Library
     Other-modules:
         Graphics.Gloss.Internals.Interface.Backend.GLFW
 
-  If flag(ExplicitBackend)
-    Exposed-modules:
-        Graphics.Gloss.Internals.Interface.Display
-        Graphics.Gloss.Internals.Interface.Animate
-        Graphics.Gloss.Internals.Interface.Simulate
-        Graphics.Gloss.Internals.Interface.Game
-        Graphics.Gloss.Internals.Interface.Backend
-  Else
-    Other-modules:
-        Graphics.Gloss.Internals.Interface.Display
-        Graphics.Gloss.Internals.Interface.Animate
-        Graphics.Gloss.Internals.Interface.Simulate
-        Graphics.Gloss.Internals.Interface.Game
-        Graphics.Gloss.Internals.Interface.Backend
