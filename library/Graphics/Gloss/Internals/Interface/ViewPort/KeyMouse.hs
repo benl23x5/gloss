@@ -10,8 +10,9 @@ import Graphics.Gloss.Internals.Interface.ViewPort
 import Graphics.Gloss.Internals.Interface.ViewPort.Command
 import Graphics.Gloss.Internals.Interface.Backend
 import qualified Graphics.Gloss.Internals.Interface.ViewPort.ControlState	as VPC
-import Data.IORef
 import Control.Monad
+import Data.IORef
+import Data.Maybe
 
 
 -- | Callback to handle keyboard and mouse button events
@@ -37,9 +38,22 @@ viewPort_keyMouse portRef controlRef stateRef key keyState keyMods pos
 		++ "keyMouse keyState = " ++ show keyState	++ "\n"
 		++ "keyMouse keyMods  = " ++ show keyMods 	++ "\n"
 -}
-	viewPort_keyMouse2 commands
+        -- Whether the user is holding down the translate button.
+        currentlyTranslating    
+                <- liftM (isJust . VPC.stateTranslateMark)
+                $ readIORef controlRef
+
+        -- Whether the user is holding down the rotate button.
+        currentlyRotating
+                <- liftM (isJust . VPC.stateRotateMark)
+                $ readIORef controlRef
+
+	viewPort_keyMouse2
+	        currentlyTranslating
+	        currentlyRotating
+	        commands
  where
-   viewPort_keyMouse2 commands
+   viewPort_keyMouse2 currentlyTranslating currentlyRotating commands
 	-- restore viewport
 	| isCommand commands CRestore key keyMods
 	, keyState	== Down
@@ -109,6 +123,7 @@ viewPort_keyMouse portRef controlRef stateRef key keyState keyMods pos
 	-- start
 	| isCommand commands CTranslate key keyMods
 	, keyState	== Down
+	, not currentlyRotating
 	= do	let (posX, posY)	= pos
 		controlRef `modifyIORef` \s -> s { 
 			VPC.stateTranslateMark 
@@ -117,7 +132,10 @@ viewPort_keyMouse portRef controlRef stateRef key keyState keyMods pos
 		postRedisplay stateRef
 
 	-- end
-	| isCommand commands CTranslate key keyMods
+	-- We don't want to use 'isCommand' here because the user may have
+	-- released the translation modifier key before the mouse button.
+	-- and we still want to cancel the translation.
+	| currentlyTranslating
 	, keyState	== Up
 	= do	controlRef `modifyIORef` \s -> s { 
 		 	VPC.stateTranslateMark = Nothing }
@@ -127,6 +145,7 @@ viewPort_keyMouse portRef controlRef stateRef key keyState keyMods pos
 	-- start
 	| isCommand commands CRotate key keyMods
 	, keyState	== Down
+	, not currentlyTranslating
 	= do	let (posX, posY)	= pos
 		controlRef `modifyIORef` \s -> s { 
 			VPC.stateRotateMark 
@@ -135,7 +154,10 @@ viewPort_keyMouse portRef controlRef stateRef key keyState keyMods pos
 		postRedisplay stateRef
 
 	-- end
-	| isCommand commands CRotate key keyMods
+	-- We don't want to use 'isCommand' here because the user may have
+	-- released the rotation modifier key before the mouse button, 
+	-- and we still want to cancel the rotation.
+	| currentlyRotating
 	, keyState	== Up
 	= do	controlRef `modifyIORef` \s -> s { 
 		 	VPC.stateRotateMark = Nothing }
