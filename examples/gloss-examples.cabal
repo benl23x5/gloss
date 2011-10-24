@@ -153,3 +153,10 @@ Executable gloss-boids
   hs-source-dirs: Boids
   ghc-options: -O2
 
+Executable gloss-draw
+  Build-depends:
+        base           == 4.*,
+        gloss          == 1.4.*
+  Main-is: Main.hs
+  hs-source-dirs: Draw
+  ghc-options: -O2
