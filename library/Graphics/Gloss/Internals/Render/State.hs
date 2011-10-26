@@ -7,11 +7,11 @@ module Graphics.Gloss.Internals.Render.State
 	, Texture (..))
 where
 import qualified Graphics.Rendering.OpenGL.GL	as GL
-import Foreign.Ptr
+import Foreign.ForeignPtr
 import System.Mem.StableName
-import Data.ByteString                          (ByteString)
 import Data.Word
 import Data.IORef
+import Graphics.Gloss.Data.Picture
 
 -- | Render options settings
 data State
@@ -36,9 +36,8 @@ data State
 -- | A texture that we've sent to OpenGL.
 data Texture
         = Texture
-        { -- | Stable name derived from the `ByteString` that the user gives us.
-          --   We 
-          texName       :: StableName ByteString
+        { -- | Stable name derived from the `BitmapData` that the user gives us.
+          texName       :: StableName BitmapData
 
         -- | Width of the image, in pixels.
         , texWidth      :: Int
@@ -47,7 +46,7 @@ data Texture
         , texHeight     :: Int
 
         -- | Pointer to the Raw texture data.
-        , texData       :: Ptr Word8
+        , texData       :: ForeignPtr Word8
         
         -- | The OpenGL texture object.
         , texObject     :: GL.TextureObject

@@ -5,14 +5,20 @@ module Graphics.Gloss.Data.Picture
 	, Vector
 	, Path
 	, Picture(..)
+	, BitmapData
 
 	-- * Aliases for Picture constructors
 	, blank, polygon, line, circle, thickCircle, text, bitmap
 	, color, translate, rotate, scale
 	, pictures
 
-	-- * Miscellaneous
+        -- * Loading Bitmaps
+        , bitmapOfForeignPtr
+	, bitmapOfByteString
+	, bitmapOfBMP
 	, loadBMP
+
+	-- * Miscellaneous
  	, lineLoop
  	, circleSolid
 	
@@ -23,10 +29,18 @@ where
 import Graphics.Gloss.Data.Color
 import Graphics.Gloss.Data.Point
 import Graphics.Gloss.Data.Vector
+import Graphics.Gloss.Internals.Render.Bitmap
 import Control.Monad
-import Data.Monoid
 import Codec.BMP
-import Data.ByteString (ByteString)
+import Foreign.ForeignPtr
+import Foreign.Marshal.Alloc
+import Foreign.Marshal.Utils
+import Foreign.Ptr
+import Data.Word
+import Data.Monoid
+import Data.ByteString
+import System.IO.Unsafe
+import qualified Data.ByteString.Unsafe as BSU
 
 
 -- | A path through the x-y plane.
@@ -56,12 +70,12 @@ data Picture
 	-- | Some text to draw with a vector font.
 	| Text		String
 
-	-- | A bitmap image with a width, height and a ByteString holding the 32 bit RGBA bitmap data.
+	-- | A bitmap image with a width, height and a Vector holding the 32 bit RGBA bitmap data.
 	-- 
 	--  The boolean flag controls whether Gloss should cache the data between frames
 	--  for speed. If you are programatically generating the image for each frame then use
 	--  `False`.  If you have loaded it from a file then use `True`.
-	| Bitmap	Int	Int 	ByteString      Bool
+	| Bitmap	Int	Int 	BitmapData Bool
 
 	-- Color ------------------------------------------
 	-- | A picture drawn with this color.
@@ -109,7 +123,7 @@ thickCircle = ThickCircle
 text :: String -> Picture
 text = Text
 
-bitmap :: Int -> Int -> ByteString -> Bool -> Picture
+bitmap :: Int -> Int -> BitmapData -> Bool -> Picture
 bitmap = Bitmap
 
 color :: Color -> Picture -> Picture
@@ -128,18 +142,59 @@ pictures :: [Picture] -> Picture
 pictures = Pictures
 
 
--- BMP file loader ------------------------------------------------------------
--- | An IO action that loads a BMP format file from the given path, and
---   produces a picture.
+-- Bitmaps --------------------------------------------------------------------
+-- | O(1). Use a `ForeignPtr` of RGBA data as a bitmap.
+bitmapOfForeignPtr :: Int -> Int -> ForeignPtr Word8 -> Bool -> Picture
+bitmapOfForeignPtr width height fptr cacheMe
+ = let  len     = width * height * 4
+        bdata   = BitmapData len fptr
+   in   Bitmap width height bdata cacheMe 
+
+
+-- | O(size). Copy a `ByteString` of RGBA data into a bitmap.
+{-# NOINLINE bitmapOfByteString #-}
+bitmapOfByteString :: Int -> Int -> ByteString -> Bool -> Picture
+bitmapOfByteString width height bs cacheMe
+ = unsafePerformIO
+ $ do   let len = width * height * 4
+        ptr     <- mallocBytes len
+        fptr    <- newForeignPtr finalizerFree ptr
+
+        BSU.unsafeUseAsCString bs
+         $ \cstr -> copyBytes ptr (castPtr cstr) len
+
+        let bdata = BitmapData len fptr
+        return $ Bitmap width height bdata cacheMe
+
+
+-- | O(size). Copy a `BMP` file into a bitmap.
+{-# NOINLINE bitmapOfBMP #-}
+bitmapOfBMP :: BMP -> Picture
+bitmapOfBMP bmp
+ = unsafePerformIO
+ $ do   let (width, height)     = bmpDimensions bmp
+        let bs                  = unpackBMPToRGBA32 bmp 
+        let len                 = width * height * 4
+
+        ptr     <- mallocBytes len
+        fptr    <- newForeignPtr finalizerFree ptr
+
+        BSU.unsafeUseAsCString bs
+         $ \cstr -> copyBytes ptr (castPtr cstr) len
+
+        let bdata = BitmapData len fptr
+        reverseRGBA bdata
+
+        return $ Bitmap width height bdata True
+
+
+-- | Load an uncompressed 24 or 32bit RGBA BMP file as a bitmap.
 loadBMP :: FilePath -> IO Picture
 loadBMP filePath
  = do   ebmp    <- readBMP filePath
         case ebmp of
          Left err       -> error $ show err
-         Right bmp
-          -> do let (width, height)     = bmpDimensions bmp
-                let bs                  = bmpRawImageData bmp 
-                return $ Bitmap width height bs True 
+         Right bmp      -> return $ bitmapOfBMP bmp
 
 
 -- Shapes ----------------------------------------------------------------------------------------

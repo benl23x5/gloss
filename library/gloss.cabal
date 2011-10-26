@@ -1,5 +1,5 @@
 Name:                gloss
-Version:             1.4.0.1
+Version:             1.5.0.1
 License:             MIT
 License-file:        LICENSE
 Author:              Ben Lippmeier
@@ -41,7 +41,8 @@ Library
         bytestring == 0.9.*,
         OpenGL     == 2.4.*,
         GLUT       == 2.2.*,
-        bmp        == 1.1.*
+        bmp        == 1.1.*,
+        vector     >= 0.8 && < 1.0
 
   ghc-options:      -O2 -Wall
 

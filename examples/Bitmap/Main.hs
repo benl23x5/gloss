@@ -13,23 +13,12 @@ main
 		      , "  file.bmp should be a 24 or 32-bit uncompressed BMP file" ]
 
 run fileName
- = do	(bitmap, width, height)	<- loadBitmap fileName
+ = do	picture@(Bitmap width height _ _)
+                <- loadBMP fileName
+
 	displayInWindow
 		fileName
 		(width, height)
       		(10,  10)
       		white
-      		(bitmap)
-
-
-loadBitmap :: FilePath -> IO (Picture, Int,  Int)
-loadBitmap fileName
- = do	eImg	<- readBMP fileName
-	case eImg of
-	 Left err 	-> error  $ show err
-	 Right img	
-	  -> let (width, height)	= bmpDimensions img
-		 bytestring		= unpackBMPToRGBA32 img
-	     in	 return ( Bitmap width height bytestring True
-			, width, height)
-	
+      		picture

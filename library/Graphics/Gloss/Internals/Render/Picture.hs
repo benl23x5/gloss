@@ -13,14 +13,14 @@ import	Graphics.Gloss.Internals.Render.State
 import	Graphics.Gloss.Internals.Render.Common
 import	Graphics.Gloss.Internals.Render.Circle
 import	Graphics.Gloss.Internals.Render.Bitmap
+import  System.Mem.StableName
+import  Foreign.ForeignPtr
+import	Data.IORef
+import  Data.List
+import  Control.Monad
 import	Graphics.Rendering.OpenGL		(($=), get)
 import	qualified Graphics.Rendering.OpenGL.GL	as GL
 import	qualified Graphics.UI.GLUT		as GLUT
-import  System.Mem.StableName
-import	Data.IORef
-import  Data.List
-import  Data.ByteString                         (ByteString)
-import  Control.Monad
 
 
 -- ^ Render a picture using the given render options and viewport.
@@ -201,7 +201,7 @@ drawPicture circScale picture
 --   otherwise load it into OpenGL.
 loadTexture
         :: IORef [Texture]
-        -> Int -> Int -> ByteString
+        -> Int -> Int -> BitmapData
         -> Bool
         -> IO Texture
 
@@ -230,23 +230,22 @@ loadTexture refTextures width height imgData cacheMe
 -- | Install a texture into OpenGL.
 installTexture     
         :: Int -> Int
-        -> ByteString
+        -> BitmapData
         -> Bool
         -> IO Texture
 
-installTexture width height imgData cacheMe
+installTexture width height bitmapData@(BitmapData _ fptr) cacheMe
  = do   
-        -- As OpenGL reads texture pixels as ABGR (instead of RGBA)
-	--  each pixel's value needs to be reversed we also need to
-	--  Convert imgData from ByteString to Ptr Word8
-	ptrData <- reverseRGBA $ imgData
-
 	-- Allocate texture handle for texture
 	[tex] <- GL.genObjectNames 1
 	GL.textureBinding GL.Texture2D $= Just tex
 
 	-- Sets the texture in imgData as the current texture
-	GL.texImage2D
+	-- This copies the data from the pointer into OpenGL texture memory, 
+	-- so it's ok if the foreignptr gets garbage collected after this.
+        withForeignPtr fptr
+         $ \ptr ->
+   	   GL.texImage2D
 		Nothing
 		GL.NoProxy
 		0
@@ -255,18 +254,18 @@ installTexture width height imgData cacheMe
 			(gsizei width)
 			(gsizei height))
 		0
-		(GL.PixelData GL.RGBA GL.UnsignedInt8888 ptrData)
+		(GL.PixelData GL.RGBA GL.UnsignedInt8888 ptr)
 
         -- Make a stable name that we can use to identify this data again.
         -- If the user gives us the same texture data at the same size then we
         -- can avoid loading it into texture memory again.
-        name    <- makeStableName imgData
+        name    <- makeStableName bitmapData
 
         return  Texture
                 { texName       = name
                 , texWidth      = width
                 , texHeight     = height
-                , texData       = ptrData
+                , texData       = fptr
                 , texObject     = tex
                 , texCacheMe    = cacheMe }
 
@@ -276,17 +275,8 @@ installTexture width height imgData cacheMe
 freeTexture :: Texture -> IO ()
 freeTexture tex
  | texCacheMe tex       = return ()
- | otherwise            = deleteTexture tex
+ | otherwise            = GL.deleteObjectNames [texObject tex]
 
-
--- | Delete a texture object from OpenGL.
-deleteTexture :: Texture -> IO ()
-deleteTexture tex
- = do   -- Delete texture
-	GL.deleteObjectNames [texObject tex]
-
-	-- Free image data
-	freeBitmapData (texData tex)
 
 
 -- Utils ------------------------------------------------------------------------------------------
