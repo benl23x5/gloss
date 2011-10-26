@@ -30,6 +30,11 @@
 --
 -- @Release Notes:
 --
+-- For 1.5.0:
+--   * O(1) Conversion of ForeignPtrs to bitmaps.
+--   * An extra flag on the Bitmap constructor allows bitmaps to be cached
+--     in texture memory between frames.
+--
 -- For 1.4.0:
 --   Thanks to Christiaan Baaij: 
 --   * Refactoring of Gloss internals to support multiple window manager backends.
