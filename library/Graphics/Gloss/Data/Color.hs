@@ -4,8 +4,8 @@ module Graphics.Gloss.Data.Color
 	( 
 	-- ** Color data type
 	  Color
-	, makeColor
-	, makeColor8
+	, makeColor, makeColor8
+	, rawColor
 	, rgbaOfColor
 
 	-- ** Color functions
@@ -31,7 +31,7 @@ where
 --	are in the required range. To make a custom color use 'makeColor'.
 data Color
 	-- | Holds the color components. All components lie in the range [0..1.
-	= RGBA  Float Float Float Float
+	= RGBA  !Float !Float !Float !Float
 	deriving (Show, Eq)
 
 
@@ -46,7 +46,8 @@ makeColor
 makeColor r g b a
 	= clampColor 
 	$ RGBA r g b a
-
+{-# INLINE makeColor #-}
+        
 
 -- | Make a custom color. All components are clamped to the range [0..255].
 makeColor8 
@@ -62,12 +63,27 @@ makeColor8 r g b a
 		(fromIntegral g / 255)
 		(fromIntegral b / 255)
 		(fromIntegral a / 255)
+{-# INLINE makeColor8 #-}
 
 	
 -- | Take the RGBA components of a color.
 rgbaOfColor :: Color -> (Float, Float, Float, Float)
 rgbaOfColor (RGBA r g b a)	= (r, g, b, a)
+{-# INLINE rgbaOfColor #-}
 		
+
+-- | Make a custom color.
+--   Components should be in the range [0..1] but this is not checked.
+rawColor
+	:: Float	-- ^ Red component.
+	-> Float	-- ^ Green component.
+	-> Float 	-- ^ Blue component.
+	-> Float 	-- ^ Alpha component.
+	-> Color
+
+rawColor = RGBA
+{-# INLINE rawColor #-}
+
 
 -- Internal 
 
