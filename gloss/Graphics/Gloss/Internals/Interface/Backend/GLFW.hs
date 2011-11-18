@@ -6,6 +6,7 @@ module Graphics.Gloss.Internals.Interface.Backend.GLFW
         (GLFWState)
 where
 import Data.IORef
+import Data.Char                           (toLower)
 import Control.Monad
 import Graphics.UI.GLFW                    (WindowValue(..))
 import qualified Graphics.UI.GLFW          as GLFW
@@ -302,9 +303,15 @@ callbackChar
         :: IORef GLFWState -> [Callback]
         -> Char -> Bool -> IO ()
 
-callbackChar stateRef callbacks key keystate
+callbackChar stateRef callbacks char keystate
  = do   (GLFWState mods pos _ _ _ _) <- readIORef stateRef
-        let key'      = if (fromEnum key == 32) then SpecialKey KeySpace else Char key
+        let key'      = charToSpecial char
+        -- Only key presses of characters are passed to this callback,
+        -- character key releases are caught by the 'keyCallback'. This is an
+        -- intentional feature of GLFW. What this means that a key press of
+        -- the '>' char  (on a US Intl keyboard) is captured by this callback,
+        -- but a release is captured as a '.' with the shift-modifier in the
+        -- keyCallback.
         let keystate' = if keystate then Down else Up
 
         -- Call all the Gloss KeyMouse actions with the new state.
@@ -448,7 +455,7 @@ class GLFWKey a where
 instance GLFWKey GLFW.Key where
   fromGLFW key 
    = case key of
-        GLFW.CharKey _      -> SpecialKey KeyUnknown
+        GLFW.CharKey c      -> charToSpecial (toLower c)
         GLFW.KeySpace       -> SpecialKey KeySpace
         GLFW.KeyEsc         -> SpecialKey KeyEsc
         GLFW.KeyF1          -> SpecialKey KeyF1
@@ -504,9 +511,41 @@ instance GLFWKey GLFW.Key where
         GLFW.KeyPadSubtract -> SpecialKey KeyPadSubtract
         GLFW.KeyPadAdd      -> SpecialKey KeyPadAdd
         GLFW.KeyPadDecimal  -> SpecialKey KeyPadDecimal
-        GLFW.KeyPadEqual    -> SpecialKey KeyPadEqual
+        GLFW.KeyPadEqual    -> Char '='
         GLFW.KeyPadEnter    -> SpecialKey KeyPadEnter
         _                   -> SpecialKey KeyUnknown
+
+-- Sometimes GLFW registers special keys as char keys. So we need to convert
+-- those character codes to special keys instead of leaving them as char keys.
+-- This mostly happens on OS X.
+charToSpecial
+        :: Char
+        -> Key
+charToSpecial c = case (fromEnum c) of
+        32    -> SpecialKey KeySpace
+        63232 -> SpecialKey KeyUp
+        63233 -> SpecialKey KeyDown
+        63234 -> SpecialKey KeyLeft
+        63235 -> SpecialKey KeyRight
+        63236 -> SpecialKey KeyF1
+        63237 -> SpecialKey KeyF2
+        63238 -> SpecialKey KeyF3
+        63239 -> SpecialKey KeyF4
+        63240 -> SpecialKey KeyF5
+        63241 -> SpecialKey KeyF6
+        63242 -> SpecialKey KeyF7
+        63243 -> SpecialKey KeyF8
+        63244 -> SpecialKey KeyF9
+        63245 -> SpecialKey KeyF10
+        63246 -> SpecialKey KeyF11
+        63247 -> SpecialKey KeyF12
+        63248 -> SpecialKey KeyF13
+        63272 -> SpecialKey KeyDelete
+        63273 -> SpecialKey KeyHome
+        63275 -> SpecialKey KeyEnd
+        63276 -> SpecialKey KeyPageUp
+        63277 -> SpecialKey KeyPageDown
+        _     -> Char c
 
 instance GLFWKey GLFW.MouseButton where
   fromGLFW mouse
