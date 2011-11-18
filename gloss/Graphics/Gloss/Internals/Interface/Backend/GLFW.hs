@@ -109,7 +109,7 @@ exitGLFW :: IORef GLFWState -> IO ()
 exitGLFW _
  = do
 #ifdef linux_HOST_OS
--- See comment in header on why we exit GLUT for Linux
+-- See [Note: FreeGlut] on why we exit GLUT for Linux
         GLUT.exit
 #endif
         GLFW.closeWindow
