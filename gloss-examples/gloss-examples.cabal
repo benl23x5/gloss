@@ -16,7 +16,7 @@ Description:
 
 Synopsis:
         Examples using the gloss library
-{-
+
 Executable gloss-easy
   Build-depends:
         base            == 4.*,
@@ -160,12 +160,3 @@ Executable gloss-draw
   Main-is: Main.hs
   hs-source-dirs: Draw
   ghc-options: -O2
--}
-Executable gloss-crystal
-  Build-depends:
-        base         == 4.*,
-        gloss        == 1.5.*,
-        repa         == 3.0.*
-  Main-is: Main.hs
-  hs-source-dirs: Crystal
-  ghc-options: -Odph -rtsopts -threaded

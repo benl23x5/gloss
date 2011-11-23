@@ -515,12 +515,13 @@ instance GLFWKey GLFW.Key where
         GLFW.KeyPadEnter    -> SpecialKey KeyPadEnter
         _                   -> SpecialKey KeyUnknown
 
--- Sometimes GLFW registers special keys as char keys. So we need to convert
--- those character codes to special keys instead of leaving them as char keys.
--- This mostly happens on OS X.
-charToSpecial
-        :: Char
-        -> Key
+
+-- | Convert char keys to special keys to work around a bug in 
+--   GLFW 2.7. On OS X, GLFW sometimes registers special keys as char keys,
+--   so we convert them back here.
+--   GLFW 2.7 is current as of Nov 2011, and is shipped with the Hackage
+--   binding GLFW-b 0.2.*
+charToSpecial :: Char -> Key
 charToSpecial c = case (fromEnum c) of
         32    -> SpecialKey KeySpace
         63232 -> SpecialKey KeyUp

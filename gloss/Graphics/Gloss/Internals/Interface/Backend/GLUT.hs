@@ -239,7 +239,8 @@ installMotionCallbackGLUT
         -> IO ()
 
 installMotionCallbackGLUT ref callbacks
-        = GLUT.motionCallback $= Just (callbackMotion ref callbacks)
+ = do   GLUT.motionCallback        $= Just (callbackMotion ref callbacks)
+        GLUT.passiveMotionCallback $= Just (callbackMotion ref callbacks)
 
 callbackMotion
         :: IORef GLUTState -> [Callback]
