@@ -33,11 +33,13 @@ import Data.IORef
 --	* Zoom Viewport - mouse wheel, or page up\/down-keys.
 --
 displayInWindow
-	:: String	-- ^ Name of the window.
-	-> (Int, Int)	-- ^ Initial size of the window, in pixels.
-	-> (Int, Int)	-- ^ Initial position of the window, in pixels.
-	-> Color	-- ^ Background color.
-	-> Picture	-- ^ The picture to draw.
+	:: String           -- ^ Name of the window.
+	-> (Int, Int)       -- ^ Initial size of the window, in pixels.
+	-> Maybe (Int, Int) -- ^ 'Just' the initial position of the
+                            -- window, in pixels, or 'Nothing' for
+                            -- fullscreen.
+	-> Color            -- ^ Background color.
+	-> Picture          -- ^ The picture to draw.
 	-> IO ()
 
 displayInWindow
@@ -46,12 +48,14 @@ displayInWindow
 
 displayInWindowWithBackend
 	:: Backend a
-	=> a		-- ^ Initial state of the backend.
-	-> String	-- ^ Name of the window.
-	-> (Int, Int)	-- ^ Initial size of the window, in pixels.
-	-> (Int, Int)	-- ^ Initial position of the window, in pixels.
-	-> Color	-- ^ Background color.
-	-> Picture	-- ^ The picture to draw.
+	=> a                -- ^ Initial state of the backend.
+	-> String           -- ^ Name of the window.
+	-> (Int, Int)       -- ^ Initial size of the window, in pixels.
+	-> Maybe (Int, Int) -- ^ 'Just' the initial position of the
+                            -- window, in pixels, or 'Nothing' for
+                            -- fullscreen.
+	-> Color            -- ^ Background color.
+	-> Picture          -- ^ The picture to draw.
 	-> IO ()
 
 displayInWindowWithBackend backend name size pos background picture

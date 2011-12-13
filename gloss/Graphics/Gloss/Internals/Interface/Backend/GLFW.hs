@@ -121,21 +121,26 @@ openWindowGLFW
         :: IORef GLFWState
         -> String
         -> (Int,Int)
-        -> (Int,Int)
+        -> Maybe (Int,Int) -- ^ 'Just' the initial window position, or
+                           -- 'Nothing' for fullscreen.
         -> IO ()
 
-openWindowGLFW _ windowName (sizeX,sizeY) (posX,posY) 
+openWindowGLFW _ windowName (sizeX,sizeY) mPos
  = do   _ <- GLFW.openWindow
                 GLFW.defaultDisplayOptions
                  { GLFW.displayOptions_width        = sizeX
-                 , GLFW.displayOptions_height       = sizeY }
+                 , GLFW.displayOptions_height       = sizeY
+                 , GLFW.displayOptions_displayMode  = winType }
 
-        GLFW.setWindowPosition           posX posY
+        maybe (return ()) (uncurry GLFW.setWindowPosition) mPos
         GLFW.setWindowTitle              windowName
 
         -- Try to enable sync-to-vertical-refresh by setting the number 
         -- of buffer swaps per vertical refresh to 1.
         GLFW.setWindowBufferSwapInterval 1
+  where winType = case mPos of
+                    Just _ -> GLFW.Window
+                    Nothing -> GLFW.Fullscreen 
 
 
 -- Dump State -----------------------------------------------------------------

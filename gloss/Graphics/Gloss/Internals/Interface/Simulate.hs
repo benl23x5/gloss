@@ -35,7 +35,10 @@ simulateInWindow
 	:: forall model
 	.  String			-- ^ Name of the window.
 	-> (Int, Int)			-- ^ Initial size of the window, in pixels.
-	-> (Int, Int)			-- ^ Initial position of the window, in pixels.
+	-> Maybe (Int, Int)		-- ^ 'Just' the initial
+                                        -- position of the window, in
+                                        -- pixels, or 'Nothing' for
+                                        -- fullscreen.
 	-> Color			-- ^ Background color.
 	-> Int				-- ^ Number of simulation steps to take for each second of real time.
 	-> model 			-- ^ The initial model.
@@ -54,7 +57,10 @@ simulateInWindowWithBackend
 	=> a				-- ^ Initial state of the backend
 	-> String			-- ^ Name of the window.
 	-> (Int, Int)			-- ^ Initial size of the window, in pixels.
-	-> (Int, Int)			-- ^ Initial position of the window, in pixels.
+        -> Maybe (Int, Int)	        -- ^ 'Just' the initial
+                                        -- position of the window, in
+                                        -- pixels, or 'Nothing' for
+                                        -- fullscreen.
 	-> Color			-- ^ Background color.
 	-> Int				-- ^ Number of simulation steps to take for each second of real time.
 	-> model 			-- ^ The initial model.

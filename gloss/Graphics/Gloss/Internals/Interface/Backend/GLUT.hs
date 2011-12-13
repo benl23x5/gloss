@@ -4,6 +4,7 @@ module Graphics.Gloss.Internals.Interface.Backend.GLUT
 where
 
 import Data.IORef
+import Data.Maybe (isNothing)
 import Control.Monad
 import Control.Concurrent
 import Graphics.UI.GLUT                           (get,($=))
@@ -93,31 +94,35 @@ openWindowGLUT
         :: IORef GLUTState
         -> String
         -> (Int,Int)
-        -> (Int,Int)
+        -> Maybe (Int,Int) -- ^ 'Just' the initial window position, or
+                           -- 'Nothing' for fullscreen.
         -> IO ()
-
-openWindowGLUT _ windowName (sizeX, sizeY) (posX, posY) 
+openWindowGLUT _ windowName (sizeX, sizeY) mPos 
  = do
-        -- Setup and create a new window.
-        -- Be sure to set initialWindow{Position,Size} before calling
-        -- createWindow. If we don't do this we get wierd half-created
-        -- windows some of the time.
-        GLUT.initialWindowPosition
-         $= GL.Position
-                (fromIntegral posX)
-                (fromIntegral posY)
-
-        GLUT.initialWindowSize
-         $= GL.Size
-                (fromIntegral sizeX)
-                (fromIntegral sizeY)
-
-        _ <- GLUT.createWindow windowName
-
-        GLUT.windowSize
-         $= GL.Size
-                (fromIntegral sizeX)
-                (fromIntegral sizeY)
+       -- Setup and create a new window.
+       -- Be sure to set initialWindow{Position,Size} before calling
+       -- createWindow. If we don't do this we get wierd half-created
+       -- windows some of the time.
+        case mPos of
+          Just (posX, posY) -> 
+            do GLUT.initialWindowSize
+                     $= GL.Size
+                          (fromIntegral sizeX)
+                          (fromIntegral sizeY)
+               GLUT.initialWindowPosition
+                     $= GL.Position
+                          (fromIntegral posX)
+                          (fromIntegral posY)
+               _ <- GLUT.createWindow windowName
+               GLUT.windowSize
+                     $= GL.Size
+                          (fromIntegral sizeX)
+                          (fromIntegral sizeY)
+          Nothing -> 
+            do GLUT.gameModeCapabilities $= 
+                 [ GLUT.Where' GLUT.GameModeWidth GLUT.IsEqualTo sizeX
+                 , GLUT.Where' GLUT.GameModeHeight GLUT.IsEqualTo sizeY ]
+               void $ GLUT.enterGameMode
 
         --  Switch some things.
         --  auto repeat interferes with key up / key down checks.
@@ -185,7 +190,6 @@ callbackDisplay ref callbacks
         GLUT.swapBuffers
         GLUT.reportErrors
         return ()
-
 
 -- Reshape Callback -----------------------------------------------------------
 installReshapeCallbackGLUT

@@ -11,7 +11,6 @@ import Graphics.Gloss.Internals.Interface.Debug
 import Graphics.Rendering.OpenGL			(($=))
 import qualified Graphics.Rendering.OpenGL.GL		as GL
 import Data.IORef (newIORef)
-
 import Control.Monad
 
 -- | Open a window and use the supplied callbacks to handle window events.
@@ -20,8 +19,11 @@ createWindow
 	=> a
 	-> String 		-- ^ Name of the window.
 	-> (Int, Int) 		-- ^ Initial size of the window, in pixels.
-	-> (Int, Int)		-- ^ Initial position of the window, in pixels relative to
-				--	the top left corner of the screen.
+	-> Maybe (Int, Int)	-- ^ 'Just' the initial position of
+				-- the window, in pixels relative
+				-- to the top left corner of the
+				-- screen, or 'Nothing' for
+				-- fullscreen.
 	-> Color		-- ^ Color to use when clearing.
 	-> [Callback]		-- ^ Callbacks to use
 	-> IO ()
@@ -30,7 +32,7 @@ createWindow
 	backend
 	windowName
 	(sizeX, sizeY)
-	(posX,  posY)
+	mPos
 	clearColor
 	callbacks
  = do
@@ -51,7 +53,7 @@ createWindow
 	 $ do	putStr	$ "* creating window\n\n"
 
 	-- Open window
-	openWindow backendStateRef windowName (sizeX, sizeY) (posX, posY)
+	openWindow backendStateRef windowName (sizeX, sizeY) mPos
 
 	-- Setup callbacks
 	installDisplayCallback     backendStateRef callbacks

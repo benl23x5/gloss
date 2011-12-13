@@ -29,8 +29,8 @@ class Backend a where
         -- | Perform any deinitialization and close the backend.
         exitBackend                :: IORef a -> IO ()
 
-        -- | Open a window. Arguments: Name of the window, (sizeW, sizeH), (posX,posY)
-        openWindow                 :: IORef a -> String -> (Int,Int) -> (Int,Int) -> IO ()
+        -- | Open a window. Arguments: Name of the window, (sizeW, sizeH), Maybe (posX,posY)
+        openWindow                 :: IORef a -> String -> (Int,Int) -> Maybe (Int,Int) -> IO ()
 
         -- | Dump information about the backend to the terminal.
         dumpBackendState           :: IORef a -> IO ()

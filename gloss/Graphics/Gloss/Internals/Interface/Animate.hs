@@ -32,7 +32,9 @@ import GHC.Float (double2Float)
 animateInWindow
 	:: String		-- ^ Name of the window.
 	-> (Int, Int)		-- ^ Initial size of the window, in pixels.
-	-> (Int, Int)		-- ^ Initial position of the window, in pixels.
+	-> Maybe (Int, Int)     -- ^ 'Just' the initial position of the
+                                -- window, in pixels, or 'Nothing' for
+                                -- fullscreen.
 	-> Color		-- ^ Background color.
 	-> (Float -> Picture)	-- ^ Function to produce the next frame of animation. 
 				--	It is passed the time in seconds since the program started.
@@ -47,7 +49,9 @@ animateInWindowWithBackend
 	=> a			-- ^ Initial State of the backend
 	-> String		-- ^ Name of the window.
 	-> (Int, Int)		-- ^ Initial size of the window, in pixels.
-	-> (Int, Int)		-- ^ Initial position of the window, in pixels.
+	-> Maybe (Int, Int)	-- ^ 'Just' the initial position of
+                                -- the window, in pixels, or 'Nothing'
+                                -- for fullscreen.
 	-> Color		-- ^ Background color.
 	-> (Float -> Picture)	-- ^ Function to produce the next frame of animation.
 				--	It is passed the time in seconds since the program started.
