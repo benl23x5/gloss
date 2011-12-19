@@ -25,24 +25,20 @@ main
 	
 	
 mainWithWorld world
- = do	let gameState	= initState world
-	gameInWindow 
-		"Occlusion"
-		(windowSizeOfWorld world)
-		(10, 10)
-		black 
-		10
-		gameState
-		drawState
-		(handleInput world)
-		(\_ -> id)
+ = play (InWindow "Occlusion"
+		 (windowSizeOfWorld world) (10, 10))
+	black 
+	10
+	(initState world)
+	drawState
+	(handleInput world)
+	(\_ -> id)
 				
 				
 -- | Convert the state to a picture.
 drawState :: State -> Picture
 drawState state
- = let	
-	world		= stateWorld state
+ = let	world		= stateWorld state
 
 	-- The ray cast by the user.
 	p1		= stateLineStart state
@@ -59,9 +55,10 @@ drawState state
 	picCellsAll	= Pictures $ map (uncurry (drawCell False world)) cellsAll
 
 	-- The cells visible from the designated point.
-	cellsVisible	= [ (coord, cell)
-				| (coord, cell)	<- flattenQuadTree (worldExtent world) (worldTree world)
-				, cellAtCoordIsVisibleFromPoint world p1 coord ]
+	cellsVisible	
+          = [ (coord, cell)
+		| (coord, cell)	<- flattenQuadTree (worldExtent world) (worldTree world)
+		, cellAtCoordIsVisibleFromPoint world p1 coord ]
 
 	picCellsVisible	= Pictures $ map (uncurry (drawCell True world)) cellsVisible
 

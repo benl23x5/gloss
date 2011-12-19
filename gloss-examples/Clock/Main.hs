@@ -4,12 +4,8 @@
 import Graphics.Gloss
 
 main
- =	animateInWindow
- 		"Clock"
-		(600, 600)
-		(20, 20)
-		black
-		frame
+ =	animate (InWindow "Clock" (600, 600) (20, 20))
+		black frame
 
 
 -- Build the fractal, scale it so it fits in the window

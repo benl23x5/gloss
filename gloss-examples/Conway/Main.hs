@@ -13,15 +13,9 @@ main
 	let height	= 100
 	world	<- randomWorld (width, height)
 	
-	simulateInWindow 
-		"John Conway's Game of Life" 
-		(windowSizeOfWorld world)
-		(5, 5) 
-		white
-		10 
-		world
-		drawWorld
-		simulateWorld
+	simulate (InWindow "John Conway's Game of Life" 
+           	           (windowSizeOfWorld world) (5, 5))
+		white 10 world drawWorld simulateWorld
 	
 
 -- | Convert a world to a picture.

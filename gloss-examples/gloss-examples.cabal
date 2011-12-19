@@ -17,6 +17,7 @@ Description:
 Synopsis:
         Examples using the gloss library
 
+
 Executable gloss-bitmap
   Build-depends:
         base           == 4.*,
@@ -25,124 +26,6 @@ Executable gloss-bitmap
         bmp            == 1.2.*
   Main-is: Main.hs
   hs-source-dirs: Bitmap
-  ghc-options: -O2
-
-
-Executable gloss-easy
-  Build-depends:
-        base            == 4.*,
-        gloss           == 1.6.*
-  Main-is: Easy/Main.hs
-  ghc-options: -O2
-
-Executable gloss-clock
-  Build-depends: 
-        base            == 4.*,
-        gloss           == 1.6.*
-  Main-is: Clock/Main.hs
-  ghc-options: -O2
-
-Executable gloss-eden
-  Build-depends: 
-        base            == 4.*,
-        gloss           == 1.6.*,
-        random          == 1.0.*
-  Main-is: Main.hs
-  other-modules: Cell Community World
-  hs-source-dirs: Eden
-  ghc-options: -O2
-
-Executable gloss-flake
-  Build-depends:
-        base            == 4.*,
-        gloss           == 1.6.*
-  Main-is: Flake/Main.hs
-  ghc-options: -O2
-
-Executable gloss-hello
-  Build-depends: 
-        base            == 4.*, 
-        gloss           == 1.6.*
-  Main-is: Hello/Main.hs
-  ghc-options: -O2
-
-Executable gloss-lifespan
-  Build-depends: 
-        base            == 4.*, 
-        gloss           == 1.6.*, 
-        random          == 1.0.*
-  Main-is: Main.hs
-  other-modules: Cell Community World
-  hs-source-dirs: Lifespan
-  ghc-options: -O2
-
-Executable gloss-styrene
-  Build-depends: 
-        base            == 4.*,
-        gloss           == 1.6.*,
-        containers      >= 0.3 && <= 0.5,
-        ghc-prim        == 0.2.*
-  Main-is: Main.hs
-  other-modules: Actor Advance Collide Config Contact QuadTree World
-  hs-source-dirs: Styrene
-  ghc-options: -O2
-
-Executable gloss-tree
-  Build-depends: 
-        base            == 4.*, 
-        gloss           == 1.6.*
-  Main-is: Tree/Main.hs
-  ghc-options: -O2
-
-Executable gloss-zen
-  Build-depends: 
-        base            == 4.*, 
-        gloss           == 1.6.*
-  Main-is: Zen/Main.hs
-  ghc-options: -O2
-
-Executable gloss-machina
-  Build-depends: 
-        base            == 4.*, 
-        gloss           == 1.6.*
-  Main-is: Machina/Main.hs
-  ghc-options: -O2
-
-Executable gloss-conway
-  Build-depends: 
-        base            == 4.*,
-        gloss           == 1.6.*,
-        vector          >= 0.7 && < 1.0
-  Main-is: Main.hs
-  other-modules: Cell World
-  hs-source-dirs: Conway
-  ghc-options: -O2
-
-Executable gloss-gameevent
-  Build-depends: 
-        base            == 4.*,
-        gloss           == 1.6.*
-  Main-is: Main.hs
-  hs-source-dirs: GameEvent
-  ghc-options: -O2
-
-Executable gloss-occlusion
-  Build-depends: 
-        base            == 4.*, 
-        gloss           == 1.6.*
-  Main-is: Main.hs
-  other-modules: Cell World State Data
-  hs-source-dirs: Occlusion
-  ghc-options: -O2
-
-Executable gloss-visibility
-  Build-depends: 
-        base            == 4.*, 
-        gloss           == 1.6.*,
-        vector          >= 0.7 && < 1.0
-  Main-is: Main.hs
-  other-modules: Draw Interface State World Geometry.Randomish Geometry.Segment
-  hs-source-dirs: Visibility 
   ghc-options: -O2
 
 
@@ -155,6 +38,26 @@ Executable gloss-boids
   hs-source-dirs: Boids
   ghc-options: -O2
 
+
+Executable gloss-clock
+  Build-depends: 
+        base            == 4.*,
+        gloss           == 1.6.*
+  Main-is: Clock/Main.hs
+  ghc-options: -O2
+
+
+Executable gloss-conway
+  Build-depends: 
+        base            == 4.*,
+        gloss           == 1.6.*,
+        vector          >= 0.7 && < 1.0
+  Main-is: Main.hs
+  other-modules: Cell World
+  hs-source-dirs: Conway
+  ghc-options: -O2
+
+
 Executable gloss-draw
   Build-depends:
         base           == 4.*,
@@ -163,11 +66,117 @@ Executable gloss-draw
   hs-source-dirs: Draw
   ghc-options: -O2
 
-Executable gloss-crystal
+
+Executable gloss-easy
   Build-depends:
-        base         == 4.*,
-        gloss        == 1.6.*,
-        repa         == 3.0.*
+        base            == 4.*,
+        gloss           == 1.6.*
+  Main-is: Easy/Main.hs
+  ghc-options: -O2
+
+
+Executable gloss-eden
+  Build-depends: 
+        base            == 4.*,
+        gloss           == 1.6.*,
+        random          == 1.0.*
   Main-is: Main.hs
-  hs-source-dirs: Crystal
-  ghc-options: -Odph -rtsopts -threaded
+  other-modules: Cell Community World
+  hs-source-dirs: Eden
+  ghc-options: -O2
+
+
+Executable gloss-flake
+  Build-depends:
+        base            == 4.*,
+        gloss           == 1.6.*
+  Main-is: Flake/Main.hs
+  ghc-options: -O2
+
+
+Executable gloss-gameevent
+  Build-depends: 
+        base            == 4.*,
+        gloss           == 1.6.*
+  Main-is: Main.hs
+  hs-source-dirs: GameEvent
+  ghc-options: -O2
+
+
+Executable gloss-hello
+  Build-depends: 
+        base            == 4.*, 
+        gloss           == 1.6.*
+  Main-is: Hello/Main.hs
+  ghc-options: -O2
+
+
+Executable gloss-lifespan
+  Build-depends: 
+        base            == 4.*, 
+        gloss           == 1.6.*, 
+        random          == 1.0.*
+  Main-is: Main.hs
+  other-modules: Cell Community World
+  hs-source-dirs: Lifespan
+  ghc-options: -O2
+
+
+Executable gloss-machina
+  Build-depends: 
+        base            == 4.*, 
+        gloss           == 1.6.*
+  Main-is: Machina/Main.hs
+  ghc-options: -O2
+
+
+Executable gloss-occlusion
+  Build-depends: 
+        base            == 4.*, 
+        gloss           == 1.6.*
+  Main-is: Main.hs
+  other-modules: Cell World State Data
+  hs-source-dirs: Occlusion
+  ghc-options: -O2
+
+
+Executable gloss-styrene
+  Build-depends: 
+        base            == 4.*,
+        gloss           == 1.6.*,
+        containers      >= 0.3 && <= 0.5,
+        ghc-prim        == 0.2.*
+  Main-is: Main.hs
+  other-modules: Actor Advance Collide Config Contact QuadTree World
+  hs-source-dirs: Styrene
+  ghc-options: -O2
+
+
+Executable gloss-tree
+  Build-depends: 
+        base            == 4.*, 
+        gloss           == 1.6.*
+  Main-is: Tree/Main.hs
+  ghc-options: -O2
+
+
+Executable gloss-visibility
+  Build-depends: 
+        base            == 4.*, 
+        gloss           == 1.6.*,
+        vector          >= 0.7 && < 1.0
+  Main-is: Main.hs
+  other-modules: Draw Interface State World Geometry.Randomish Geometry.Segment
+  hs-source-dirs: Visibility 
+  ghc-options: -O2
+
+
+Executable gloss-zen
+  Build-depends: 
+        base            == 4.*, 
+        gloss           == 1.6.*
+  Main-is: Zen/Main.hs
+  ghc-options: -O2
+
+
+

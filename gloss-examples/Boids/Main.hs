@@ -13,6 +13,7 @@ import Graphics.Gloss
 import Graphics.Gloss.Data.Picture
 import Graphics.Gloss.Interface.Simulate
 
+
 -- Parameters -----------------------------------------------------------------
 cParam  = 0.0075
 
@@ -68,15 +69,8 @@ main
         let bs  = initialize 500 10.0 0.5
         let t   = foldl (\t b -> kdtAddPoint t (position b) b) newKDTree bs
 
-        simulateInWindow
-                "Boids"
-                (pixWidth w, pixHeight w)
-                (10,10)
-                (greyN 0.1)
-                30 
-                t
-                (renderboids w)
-                iterationkd
+        simulate (InWindow "Boids" (pixWidth w, pixHeight w) (10,10))
+                (greyN 0.1) 30 t (renderboids w) iterationkd
 
 
 -- Coordinate Conversion ------------------------------------------------------
@@ -242,6 +236,7 @@ oneboid b boids
                 , dbgC          = c
                 , dbgS          = s
                 , dbgA          = a }
+
 
 -- | Neighbor finding code
 --

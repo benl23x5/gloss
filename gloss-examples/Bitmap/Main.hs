@@ -16,9 +16,5 @@ run fileName
  = do	picture@(Bitmap width height _ _)
                 <- loadBMP fileName
 
-	displayInWindow
-		fileName
-		(width, height)
-      		(Just (10,  10))
-      		white
-      		picture
+	display (InWindow fileName (width, height) (10,  10))
+      		white picture

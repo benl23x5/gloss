@@ -4,12 +4,8 @@
 --	
 import Graphics.Gloss
 
-main =  animateInWindow
-		"Tree"
-		(500, 650) 
-		(20,  20)
-		black
-		(picture 4)
+main =  animate (InWindow "Tree" (500, 650) (20,  20))
+		black (picture 4)
 
 
 -- The picture is a tree fractal, graded from brown to green

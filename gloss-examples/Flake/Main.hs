@@ -4,12 +4,8 @@
 --
 import Graphics.Gloss
 
-main =	displayInWindow
-       		"Snowflake"
-       		(500, 500)
-       		(20,  20)
-		black
-       		(picture 3)
+main = display (InWindow "Snowflake" (500, 500) (20,  20))
+	       black (picture 3)
 
 
 -- Fix a starting edge length of 360

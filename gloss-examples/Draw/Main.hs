@@ -6,23 +6,19 @@ import Graphics.Gloss
 import Data.Maybe (maybe)
 import Debug.Trace
 
+
 main 
  = do   let state = State Nothing []
-        gameInWindow
-                "Draw"
-                (600, 600)
-                (0,0)
-                white
-                100
-                state
-                makePicture
-                handleEvent 
-                stepWorld
+        play    (InWindow "Draw" (600, 600) (0,0))
+                white 100 state
+                makePicture handleEvent stepWorld
+
 
 -- | The game state.
 data State      
         = State (Maybe Path)    -- The current line being drawn.
                 [Picture]       -- All the lines drawn previously.
+
 
 -- | A Line Segment
 type Segment    = ((Float, Float), (Float, Float))
@@ -52,7 +48,7 @@ handleEvent event state
         | EventKey (MouseButton LeftButton) Up _ pt@(x,y)      <- event
         , State (Just ps) ss    <- state
         = State Nothing
-                ((Translate x y $ Scale 0.1 0.1 $ Text "up")   : Line (pt:ps) : ss)
+                ((Translate x y $ Scale 0.1 0.1 $ Text "up") : Line (pt:ps) : ss)
 
         | otherwise
         = state
@@ -60,3 +56,4 @@ handleEvent event state
 
 stepWorld :: Float -> State -> State
 stepWorld _ = id
+

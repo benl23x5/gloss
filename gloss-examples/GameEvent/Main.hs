@@ -3,10 +3,7 @@ import Graphics.Gloss
 
 -- | Display the last event received as text.
 main
- = gameInWindow
-        "GameEvent"
-        (700, 100)
-        (10, 10)
+ = play (InWindow "GameEvent" (700, 100) (10, 10))
         white
         100
         ""

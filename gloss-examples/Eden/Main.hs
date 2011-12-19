@@ -9,14 +9,11 @@ import System.Random
 -- varying prng sequence
 main 
  = do 	gen <- getStdGen
-	simulateInWindow
-		"Eden"          -- window name
-		(800, 600)      -- window size
-		(10, 10)	-- window position
-		(greyN 0.1)	-- background color
-		2               -- number of steps per second
-		(genesis' gen)  -- initial world
-		render          -- function to convert world to a Picture
-		evolve          -- function to step the world one iteration
+	simulate (InWindow "Eden" (800, 600) (10, 10))
+ 		 (greyN 0.1)	 -- background color
+		 2               -- number of steps per second
+		 (genesis' gen)  -- initial world
+		 render          -- function to convert world to a Picture
+		 evolve          -- function to step the world one iteration
 
 
