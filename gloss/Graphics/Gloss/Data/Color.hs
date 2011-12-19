@@ -35,6 +35,33 @@ data Color
 	deriving (Show, Eq)
 
 
+instance Num Color where
+ {-# INLINE (+) #-}
+ (+) (RGBA r1 g1 b1 _) (RGBA r2 g2 b2 _)
+        = RGBA (r1 + r2) (g1 + g2) (b1 + b2) 1
+
+ {-# INLINE (-) #-}
+ (-) (RGBA r1 g1 b1 _) (RGBA r2 g2 b2 _)
+        = RGBA (r1 - r2) (g1 - g2) (b1 - b2) 1
+
+ {-# INLINE (*) #-}
+ (*) (RGBA r1 g1 b1 _) (RGBA r2 g2 b2 _)
+        = RGBA (r1 * r2) (g1 * g2) (b1 * b2) 1
+
+ {-# INLINE abs #-}
+ abs (RGBA r1 g1 b1 _)
+        = RGBA (abs r1) (abs g1) (abs b1) 1
+
+ {-# INLINE signum #-}
+ signum (RGBA r1 g1 b1 _)
+        = RGBA (signum r1) (signum g1) (signum b1) 1
+        
+ {-# INLINE fromInteger #-}
+ fromInteger i
+  = let f = fromInteger i
+    in  RGBA f f f 1
+
+
 -- | Make a custom color. All components are clamped to the range  [0..1].
 makeColor 
 	:: Float 	-- ^ Red component.
