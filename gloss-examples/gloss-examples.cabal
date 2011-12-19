@@ -160,7 +160,7 @@ Executable gloss-draw
   Main-is: Main.hs
   hs-source-dirs: Draw
   ghc-options: -O2
--}
+
 Executable gloss-crystal
   Build-depends:
         base         == 4.*,
