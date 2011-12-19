@@ -34,8 +34,8 @@ type Time   = Float
 
 -- Point ----------------------------------------------------------------------
 -- | Compute a single point of the visualisation.
-quasicrystal :: Size -> Scale -> Degree -> Time -> Point -> Color
-quasicrystal !size !scale !degree !time !p
+quasicrystal :: Scale -> Degree -> Time -> Point -> Color
+quasicrystal !scale !degree !time !p
  = let  -- Scale the time to be the phi value of the animation.
         -- The action seems to slow down at increasing phi values, 
         -- so we increase phi faster as time moves on.
@@ -43,7 +43,7 @@ quasicrystal !size !scale !degree !time !p
 
    in   rampColor 
           $ waves degree phi
-          $ point size scale p
+          $ point scale p
 
 
 -- | Sum up all the waves at a particular point.
@@ -76,8 +76,8 @@ wave !th = f where
 
 
 -- | Convert an image point to a point on our wave plane.
-point :: Size -> Scale -> Point -> Point
-point !size !scale (x, y) = (x * scale, y * scale)
+point :: Scale -> Point -> Point
+point !scale (x, y) = (x * scale, y * scale)
 
 
 -- | Color ramp from blue to white.
@@ -91,10 +91,10 @@ main :: IO ()
 main 
  = do   args    <- getArgs
         case args of
-         []     -> run 200 3 30 5
+         []     -> run 360 225 3 30 5
 
-         [size, zoom, scale, degree]
-                -> run (read size) (read zoom) (read scale) (read degree)
+         [sizeX, sizeY, zoom, scale, degree]
+                -> run (read sizeX) (read sizeY) (read zoom) (read scale) (read degree)
 
          _ -> putStr $ unlines
            [ "quazicrystal <size::Int> <zoom::Int> <scale::Float> <degree::Int>"
@@ -106,12 +106,9 @@ main
            , " You'll want to run this with +RTS -N to enable threads" ]
    
 
-run :: Size -> Int -> Scale -> Degree -> IO ()                     
-run size zoom scale degree
- = animateFieldInWindow
-        "crystal"
-        (size, size)
-        (10, 10)
+run :: Int -> Int -> Int -> Scale -> Degree -> IO ()                     
+run sizeX sizeY zoom scale degree
+ = animateField (FullScreen (sizeX, sizeY)) 
         (zoom, zoom)
-        (quasicrystal size scale degree)
+        (quasicrystal scale degree)
 

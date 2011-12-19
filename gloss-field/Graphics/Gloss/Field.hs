@@ -1,7 +1,8 @@
 {-# LANGUAGE BangPatterns #-}
 module Graphics.Gloss.Field 
-        (animateFieldInWindow)
+        (animateField)
 where
+import Graphics.Gloss.Data.Display
 import Graphics.Gloss.Interface.Animate
 import Data.Array.Repa                  as R
 import Data.Array.Repa.Repr.ForeignPtr  as R
@@ -10,25 +11,23 @@ import Data.Word
 -- TODO: add another version for a static picture
 -- TODO: add another version that takes the viewport.
 -- TODO: scale buffer size as window size changes.
-animateFieldInWindow
-        :: String                       -- window name
-        -> (Int, Int)                   -- window size
-        -> (Int, Int)                   -- window position
-        -> (Int, Int)                   -- zoom
+animateField
+        :: Display
+        -> (Int, Int)
         -> (Float -> Point -> Color)
         -> IO ()
         
-animateFieldInWindow name windowSize pos zoom pixel
- = animateInWindow
-        name 
-        (sizeX * zoomX, sizeY * zoomY)
-        (Just pos)
-        black
-        mkFrame
+animateField display (zoomX, zoomY) pixel
+ =       animate display black mkFrame
  where
-        (zoomX, zoomY)  = zoom
-        (sizeX, sizeY)  = windowSize
+        (winSizeX, winSizeY)  
+                = case display of
+                        FullScreen ws    -> ws
+                        InWindow _ ws _  -> ws
         
+        sizeX = winSizeX `div` zoomX
+        sizeY = winSizeY `div` zoomY
+
         fsizeX, fsizeY  :: Float
         !fsizeX          = fromIntegral sizeX
         !fsizeY          = fromIntegral sizeY
@@ -44,7 +43,7 @@ animateFieldInWindow name windowSize pos zoom pixel
         mkFrame time
          = let  
                 {-# INLINE pixelOfIndex #-}
-                pixelOfIndex (Z :. x :. y)
+                pixelOfIndex (Z :. y :. x)
                  = let  x'      = fromIntegral (x - midX) / fsizeX2
                         y'      = fromIntegral (y - midY) / fsizeY2
                    in   (x', y')
@@ -54,7 +53,7 @@ animateFieldInWindow name windowSize pos zoom pixel
                 arrRGB :: Array D DIM2 (Float, Float, Float)
                 arrRGB  = R.map (\c -> case rgbaOfColor c of 
                                         (r, g, b, _) -> (r, g, b))
-                        $ R.fromFunction (Z :. sizeY :. sizeX)
+                        $ R.fromFunction (Z :. sizeY  :. sizeX)
                         $ (pixel time . pixelOfIndex)
          
                  -- Convert the RGB Float colors to a flat image.
@@ -75,13 +74,13 @@ animateFieldInWindow name windowSize pos zoom pixel
                 -- Wrap the ForeignPtr from the Array as a gloss picture.
                 pic     = arr8 
                         `seq` Scale (fromIntegral zoomX) (fromIntegral zoomY)
-                         $    bitmapOfForeignPtr
+                            $ bitmapOfForeignPtr
                                 sizeX sizeY             -- raw image size
                                 (R.toForeignPtr arr8)   -- the image data.
                                 False                   -- don't cache this in texture memory.
            in   pic
 
-{-# INLINE animateFieldInWindow #-}
+{-# INLINE animateField #-}
 --  INLINE so the repa functions fuse with the users client functions.
 
 
