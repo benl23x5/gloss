@@ -5,11 +5,8 @@ import Graphics.Gloss
 
 main :: IO ()
 main 
- = 	animateInWindow 
-		"Zen" 
-		(2560, 1440) 
-		Nothing-- (5, 5)
-		(greyN 0.2)
+ = 	animate (InWindow "Zen" (800, 600) (5, 5))
+                (greyN 0.2)
 		frame	
 
 
