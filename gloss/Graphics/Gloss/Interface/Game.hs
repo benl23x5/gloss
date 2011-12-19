@@ -7,7 +7,8 @@
 module Graphics.Gloss.Interface.Game
  	( module Graphics.Gloss.Data.Picture
 	, module Graphics.Gloss.Data.Color
-	, gameInWindow
+	, play
+        , Display(..)
 	, Event(..), Key(..), SpecialKey(..), MouseButton(..), KeyState(..), Modifiers(..))
 where
 import Graphics.Gloss.Data.Picture

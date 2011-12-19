@@ -8,9 +8,11 @@
 module Graphics.Gloss.Interface.Simulate
  	( module Graphics.Gloss.Data.Picture
 	, module Graphics.Gloss.Data.Color
-	, ViewPort(..)
-	, simulateInWindow)
+	, simulate
+        , Display(..)
+        , ViewPort(..))
 where
+import Graphics.Gloss.Data.Display
 import Graphics.Gloss.Data.Picture
 import Graphics.Gloss.Data.Color
 import Graphics.Gloss.Internals.Interface.ViewPort

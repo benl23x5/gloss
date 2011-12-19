@@ -4,7 +4,6 @@ module Graphics.Gloss.Internals.Interface.Backend.GLUT
 where
 
 import Data.IORef
-import Data.Maybe (isNothing)
 import Control.Monad
 import Control.Concurrent
 import Graphics.UI.GLUT                           (get,($=))
@@ -92,33 +91,35 @@ initializeGLUT _ debug
 -- Open Window ----------------------------------------------------------------
 openWindowGLUT
         :: IORef GLUTState
-        -> String
-        -> (Int,Int)
-        -> Maybe (Int,Int) -- ^ 'Just' the initial window position, or
-                           -- 'Nothing' for fullscreen.
+        -> Display
         -> IO ()
-openWindowGLUT _ windowName (sizeX, sizeY) mPos 
+
+openWindowGLUT _ display
  = do
        -- Setup and create a new window.
        -- Be sure to set initialWindow{Position,Size} before calling
        -- createWindow. If we don't do this we get wierd half-created
        -- windows some of the time.
-        case mPos of
-          Just (posX, posY) -> 
+        case display of
+          InWindow windowName (sizeX, sizeY) (posX, posY) -> 
             do GLUT.initialWindowSize
                      $= GL.Size
                           (fromIntegral sizeX)
                           (fromIntegral sizeY)
+
                GLUT.initialWindowPosition
                      $= GL.Position
                           (fromIntegral posX)
                           (fromIntegral posY)
+
                _ <- GLUT.createWindow windowName
+
                GLUT.windowSize
                      $= GL.Size
                           (fromIntegral sizeX)
                           (fromIntegral sizeY)
-          Nothing -> 
+
+          FullScreen (sizeX, sizeY) -> 
             do GLUT.gameModeCapabilities $= 
                  [ GLUT.Where' GLUT.GameModeWidth GLUT.IsEqualTo sizeX
                  , GLUT.Where' GLUT.GameModeHeight GLUT.IsEqualTo sizeY ]

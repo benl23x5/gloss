@@ -1,7 +1,7 @@
 
 module Graphics.Gloss.Internals.Interface.Animate
-	( animateInWindow
-	, animateInWindowWithBackend)
+	( animate
+	, animateWithBackend)
 where	
 import Graphics.Gloss.Data.Color
 import Graphics.Gloss.Data.Picture
@@ -27,37 +27,27 @@ import GHC.Float (double2Float)
 
 -- | Open a new window and display the given animation.
 --
---   Once the window is open you can use the same commands as with @displayInWindow@.
+--   Once the window is open you can use the same commands as with @display@.
 --
-animateInWindow
-	:: String		-- ^ Name of the window.
-	-> (Int, Int)		-- ^ Initial size of the window, in pixels.
-	-> Maybe (Int, Int)     -- ^ 'Just' the initial position of the
-                                -- window, in pixels, or 'Nothing' for
-                                -- fullscreen.
+animate :: Display              -- ^ Display mode.
 	-> Color		-- ^ Background color.
 	-> (Float -> Picture)	-- ^ Function to produce the next frame of animation. 
 				--	It is passed the time in seconds since the program started.
 	-> IO ()
 
-animateInWindow
-        = animateInWindowWithBackend defaultBackendState
+animate = animateWithBackend defaultBackendState
 
 
-animateInWindowWithBackend
+animateWithBackend
 	:: Backend a
 	=> a			-- ^ Initial State of the backend
-	-> String		-- ^ Name of the window.
-	-> (Int, Int)		-- ^ Initial size of the window, in pixels.
-	-> Maybe (Int, Int)	-- ^ 'Just' the initial position of
-                                -- the window, in pixels, or 'Nothing'
-                                -- for fullscreen.
+        -> Display              -- ^ Display mode.
 	-> Color		-- ^ Background color.
 	-> (Float -> Picture)	-- ^ Function to produce the next frame of animation.
 				--	It is passed the time in seconds since the program started.
 	-> IO ()
 
-animateInWindowWithBackend backend name size pos backColor frameFun
+animateWithBackend backend display backColor frameFun
  = do	
 	viewSR		<- newIORef viewPortInit
 	viewControlSR	<- newIORef VPC.stateInit
@@ -94,7 +84,7 @@ animateInWindowWithBackend backend name size pos backColor frameFun
 		, callback_viewPort_motion   viewSR viewControlSR 
 		, callback_viewPort_reshape ]
 
-	createWindow backend name size pos backColor callbacks
+	createWindow backend display backColor callbacks
 
 getsIORef :: IORef a -> (a -> r) -> IO r
 getsIORef ref fun

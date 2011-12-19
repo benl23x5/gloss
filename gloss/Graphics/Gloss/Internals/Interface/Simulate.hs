@@ -1,9 +1,10 @@
 {-# LANGUAGE RankNTypes #-}
 
 module Graphics.Gloss.Internals.Interface.Simulate
-	( simulateInWindow
-	, simulateInWindowWithBackend)
+	( simulate
+	, simulateWithBackend)
 where
+import Graphics.Gloss.Data.Display
 import Graphics.Gloss.Data.Color
 import Graphics.Gloss.Data.Picture
 import Graphics.Gloss.Internals.Render.Picture
@@ -29,16 +30,10 @@ import System.Mem
 --	how to convert the model to a picture, and how to advance the model for each unit of time. 
 --	This function does the rest.
 --
---   Once the window is open you can use the same commands as with @displayInWindow@.
+--   Once the window is open you can use the same commands as with @display@.
 --
-simulateInWindow 
-	:: forall model
-	.  String			-- ^ Name of the window.
-	-> (Int, Int)			-- ^ Initial size of the window, in pixels.
-	-> Maybe (Int, Int)		-- ^ 'Just' the initial
-                                        -- position of the window, in
-                                        -- pixels, or 'Nothing' for
-                                        -- fullscreen.
+simulate :: forall model
+        .  Display                      -- ^ Display mode.
 	-> Color			-- ^ Background color.
 	-> Int				-- ^ Number of simulation steps to take for each second of real time.
 	-> model 			-- ^ The initial model.
@@ -48,19 +43,13 @@ simulateInWindow
 						 --     step (in seconds).
 	-> IO ()
 
-simulateInWindow
-        = simulateInWindowWithBackend defaultBackendState
+simulate = simulateWithBackend defaultBackendState
 
-simulateInWindowWithBackend
+simulateWithBackend
 	:: forall model a
 	.  Backend a
 	=> a				-- ^ Initial state of the backend
-	-> String			-- ^ Name of the window.
-	-> (Int, Int)			-- ^ Initial size of the window, in pixels.
-        -> Maybe (Int, Int)	        -- ^ 'Just' the initial
-                                        -- position of the window, in
-                                        -- pixels, or 'Nothing' for
-                                        -- fullscreen.
+        -> Display                      -- ^ Display mode.
 	-> Color			-- ^ Background color.
 	-> Int				-- ^ Number of simulation steps to take for each second of real time.
 	-> model 			-- ^ The initial model.
@@ -70,11 +59,9 @@ simulateInWindowWithBackend
 						 --     step (in seconds).
 	-> IO ()
 
-simulateInWindowWithBackend
+simulateWithBackend
 	backend
-	windowName
-	windowSize
-	windowPos
+        display
 	backgroundColor
 	simResolution
 	worldStart
@@ -128,4 +115,4 @@ simulateInWindowWithBackend
 		, callback_viewPort_motion   viewSR viewControlSR 
 		, callback_viewPort_reshape ]
 
-	createWindow backend windowName windowSize windowPos backgroundColor callbacks
+	createWindow backend display backgroundColor callbacks

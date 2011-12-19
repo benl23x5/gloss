@@ -1,5 +1,5 @@
 Name:                gloss-field
-Version:             1.5.2.1
+Version:             1.6.0.1
 License:             MIT
 License-file:        LICENSE
 Author:              Ben Lippmeier
@@ -23,7 +23,7 @@ Library
         base       == 4.*,
         ghc-prim   == 0.2.*,
         containers >= 0.3.0 && < 0.5.0,
-        gloss      == 1.5.2.*,
+        gloss      == 1.6.0.*,
         repa       == 3.0.0.*
 
   ghc-options:      -O2 -Wall

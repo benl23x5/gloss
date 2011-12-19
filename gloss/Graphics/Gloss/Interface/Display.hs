@@ -3,8 +3,10 @@
 module Graphics.Gloss.Interface.Display
  	( module Graphics.Gloss.Data.Picture
 	, module Graphics.Gloss.Data.Color
-	, displayInWindow)
+	, display
+        , Display(..))
 where
+import Graphics.Gloss.Data.Display
 import Graphics.Gloss.Data.Picture
 import Graphics.Gloss.Data.Color
 import Graphics.Gloss.Internals.Interface.Display

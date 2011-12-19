@@ -1,5 +1,5 @@
 Name:                gloss
-Version:             1.6
+Version:             1.6.0.1
 License:             MIT
 License-file:        LICENSE
 Author:              Ben Lippmeier
@@ -50,6 +50,7 @@ Library
         Graphics.Gloss.Geometry
         Graphics.Gloss.Geometry.Angle
         Graphics.Gloss.Geometry.Line
+        Graphics.Gloss.Data.Display
         Graphics.Gloss.Data.Point
         Graphics.Gloss.Data.Vector
         Graphics.Gloss.Data.Quad

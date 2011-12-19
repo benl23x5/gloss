@@ -1,7 +1,7 @@
 
 module Graphics.Gloss.Internals.Interface.Display
-	( displayInWindow
-	, displayInWindowWithBackend)
+	( display
+	, displayWithBackend)
 where	
 import Graphics.Gloss.Data.Color
 import Graphics.Gloss.Data.Picture
@@ -32,33 +32,23 @@ import Data.IORef
 --
 --	* Zoom Viewport - mouse wheel, or page up\/down-keys.
 --
-displayInWindow
-	:: String           -- ^ Name of the window.
-	-> (Int, Int)       -- ^ Initial size of the window, in pixels.
-	-> Maybe (Int, Int) -- ^ 'Just' the initial position of the
-                            -- window, in pixels, or 'Nothing' for
-                            -- fullscreen.
+display :: Display          -- ^ Display mode.
 	-> Color            -- ^ Background color.
 	-> Picture          -- ^ The picture to draw.
 	-> IO ()
 
-displayInWindow
-        = displayInWindowWithBackend defaultBackendState
+display = displayWithBackend defaultBackendState
 
 
-displayInWindowWithBackend
+displayWithBackend
 	:: Backend a
 	=> a                -- ^ Initial state of the backend.
-	-> String           -- ^ Name of the window.
-	-> (Int, Int)       -- ^ Initial size of the window, in pixels.
-	-> Maybe (Int, Int) -- ^ 'Just' the initial position of the
-                            -- window, in pixels, or 'Nothing' for
-                            -- fullscreen.
+        -> Display          -- ^ Display config.
 	-> Color            -- ^ Background color.
 	-> Picture          -- ^ The picture to draw.
 	-> IO ()
 
-displayInWindowWithBackend backend name size pos background picture
+displayWithBackend backend displayMode background picture
  =  do	viewSR		<- newIORef viewPortInit
 	viewControlSR	<- newIORef VPC.stateInit
 
@@ -88,4 +78,4 @@ displayInWindowWithBackend backend name size pos background picture
 		, callback_viewPort_motion   viewSR viewControlSR 
 		, callback_viewPort_reshape ]
 
-	createWindow backend name size pos background callbacks
+	createWindow backend displayMode background callbacks

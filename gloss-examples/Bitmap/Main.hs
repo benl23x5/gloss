@@ -19,6 +19,6 @@ run fileName
 	displayInWindow
 		fileName
 		(width, height)
-      		(10,  10)
+      		(Just (10,  10))
       		white
       		picture

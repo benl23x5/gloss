@@ -22,7 +22,7 @@ animateFieldInWindow name windowSize pos zoom pixel
  = animateInWindow
         name 
         (sizeX * zoomX, sizeY * zoomY)
-        pos
+        (Just pos)
         black
         mkFrame
  where
@@ -59,7 +59,7 @@ animateFieldInWindow name windowSize pos zoom pixel
          
                  -- Convert the RGB Float colors to a flat image.
                 arr8 :: Array F DIM2 Word8
-                arr8    = R.compute
+                arr8    = R.computeP
                         $ R.traverse
                                 arrRGB
                                 (\(Z :. height :. width) -> Z :. height :. width * 4)

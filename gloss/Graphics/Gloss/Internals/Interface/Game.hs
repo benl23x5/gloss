@@ -1,8 +1,8 @@
 {-# LANGUAGE RankNTypes #-}
 
 module Graphics.Gloss.Internals.Interface.Game
-	( gameInWindow
-	, gameInWindowWithBackend
+	( play
+	, playWithBackend
 	, Event(..))
 where
 import Graphics.Gloss.Data.Color
@@ -29,16 +29,10 @@ data Event
 	| EventMotion (Float, Float)
 	deriving (Eq, Show)
 
--- | Run a game in a window. 
-gameInWindow 
-	:: forall world
-	.  String			-- ^ Name of the window.
-	-> (Int, Int)			-- ^ Initial size of the window, in pixels.
-	-> Maybe (Int, Int)		-- ^ 'Just' the initial
-                                        -- position of the window, in
-                                        -- pixels, or 'Nothing' for
-                                        -- fullscreen.
-	-> Color			-- ^ Background color.
+-- | Play a game in a window. 
+play    :: forall world
+        .  Display                      -- ^ Display mode.
+        -> Color                        -- ^ Background color.
 	-> Int				-- ^ Number of simulation steps to take for each second of real time.
 	-> world 			-- ^ The initial world.
 	-> (world -> Picture)	 	-- ^ A function to convert the world a picture.
@@ -47,19 +41,13 @@ gameInWindow
 					--   It is passed the period of time (in seconds) needing to be advanced.
 	-> IO ()
 
-gameInWindow
-        = gameInWindowWithBackend defaultBackendState
+play    = playWithBackend defaultBackendState
 
-gameInWindowWithBackend
+playWithBackend
 	:: forall world a
 	.  Backend a
 	=> a				-- ^ Initial state of the backend
-	-> String			-- ^ Name of the window.
-	-> (Int, Int)			-- ^ Initial size of the window, in pixels.
-	-> Maybe (Int, Int)		-- ^ 'Just' the initial
-                                        -- position of the window, in
-                                        -- pixels, or 'Nothing' for
-                                        -- fullscreen.
+        -> Display                      -- ^ Display mode.
 	-> Color			-- ^ Background color.
 	-> Int				-- ^ Number of simulation steps to take for each second of real time.
 	-> world 			-- ^ The initial world.
@@ -69,11 +57,9 @@ gameInWindowWithBackend
 					--   It is passed the period of time (in seconds) needing to be advanced.
 	-> IO ()
 
-gameInWindowWithBackend
+playWithBackend
 	backend
-	windowName
-	windowSize
-	windowPos
+        display
 	backgroundColor
 	simResolution
 	worldStart
@@ -127,7 +113,7 @@ gameInWindowWithBackend
 		, callback_motion   worldSR worldHandleEvent
 		, callback_viewPort_reshape ]
 
-	createWindow backend windowName windowSize windowPos backgroundColor callbacks
+	createWindow backend display backgroundColor callbacks
 
 
 -- | Callback for KeyMouse events.

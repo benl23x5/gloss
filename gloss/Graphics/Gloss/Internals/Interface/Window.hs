@@ -17,22 +17,14 @@ import Control.Monad
 createWindow
 	:: Backend a
 	=> a
-	-> String 		-- ^ Name of the window.
-	-> (Int, Int) 		-- ^ Initial size of the window, in pixels.
-	-> Maybe (Int, Int)	-- ^ 'Just' the initial position of
-				-- the window, in pixels relative
-				-- to the top left corner of the
-				-- screen, or 'Nothing' for
-				-- fullscreen.
+        -> Display
 	-> Color		-- ^ Color to use when clearing.
 	-> [Callback]		-- ^ Callbacks to use
 	-> IO ()
 
 createWindow
 	backend
-	windowName
-	(sizeX, sizeY)
-	mPos
+        display
 	clearColor
 	callbacks
  = do
@@ -50,10 +42,10 @@ createWindow
 
 	-- Here we go!
 	when debug
-	 $ do	putStr	$ "* creating window\n\n"
+	 $ do	putStr	$ "* c window\n\n"
 
 	-- Open window
-	openWindow backendStateRef windowName (sizeX, sizeY) mPos
+	openWindow backendStateRef display
 
 	-- Setup callbacks
 	installDisplayCallback     backendStateRef callbacks

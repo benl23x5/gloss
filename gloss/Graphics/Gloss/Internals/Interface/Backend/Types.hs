@@ -2,9 +2,11 @@
 {-# OPTIONS -fspec-constr-count=5 #-}
 {-# LANGUAGE Rank2Types #-}
 module Graphics.Gloss.Internals.Interface.Backend.Types
-        (module Graphics.Gloss.Internals.Interface.Backend.Types)
+        ( module Graphics.Gloss.Internals.Interface.Backend.Types
+        , module Graphics.Gloss.Data.Display)
 where
 import Data.IORef
+import Graphics.Gloss.Data.Display
 
 
 -- | The functions every backend window managed backend needs to support.
@@ -29,8 +31,8 @@ class Backend a where
         -- | Perform any deinitialization and close the backend.
         exitBackend                :: IORef a -> IO ()
 
-        -- | Open a window. Arguments: Name of the window, (sizeW, sizeH), Maybe (posX,posY)
-        openWindow                 :: IORef a -> String -> (Int,Int) -> Maybe (Int,Int) -> IO ()
+        -- | Open a window with the given display mode.
+        openWindow                 :: IORef a -> Display -> IO ()
 
         -- | Dump information about the backend to the terminal.
         dumpBackendState           :: IORef a -> IO ()

@@ -7,8 +7,8 @@ main :: IO ()
 main 
  = 	animateInWindow 
 		"Zen" 
-		(800, 600) 
-		(5, 5)
+		(2560, 1440) 
+		Nothing-- (5, 5)
 		(greyN 0.2)
 		frame	
 
