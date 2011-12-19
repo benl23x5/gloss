@@ -1,7 +1,7 @@
 
 import Graphics.Gloss
 
-main 	= animate (InWindow "deus ex machina" (800, 600) (10, 10))
+main 	= animate (InWindow "machina" (800, 600) (10, 10))
                   black frame
 
 frame time
