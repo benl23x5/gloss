@@ -18,7 +18,7 @@ Description:
 Synopsis:
         Painless 2D vector graphics, animations and simulations.
 
-Tested-with: GHC == 6.12.1, GHC == 7.0.1
+Tested-with: GHC == 7.2.1
 
 Flag GLUT
   Description: Enable the GLUT backend
@@ -41,7 +41,7 @@ Library
         bytestring == 0.9.*,
         OpenGL     == 2.4.*,
         GLUT       == 2.2.*,
-        bmp        == 1.1.*
+        bmp        == 1.2.*
 
   ghc-options:      -O2 -Wall
 

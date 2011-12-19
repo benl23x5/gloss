@@ -1,5 +1,5 @@
 Name:                gloss-field
-Version:             1.5.1.1
+Version:             1.5.2.1
 License:             MIT
 License-file:        LICENSE
 Author:              Ben Lippmeier
@@ -11,9 +11,7 @@ Category:            Graphics
 Homepage:            http://gloss.ouroborus.net
 Bug-reports:         gloss@ouroborus.net
 Description:
-	Gloss hides the pain of drawing simple vector graphics behind a nice data type and
-	a few display functions. Gloss uses OpenGL under the hood, but you won't need to
-	worry about any of that. Get something cool on the screen in under 10 minutes.
+        Parallel rendering of raster fields.
 
 Synopsis:
         Painless 2D vector graphics, animations and simulations.
@@ -25,7 +23,7 @@ Library
         base       == 4.*,
         ghc-prim   == 0.2.*,
         containers >= 0.3.0 && < 0.5.0,
-        gloss      == 1.5.1.*,
+        gloss      == 1.5.2.*,
         repa       == 3.0.0.*
 
   ghc-options:      -O2 -Wall

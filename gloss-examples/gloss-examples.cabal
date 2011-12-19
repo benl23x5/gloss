@@ -1,5 +1,5 @@
 Name:                gloss-examples
-Version:             1.5.0.1
+Version:             1.5.2.1
 License:             MIT
 License-file:        LICENSE
 Author:              Ben Lippmeier
@@ -139,7 +139,7 @@ Executable gloss-bitmap
         base           == 4.*,
         gloss          == 1.5.*,
         bytestring     == 0.9.*,
-        bmp            == 1.1.*
+        bmp            == 1.2.*
   Main-is: Main.hs
   hs-source-dirs: Bitmap
   ghc-options: -O2
@@ -160,3 +160,12 @@ Executable gloss-draw
   Main-is: Main.hs
   hs-source-dirs: Draw
   ghc-options: -O2
+-}
+Executable gloss-crystal
+  Build-depends:
+        base         == 4.*,
+        gloss        == 1.5.*,
+        repa         == 3.0.*
+  Main-is: Main.hs
+  hs-source-dirs: Crystal
+  ghc-options: -Odph -rtsopts -threaded
