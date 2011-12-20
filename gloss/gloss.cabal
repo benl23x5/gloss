@@ -6,7 +6,7 @@ Author:              Ben Lippmeier
 Maintainer:          benl@ouroborus.net
 Build-Type:          Simple
 Cabal-Version:       >=1.6
-Stability:           provisional
+Stability:           stable
 Category:            Graphics
 Homepage:            http://gloss.ouroborus.net
 Bug-reports:         gloss@ouroborus.net
