@@ -6,7 +6,7 @@
 --
 --  @
 --    import Graphics.Gloss
---    main = `display` (InWindow \"My Window\" (200, 200) (10, 10)) `white` (`Circle` 80)
+--    main = `display` (InWindow \"Nice Window\" (200, 200) (10, 10)) `white` (`Circle` 80)
 --  @
 --
 --   Once the window is open you can use the following:

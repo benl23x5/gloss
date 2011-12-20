@@ -8,6 +8,7 @@ where
 import Data.IORef
 import Data.Char                           (toLower)
 import Control.Monad
+import Graphics.Gloss.Data.Display
 import Graphics.UI.GLFW                    (WindowValue(..))
 import qualified Graphics.UI.GLFW          as GLFW
 import qualified Graphics.Rendering.OpenGL as GL
@@ -119,28 +120,33 @@ exitGLFW _
 -- | Open a new window.
 openWindowGLFW 
         :: IORef GLFWState
-        -> String
-        -> (Int,Int)
-        -> Maybe (Int,Int) -- ^ 'Just' the initial window position, or
-                           -- 'Nothing' for fullscreen.
+        -> Display
         -> IO ()
 
-openWindowGLFW _ windowName (sizeX,sizeY) mPos
+openWindowGLFW _ (InWindow title (sizeX, sizeY) pos)
  = do   _ <- GLFW.openWindow
                 GLFW.defaultDisplayOptions
                  { GLFW.displayOptions_width        = sizeX
                  , GLFW.displayOptions_height       = sizeY
-                 , GLFW.displayOptions_displayMode  = winType }
-
-        maybe (return ()) (uncurry GLFW.setWindowPosition) mPos
-        GLFW.setWindowTitle              windowName
+                 , GLFW.displayOptions_displayMode  = GLFW.Window }
+        
+        uncurry GLFW.setWindowPosition pos
+        GLFW.setWindowTitle title
 
         -- Try to enable sync-to-vertical-refresh by setting the number 
         -- of buffer swaps per vertical refresh to 1.
         GLFW.setWindowBufferSwapInterval 1
-  where winType = case mPos of
-                    Just _ -> GLFW.Window
-                    Nothing -> GLFW.Fullscreen 
+
+openWindowGLFW _ (FullScreen (sizeX, sizeY))
+ = do   _ <- GLFW.openWindow
+                GLFW.defaultDisplayOptions
+                 { GLFW.displayOptions_width        = sizeX
+                 , GLFW.displayOptions_height       = sizeY
+                 , GLFW.displayOptions_displayMode  = GLFW.Fullscreen }
+        
+        -- Try to enable sync-to-vertical-refresh by setting the number 
+        -- of buffer swaps per vertical refresh to 1.
+        GLFW.setWindowBufferSwapInterval 1
 
 
 -- Dump State -----------------------------------------------------------------
