@@ -16,5 +16,12 @@ run fileName
  = do	picture@(Bitmap width height _ _)
                 <- loadBMP fileName
 
-	display (InWindow fileName (width, height) (10,  10))
-      		white picture
+	animate (InWindow fileName (width, height) (10,  10))
+                black (frame width height picture)
+
+frame :: Int -> Int -> Picture -> Float -> Picture
+frame width height picture t
+        = Color (greyN (abs $ sin (t * 2)))
+        $ Pictures 
+                [rectangleSolid (fromIntegral width) (fromIntegral height)
+                , picture]
