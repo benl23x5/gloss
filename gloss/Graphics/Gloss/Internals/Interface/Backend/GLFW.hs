@@ -147,7 +147,7 @@ openWindowGLFW _ (FullScreen (sizeX, sizeY))
         -- Try to enable sync-to-vertical-refresh by setting the number 
         -- of buffer swaps per vertical refresh to 1.
         GLFW.setWindowBufferSwapInterval 1
-
+        GLFW.enableMouseCursor
 
 -- Dump State -----------------------------------------------------------------
 -- | Print out the internal GLFW state.
