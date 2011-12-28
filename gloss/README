@@ -8,7 +8,7 @@ EXAMPLE
     Getting something on the screen is as easy as:
 
       import Graphics.Gloss
-      main = displayInWindow "My Window" (200, 200) (10, 10) white (Circle 80)
+      main = display (InWindow "Nice Window" (200, 200) (10, 10)) white (Circle 80)
 
 
 USAGE
@@ -21,7 +21,8 @@ USAGE
 
 OTHER THINGS
     Animations and simulations can be constructed similarly using the
-    animateInWindow and simulateInWindow functions.
+    'animate' and 'simulate' functions. Games with user input can be
+    constructed with the 'play' function.
 
     See the gloss-examples package for more.
 

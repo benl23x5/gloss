@@ -29,6 +29,7 @@
 --   Gloss uses OpenGL under the hood, but you don't have to worry about any of that.
 --
 -- @Release Notes:
+--
 -- For 1.6.0:
 --   Thanks to Anthony Cowley
 --   * Full screen display mode.
@@ -45,6 +46,8 @@
 --     GLUT is still the default, but to use GLFW install gloss with:
 --        cabal install gloss --flags=\"GLFW -GLUT\"
 -- @
+--
+-- For more information, check out <http://gloss.ouroborus.net>.
 --
 module Graphics.Gloss 
 	( module Graphics.Gloss.Data.Picture

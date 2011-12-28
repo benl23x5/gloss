@@ -29,7 +29,7 @@ Flag GLFW
   Default:     False
 
 Flag ExplicitBackend
-  Description: Expose versions of displayInWindow and friends that allow
+  Description: Expose versions of 'display' and friends that allow
                you to choose what window manager backend to use.
   Default:     False
 
