@@ -41,7 +41,7 @@ renderPicture
 	-- This GL state doesn't change during rendering, 
 	--	so we can just read it once here
 	(matProj_  :: GL.GLmatrix GL.GLdouble)	
-			<- get $ GL.matrix (Just $ GL.Projection)
+			<- get $ GL.matrix (Just GL.Projection)
 	viewport_  	<- get $ GL.viewport
 	windowSize_	<- getWindowDimensions backendRef
 
@@ -197,7 +197,7 @@ drawPicture circScale picture
 		
 		-- Draw textured polygon
 		GL.renderPrimitive GL.Polygon
-		 $ do zipWithM_
+		 $ zipWithM_
 		        (\(pX, pY) (tX, tY)
 			  -> do GL.texCoord $ GL.TexCoord2 (gf tX) (gf tY)
 		           	GL.vertex   $ GL.Vertex2   (gf pX) (gf pY))
@@ -234,7 +234,7 @@ loadTexture refTextures width height imgData cacheMe
                 = find (\tex -> texName   tex == name
                              && texWidth  tex == width
                              && texHeight tex == height)
-                $ textures
+                textures
                 
         case mTexCached of
          Just tex
