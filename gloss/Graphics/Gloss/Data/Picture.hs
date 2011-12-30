@@ -8,7 +8,9 @@ module Graphics.Gloss.Data.Picture
 	, BitmapData
 
 	-- * Aliases for Picture constructors
-	, blank, polygon, line, circle, thickCircle, text, bitmap
+	, blank, polygon, line, circle, thickCircle
+        , arc, thickArc, sector
+        , text, bitmap
 	, color, translate, rotate, scale
 	, pictures
 
@@ -20,7 +22,7 @@ module Graphics.Gloss.Data.Picture
 
 	-- * Miscellaneous
  	, lineLoop
- 	, circleSolid
+ 	, circleSolid, arcSolid
 	
 	-- * Rectangles
 	, rectanglePath, 	rectangleWire, 		rectangleSolid
@@ -66,6 +68,24 @@ data Picture
 	-- | A circle with the given thickness and radius.
 	--   If the thickness is 0 then this is equivalent to `Circle`.
 	| ThickCircle	Float		Float
+
+	-- | A circular arc between two angles (a1 and a2) and
+        --   with the given radius (r). The arc is drawn
+        --   counter-clockwise from a1 to a2, where the angles  
+        --   are in degrees.  
+        | Arc	Float Float Float
+
+	-- | A circular arc between two angles (a1 and a2) and
+        --   with the given radius (r) and thickness.
+	--   If the thickness is 0 then this is equivalent to `Arc`.
+        | ThickArc	Float Float Float Float
+
+	-- | A circular arc between two angles (a1 and a2) and
+        --   with the given radius (r), with radial lines connecting 
+        --   the ends to the center of the circle. The arc is drawn
+        --   counter-clockwise from a1 to a2, where the angles  
+        --   are in degrees. 
+        | Sector	Float Float Float
 
 	-- | Some text to draw with a vector font.
 	| Text		String
@@ -131,6 +151,38 @@ thickCircle ::
   -> Float    -- ^ thickness
   -> Picture
 thickCircle = ThickCircle
+
+-- | Create an `Arc`, drawn counter-clockwise from the
+--   start to end angles. The angles are measured 
+--   counter-clockwise from the horizontal.
+arc ::
+  Float -- ^ start angle, in degrees
+  -> Float -- ^ end angle, in degrees
+  -> Float -- ^ radius
+  -> Picture
+arc = Arc
+
+-- | Create a `ThickArc`. Using a @thickness@ of 0 is the
+--   same as `arc`.
+thickArc :: 
+  Float -- ^ start angle, in degrees
+  -> Float -- ^ end angle, in degrees
+  -> Float -- ^ radius
+  -> Float -- ^ thickness
+  -> Picture
+thickArc = ThickArc
+
+-- | Draw a `Sector`, which is an `Arc` connected to the origin
+--   of the circle.
+sector :: 
+  Float -- ^ start angle, in degrees
+  -> Float -- ^ end angle, in degrees
+  -> Float -- ^ radius
+  -> Picture
+sector = Sector
+
+-- thickSector :: Float -> Float -> Float -> Float -> Picture
+-- thickSector = ThickSector
 
 -- | Add `Text` to the picture.
 text :: String -> Picture
@@ -298,3 +350,11 @@ rectangleUpperSolid sizeX sizeY
 circleSolid :: Float -> Picture
 circleSolid r = thickCircle (r/2) r
 
+-- | A solid arc, drawn counter-clockwise from the start
+--   to the end angle.
+arcSolid :: 
+  Float -- ^ Start angle, in degrees.
+  -> Float -- ^ End angle, in degrees.
+  -> Float -- ^ Radius of arc.
+  -> Picture
+arcSolid a1 a2 r = thickArc a1 a2 (r/2) r 

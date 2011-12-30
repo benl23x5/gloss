@@ -96,6 +96,17 @@ drawPicture circScale picture
 	ThickCircle radius thickness
 	 ->  renderCircle 0 0 circScale radius thickness
 	
+        -- arc
+        Arc a1 a2 radius
+         ->  renderArc 0 0 circScale radius a1 a2 0
+             
+        ThickArc a1 a2 radius thickness
+         ->  renderArc 0 0 circScale radius a1 a2 thickness
+             
+        -- sector
+        Sector a1 a2 radius
+         ->  renderSector 0 0 circScale radius a1 a2
+             
 	-- stroke text
 	-- 	text looks weird when we've got blend on,
 	--	so disable it during the renderString call.
@@ -130,6 +141,15 @@ drawPicture circScale picture
 	Translate posX posY (ThickCircle radius thickness)
 	 -> renderCircle posX posY circScale radius thickness
 
+	Translate posX posY (Arc a1 a2 radius)
+	 -> renderArc posX posY circScale radius a1 a2 0
+
+	Translate posX posY (ThickArc a1 a2 radius thickness)
+	 -> renderArc posX posY circScale radius a1 a2 thickness
+
+        Translate posX posY (Sector a1 a2 radius)
+         ->  renderSector posX posY circScale radius a1 a2
+             
 	Translate tx ty (Rotate deg p)
 	 -> GL.preservingMatrix
 	  $ do	GL.translate (GL.Vector3 (gf tx) (gf ty) 0)
