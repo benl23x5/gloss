@@ -85,7 +85,7 @@ data Picture
 	-- | A picture translated by the given x and y coordinates.
 	| Translate	Float Float	Picture
 
-	-- | A picture rotated by the given angle (in degrees).
+	-- | A picture rotated clockwise by the given angle (in degrees).
 	| Rotate	Float		Picture
 
 	-- | A picture scaled by the given x and y factors.
@@ -105,39 +105,73 @@ instance Monoid Picture where
 
 
 -- Constructors ----------------------------------------------------------------------------------
+
+-- | Create a `Blank` picture.
 blank :: Picture
 blank	= Blank
 
+-- | Create a `Polygon`.
 polygon :: Path -> Picture
 polygon = Polygon
 
+-- | Create a `Line`.
 line :: Path -> Picture
 line 	= Line
 
-circle :: Float -> Picture
+-- | Create a `Circle`.
+circle ::
+  Float       -- ^ radius
+  -> Picture
 circle 	= Circle
 
-thickCircle :: Float -> Float -> Picture
+-- | Create a `ThickCircle`. Using a @thickness@ of 0
+--   is the same as `circle`.
+thickCircle :: 
+  Float       -- ^ radius
+  -> Float    -- ^ thickness
+  -> Picture
 thickCircle = ThickCircle
 
+-- | Add `Text` to the picture.
 text :: String -> Picture
 text = Text
 
-bitmap :: Int -> Int -> BitmapData -> Bool -> Picture
+-- | Add a `Bitmap`.
+bitmap :: 
+  Int            -- ^ width
+  -> Int         -- ^ height
+  -> BitmapData  -- ^ 32-bit RGBA bitmap data
+  -> Bool        -- ^ should the data be cached between frames?
+  -> Picture
 bitmap = Bitmap
 
+-- | Set the `Color` for a picture.
 color :: Color -> Picture -> Picture
 color = Color
 
-translate :: Float -> Float -> Picture -> Picture
+-- | `Translate` a picture horizontally and vertically.
+translate :: 
+  Float       -- ^ x
+  -> Float    -- ^ y
+  -> Picture 
+  -> Picture
 translate = Translate
 
-rotate :: Float -> Picture -> Picture
+-- | `Rotate` a picture.
+rotate :: 
+  Float -- ^ angle, in degrees
+  -> Picture -> Picture
 rotate = Rotate
 
-scale :: Float -> Float -> Picture -> Picture
+-- | `Scale` the size of a picture.
+scale :: 
+  Float       -- ^ x scale factor
+  -> Float    -- ^ y scale factor
+  -> Picture 
+  -> Picture
 scale = Scale
 
+-- | Combine pictures.
 pictures :: [Picture] -> Picture
 pictures = Pictures
 
@@ -204,47 +238,59 @@ lineLoop []	= Line []
 lineLoop (x:xs)	= Line ((x:xs) ++ [x])
 
 
--- | A path representing a rectangle centered about the origin,
---	with the given width and height.
-rectanglePath :: Float -> Float -> Path
+-- | A path representing a rectangle centered about the origin.
+rectanglePath :: 
+  Float     -- ^ width. 
+  -> Float  -- ^ height
+  -> Path
 rectanglePath sizeX sizeY			
  = let	sx	= sizeX / 2
 	sy	= sizeY / 2
    in	[(-sx, -sy), (-sx, sy), (sx, sy), (sx, -sy)]
 
 
--- | A wireframe rectangle centered about the origin,
---	with the given width and height.
-rectangleWire :: Float -> Float -> Picture
+-- | A wireframe rectangle centered about the origin.
+rectangleWire :: 
+  Float       -- ^ width
+  -> Float    -- ^ height
+  -> Picture
 rectangleWire sizeX sizeY
 	= lineLoop $ rectanglePath sizeX sizeY
 
 
--- | A wireframe rectangle in the y > 0 half of the x-y plane,
---	with the given width and height.
-rectangleUpperWire :: Float -> Float -> Picture
+-- | A wireframe rectangle in the y > 0 half of the x-y plane.
+rectangleUpperWire :: 
+  Float       -- ^ width
+  -> Float    -- ^ height
+  -> Picture
 rectangleUpperWire sizeX sizeY
 	= lineLoop $ rectangleUpperPath sizeX sizeY
 
 
--- | A path representing a rectangle in the y > 0 half of the x-y plane,
---	with the given width and height
-rectangleUpperPath :: Float -> Float -> Path
+-- | A path representing a rectangle in the y > 0 half of the x-y plane.
+rectangleUpperPath ::
+  Float       -- ^ width
+  -> Float    -- ^ height
+  -> Path
 rectangleUpperPath sizeX sy
  = let 	sx	= sizeX / 2
    in  	[(-sx, 0), (-sx, sy), (sx, sy), (sx, 0)]
 
 
--- | A solid rectangle centered about the origin, 
---	with the given width and height.
-rectangleSolid :: Float -> Float -> Picture
+-- | A solid rectangle centered about the origin.
+rectangleSolid ::
+  Float       -- ^ width
+  -> Float    -- ^ height
+  -> Picture
 rectangleSolid sizeX sizeY
 	= Polygon $ rectanglePath sizeX sizeY
 
 
--- | A solid rectangle in the y > 0 half of the x-y plane,
---	with the given width and height.
-rectangleUpperSolid :: Float -> Float -> Picture
+-- | A solid rectangle in the y > 0 half of the x-y plane.
+rectangleUpperSolid ::
+  Float       -- ^ width
+  -> Float    -- ^ height
+  -> Picture
 rectangleUpperSolid sizeX sizeY
 	= Polygon  $ rectangleUpperPath sizeX sizeY
 
