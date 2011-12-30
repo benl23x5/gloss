@@ -30,7 +30,7 @@ import Graphics.Gloss.Data.Color
 import Graphics.Gloss.Data.Point
 import Graphics.Gloss.Data.Vector
 import Graphics.Gloss.Internals.Render.Bitmap
-import Control.Monad
+-- import Control.Monad
 import Codec.BMP
 import Foreign.ForeignPtr
 import Foreign.Marshal.Alloc
