@@ -162,6 +162,13 @@ drawPicture circScale picture
 	  $ do	GL.translate (GL.Vector3 (gf tx) (gf ty) 0)
 		drawPicture circScale p
 
+        -- Are these worthwhile optimizations?
+        -- Rotate deg (Arc a1 a2 r)
+        --  ->  renderArc 0 0 circScale r (a1-deg) (a2-deg) 0
+
+        -- Rotate deg (Sector a1 a2 r)
+        --  ->  renderSector 0 0 circScale r (a1-deg) (a2-deg)
+
 	Rotate deg p
 	 -> GL.preservingMatrix
 	  $ do	GL.rotate (gf deg) (GL.Vector3 0 0 (-1))
