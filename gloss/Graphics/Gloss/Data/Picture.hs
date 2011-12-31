@@ -22,7 +22,7 @@ module Graphics.Gloss.Data.Picture
 
 	-- * Miscellaneous
  	, lineLoop
- 	, circleSolid, arcSolid
+ 	, circleSolid, arcSolid, arcPath
 	
 	-- * Rectangles
 	, rectanglePath, 	rectangleWire, 		rectangleSolid
@@ -31,8 +31,8 @@ where
 import Graphics.Gloss.Data.Color
 import Graphics.Gloss.Data.Point
 import Graphics.Gloss.Data.Vector
+import Graphics.Gloss.Geometry.Angle
 import Graphics.Gloss.Internals.Render.Bitmap
--- import Control.Monad
 import Codec.BMP
 import Foreign.ForeignPtr
 import Foreign.Marshal.Alloc
@@ -43,7 +43,8 @@ import Data.Monoid
 import Data.ByteString
 import System.IO.Unsafe
 import qualified Data.ByteString.Unsafe as BSU
-
+import Prelude hiding (map)
+import qualified Prelude as P
 
 -- | A path through the x-y plane.
 type Path	= [Point]				
@@ -353,8 +354,32 @@ circleSolid r = thickCircle (r/2) r
 -- | A solid arc, drawn counter-clockwise from the start
 --   to the end angle.
 arcSolid :: 
-  Float -- ^ Start angle, in degrees.
-  -> Float -- ^ End angle, in degrees.
-  -> Float -- ^ Radius of arc.
+  Float      -- ^ Start angle, in degrees
+  -> Float   -- ^ End angle, in degrees
+  -> Float   -- ^ Radius of arc
   -> Picture
 arcSolid a1 a2 r = thickArc a1 a2 (r/2) r 
+
+-- Ideally we would hide the Int argument, using
+-- Graphics.Gloss.Internals.Render.Circle.circleSteps, to
+-- better match the behavior of circle, but it's not clear
+-- how to do this.
+
+-- | A path representing an arc, centered about the origin.
+arcPath ::
+  Float     -- ^ start angle, in degrees
+  -> Float  -- ^ end angle, in degrees
+  -> Float  -- ^ radius
+  -> Int    -- ^ number of segments, assumed to be > 0
+  -> Path
+arcPath a1 a2 r n =  
+  let  tStart    = degToRad a1
+       tStop     = degToRad a2 + if a1 >= a2 then 2 * pi else 0
+       tStep     = (tStop - tStart) / fromIntegral n
+       
+       -- not the most efficient
+       arcPos t  = (r * cos t, r * sin t)
+       angles = P.map ((tStart +) . (tStep *) . fromIntegral) [0..n]
+       
+  in   P.map arcPos angles
+  
