@@ -43,7 +43,7 @@ applyLight objs pt n (LightPoint lpt color)
         !final   = clampV3 (color `mulsV3` mag) 0.0 999999.0
         
         -- check for occluding objects between the light and the surface point
-   in   case findNearest objs pt dir of
+   in   case castRay objs pt dir of
                 Just (_, opt)
                  -> if magnitudeV3 (opt - pt) < dist
                         then Vec3 0.0 0.0 0.0

@@ -1,3 +1,4 @@
+{-# LANGUAGE BangPatterns #-}
 
 module Solver where
 import World
@@ -12,13 +13,13 @@ import qualified Graphics.Gloss.Field   as G
 run :: Int -> Int -> Int -> IO ()                     
 run sizeX sizeY zoom 
  = G.animateField 
-        (G.InWindow "ray" (sizeX, sizeY) (100, 400)) 
+        (G.InWindow "ray" (sizeX, sizeY) (100, 100)) 
         (zoom, zoom)
         (tracePixel 400 300)
 
 
 tracePixel :: Int -> Int -> Float -> G.Point -> G.Color
-tracePixel sizeX sizeY time (x, y)
+tracePixel !sizeX !sizeY !time (x, y)
  = let  sizeX'  = fromIntegral sizeX
         sizeY'  = fromIntegral sizeY
        

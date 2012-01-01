@@ -16,11 +16,11 @@ traceRay
         -> Color        -- visible color for this ray
         
 -- too many reflections
-traceRay objs lights orig dir 0
+traceRay !objs !lights !orig !dir 0
         = Vec3 0.0 0.0 0.0
 
-traceRay objs lights orig dir limit
- = case findNearest objs orig dir of
+traceRay !objs !lights !orig !dir !limit
+ = case castRay objs orig dir of
 
          -- ray didn't intersect any objects
          Nothing                
@@ -30,7 +30,7 @@ traceRay objs lights orig dir limit
          Just (obj, pt)
           -> let 
                 -- get the surface normal at that point
-                !n       = surfaceNormal (objectShape obj) pt
+                !n       = surfaceNormal obj pt
 
                 -- result angle of ray after reflection
                 !ndir    = dir - n `mulsV3` (2.0 * (n `dotV3` dir))
@@ -44,8 +44,8 @@ traceRay objs lights orig dir limit
                         $ map (applyLight objs pt n) lights
                         
                 -- total incoming light is direct lighting plus reflections
-                !color   = objectColor obj pt
-                !shine   = objectShine obj pt
+                !color   = colorOfObject obj pt
+                !shine   = shineOfObject obj pt
         
                 !in_light 
                         = refl     `mulsV3` shine
