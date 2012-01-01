@@ -17,14 +17,27 @@ animateField
         -> (Float -> Point -> Color)
         -> IO ()
         
-animateField display (zoomX, zoomY) pixel
- =       animate display black mkFrame
+animateField display (zoomX, zoomY) makePixel
+ = let  (winSizeX, winSizeY) = sizeOfDisplay display
+   in   animate display black 
+                $ (\time -> makeFrame winSizeX winSizeY zoomX zoomY (makePixel time))
+{-# INLINE animateField #-}
+--  INLINE so the repa functions fuse with the users client functions.
+
+
+{-# INLINE sizeOfDisplay #-}
+sizeOfDisplay :: Display -> (Int, Int)
+sizeOfDisplay display
+ = case display of
+        InWindow _ s _  -> s
+        FullScreen s    -> s
+
+{-# INLINE makeFrame #-}
+makeFrame :: Int -> Int -> Int -> Int -> (Point -> Color) -> Picture
+makeFrame winSizeX winSizeY zoomX zoomY makePixel
+ = picture
  where
-        (winSizeX, winSizeY)  
-                = case display of
-                        FullScreen ws    -> ws
-                        InWindow _ ws _  -> ws
-        
+        -- Size of the raw image to render.
         sizeX = winSizeX `div` zoomX
         sizeY = winSizeY `div` zoomY
 
@@ -36,52 +49,47 @@ animateField display (zoomX, zoomY) pixel
         !fsizeX2        = fsizeX / 2
         !fsizeY2        = fsizeY / 2
 
+        -- Midpoint of image.
         midX, midY :: Int
         !midX           = sizeX `div` 2
         !midY           = sizeY `div` 2
 
-        mkFrame time
-         = let  
-                {-# INLINE pixelOfIndex #-}
-                pixelOfIndex (Z :. y :. x)
-                 = let  x'      = fromIntegral (x - midX) / fsizeX2
-                        y'      = fromIntegral (y - midY) / fsizeY2
-                   in   (x', y')
+        {-# INLINE pixelOfIndex #-}
+        pixelOfIndex (Z :. y :. x)
+         = let  x'      = fromIntegral (x - midX) / fsizeX2
+                y'      = fromIntegral (y - midY) / fsizeY2
+           in   (x', y')
          
-                -- Define the image, and extract out just the RGB color components.
-                -- We don't need the alpha because we're only drawing one image.
-                arrRGB :: Array D DIM2 (Float, Float, Float)
-                arrRGB  = R.map (\c -> case rgbaOfColor c of 
-                                        (r, g, b, _) -> (r, g, b))
-                        $ R.fromFunction (Z :. sizeY  :. sizeX)
-                        $ (pixel time . pixelOfIndex)
+        -- Define the image, and extract out just the RGB color components.
+        -- We don't need the alpha because we're only drawing one image.
+        arrRGB :: Array D DIM2 (Float, Float, Float)
+        arrRGB  = R.map (\c -> case rgbaOfColor c of 
+                                (r, g, b, _) -> (r, g, b))
+                $ R.fromFunction (Z :. sizeY  :. sizeX)
+                $ (makePixel . pixelOfIndex)
          
-                 -- Convert the RGB Float colors to a flat image.
-                arr8 :: Array F DIM2 Word8
-                arr8    = R.computeP
-                        $ R.traverse
-                                arrRGB
-                                (\(Z :. height :. width) -> Z :. height :. width * 4)
-                                (\get (Z :. y :. x) 
-                                 -> let (r, g, b)     = get (Z :. y :. x `div` 4)
-                                    in  case x `mod` 4 of
-                                          0 -> 255
-                                          1 -> word8OfFloat (b * 255)
-                                          2 -> word8OfFloat (g * 255)
-                                          3 -> word8OfFloat (r * 255)
-                                          _ -> 0)
+         -- Convert the RGB Float colors to a flat image.
+        arr8 :: Array F DIM2 Word8
+        arr8    = R.computeP
+                $ R.traverse
+                        arrRGB
+                        (\(Z :. height :. width) -> Z :. height :. width * 4)
+                        (\get (Z :. y :. x) 
+                         -> let (r, g, b)     = get (Z :. y :. x `div` 4)
+                            in  case x `mod` 4 of
+                                  0 -> 255
+                                  1 -> word8OfFloat (b * 255)
+                                  2 -> word8OfFloat (g * 255)
+                                  3 -> word8OfFloat (r * 255)
+                                  _ -> 0)
 
-                -- Wrap the ForeignPtr from the Array as a gloss picture.
-                pic     = arr8 
-                        `seq` Scale (fromIntegral zoomX) (fromIntegral zoomY)
-                            $ bitmapOfForeignPtr
-                                sizeX sizeY             -- raw image size
-                                (R.toForeignPtr arr8)   -- the image data.
-                                False                   -- don't cache this in texture memory.
-           in   pic
-
-{-# INLINE animateField #-}
---  INLINE so the repa functions fuse with the users client functions.
+        -- Wrap the ForeignPtr from the Array as a gloss picture.
+        picture = arr8 
+                `seq` Scale (fromIntegral zoomX) (fromIntegral zoomY)
+                    $ bitmapOfForeignPtr
+                        sizeX sizeY             -- raw image size
+                        (R.toForeignPtr arr8)   -- the image data.
+                        False                   -- don't cache this in texture memory.
 
 
 -- | Float to Word8 conversion because the one in the GHC libraries
