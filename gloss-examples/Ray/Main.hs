@@ -22,7 +22,7 @@ main
            [ "trace <sizeX::Int> <sizeY::Int> <zoom::Int> (fov::Int) (bounces::Int)"
            , "    sizeX, sizeY - visualisation size        (default 1440, 600)"
            , "    zoom         - pixel replication factor  (default 3)"
-           , "    fov          - field of view             (default 400)"
+           , "    fov          - field of view             (default 100)"
            , "    bounces      - ray bounce limit          (default 4)"
            , ""
            , " You'll want to run this with +RTS -N to enable threads" ]
