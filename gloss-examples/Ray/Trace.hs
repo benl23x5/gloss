@@ -53,8 +53,8 @@ traceRay !objs !lights !ambient !orig !dir !limit
                 !color     = colorOfObject obj point
                 !shine     = shineOfObject obj point
         
-                !light_in  = refl    `mulsV3` shine
-                          + lighting `mulsV3` (1.0 - shine)
+                !light_in  = refl    `mulsV3` shine 
+                           + lighting `mulsV3` (1.0 - shine)
                 
                 -- Outgoing light is incoming light modified by surface color.
                 -- We also need to clip it incase the sum of all incoming lights
@@ -62,4 +62,4 @@ traceRay !objs !lights !ambient !orig !dir !limit
                 !light_out = clipV3 (light_in * color) 1.0
 
               in light_out
-
+{-# INLINE traceRay #-}

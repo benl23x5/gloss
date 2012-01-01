@@ -13,14 +13,16 @@ import Vec3
 data Light
         -- | A point light source, intensity drops off with distance from the point.
         = Light
-        { lightPoint   :: Vec3
-        , lightColor   :: Color }
+        { lightPoint   :: !Vec3
+        , lightColor   :: !Color }
         deriving (Eq, Show)
 
 translateLight :: Vec3 -> Light -> Light
 translateLight v ll
  = case ll of
         Light pos color -> Light (pos + v) color
+{-# INLINE translateLight #-}
+
 
 -- | Compute the direct lighting at particular point for a list of lights.
 applyLights
@@ -30,13 +32,13 @@ applyLights
         -> [Light]      -- ^ Lights to consider.
         -> Color        -- ^ Total lighting at this point.
 
-
-applyLights objs point normal lights
+applyLights !objs !point !normal !lights
  = go lights (Vec3 0 0 0)
- where go [] total     = total
-       go (light:rest) total
-        = let !contrib = applyLight objs point normal light
+ where go [] !total     = total
+       go (light:rest) !total
+        = let !contrib  = applyLight objs point normal light
           in  go rest (total + contrib)
+{-# INLINE applyLights #-}
 
 
 -- | Compute the direct lighting at a particular point for a single light.
@@ -47,7 +49,7 @@ applyLight
         -> Light 
         -> Color
 
-applyLight objs point normal (Light lpoint color)
+applyLight !objs !point !normal !(Light lpoint color)
  = let  -- vector from the light to the surface point
         !dir    = normaliseV3 (lpoint - point)
 
@@ -63,5 +65,5 @@ applyLight objs point normal (Light lpoint color)
                 -- the light that is reflected
                 !refl   = color `mulsV3` mag
             in refl
-                
+{-# INLINE applyLight #-}                
                

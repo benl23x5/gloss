@@ -13,16 +13,17 @@ main :: IO ()
 main 
  = do   args    <- getArgs
         case args of
-         []     -> run 1440 900 5 400
+         []     -> run 1440 900 5 400 10
 
-         [sizeX, sizeY, zoom, fov]
-                -> run (read sizeX) (read sizeY) (read zoom) (read fov)
+         [sizeX, sizeY, zoom, fov, bounces]
+                -> run (read sizeX) (read sizeY) (read zoom) (read fov) (read bounces)
 
          _ -> putStr $ unlines
-           [ "trace <sizeX::Int> <sizeY::Int> <zoom::Int> (fov::Int)"
+           [ "trace <sizeX::Int> <sizeY::Int> <zoom::Int> (fov::Int) (bounces::Int)"
            , "    sizeX, sizeY - visualisation size        (default 1440, 900)"
            , "    zoom         - pixel replication factor  (default 5)"
            , "    fov          - field of view             (default 400)"
+           , "    bounces      - ray bounce limit          (default 10)"
            , ""
            , " You'll want to run this with +RTS -N to enable threads" ]
    
@@ -75,21 +76,21 @@ initState
 
 
 -- | Run the game.
-run :: Int -> Int -> Int -> Int -> IO ()                     
-run sizeX sizeY zoom fov 
+run :: Int -> Int -> Int -> Int -> Int -> IO ()                     
+run sizeX sizeY zoom fov bounces
  = G.playField 
         (G.FullScreen (sizeX, sizeY))
         (zoom, zoom)
         100
         initState
-        (tracePixel sizeX sizeY fov)
+        (tracePixel sizeX sizeY fov bounces)
         handleEvent
         advanceState
 
 
 -- | Render a single pixel of the image.
-tracePixel :: Int -> Int -> Int -> State -> G.Point -> G.Color
-tracePixel !sizeX !sizeY !fov !state (x, y)
+tracePixel :: Int -> Int -> Int -> Int -> State -> G.Point -> G.Color
+tracePixel !sizeX !sizeY !fov !bounces !state (x, y)
  = let  sizeX'  = fromIntegral sizeX
         sizeY'  = fromIntegral sizeY
         aspect  = sizeX' / sizeY'
@@ -105,7 +106,7 @@ tracePixel !sizeX !sizeY !fov !state (x, y)
           = traceRay    (stateObjectsView state) 
                         (stateLightsView  state) ambient
                         eyePos eyeDir
-                        8               -- max bounces.
+                        bounces
 
    in   G.rawColor r g b 1.0
 {-# INLINE tracePixel #-}
