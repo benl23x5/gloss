@@ -13,7 +13,7 @@ main :: IO ()
 main 
  = do   args    <- getArgs
         case args of
-         []     -> run 1440 900 4 400 4
+         []     -> run 1440 900 4 100 4
 
          [sizeX, sizeY, zoom, fov, bounces]
                 -> run (read sizeX) (read sizeY) (read zoom) (read fov) (read bounces)
@@ -57,8 +57,8 @@ initState :: State
 initState
         = State
         { stateTime             = 0
-        , stateEyePos           = Vec3 50 (-100) (-500)
-        , stateEyeLoc           = Vec3 0 0 0
+        , stateEyePos           = Vec3 50 (-100) (-600)
+        , stateEyeLoc           = Vec3 0 100 800 
 
         , stateLeftClick        = Nothing 
 
