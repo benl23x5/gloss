@@ -66,7 +66,7 @@ initState
 run :: Int -> Int -> Int -> Int -> IO ()                     
 run sizeX sizeY zoom fov 
  = G.playField 
-        (G.InWindow "ray" (sizeX, sizeY) (100, 100)) 
+        (G.FullScreen (sizeX, sizeY))
         (zoom, zoom)
         100
         initState
