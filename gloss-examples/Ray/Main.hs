@@ -9,7 +9,6 @@ import qualified Graphics.Gloss                 as G
 import qualified Graphics.Gloss.Interface.Game  as G
 import qualified Graphics.Gloss.Field           as G
 
-
 main :: IO ()
 main 
  = do   args    <- getArgs
@@ -37,6 +36,12 @@ data State
 
         , stateLeftClick        :: Maybe G.Point 
 
+        , stateMoveSpeed        :: Float
+        , stateMovingForward    :: Bool
+        , stateMovingBackward   :: Bool
+        , stateMovingLeft       :: Bool
+        , stateMovingRight      :: Bool
+
         , stateObjects          :: [Object]
         , stateObjectsView      :: [Object]
 
@@ -53,7 +58,14 @@ initState
         { stateTime             = 0
         , stateEyePos           = Vec3 50 (-100) (-500)
         , stateEyeLoc           = Vec3 0 0 0
+
         , stateLeftClick        = Nothing 
+
+        , stateMoveSpeed        = 400
+        , stateMovingForward    = False
+        , stateMovingBackward   = False
+        , stateMovingLeft       = False
+        , stateMovingRight      = False
 
         , stateObjects          = makeObjects 0
         , stateObjectsView      = makeObjects 0
@@ -108,8 +120,37 @@ handleEvent event state
         = state { stateLeftClick = Just (x, y)}
 
         -- End transation.
-        | G.EventKey _ G.Up _ _ <- event
+        | G.EventKey (G.MouseButton G.LeftButton) 
+                     G.Up _ _ <- event
         = state { stateLeftClick = Nothing }
+
+        -- Moving forward
+        | G.EventKey (G.Char 'w') G.Down _ _        <- event
+        = state { stateMovingForward  = True }
+
+        | G.EventKey (G.Char 'w') G.Up   _ _        <- event
+        = state { stateMovingForward  = False }
+
+        -- Moving backward
+        | G.EventKey (G.Char 's') G.Down _ _        <- event
+        = state { stateMovingBackward = True }
+
+        | G.EventKey (G.Char 's') G.Up   _ _        <- event
+        = state { stateMovingBackward = False }
+
+        -- Moving left
+        | G.EventKey (G.Char 'a') G.Down _ _        <- event
+        = state { stateMovingLeft = True }
+
+        | G.EventKey (G.Char 'a') G.Up   _ _        <- event
+        = state { stateMovingLeft = False }
+
+        -- Moving right
+        | G.EventKey (G.Char 'd') G.Down _ _        <- event
+        = state { stateMovingRight = True }
+
+        | G.EventKey (G.Char 'd') G.Up   _ _        <- event
+        = state { stateMovingRight = False }
 
         -- Translate the world.
         | G.EventMotion (x, y)  <- event
@@ -130,7 +171,22 @@ handleEvent event state
 advanceState :: Float -> State -> State
 advanceState advTime state
  = let  time'   = stateTime state + advTime
-   in   setTime time' state
+
+        speed   = stateMoveSpeed state
+        move    = (if stateMovingForward state 
+                        then moveEyeLoc (Vec3 0 0 (speed * advTime))
+                        else id)
+                . (if stateMovingBackward state
+                        then moveEyeLoc (Vec3 0 0 (-speed * advTime))
+                        else id)
+                . (if stateMovingLeft state
+                        then moveEyeLoc (Vec3 (-speed * advTime) 0 0)
+                        else id)
+                . (if stateMovingRight state
+                        then moveEyeLoc (Vec3 (speed * advTime) 0 0)
+                        else id)
+
+   in   setTime time' $ move state
 
 
 -- | Set the location of the eye.
@@ -144,6 +200,16 @@ setEyeLoc eyeLoc state
         , stateLightsView       = map (translateLight  (stateEyeLoc state)) lights 
         }
 
+moveEyeLoc :: Vec3 -> State -> State
+moveEyeLoc v state
+ = let  objects = stateObjects state
+        lights  = stateLights  state
+        eyeLoc  = stateEyeLoc  state + v
+   in state
+        { stateEyeLoc           = eyeLoc
+        , stateObjectsView      = map (translateObject eyeLoc) objects
+        , stateLightsView       = map (translateLight  eyeLoc) lights
+        }
 
 -- | Set the time of the world.
 setTime   :: Float -> State -> State
