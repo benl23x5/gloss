@@ -174,16 +174,16 @@ advanceState advTime state
 
         speed   = stateMoveSpeed state
         move    = (if stateMovingForward state 
-                        then moveEyeLoc (Vec3 0 0 (speed * advTime))
-                        else id)
-                . (if stateMovingBackward state
                         then moveEyeLoc (Vec3 0 0 (-speed * advTime))
                         else id)
+                . (if stateMovingBackward state
+                        then moveEyeLoc (Vec3 0 0 (speed * advTime))
+                        else id)
                 . (if stateMovingLeft state
-                        then moveEyeLoc (Vec3 (-speed * advTime) 0 0)
+                        then moveEyeLoc (Vec3 (speed * advTime) 0 0)
                         else id)
                 . (if stateMovingRight state
-                        then moveEyeLoc (Vec3 (speed * advTime) 0 0)
+                        then moveEyeLoc (Vec3 (-speed * advTime) 0 0)
                         else id)
 
    in   setTime time' $ move state

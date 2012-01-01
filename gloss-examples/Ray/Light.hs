@@ -3,8 +3,7 @@
 module Light 
         ( Light(..)
         , translateLight
-        , applyLights
-        , applyLight)
+        , applyLights)
 where
 import Object
 import Vec3
@@ -48,27 +47,21 @@ applyLight
         -> Light 
         -> Color
 
-applyLight objs pt n (Light lpt color)
- = let
-        -- vector from the light to the surface point
-        !dir    = normaliseV3 (lpt - pt)
+applyLight objs point normal (Light lpoint color)
+ = let  -- vector from the light to the surface point
+        !dir    = normaliseV3 (lpoint - point)
 
         -- distance from light source to surface
-        !dist   = magnitudeV3 (lpt - pt)
-        
-        -- magnitude of reflection
-        !mag    = (n `dotV3` dir) / (dist * dist)
-
-        -- the light that is reflected
-        !refl   = color `mulsV3` mag
+        !dist   = magnitudeV3 (lpoint - point)
 
         -- check for occluding objects between the light and the surface point
-        -- TODO: only need to know if something is infront, not the actual distance.
-   in   case castRay objs pt dir of
-                Just (_, opt)
-                 -> if magnitudeV3 (opt - pt) < dist
-                        then Vec3 0.0 0.0 0.0
-                        else refl
-                        
-                Nothing -> refl
-                 
+   in if checkRay objs point dir dist
+       then Vec3 0 0 0
+       else let -- magnitude of reflection
+                !mag    = (normal `dotV3` dir) / (dist * dist)
+
+                -- the light that is reflected
+                !refl   = color `mulsV3` mag
+            in refl
+                
+               

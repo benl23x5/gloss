@@ -5,6 +5,7 @@ module Object
         , Object(..)
         , translateObject
         , castRay
+        , checkRay
         , surfaceNormal
         , colorOfObject
         , shineOfObject)
@@ -72,8 +73,28 @@ castRay !objs !orig !dir
            Just dist'
             | dist' < dist -> go1 rest obj      dist'
             | otherwise    -> go1 rest objClose dist
+{-# INLINE castRay #-}
 
- 
+
+-- | Simplified version of `castRay` that only checks whether there is some
+--   object closer than a given mimimum distance.
+checkRay :: [Object]    -- ^ Check for intersection on all these objects.
+         -> Vec3        -- ^ Ray origin.
+         -> Vec3        -- ^ Ray direction.
+         -> Float       -- ^ Minimum distance.
+         -> Bool
+        
+checkRay !objs !orig !dir !dist
+ = go0 objs
+ where  go0 []          = False
+        go0 (obj:rest)
+         = case distanceToObject obj orig dir of
+            Nothing             -> go0 rest
+            Just dist'
+             | dist' < dist     -> True
+             | otherwise        -> go0 rest
+{-# INLINE checkRay #-}             
+
 
 -- | Compute the distance to the surface of this shape
 distanceToObject
@@ -87,11 +108,9 @@ distanceToObject !obj !orig !dir
     Sphere pos radius _ _
      -> let !p       = orig + dir `mulsV3` ((pos - orig) `dotV3` dir) 
             !d_cp    = magnitudeV3 (p - pos)
-            !d       = magnitudeV3 (p - orig) - sqrt (radius * radius - d_cp * d_cp)
-            
-        in  if      d_cp >= radius                then Nothing
+        in  if    d_cp >= radius                  then Nothing
             else if (p - orig) `dotV3` dir <= 0.0 then Nothing
-            else Just d
+            else Just $ magnitudeV3 (p - orig) - sqrt (radius * radius - d_cp * d_cp)
 
     Plane pos normal _ _
      -> if dotV3 dir normal >= 0.0 

@@ -16,7 +16,6 @@ traceRay
         -> Int          -- maximum reflection count
         -> Color        -- visible color for this ray
         
-
 traceRay !objs !lights !ambient !orig !dir !limit
  = go orig dir limit
  where 
@@ -36,25 +35,25 @@ traceRay !objs !lights !ambient !orig !dir !limit
            Just (obj, point)
             -> let 
                 -- get the surface normal at that point.
-                !normal   = surfaceNormal obj point
+                !normal    = surfaceNormal obj point
 
                 -- result angle of ray after reflection.
-                !newdir   = dir - normal `mulsV3` (2.0 * (normal `dotV3` dir))
-
-                -- see if ray hits anything else.
-                !refl     = go point newdir (bounces - 1)
+                !newdir    = dir - normal `mulsV3` (2.0 * (normal `dotV3` dir))
  
                 -- determine the direct lighting at this point
-                !direct   = applyLights objs point normal lights
+                !direct    = applyLights objs point normal lights
+
+                -- see if ray hits anything else.
+                !refl      = go point newdir (bounces - 1)
 
                 -- total lighting is the direct lights plus ambient
-                !lighting = direct + ambient
+                !lighting  = direct + ambient
                         
                 -- total incoming light is direct lighting plus reflections
                 !color     = colorOfObject obj point
                 !shine     = shineOfObject obj point
         
-                !light_in  = refl     `mulsV3` shine
+                !light_in  = refl    `mulsV3` shine
                           + lighting `mulsV3` (1.0 - shine)
                 
                 -- Outgoing light is incoming light modified by surface color.
@@ -63,3 +62,4 @@ traceRay !objs !lights !ambient !orig !dir !limit
                 !light_out = clipV3 (light_in * color) 1.0
 
               in light_out
+
