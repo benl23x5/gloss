@@ -39,14 +39,17 @@ playField
         -> (Event -> world -> world)
         -> (Float -> world -> world)
         -> IO ()
-playField display (zoomX, zoomY) stepRate initWorld makePixel handleEvent stepWorld
- = let  (winSizeX, winSizeY) = sizeOfDisplay display
-   in   play display black stepRate 
+playField !display (zoomX, zoomY) !stepRate !initWorld !makePixel !handleEvent !stepWorld
+ = zoomX `seq` zoomY `seq`
+   let  (winSizeX, winSizeY) = sizeOfDisplay display
+        
+   in   winSizeX `seq` winSizeY `seq`
+         play display black stepRate 
            initWorld
            (\world -> makeFrame winSizeX winSizeY zoomX zoomY (makePixel world))
            handleEvent
            stepWorld
-
+{-# INLINE playField #-}
 
 -- Frame ----------------------------------------------------------------------
 {-# INLINE sizeOfDisplay #-}

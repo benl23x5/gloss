@@ -75,6 +75,7 @@ initState
         , stateLightsView       = makeLights  0 }
 
 
+{-# NOINLINE run #-}
 -- | Run the game.
 run :: Int -> Int -> Int -> Int -> Int -> IO ()                     
 run sizeX sizeY zoom fov bounces
@@ -112,6 +113,7 @@ tracePixel !sizeX !sizeY !fov !bounces !state (x, y)
 {-# INLINE tracePixel #-}
 
 
+{-# NOINLINE handleEvent #-}
 -- | Handle an event from the user interface.
 handleEvent :: G.Event -> State -> State
 handleEvent event state 
@@ -168,6 +170,7 @@ handleEvent event state
         = state
 
 
+{-# NOINLINE advanceState #-}
 -- | Advance the world forward in time.
 advanceState :: Float -> State -> State
 advanceState advTime state
@@ -190,6 +193,7 @@ advanceState advTime state
    in   setTime time' $ move state
 
 
+{-# NOINLINE setEyeLoc #-}
 -- | Set the location of the eye.
 setEyeLoc :: Vec3 -> State -> State
 setEyeLoc eyeLoc state
@@ -201,6 +205,8 @@ setEyeLoc eyeLoc state
         , stateLightsView       = map (translateLight  (stateEyeLoc state)) lights 
         }
 
+
+{-# NOINLINE moveEyeLoc #-}
 moveEyeLoc :: Vec3 -> State -> State
 moveEyeLoc v state
  = let  objects = stateObjects state
@@ -212,6 +218,7 @@ moveEyeLoc v state
         , stateLightsView       = map (translateLight  eyeLoc) lights
         }
 
+{-# NOINLINE setTime #-}
 -- | Set the time of the world.
 setTime   :: Float -> State -> State
 setTime time state

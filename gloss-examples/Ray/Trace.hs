@@ -16,23 +16,23 @@ traceRay
         -> Int          -- maximum reflection count
         -> Color        -- visible color for this ray
         
-traceRay !objs !lights !ambient !orig !dir !limit
- = go orig dir limit
+traceRay !objs !lights !ambient !orig@(Vec3 gX gY gZ) !dir !limit
+ = go gX gY gZ dir limit
  where 
        -- too many reflections,
        -- give up incase we've found two parallel mirrors..
-       go _ _ 0
+       go _ _ _ _ 0
         = Vec3 0.0 0.0 0.0
 
-       go !orig' !dir' !bounces
-        = case castRay objs orig' dir' of
+       go !oX !oY oZ !dir' !bounces
+        = case castRay objs (Vec3 oX oY oZ) dir' of
 
            -- ray didn't intersect any objects
            Nothing                
             -> Vec3 0.0 0.0 0.0
 
            -- ray hit an object
-           Just (obj, point)
+           Just (obj, point@(Vec3 pX' pY' pZ'))
             -> let 
                 -- get the surface normal at that point.
                 !normal    = surfaceNormal obj point
@@ -44,7 +44,7 @@ traceRay !objs !lights !ambient !orig !dir !limit
                 !direct    = applyLights objs point normal lights
 
                 -- see if ray hits anything else.
-                !refl      = go point newdir (bounces - 1)
+                !refl      = go pX' pY' pZ' newdir (bounces - 1)
 
                 -- total lighting is the direct lights plus ambient
                 !lighting  = direct + ambient
