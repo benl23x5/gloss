@@ -56,20 +56,13 @@ applyLight objs pt n (Light lpt color)
         -- the light that is reflected
         !refl   = color `mulsV3` mag
 
-        -- eliminate negative lights
-        -- TODO: not sure if we ever to do this.
---      !final  = clampV3 refl 0.0 99999.0 
-        !final  = refl
-
-
         -- check for occluding objects between the light and the surface point
-        -- TODO: only need to know if something is infront, 
-        --       not the actual distance.
+        -- TODO: only need to know if something is infront, not the actual distance.
    in   case castRay objs pt dir of
                 Just (_, opt)
                  -> if magnitudeV3 (opt - pt) < dist
                         then Vec3 0.0 0.0 0.0
-                        else final 
+                        else refl
                         
-                Nothing -> final
+                Nothing -> refl
                  

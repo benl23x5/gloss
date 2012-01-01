@@ -36,19 +36,19 @@ objs time =
                 0.1
                 
         , Sphere
-                (Vec3 (180.0 * sin time) 0 (180 * cos time))
-                80.0
+                (Vec3 (200.0 * sin time) 0 (200 * cos time))
+                100.0
                 (Vec3 0.4 0.4 1.0)
                 0.8
 
         , Sphere
-                (Vec3 (-180.0 * sin time) 0.0 (-180 * cos time))
-                80.0
+                (Vec3 (-200.0 * sin time) 0.0 (-200 * cos time))
+                100.0
                 (Vec3 0.4 0.4 1.0)
                 0.5
 
         , Sphere
-                (Vec3 0.0 (-130.0) (-100.0)) 50.0
+                (Vec3 0.0 (-150.0) (-100.0)) 50.0
                 (Vec3 1.0 1.0 1.0)
                 0.8
                 

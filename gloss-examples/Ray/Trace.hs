@@ -17,7 +17,7 @@ traceRay
         -> Color        -- visible color for this ray
         
 
-traceRay !objs ![light] !ambient !orig !dir !limit
+traceRay !objs !lights !ambient !orig !dir !limit
  = go orig dir limit
  where 
        -- too many reflections,
@@ -45,8 +45,7 @@ traceRay !objs ![light] !ambient !orig !dir !limit
                 !refl     = go point newdir (bounces - 1)
  
                 -- determine the direct lighting at this point
---                !direct   = applyLights objs point normal lights
-                !direct   = applyLight objs point normal light 
+                !direct   = applyLights objs point normal lights
 
                 -- total lighting is the direct lights plus ambient
                 !lighting = direct + ambient
