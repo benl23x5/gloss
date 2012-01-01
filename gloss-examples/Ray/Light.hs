@@ -2,6 +2,7 @@
 
 module Light 
         ( Light(..)
+        , translateLight
         , applyLights
         , applyLight)
 where
@@ -15,7 +16,12 @@ data Light
         = Light
         { lightPoint   :: Vec3
         , lightColor   :: Color }
+        deriving (Eq, Show)
 
+translateLight :: Vec3 -> Light -> Light
+translateLight v ll
+ = case ll of
+        Light pos color -> Light (pos + v) color
 
 -- | Compute the direct lighting at particular point for a list of lights.
 applyLights

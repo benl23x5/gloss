@@ -1,9 +1,8 @@
 
 
 module World
-        ( eyePos
-        , lights
-        , objs)
+        ( makeLights
+        , makeObjects)
 where 
 import Object
 import Light
@@ -11,24 +10,20 @@ import Vec3
 
 type Time = Float
 
--- | Position of the eye viewing the world
-eyePos :: Vec3
-eyePos  = Vec3 50 (-100) (-500.0)
 
 -- | Lights in the world
-{-# NOINLINE lights #-}
-lights :: [Light]
-lights =
+{-# NOINLINE makeLights #-}
+makeLights :: Float -> [Light]
+makeLights _ =
         [ Light
                 (Vec3 300.0 (-300.0) (-100.0))
                 (Vec3 150000.0 150000.0 150000.0) ]
 
                 
-
 -- | Objects in the world
-{-# NOINLINE objs #-}
-objs :: Time -> [Object]
-objs time =
+{-# NOINLINE makeObjects #-}
+makeObjects :: Float -> [Object]
+makeObjects time =
         [ Sphere 
                 (Vec3 (40 * sin time) 80 0.0)
                 20

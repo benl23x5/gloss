@@ -3,6 +3,7 @@
 module Object 
         ( Color
         , Object(..)
+        , translateObject
         , castRay
         , surfaceNormal
         , colorOfObject
@@ -31,6 +32,16 @@ data Object
         { planeCheckPos         :: !Vec3
         , planeCheckNormal      :: !Vec3
         , planeCheckShine       :: !Float }
+        deriving (Eq, Show)
+
+
+translateObject :: Vec3 -> Object -> Object
+translateObject v obj
+ = case obj of
+        Sphere{}        -> obj { spherePos     = spherePos     obj + v }
+        Plane{}         -> obj { planePos      = planePos      obj + v }
+        PlaneCheck{}    -> obj { planeCheckPos = planeCheckPos obj + v }
+{-# INLINE translateObject #-}
 
 
 -- | Find the nearest point of intersection for a ray

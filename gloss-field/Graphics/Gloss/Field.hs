@@ -1,8 +1,10 @@
 {-# LANGUAGE BangPatterns #-}
 module Graphics.Gloss.Field 
-        (animateField)
+        ( animateField
+        , playField)
 where
 import Graphics.Gloss.Data.Display
+import Graphics.Gloss.Interface.Game
 import Graphics.Gloss.Interface.Animate
 import Data.Array.Repa                  as R
 import Data.Array.Repa.Repr.ForeignPtr  as R
@@ -11,6 +13,7 @@ import Data.Word
 -- TODO: add another version for a static picture
 -- TODO: add another version that takes the viewport.
 -- TODO: scale buffer size as window size changes.
+-- Animate --------------------------------------------------------------------
 animateField
         :: Display
         -> (Int, Int)
@@ -25,6 +28,27 @@ animateField display (zoomX, zoomY) makePixel
 --  INLINE so the repa functions fuse with the users client functions.
 
 
+
+-- Play -----------------------------------------------------------------------
+playField 
+        :: Display
+        -> (Int, Int)
+        -> Int
+        -> world
+        -> (world -> Point -> Color)
+        -> (Event -> world -> world)
+        -> (Float -> world -> world)
+        -> IO ()
+playField display (zoomX, zoomY) stepRate initWorld makePixel handleEvent stepWorld
+ = let  (winSizeX, winSizeY) = sizeOfDisplay display
+   in   play display black stepRate 
+           initWorld
+           (\world -> makeFrame winSizeX winSizeY zoomX zoomY (makePixel world))
+           handleEvent
+           stepWorld
+
+
+-- Frame ----------------------------------------------------------------------
 {-# INLINE sizeOfDisplay #-}
 sizeOfDisplay :: Display -> (Int, Int)
 sizeOfDisplay display
