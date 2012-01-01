@@ -28,16 +28,20 @@ makeObjects time =
                 (Vec3 (40 * sin time) 80 0.0)
                 20
                 (Vec3 1.0 0.3 1.0)
-                0.1
+                0.4
                 
         , Sphere
-                (Vec3 (200.0 * sin time) 0 (200 * cos time))
+                (Vec3   (200 * sin time) 
+                        ((-40) * sin (time + pi/2))
+                        (200 * cos time))
                 100.0
                 (Vec3 0.4 0.4 1.0)
                 0.8
 
         , Sphere
-                (Vec3 (-200.0 * sin time) 0.0 (-200 * cos time))
+                (Vec3   (-200.0 * sin time) 
+                        ((-40) * sin (time - pi/2))
+                        (-200 * cos time))
                 100.0
                 (Vec3 0.4 0.4 1.0)
                 0.5
@@ -47,17 +51,16 @@ makeObjects time =
                 (Vec3 1.0 1.0 1.0)
                 0.8
                 
-
+{-}
         , Sphere
                 (Vec3 0 (1000100) 0) 1000000
                 (Vec3 1.0 1.0 1.0)
                 0.5 
-
-{-
-        , Plane
-                (Vec3 0.0 100.0 0.0)
-                (normaliseV3 (Vec3 0.0 (-1.0) (-0.2)))
-                (Vec3 1.0 1.0 1.0)
-                0.5
 -}
+
+        , PlaneCheck
+                (Vec3 0.0 100.0 0.0)
+                (normaliseV3 (Vec3 0 (-1) (-0.2)))
+                0.8
+
         ]

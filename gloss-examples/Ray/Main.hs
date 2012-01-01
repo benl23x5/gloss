@@ -58,7 +58,7 @@ initState
         = State
         { stateTime             = 0
         , stateEyePos           = Vec3 50 (-100) (-600)
-        , stateEyeLoc           = Vec3 0 100 800 
+        , stateEyeLoc           = Vec3 15 100 796
 
         , stateLeftClick        = Nothing 
 
