@@ -31,23 +31,23 @@ main
 -- | World and interface state.
 data State
         = State
-        { stateTime             :: Float 
-        , stateEyePos           :: Vec3
-        , stateEyeLoc           :: Vec3
+        { stateTime             :: !Float 
+        , stateEyePos           :: !Vec3
+        , stateEyeLoc           :: !Vec3
 
-        , stateLeftClick        :: Maybe G.Point 
+        , stateLeftClick        :: !(Maybe G.Point)
 
-        , stateMoveSpeed        :: Float
-        , stateMovingForward    :: Bool
-        , stateMovingBackward   :: Bool
-        , stateMovingLeft       :: Bool
-        , stateMovingRight      :: Bool
+        , stateMoveSpeed        :: !Float
+        , stateMovingForward    :: !Bool
+        , stateMovingBackward   :: !Bool
+        , stateMovingLeft       :: !Bool
+        , stateMovingRight      :: !Bool
 
-        , stateObjects          :: [Object]
-        , stateObjectsView      :: [Object]
+        , stateObjects          :: ![Object]
+        , stateObjectsView      :: ![Object]
 
-        , stateLights           :: [Light]
-        , stateLightsView       :: [Light] }
+        , stateLights           :: ![Light]
+        , stateLightsView       :: ![Light] }
 
         deriving (Eq, Show)
 
@@ -92,16 +92,16 @@ run sizeX sizeY zoom fov bounces
 -- | Render a single pixel of the image.
 tracePixel :: Int -> Int -> Int -> Int -> State -> G.Point -> G.Color
 tracePixel !sizeX !sizeY !fov !bounces !state (x, y)
- = let  sizeX'  = fromIntegral sizeX
-        sizeY'  = fromIntegral sizeY
-        aspect  = sizeX' / sizeY'
-        fov'    = fromIntegral fov
-        fovX    = fov' * aspect
-        fovY    = fov'
+ = let  !sizeX'  = fromIntegral sizeX
+        !sizeY'  = fromIntegral sizeY
+        !aspect  = sizeX' / sizeY'
+        !fov'    = fromIntegral fov
+        !fovX    = fov' * aspect
+        !fovY    = fov'
        
-        ambient = Vec3 0.3 0.3 0.3
-        eyePos  = stateEyePos state
-        eyeDir  = normaliseV3 ((Vec3 (x * fovX) ((-y) * fovY) 0) - eyePos)
+        !ambient = Vec3 0.3 0.3 0.3
+        !eyePos  = stateEyePos state
+        !eyeDir  = normaliseV3 ((Vec3 (x * fovX) ((-y) * fovY) 0) - eyePos)
 
         Vec3 r g b
           = traceRay    (stateObjectsView state) 

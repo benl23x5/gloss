@@ -25,15 +25,13 @@ traceRay !objs !lights !ambient !orig@(Vec3 gX gY gZ) !dir !limit
         = Vec3 0.0 0.0 0.0
 
        go !oX !oY oZ !dir' !bounces
-        = case castRay objs (Vec3 oX oY oZ) dir' of
+        = castRay_continuation objs (Vec3 oX oY oZ) dir' 
+            -- ray didn't intersect any objects
+            (Vec3 0.0 0.0 0.0)
 
-           -- ray didn't intersect any objects
-           Nothing                
-            -> Vec3 0.0 0.0 0.0
-
-           -- ray hit an object
-           Just (obj, point@(Vec3 pX' pY' pZ'))
-            -> let 
+            -- ray hit an object
+            (\obj point@(Vec3 pX' pY' pZ')
+             -> let 
                 -- get the surface normal at that point.
                 !normal    = surfaceNormal obj point
 
@@ -61,5 +59,5 @@ traceRay !objs !lights !ambient !orig@(Vec3 gX gY gZ) !dir !limit
                 --  will be too bright to display.
                 !light_out = clipV3 (light_in * color) 1.0
 
-              in light_out
+              in light_out)
 {-# INLINE traceRay #-}

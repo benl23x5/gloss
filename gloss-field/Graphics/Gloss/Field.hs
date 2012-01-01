@@ -46,7 +46,9 @@ playField !display (zoomX, zoomY) !stepRate !initWorld !makePixel !handleEvent !
    in   winSizeX `seq` winSizeY `seq`
          play display black stepRate 
            initWorld
-           (\world -> makeFrame winSizeX winSizeY zoomX zoomY (makePixel world))
+           (\world -> 
+              world `seq` 
+              makeFrame winSizeX winSizeY zoomX zoomY (makePixel world))
            handleEvent
            stepWorld
 {-# INLINE playField #-}
@@ -61,7 +63,7 @@ sizeOfDisplay display
 
 {-# INLINE makeFrame #-}
 makeFrame :: Int -> Int -> Int -> Int -> (Point -> Color) -> Picture
-makeFrame winSizeX winSizeY zoomX zoomY makePixel
+makeFrame !winSizeX !winSizeY !zoomX !zoomY !makePixel
  = picture
  where
         -- Size of the raw image to render.
@@ -103,7 +105,8 @@ makeFrame winSizeX winSizeY zoomX zoomY makePixel
                         (\(Z :. height :. width) -> Z :. height :. width * 4)
                         (\get (Z :. y :. x) 
                          -> let (r, g, b)     = get (Z :. y :. x `div` 4)
-                            in  case x `mod` 4 of
+                            in  r `seq` g `seq` b `seq`
+                                case x `mod` 4 of
                                   0 -> 255
                                   1 -> word8OfFloat (b * 255)
                                   2 -> word8OfFloat (g * 255)

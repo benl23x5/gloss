@@ -5,6 +5,7 @@ module Object
         , Object(..)
         , translateObject
         , castRay
+        , castRay_continuation
         , checkRay
         , surfaceNormal
         , colorOfObject
@@ -74,6 +75,40 @@ castRay !objs !orig !dir
             | dist' < dist -> go1 rest obj      dist'
             | otherwise    -> go1 rest objClose dist
 {-# INLINE castRay #-}
+
+
+-- | Like castRay, but take continuations for the Nothing and Just branches to 
+--   eliminate intermediate unboxings.
+castRay_continuation
+        :: [Object]        -- check for intersections on all these objects
+        -> Vec3            -- ray origin
+        -> Vec3            -- ray direction
+
+        -> a                     -- continuation when no intersection 
+        -> (Object -> Vec3 -> a) -- continuation with intersection
+        -> a
+
+castRay_continuation !objs !orig !dir contNone contJust
+ = go0 objs
+ where -- We haven't hit any objects yet.
+       go0 []     = contNone
+       go0 (obj:rest) 
+        = case distanceToObject obj orig dir of
+           Nothing    -> go0 rest
+           Just dist  -> go1 rest obj dist
+
+       -- We hit an object before, and we're testing others
+       -- to see if they're closer.
+       go1 []         !objClose !dist 
+        = contJust objClose (orig + dir `mulsV3` dist)
+
+       go1 (obj:rest) !objClose !dist
+        = case distanceToObject obj orig dir of
+           Nothing         -> go1 rest objClose dist
+           Just dist'
+            | dist' < dist -> go1 rest obj      dist'
+            | otherwise    -> go1 rest objClose dist
+{-# INLINE castRay_continuation #-}
 
 
 -- | Simplified version of `castRay` that only checks whether there is some
