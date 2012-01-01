@@ -13,15 +13,15 @@ main :: IO ()
 main 
  = do   args    <- getArgs
         case args of
-         []     -> run 1440 900 4 100 4
+         []     -> run 1440 600 3 100 4
 
          [sizeX, sizeY, zoom, fov, bounces]
                 -> run (read sizeX) (read sizeY) (read zoom) (read fov) (read bounces)
 
          _ -> putStr $ unlines
            [ "trace <sizeX::Int> <sizeY::Int> <zoom::Int> (fov::Int) (bounces::Int)"
-           , "    sizeX, sizeY - visualisation size        (default 1440, 900)"
-           , "    zoom         - pixel replication factor  (default 4)"
+           , "    sizeX, sizeY - visualisation size        (default 1440, 600)"
+           , "    zoom         - pixel replication factor  (default 3)"
            , "    fov          - field of view             (default 400)"
            , "    bounces      - ray bounce limit          (default 4)"
            , ""
