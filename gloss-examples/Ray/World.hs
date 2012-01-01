@@ -18,12 +18,10 @@ eyePos  = Vec3 50 (-300) (-500.0)
 {-# NOINLINE lights #-}
 lights :: [Light]
 lights =
-        [ LightPoint
+        [ Light
                 (Vec3 300.0 (-300.0) (-100.0))
-                (Vec3 150000.0 150000.0 150000.0)
+                (Vec3 150000.0 150000.0 150000.0) ]
 
-        , LightAmbient
-                (Vec3 0.3 0.3 0.3) ]
                 
 
 -- | Objects in the world

@@ -35,23 +35,26 @@ castRay :: [Object]        -- check for intersections on all these objects
                 ( Object   -- object of first intersected
                 , Vec3)    -- position of intersection, on surface of object
 
-castRay objs orig dir
+castRay !objs !orig !dir
  = go0 objs
- where go0 []     = Nothing
+ where -- We haven't hit any objects yet.
+       go0 []     = Nothing
        go0 (obj:rest) 
         = case distanceToObject obj orig dir of
            Nothing    -> go0 rest
            Just dist  -> go1 rest obj dist
 
-       go1 []         objClose dist 
+       -- We hit an object before, and we're testing others
+       -- to see if they're closer.
+       go1 []         !objClose !dist 
         = Just (objClose, orig + dir `mulsV3` dist)
 
-       go1 (obj:rest) objClose dist
+       go1 (obj:rest) !objClose !dist
         = case distanceToObject obj orig dir of
            Nothing         -> go1 rest objClose dist
            Just dist'
             | dist' < dist -> go1 rest obj      dist'
-            |   otherwise  -> go1 rest objClose dist
+            | otherwise    -> go1 rest objClose dist
 
  
 
@@ -77,6 +80,7 @@ distanceToObject !obj !orig !dir
      -> if dotV3 dir normal >= 0.0 
                 then Nothing
                 else Just (((pos - orig) `dotV3` normal) / (dir `dotV3` normal))
+{-# INLINE distanceToObject #-}
 
                 
 -- | Compute the surface normal of the shape at this point
@@ -87,9 +91,9 @@ surfaceNormal
 
 surfaceNormal obj point
  = case obj of
-    Sphere     pos radius _ _  -> normaliseV3 (point - pos)
-    PlaneCheck pos normal _    -> normal
-
+    Sphere     pos _ _ _    -> normaliseV3 (point - pos)
+    PlaneCheck _   normal _ -> normal
+{-# INLINE surfaceNormal #-}
 
 -- | Get the color of an object at the given point.
 colorOfObject :: Object -> Vec3 -> Color
@@ -97,6 +101,7 @@ colorOfObject obj point
  = case obj of
         Sphere _ _ c _   -> c
         PlaneCheck{}     -> checkers point
+{-# INLINE colorOfObject #-}
 
 
 -- | Get the shine of an object at the given point.
@@ -105,11 +110,12 @@ shineOfObject obj _point
  = case obj of 
         Sphere _ _ _ s   -> s
         PlaneCheck _ _ s -> s
+{-# INLINE shineOfObject #-}
 
                 
 -- | A checkerboard pattern along the x/z coords
 checkers :: Vec3 -> Vec3
-checkers (Vec3 x y z)
+checkers (Vec3 x _ z)
         |       ((truncate (z / 100.0) :: Int)`mod` 2 == 0)
           `xor` ((truncate (x / 100.0) :: Int) `mod` 2 == 0)
           `xor` (x < 0.0)
