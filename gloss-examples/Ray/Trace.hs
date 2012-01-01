@@ -16,42 +16,51 @@ traceRay
         -> Int          -- maximum reflection count
         -> Color        -- visible color for this ray
         
--- too many reflections
-traceRay _ _ _ _ _ 0
+
+traceRay !objs ![light] !ambient !orig !dir !limit
+ = go orig dir limit
+ where 
+       -- too many reflections,
+       -- give up incase we've found two parallel mirrors..
+       go _ _ 0
         = Vec3 0.0 0.0 0.0
 
-traceRay !objs !lights !ambient !orig !dir !limit
- = case castRay objs orig dir of
+       go !orig' !dir' !bounces
+        = case castRay objs orig' dir' of
 
-         -- ray didn't intersect any objects
-         Nothing                
-          -> Vec3 0.0 0.0 0.0
+           -- ray didn't intersect any objects
+           Nothing                
+            -> Vec3 0.0 0.0 0.0
 
-         -- ray hit an object
-         Just (obj, pt)
-          -> let 
+           -- ray hit an object
+           Just (obj, point)
+            -> let 
                 -- get the surface normal at that point.
-                !n        = surfaceNormal obj pt
+                !normal   = surfaceNormal obj point
 
                 -- result angle of ray after reflection.
-                !ndir     = dir - n `mulsV3` (2.0 * (n `dotV3` dir))
+                !newdir   = dir - normal `mulsV3` (2.0 * (normal `dotV3` dir))
 
                 -- see if ray hits anything else.
-                !refl     = traceRay objs lights ambient pt ndir (limit - 1)
-                                
+                !refl     = go point newdir (bounces - 1)
+ 
                 -- determine the direct lighting at this point
-                !direct   = applyLights objs pt n lights
+--                !direct   = applyLights objs point normal lights
+                !direct   = applyLight objs point normal light 
 
                 -- total lighting is the direct lights plus ambient
                 !lighting = direct + ambient
                         
                 -- total incoming light is direct lighting plus reflections
-                !color   = colorOfObject obj pt
-                !shine   = shineOfObject obj pt
+                !color     = colorOfObject obj point
+                !shine     = shineOfObject obj point
         
-                !in_light 
-                        = refl     `mulsV3` shine
-                        + lighting `mulsV3` (1.0 - shine)
+                !light_in  = refl     `mulsV3` shine
+                          + lighting `mulsV3` (1.0 - shine)
                 
-                -- incoming light is modified by surface color
-             in clampV3 (color * in_light) 0.0 1.0
+                -- Outgoing light is incoming light modified by surface color.
+                -- We also need to clip it incase the sum of all incoming lights
+                --  will be too bright to display.
+                !light_out = clipV3 (light_in * color) 1.0
+
+              in light_out

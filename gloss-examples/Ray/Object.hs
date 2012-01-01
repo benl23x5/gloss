@@ -21,6 +21,12 @@ data Object
         , sphereColor           :: !Color
         , sphereShine           :: !Float }
 
+        | Plane
+        { planePos              :: !Vec3
+        , planeNormal           :: !Vec3
+        , planeColor            :: !Color
+        , planeShine            :: !Float }
+
         | PlaneCheck
         { planeCheckPos         :: !Vec3
         , planeCheckNormal      :: !Vec3
@@ -76,6 +82,11 @@ distanceToObject !obj !orig !dir
             else if (p - orig) `dotV3` dir <= 0.0 then Nothing
             else Just d
 
+    Plane pos normal _ _
+     -> if dotV3 dir normal >= 0.0 
+                then Nothing
+                else Just (((pos - orig) `dotV3` normal) / (dir `dotV3` normal))
+
     PlaneCheck pos normal _
      -> if dotV3 dir normal >= 0.0 
                 then Nothing
@@ -92,7 +103,8 @@ surfaceNormal
 surfaceNormal obj point
  = case obj of
     Sphere     pos _ _ _    -> normaliseV3 (point - pos)
-    PlaneCheck _   normal _ -> normal
+    Plane      _ normal _ _ -> normal
+    PlaneCheck _ normal _   -> normal
 {-# INLINE surfaceNormal #-}
 
 -- | Get the color of an object at the given point.
@@ -100,6 +112,7 @@ colorOfObject :: Object -> Vec3 -> Color
 colorOfObject obj point
  = case obj of
         Sphere _ _ c _   -> c
+        Plane  _ _ c _   -> c
         PlaneCheck{}     -> checkers point
 {-# INLINE colorOfObject #-}
 
@@ -109,6 +122,7 @@ shineOfObject :: Object -> Vec3 -> Float
 shineOfObject obj _point
  = case obj of 
         Sphere _ _ _ s   -> s
+        Plane  _ _ _ s   -> s
         PlaneCheck _ _ s -> s
 {-# INLINE shineOfObject #-}
 

@@ -6,7 +6,8 @@ module Vec3
         , normaliseV3
         , mulsV3
         , dotV3
-        , clampV3)
+        , clampV3
+        , clipV3)
 where
 
 
@@ -67,3 +68,14 @@ clampV3 (Vec3 r g b) minVal maxVal
         | x >= maxVal   = maxVal
         | otherwise     = x
 {-# INLINE clampV3 #-}
+
+
+-- | Clip a vector's components to some maxiumum value.
+clipV3 :: Vec3 -> Float -> Vec3
+clipV3 (Vec3 r g b) maxVal
+ = Vec3 (clip r) (clip g) (clip b)
+ where {-# INLINE clip #-}
+       clip x
+        | x > maxVal    = maxVal
+        | otherwise     = x
+{-# INLINE clipV3 #-}
