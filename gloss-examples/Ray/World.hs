@@ -61,6 +61,6 @@ makeObjects time =
         , PlaneCheck
                 (Vec3 0.0 100.0 0.0)
                 (normaliseV3 (Vec3 0 (-1) (-0.2)))
-                0.8
+                0.6
 
         ]

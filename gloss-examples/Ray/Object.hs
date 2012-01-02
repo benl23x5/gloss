@@ -202,7 +202,7 @@ checkers (Vec3 x _ z)
         = Vec3 1.0 1.0 1.0
         
         | otherwise
-        = Vec3 0.2 0.2 0.2
+        = Vec3 0.4 0.4 0.4
 
 
 xor :: Bool -> Bool -> Bool
