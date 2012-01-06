@@ -30,6 +30,10 @@
 --
 -- @Release Notes:
 --
+-- For 1.7.0:
+--   Thanks to Doug Burke
+--   * Primitives for drawing arcs and sectors.
+--
 -- For 1.6.0:
 --   Thanks to Anthony Cowley
 --   * Full screen display mode.

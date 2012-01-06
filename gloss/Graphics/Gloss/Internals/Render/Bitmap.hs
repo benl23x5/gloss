@@ -11,7 +11,7 @@ where
 import Foreign
 
 
--- | Abstract bitmap data.
+-- | Abstract 32-bit RGBA bitmap data.
 data BitmapData 
         = BitmapData 
                 Int                     -- length (in bytes)

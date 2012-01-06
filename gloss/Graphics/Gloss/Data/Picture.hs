@@ -13,31 +13,35 @@ module Graphics.Gloss.Data.Picture
         , line
         , circle, thickCircle
         , arc,    thickArc
-        , sector
         , text
         , bitmap
 	, color
         , translate, rotate, scale
 	, pictures
 
-        -- * Loading Bitmaps
-        , bitmapOfForeignPtr
-	, bitmapOfByteString
-	, bitmapOfBMP
-	, loadBMP
-
-	-- * Miscellaneous
+	-- * Compound shapes
  	, lineLoop
  	, circleSolid
         , arcSolid
-	
-	-- * Rectangles
-	, rectanglePath, 	rectangleWire, 		rectangleSolid
-	, rectangleUpperPath,	rectangleUpperWire, 	rectangleUpperSolid)
+        , sectorWire
+	, rectanglePath
+        , rectangleWire
+        , rectangleSolid
+	, rectangleUpperPath
+        , rectangleUpperWire
+        , rectangleUpperSolid
+
+        -- * Loading Bitmaps
+        , bitmapOfForeignPtr
+        , bitmapOfByteString
+        , bitmapOfBMP
+        , loadBMP)
+
 where
 import Graphics.Gloss.Data.Color
 import Graphics.Gloss.Data.Point
 import Graphics.Gloss.Data.Vector
+import Graphics.Gloss.Geometry.Angle
 import Graphics.Gloss.Internals.Render.Bitmap
 import Codec.BMP
 import Foreign.ForeignPtr
@@ -75,35 +79,24 @@ data Picture
 	--   If the thickness is 0 then this is equivalent to `Circle`.
 	| ThickCircle	Float Float
 
-	-- | A circular arc between two angles (a1 and a2) and
-        --   with the given radius (r). The arc is drawn
-        --   counter-clockwise from a1 to a2, where the angles  
-        --   are in degrees.  
+	-- | A circular arc drawn counter-clockwise between two angles (in degrees) 
+        --   at the given radius.
         | Arc           Float Float Float
 
-	-- | A circular arc between two angles (a1 and a2) and
-        --   with the given radius (r) and thickness.
+	-- | A circular arc drawn counter-clockwise between two angles (in degrees),
+        --   with the given radius  and thickness.
 	--   If the thickness is 0 then this is equivalent to `Arc`.
         | ThickArc	Float Float Float Float
-
-	-- | A circular arc between two angles (a1 and a2) and
-        --   with the given radius (r), with radial lines connecting 
-        --   the ends to the center of the circle. The arc is drawn
-        --   counter-clockwise from a1 to a2, where the angles  
-        --   are in degrees. 
-        | Sector	Float Float Float
 
 	-- | Some text to draw with a vector font.
 	| Text		String
 
-	-- | A bitmap image with a width, height and a Vector holding the 
-        --   32-bit RGBA bitmap data.
+	-- | A bitmap image with a width, height and some 32-bit RGBA bitmap data.
 	-- 
 	--  The boolean flag controls whether Gloss should cache the data
-        --  between frames for speed.
-        --  If you are programatically generating the image for
-        --  each frame then use `False`.  
-        --  If you have loaded it from a file then use `True`.
+        --  between frames for speed. If you are programatically generating
+        --  the image for each frame then use `False`. If you have loaded it
+        --  from a file then use `True`.
 	| Bitmap	Int	Int 	BitmapData Bool
 
 	-- Color ------------------------------------------
@@ -133,116 +126,85 @@ instance Monoid Picture where
 	mconcat		= Pictures
 
 
--- Constructors ---------------------------------------------------------------
--- | Create a `Blank` picture.
+-- Constructors ----------------------------------------------------------------
+-- NOTE: The docs here should be identical to the ones on the constructors.
+
+-- | A blank picture, with nothing in it.
 blank :: Picture
 blank	= Blank
 
-
--- | Create a `Polygon`.
+-- | A convex polygon filled with a solid color.
 polygon :: Path -> Picture
 polygon = Polygon
 
-
--- | Create a `Line`.
+-- | A line along an arbitrary path.
 line :: Path -> Picture
 line 	= Line
 
-
--- | Create a `Circle`.
-circle  :: Float        -- ^ radius
-        -> Picture
+-- | A circle with the given radius.
+circle  :: Float  -> Picture
 circle 	= Circle
 
-
--- | Create a `ThickCircle`. Using a @thickness@ of 0
---   is the same as `circle`.
-thickCircle 
-        :: Float        -- ^ radius
-        -> Float        -- ^ thickness
-        -> Picture
+-- | A circle with the given thickness and radius.
+--   If the thickness is 0 then this is equivalent to `Circle`.
+thickCircle  :: Float -> Float -> Picture
 thickCircle = ThickCircle
 
-
--- | Create an `Arc`, drawn counter-clockwise from the
---   start to end angles. The angles are measured 
---   counter-clockwise from the horizontal.
-arc     :: Float        -- ^ start angle, in degrees
-        -> Float        -- ^ end angle, in degrees
-        -> Float        -- ^ radius
-        -> Picture
+-- | A circular arc drawn counter-clockwise between two angles (in degrees) 
+--   at the given radius.
+arc     :: Float -> Float -> Float -> Picture
 arc = Arc
 
-
--- | Create a `ThickArc`. Using a @thickness@ of 0 is the
---   same as `arc`.
-thickArc :: Float       -- ^ start angle, in degrees
-         -> Float       -- ^ end angle, in degrees
-         -> Float       -- ^ radius
-         -> Float       -- ^ thickness
-         -> Picture
+-- | A circular arc drawn counter-clockwise between two angles (in degrees),
+--   with the given radius  and thickness.
+--   If the thickness is 0 then this is equivalent to `Arc`.
+thickArc :: Float -> Float -> Float -> Float -> Picture
 thickArc = ThickArc
 
-
--- | Draw a `Sector`, which is an `Arc` connected to the origin
---   of the circle.
-sector  :: Float        -- ^ start angle, in degrees
-        -> Float        -- ^ end angle, in degrees
-        -> Float        -- ^ radius
-        -> Picture
-sector = Sector
-
-
--- | Add `Text` to the picture.
+-- | Some text to draw with a vector font.
 text :: String -> Picture
 text = Text
 
-
--- | Add a `Bitmap`.
-bitmap  :: Int          -- ^ width
-        -> Int          -- ^ height
-        -> BitmapData   -- ^ 32-bit RGBA bitmap data
-        -> Bool         -- ^ should the data be cached between frames?
-        -> Picture
+-- | A bitmap image with a width, height and a Vector holding the 
+--   32-bit RGBA bitmap data.
+-- 
+--  The boolean flag controls whether Gloss should cache the data
+--  between frames for speed.
+--  If you are programatically generating the image for
+--  each frame then use `False`.  
+--  If you have loaded it from a file then use `True`.
+bitmap  :: Int -> Int -> BitmapData -> Bool -> Picture
 bitmap = Bitmap
 
-
--- | Set the `Color` for a picture.
+-- | A picture drawn with this color.
 color :: Color -> Picture -> Picture
 color = Color
 
-
--- | `Translate` a picture horizontally and vertically.
-translate 
-        :: Float        -- ^ x
-        -> Float        -- ^ y
-        -> Picture 
-        -> Picture
+-- | A picture translated by the given x and y coordinates.
+translate :: Float -> Float -> Picture -> Picture
 translate = Translate
 
-
--- | `Rotate` a picture.
-rotate  :: Float        -- ^ angle, in degrees
-        -> Picture 
-        -> Picture
+-- | A picture rotated clockwise by the given angle (in degrees).
+rotate  :: Float -> Picture -> Picture
 rotate = Rotate
 
--- | `Scale` the size of a picture.
-
-scale   :: Float        -- ^ x scale factor
-        -> Float        -- ^ y scale factor
-        -> Picture 
-        -> Picture
+-- | A picture scaled by the given x and y factors.
+scale   :: Float -> Float -> Picture -> Picture
 scale = Scale
 
-
--- | Combine pictures.
+-- | A picture consisting of several others.
 pictures :: [Picture] -> Picture
 pictures = Pictures
 
 
 -- Bitmaps --------------------------------------------------------------------
--- | O(1). Use a `ForeignPtr` of RGBA data as a bitmap.
+-- | O(1). Use a `ForeignPtr` of RGBA data as a bitmap with the given
+--   width and height.
+
+--   The boolean flag controls whether Gloss should cache the data
+--   between frames for speed. If you are programatically generating
+--   the image for each frame then use `False`. If you have loaded it
+--   from a file then use `True`.
 bitmapOfForeignPtr :: Int -> Int -> ForeignPtr Word8 -> Bool -> Picture
 bitmapOfForeignPtr width height fptr cacheMe
  = let  len     = width * height * 4
@@ -250,7 +212,13 @@ bitmapOfForeignPtr width height fptr cacheMe
    in   Bitmap width height bdata cacheMe 
 
 
--- | O(size). Copy a `ByteString` of RGBA data into a bitmap.
+-- | O(size). Copy a `ByteString` of RGBA data into a bitmap with the given
+--   width and height.
+--
+--   The boolean flag controls whether Gloss should cache the data
+--   between frames for speed. If you are programatically generating
+--   the image for each frame then use `False`. If you have loaded it
+--   from a file then use `True`.
 {-# NOINLINE bitmapOfByteString #-}
 bitmapOfByteString :: Int -> Int -> ByteString -> Bool -> Picture
 bitmapOfByteString width height bs cacheMe
@@ -296,17 +264,46 @@ loadBMP filePath
          Right bmp      -> return $ bitmapOfBMP bmp
 
 
--- Shapes ---------------------------------------------------------------------
--- | A closed loop along this path.
+-- Other Shapes ---------------------------------------------------------------
+-- | A closed loop along a path.
 lineLoop :: Path -> Picture
 lineLoop []	= Line []
 lineLoop (x:xs)	= Line ((x:xs) ++ [x])
 
 
+-- Circles and Arcs -----------------------------------------------------------
+-- | A solid circle with the given radius.
+circleSolid :: Float -> Picture
+circleSolid r 
+        = thickCircle (r/2) r
+
+
+-- | A solid arc, drawn counter-clockwise between two angles at the given radius.
+arcSolid  :: Float -> Float -> Float -> Picture
+arcSolid a1 a2 r 
+        = thickArc a1 a2 (r/2) r 
+
+
+-- | A wireframe sector of a circle. 
+--   An arc is draw counter-clockwise from the first to the second angle at
+--   the given radius.
+--   Lines are drawn from the origin to the ends of the arc.
+sectorWire :: Float -> Float -> Float -> Picture
+sectorWire a1 a2 r
+ = Pictures 
+        [ Arc a1 a2 r
+        , Line [(0, 0), (r * cos (degToRad a1), r * sin (degToRad a1))]
+        , Line [(0, 0), (r * cos (degToRad a2), r * sin (degToRad a2))] ]
+
+
+-- Rectangles -----------------------------------------------------------------
+-- NOTE: Only the first of these rectangle functions has haddocks on the
+--       arguments to reduce the amount of noise in the extracted docs.
+
 -- | A path representing a rectangle centered about the origin
-rectanglePath
-        :: Float        -- ^ width
-        -> Float        -- ^ height
+rectanglePath 
+        :: Float        -- ^ width of rectangle
+        -> Float        -- ^ height of rectangle
         -> Path
 rectanglePath sizeX sizeY			
  = let	sx	= sizeX / 2
@@ -315,61 +312,32 @@ rectanglePath sizeX sizeY
 
 
 -- | A wireframe rectangle centered about the origin.
-rectangleWire 
-        :: Float        -- ^ width
-        -> Float        -- ^ height
-        -> Picture
+rectangleWire :: Float -> Float -> Picture
 rectangleWire sizeX sizeY
 	= lineLoop $ rectanglePath sizeX sizeY
 
 
 -- | A wireframe rectangle in the y > 0 half of the x-y plane.
-rectangleUpperWire
-        :: Float        -- ^ width
-        -> Float        -- ^ height
-        -> Picture
+rectangleUpperWire :: Float -> Float -> Picture
 rectangleUpperWire sizeX sizeY
 	= lineLoop $ rectangleUpperPath sizeX sizeY
 
 
 -- | A path representing a rectangle in the y > 0 half of the x-y plane.
-rectangleUpperPath 
-        :: Float        -- ^ width
-        -> Float        -- ^ height
-        -> Path
+rectangleUpperPath :: Float -> Float -> Path
 rectangleUpperPath sizeX sy
  = let 	sx	= sizeX / 2
    in  	[(-sx, 0), (-sx, sy), (sx, sy), (sx, 0)]
 
 
 -- | A solid rectangle centered about the origin.
-rectangleSolid 
-        :: Float        -- ^ width
-        -> Float        -- ^ height
-        -> Picture
+rectangleSolid :: Float -> Float -> Picture
 rectangleSolid sizeX sizeY
 	= Polygon $ rectanglePath sizeX sizeY
 
 
 -- | A solid rectangle in the y > 0 half of the x-y plane.
-rectangleUpperSolid 
-        :: Float        -- ^ width
-        -> Float        -- ^ height
-        -> Picture
+rectangleUpperSolid :: Float -> Float -> Picture
 rectangleUpperSolid sizeX sizeY
 	= Polygon  $ rectangleUpperPath sizeX sizeY
 
-
--- | A solid circle with the given radius.
-circleSolid :: Float -> Picture
-circleSolid r = thickCircle (r/2) r
-
-
--- | A solid arc, drawn counter-clockwise from the start
---   to the end angle.
-arcSolid 
-        :: Float        -- ^ start angle, in degrees
-        -> Float        -- ^ end angle, in degrees
-        -> Float        -- ^ radius
-        -> Picture
-arcSolid a1 a2 r = thickArc a1 a2 (r/2) r 

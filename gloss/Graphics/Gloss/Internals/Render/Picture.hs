@@ -3,27 +3,28 @@
 {-# LANGUAGE ImplicitParams, ScopedTypeVariables #-}
 
 module Graphics.Gloss.Internals.Render.Picture
-	( renderPicture )
+	(renderPicture)
 where
-import	Graphics.Gloss.Data.Picture
-import	Graphics.Gloss.Data.Color
-import	Graphics.Gloss.Internals.Interface.Backend
-import	Graphics.Gloss.Internals.Interface.ViewPort
-import	Graphics.Gloss.Internals.Render.State
-import	Graphics.Gloss.Internals.Render.Common
-import	Graphics.Gloss.Internals.Render.Circle
-import	Graphics.Gloss.Internals.Render.Bitmap
-import  System.Mem.StableName
-import  Foreign.ForeignPtr
-import	Data.IORef
-import  Data.List
-import  Control.Monad
-import	Graphics.Rendering.OpenGL		(($=), get)
-import	qualified Graphics.Rendering.OpenGL.GL	as GL
-import	qualified Graphics.UI.GLUT		as GLUT
+import Graphics.Gloss.Data.Picture
+import Graphics.Gloss.Data.Color
+import Graphics.Gloss.Internals.Interface.Backend
+import Graphics.Gloss.Internals.Interface.ViewPort
+import Graphics.Gloss.Internals.Render.State
+import Graphics.Gloss.Internals.Render.Common
+import Graphics.Gloss.Internals.Render.Circle
+import Graphics.Gloss.Internals.Render.Bitmap
+import System.Mem.StableName
+import Foreign.ForeignPtr
+import Data.IORef
+import Data.List
+import Control.Monad
+import Graphics.Rendering.OpenGL		(($=), get)
+import qualified Graphics.Rendering.OpenGL.GL	as GL
+import qualified Graphics.UI.GLUT		as GLUT
+import Debug.Trace
 
 
--- ^ Render a picture using the given render options and viewport.
+-- | Render a picture using the given render options and viewport.
 renderPicture
 	:: forall a . Backend a
 	=> IORef a
@@ -57,7 +58,9 @@ renderPicture
 	setLineSmooth	(stateLineSmooth renderS)
 	setBlendAlpha	(stateBlendAlpha renderS)
 	
-	drawPicture (viewPortScale viewS) picture
+	trace ("scale = " ++ show (viewPortScale viewS))
+         $ drawPicture (viewPortScale viewS) picture
+
 
 drawPicture
 	:: ( ?modeWireframe     :: Bool
@@ -103,10 +106,6 @@ drawPicture circScale picture
         ThickArc a1 a2 radius thickness
          ->  renderArc 0 0 circScale radius a1 a2 thickness
              
-        -- sector
-        Sector a1 a2 radius
-         ->  renderSector 0 0 circScale radius a1 a2
-             
 	-- stroke text
 	-- 	text looks weird when we've got blend on,
 	--	so disable it during the renderString call.
@@ -146,9 +145,6 @@ drawPicture circScale picture
 
 	Translate posX posY (ThickArc a1 a2 radius thickness)
 	 -> renderArc posX posY circScale radius a1 a2 thickness
-
-        Translate posX posY (Sector a1 a2 radius)
-         ->  renderSector posX posY circScale radius a1 a2
              
 	Translate tx ty (Rotate deg p)
 	 -> GL.preservingMatrix
