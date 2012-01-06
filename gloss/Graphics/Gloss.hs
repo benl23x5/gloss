@@ -25,12 +25,18 @@
 --   `simulate`.
 --
 --   If you want to manage your own key\/mouse events then use `play`.
---
+-- 
 --   Gloss uses OpenGL under the hood, but you don't have to worry about any of that.
+--
+--   Gloss programs should be compiled with @-threaded@, otherwise the GHC runtime
+--   will limit the frame-rate to around 20Hz.
+--
 --
 -- @Release Notes:
 --
 -- For 1.7.0:
+--   * Tweaked circle level-of-detail reduction code.
+--   * Increased frame rate cap to 100hz.
 --   Thanks to Doug Burke
 --   * Primitives for drawing arcs and sectors.
 --

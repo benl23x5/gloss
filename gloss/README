@@ -30,6 +30,8 @@ OTHER THINGS
 Release Notes:
 
  For 1.7.0:
+   * Tweaked circle level-of-detail reduction code.
+   * Increased frame rate cap to 100hz.
    Thanks to Doug Burke
    * Primitives for drawing arcs and sectors.
 
