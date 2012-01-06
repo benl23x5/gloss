@@ -66,10 +66,6 @@ displayWithBackend backend displayMode background picture
 	let callbacks
 	     =	[ Callback.Display renderFun 
 
-		-- Delay the thread for a bit to give the runtime
-		--	a chance to switch back to the OS.
-		, Callback.Idle	   (\stateRef -> sleep stateRef 0.001 >> postRedisplay stateRef)
-
 		-- Escape exits the program
 		, callback_exit () 
 		
