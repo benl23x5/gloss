@@ -9,6 +9,7 @@ import  Graphics.Gloss.Geometry.Angle
 import	qualified Graphics.Rendering.OpenGL.GL		as GL
 import	GHC.Exts
 
+
 -- | Render a circle with the given thickness
 renderCircle :: Float -> Float -> Float -> Float -> Float -> IO ()
 renderCircle posX posY scaleFactor radius thickness
@@ -18,6 +19,7 @@ renderCircle posX posY scaleFactor radius thickness
 		then renderCircleLine posX posY steps radius
 		else renderCircleStrip posX posY steps radius thickness
 
+-- | Render an arc with the given thickness.
 renderArc :: Float -> Float -> Float -> Float -> Float -> Float -> Float -> IO ()
 renderArc posX posY scaleFactor radius a1 a2 thickness
  	| radScreen	<- scaleFactor * radius
@@ -26,22 +28,13 @@ renderArc posX posY scaleFactor radius a1 a2 thickness
 		then renderArcLine posX posY steps radius a1 a2
 		else renderArcStrip posX posY steps radius a1 a2 thickness
   
+-- | Render a sector.
 renderSector :: Float -> Float -> Float -> Float -> Float -> Float -> IO ()
 renderSector posX posY scaleFactor radius a1 a2
  	| radScreen	<- scaleFactor * radius
 	, steps		<- circleSteps (2 * radScreen)
 	= renderSectorLine posX posY steps radius a1 a2
   
--- | Decide how many line segments to use to render the circle
-circleSteps :: Float -> Int
-circleSteps sDiam
-	| sDiam < 1	= 1
-	| sDiam < 2	= 4
-	| sDiam < 10	= 8
-	| sDiam < 20	= 16
-	| sDiam < 30	= 32
-	| otherwise	= 40
-
 
 renderCircleLine_step :: Float# -> Float# -> Float# -> Float# -> Float# -> Float# -> IO ()
 renderCircleLine_step posX posY tStep tStop rad tt
@@ -52,6 +45,7 @@ renderCircleLine_step posX posY tStep tStop rad tt
 	= do	addPointOnCircle posX posY rad tt
 		renderCircleLine_step posX posY tStep tStop rad (tt `plusFloat#` tStep)
 
+
 -- | Render a circle as a line.
 renderCircleLine :: Float -> Float -> Int -> Float -> IO ()
 renderCircleLine (F# posX) (F# posY) steps (F# rad)
@@ -60,15 +54,25 @@ renderCircleLine (F# posX) (F# posY) steps (F# rad)
 	!(F# tStop)	= (2 * pi)
 
    in	GL.renderPrimitive GL.LineLoop
-   		$ renderCircleLine_step posX posY tStep tStop rad 0.0#
+   	 $ renderCircleLine_step posX posY tStep tStop rad 0.0#
 
--- I am assuming these should be inlined; no performance testing has been 
--- done to actually check this assumption.
+
+-- | Decide how many line segments to use to render the circle
+circleSteps :: Float -> Int
+circleSteps sDiam
+        | sDiam < 1     = 1
+        | sDiam < 2     = 4
+        | sDiam < 10    = 8
+        | sDiam < 20    = 16
+        | sDiam < 30    = 32
+        | otherwise     = 40
+
 
 {-# INLINE addPoint #-}
 addPoint :: Float# -> Float# -> IO ()
 addPoint x y =
   GL.vertex $ GL.Vertex2 (gf (F# x)) (gf (F# y))
+
 
 {-# INLINE addPointOnCircle #-}
 addPointOnCircle :: Float# -> Float# -> Float# -> Float# -> IO ()
@@ -76,6 +80,7 @@ addPointOnCircle posX posY rad tt =
   addPoint
     (posX `plusFloat#` (rad `timesFloat#` (cosFloat# tt)))
     (posY `plusFloat#` (rad `timesFloat#` (sinFloat# tt)))
+
 
 -- | Render an arc as a line.
 renderArcLine :: Float -> Float -> Int -> Float -> Float -> Float -> IO ()
@@ -89,8 +94,9 @@ renderArcLine (F# posX) (F# posY) steps (F# rad) a1 a2
         endVertex       = addPointOnCircle posX posY rad tStop
 
    in	GL.renderPrimitive GL.LineStrip
-   		(renderCircleLine_step posX posY tStep tStop rad tStart >>
-                 endVertex)
+   	 $ do   renderCircleLine_step posX posY tStep tStop rad tStart
+                endVertex
+
 
 -- | Render a sector as a line.
 renderSectorLine :: Float -> Float -> Int -> Float -> Float -> Float -> IO ()
@@ -105,9 +111,10 @@ renderSectorLine pX@(F# posX) pY@(F# posY) steps (F# rad) a1 a2
         endVertex       = addPointOnCircle posX posY rad tStop
 
    in	GL.renderPrimitive GL.LineLoop
-   		(startVertex >>
-                 renderCircleLine_step posX posY tStep tStop rad tStart >>
-                 endVertex)
+         $ do   startVertex
+                renderCircleLine_step posX posY tStep tStop rad tStart
+                endVertex
+
 
 -- | Render a circle with a given thickness as a triangle strip
 renderCircleStrip :: Float -> Float -> Int -> Float -> Float -> IO ()
@@ -119,8 +126,9 @@ renderCircleStrip (F# posX) (F# posY) steps r width
 	!(F# r2)	= r + width / 2
 
    in	GL.renderPrimitive GL.TriangleStrip
-   		$ renderCircleStrip_step posX posY tStep tStop r1 0.0# r2 
-			(tStep `divideFloat#` 2.0#)
+   	 $ renderCircleStrip_step posX posY tStep tStop r1 0.0# r2 
+		(tStep `divideFloat#` 2.0#)
+
 
 -- | Render an arc with a given thickness as a triangle strip
 renderArcStrip :: Float -> Float -> Int -> Float -> Float -> Float -> Float -> IO ()
@@ -135,15 +143,17 @@ renderArcStrip (F# posX) (F# posY) steps r a1 a2 width
         
         !dt             = tStep `divideFloat#` 2.0#
         
-        startVector     = addPointOnCircle posX posY r2 tStart
-        endVectors      = addPointOnCircle posX posY r1 tStop >>
-                          addPointOnCircle posX posY r2 tStop
-
    in	GL.renderPrimitive GL.TriangleStrip
-   		(startVector >>
+   	 $ do    -- start vector
+                 addPointOnCircle posX posY r2 tStart
+
                  renderCircleStrip_step posX posY tStep tStop r1 tStart r2
-                    (tStart `plusFloat#` dt) >>
-                 endVectors)   
+                    (tStart `plusFloat#` dt)
+
+                 -- end vectors
+                 addPointOnCircle posX posY r1 tStop
+                 addPointOnCircle posX posY r2 tStop
+
    
 renderCircleStrip_step 
 	:: Float# -> Float# 
