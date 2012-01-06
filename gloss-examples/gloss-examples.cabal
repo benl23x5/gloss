@@ -1,5 +1,5 @@
 Name:                gloss-examples
-Version:             1.6.0.1
+Version:             1.7.0.1
 License:             MIT
 License-file:        LICENSE
 Author:              Ben Lippmeier
@@ -21,7 +21,7 @@ Synopsis:
 Executable gloss-bitmap
   Build-depends:
         base           == 4.*,
-        gloss          == 1.6.*,
+        gloss          == 1.7.*,
         bytestring     == 0.9.*,
         bmp            == 1.2.*
   Main-is: Main.hs
@@ -32,7 +32,7 @@ Executable gloss-bitmap
 Executable gloss-boids
   Build-depends:
         base           == 4.*,
-        gloss          == 1.6.*
+        gloss          == 1.7.*
   Main-is: Main.hs
   other-modules: KDTree2d Vec2
   hs-source-dirs: Boids
@@ -42,7 +42,7 @@ Executable gloss-boids
 Executable gloss-clock
   Build-depends: 
         base            == 4.*,
-        gloss           == 1.6.*
+        gloss           == 1.7.*
   Main-is: Clock/Main.hs
   ghc-options: -O2
 
@@ -50,7 +50,7 @@ Executable gloss-clock
 Executable gloss-conway
   Build-depends: 
         base            == 4.*,
-        gloss           == 1.6.*,
+        gloss           == 1.7.*,
         vector          >= 0.7 && < 1.0
   Main-is: Main.hs
   other-modules: Cell World
@@ -61,7 +61,7 @@ Executable gloss-conway
 Executable gloss-draw
   Build-depends:
         base           == 4.*,
-        gloss          == 1.6.*
+        gloss          == 1.7.*
   Main-is: Main.hs
   hs-source-dirs: Draw
   ghc-options: -O2
@@ -70,7 +70,7 @@ Executable gloss-draw
 Executable gloss-easy
   Build-depends:
         base            == 4.*,
-        gloss           == 1.6.*
+        gloss           == 1.7.*
   Main-is: Easy/Main.hs
   ghc-options: -O2
 
@@ -78,7 +78,7 @@ Executable gloss-easy
 Executable gloss-eden
   Build-depends: 
         base            == 4.*,
-        gloss           == 1.6.*,
+        gloss           == 1.7.*,
         random          == 1.0.*
   Main-is: Main.hs
   other-modules: Cell Community World
@@ -89,7 +89,7 @@ Executable gloss-eden
 Executable gloss-flake
   Build-depends:
         base            == 4.*,
-        gloss           == 1.6.*
+        gloss           == 1.7.*
   Main-is: Flake/Main.hs
   ghc-options: -O2
 
@@ -97,7 +97,7 @@ Executable gloss-flake
 Executable gloss-gameevent
   Build-depends: 
         base            == 4.*,
-        gloss           == 1.6.*
+        gloss           == 1.7.*
   Main-is: Main.hs
   hs-source-dirs: GameEvent
   ghc-options: -O2
@@ -106,7 +106,7 @@ Executable gloss-gameevent
 Executable gloss-hello
   Build-depends: 
         base            == 4.*, 
-        gloss           == 1.6.*
+        gloss           == 1.7.*
   Main-is: Hello/Main.hs
   ghc-options: -O2
 
@@ -114,7 +114,7 @@ Executable gloss-hello
 Executable gloss-lifespan
   Build-depends: 
         base            == 4.*, 
-        gloss           == 1.6.*, 
+        gloss           == 1.7.*, 
         random          == 1.0.*
   Main-is: Main.hs
   other-modules: Cell Community World
@@ -125,7 +125,7 @@ Executable gloss-lifespan
 Executable gloss-machina
   Build-depends: 
         base            == 4.*, 
-        gloss           == 1.6.*
+        gloss           == 1.7.*
   Main-is: Machina/Main.hs
   ghc-options: -O2
 
@@ -133,7 +133,7 @@ Executable gloss-machina
 Executable gloss-occlusion
   Build-depends: 
         base            == 4.*, 
-        gloss           == 1.6.*
+        gloss           == 1.7.*
   Main-is: Main.hs
   other-modules: Cell World State Data
   hs-source-dirs: Occlusion
@@ -143,7 +143,7 @@ Executable gloss-occlusion
 Executable gloss-styrene
   Build-depends: 
         base            == 4.*,
-        gloss           == 1.6.*,
+        gloss           == 1.7.*,
         containers      >= 0.3 && <= 0.5,
         ghc-prim        == 0.2.*
   Main-is: Main.hs
@@ -155,7 +155,7 @@ Executable gloss-styrene
 Executable gloss-tree
   Build-depends: 
         base            == 4.*, 
-        gloss           == 1.6.*
+        gloss           == 1.7.*
   Main-is: Tree/Main.hs
   ghc-options: -O2
 
@@ -163,7 +163,7 @@ Executable gloss-tree
 Executable gloss-visibility
   Build-depends: 
         base            == 4.*, 
-        gloss           == 1.6.*,
+        gloss           == 1.7.*,
         vector          >= 0.7 && < 1.0
   Main-is: Main.hs
   other-modules: Draw Interface State World Geometry.Randomish Geometry.Segment
@@ -174,9 +174,8 @@ Executable gloss-visibility
 Executable gloss-zen
   Build-depends: 
         base            == 4.*, 
-        gloss           == 1.6.*
+        gloss           == 1.7.*
   Main-is: Zen/Main.hs
   ghc-options: -O2
-
 
 
