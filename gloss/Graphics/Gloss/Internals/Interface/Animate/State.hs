@@ -12,6 +12,9 @@ data State
 	-- | Whether the animation is running.
 	  stateAnimate			:: Bool
 
+        -- | How many times we've entered the animation loop.
+        , stateAnimateCount             :: Integer
+
 	-- | Whether this is the first frame of the animation.
 	, stateAnimateStart		:: Bool
 
@@ -22,10 +25,8 @@ data State
 	, stateDisplayTime		:: Double
 	, stateDisplayTimeLast		:: Double
 
-	-- | Clamp the minimum time between frames to this value (in msec)
-	--	Most LCD monitors refresh at around 50Hz so setting
-	--	this to < 20msec probably isn't worthwhile.
-	--
+	-- | Clamp the minimum time between frames to this value (in seconds)
+        --      Setting this to < 10ms probably isn't worthwhile.
 	, stateDisplayTimeClamp		:: Double
 							
 	-- | The time when the last call to the users render function finished.
@@ -42,11 +43,12 @@ stateInit :: State
 stateInit
 	= State
 	{ stateAnimate			= True
+        , stateAnimateCount             = 0
 	, stateAnimateStart		= True
 	, stateAnimateTime		= 0
 	, stateDisplayTime		= 0
 	, stateDisplayTimeLast		= 0 
-	, stateDisplayTimeClamp		= 0.02
+	, stateDisplayTimeClamp		= 0.01
 	, stateGateTimeStart		= 0
 	, stateGateTimeEnd		= 0 
 	, stateGateTimeElapsed		= 0 }

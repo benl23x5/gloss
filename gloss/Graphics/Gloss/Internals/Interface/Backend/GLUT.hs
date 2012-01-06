@@ -59,7 +59,7 @@ instance Backend GLUTState where
                 return $ (fromIntegral t) / 1000
 
         sleep _ sec
-         = do   threadDelay (round $ sec * 100000)
+         = do   threadDelay (round $ sec * 1000000)
 
 
 -- Initialise -----------------------------------------------------------------

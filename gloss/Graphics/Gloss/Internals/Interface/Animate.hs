@@ -49,6 +49,7 @@ animateWithBackend
 
 animateWithBackend backend display backColor frameFun
  = do	
+        -- 
 	viewSR		<- newIORef viewPortInit
 	viewControlSR	<- newIORef VPC.stateInit
 	animateSR	<- newIORef AN.stateInit

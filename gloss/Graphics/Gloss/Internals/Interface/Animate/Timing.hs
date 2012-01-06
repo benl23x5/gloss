@@ -32,23 +32,28 @@ animateBegin stateRef backendRef
 		{ stateDisplayTime	= displayTime 
 		, stateDisplayTimeLast	= displayTimeLast }
 
-{-	putStr 	$  "  displayTime        = " ++ show displayTime 		++ "\n"
-	 	++ "  displayTimeLast    = " ++ show displayTimeLast 		++ "\n"
-		++ "  displayTimeElapsed = " ++ show displayTimeElapsed 	++ "\n"
--}
-
 	-- increment the animation time
-	animate			<- stateRef `getsIORef` stateAnimate
-	animateTime		<- stateRef `getsIORef` stateAnimateTime
-	animateStart		<- stateRef `getsIORef` stateAnimateStart
-	
+	animate		<- stateRef `getsIORef` stateAnimate
+        animateCount    <- stateRef `getsIORef` stateAnimateCount
+	animateTime	<- stateRef `getsIORef` stateAnimateTime
+	animateStart	<- stateRef `getsIORef` stateAnimateStart
+
+{-
+        when (animateCount `mod` 5 == 0)
+         $  putStr  $  "  displayTime        = " ++ show displayTime                ++ "\n"
+                    ++ "  displayTimeLast    = " ++ show displayTimeLast            ++ "\n"
+                    ++ "  displayTimeElapsed = " ++ show displayTimeElapsed         ++ "\n"
+                    ++ "  fps                = " ++ show (truncate $ 1 / displayTimeElapsed)   ++ "\n"
+-}	
 	when (animate && not animateStart)
-	 $ do	stateRef `modifyIORef` \s -> s
-			{ stateAnimateTime	= animateTime + displayTimeElapsed }
+	 $ stateRef `modifyIORef` \s -> s
+	       { stateAnimateTime	= animateTime + displayTimeElapsed }
 			
 	when animate
-	 $ do	stateRef `modifyIORef` \s -> s
-	 		{ stateAnimateStart	= False }
+	 $ stateRef `modifyIORef` \s -> s
+	       { stateAnimateCount      = animateCount + 1
+               , stateAnimateStart	= False  }
+
 
 
 -- | Handles animation timing details.
@@ -61,9 +66,8 @@ animateEnd stateRef backendRef
 
 	gateTimeStart	<- elapsedTime backendRef			-- the start of this gate
 	gateTimeEnd	<- stateRef `getsIORef` stateGateTimeEnd	-- end of the previous gate
-	let gateTimeElapsed	
-			= gateTimeStart - gateTimeEnd
-	
+	let gateTimeElapsed = gateTimeStart - gateTimeEnd
+
 	when (gateTimeElapsed < timeClamp)
 	 $ do	sleep backendRef (timeClamp - gateTimeElapsed)
 
