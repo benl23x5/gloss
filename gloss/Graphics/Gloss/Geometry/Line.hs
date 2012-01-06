@@ -2,7 +2,8 @@
 
 -- | Geometric functions concerning lines and segments.
 --
---   A @Line@ is taken to be infinite in length, while a @Seg@ is finite length line segment represented by its two endpoints. 
+--   A @Line@ is taken to be infinite in length, while a @Seg@ is finite length
+--   line segment represented by its two endpoints. 
 module Graphics.Gloss.Geometry.Line
 	( segClearsBox
 
@@ -94,11 +95,11 @@ closestPointOnLineParam p1 p2 p3
 
 
 
--- Line-Line intersection -------------------------------------------------------------------------
+-- Line-Line intersection -----------------------------------------------------
 
--- | Given four points specifying two lines, get the point where the two lines cross, if any.
---   Note that the lines extend off to infinity, so the intersection point might not lie
---   between either of the two pairs of points.
+-- | Given four points specifying two lines, get the point where the two lines
+--   cross, if any. Note that the lines extend off to infinity, so the
+--   intersection point might not line between either of the two pairs of points.
 --
 -- @
 --     \\      /
@@ -137,9 +138,9 @@ intersectLineLine (x1, y1) (x2, y2) (x3, y3) (x4, y4)
 	     in	Just (numx / den, numy / den)
 
 
--- Segment-Line intersection ----------------------------------------------------------------------
-
--- | Get the point where a segment @P1-P2@ crosses an infinite line @P3-P4@, if any.
+-- Segment-Line intersection --------------------------------------------------
+-- | Get the point where a segment @P1-P2@ crosses an infinite line @P3-P4@,
+--   if any.
 --
 intersectSegLine
 	:: Point	-- ^ `P1`
@@ -237,9 +238,10 @@ intersectSegVertLine (x1, y1) (x2, y2) x0
 	       , (x0 - x1) * (y2 - y1) / (x2 - x1) + y1)
 
 
--- Segment-Segment intersection -------------------------------------------------------------------
+-- Segment-Segment intersection -----------------------------------------------
 
--- | Get the point where a segment @P1-P2@ crosses another segement @P3-P4@, if any.
+-- | Get the point where a segment @P1-P2@ crosses another segement @P3-P4@,
+--   if any.
 intersectSegSeg
 	:: Point	-- ^ `P1`
 	-> Point	-- ^ `P2`
@@ -286,8 +288,8 @@ intersectSegHorzSeg p1@(x1, y1) p2@(x2, y2) y0 xa xb
 	| x0 > xb	= Nothing
 	| otherwise	= Just (x0, y0)
 		
-	where x0 | (y2 - y1) == 0 	= x1
-		 | otherwise		= (y0 - y1) * (x2 - x1) / (y2 - y1) + x1
+	where x0 | (y2 - y1) == 0 = x1
+		 | otherwise	  = (y0 - y1) * (x2 - x1) / (y2 - y1) + x1
 
 
 -- | Check if an arbitrary segment intersects a vertical segment.
@@ -318,7 +320,7 @@ intersectSegVertSeg p1@(x1, y1) p2@(x2, y2) x0 ya yb
 	| y0 > yb	= Nothing
 	| otherwise	= Just (x0, y0)
 	
-	where y0 | (x2 - x1) == 0	= y1
-		 | otherwise		= (x0 - x1) * (y2 - y1) / (x2 - x1) + y1
+	where y0 | (x2 - x1) == 0 = y1
+		 | otherwise	  = (x0 - x1) * (y2 - y1) / (x2 - x1) + y1
 
 

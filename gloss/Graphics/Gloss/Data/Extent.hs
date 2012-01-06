@@ -1,7 +1,8 @@
 {-# LANGUAGE PatternGuards #-}
 
 -- | Represents an integral rectangular area of the 2D plane.
---   Using `Int`s (instead of `Float`s) for the bounds means we can safely compare extents for equality.
+--   Using `Int`s (instead of `Float`s) for the bounds means we can safely
+--   compare extents for equality.
 module Graphics.Gloss.Data.Extent
 	( Extent
 	, Coord
@@ -26,7 +27,8 @@ import Data.Maybe
 
 
 -- | A rectangular area of the 2D plane.
---   We keep the type abstract to ensure that invalid extents cannot be constructed.
+--   We keep the type abstract to ensure that invalid extents cannot be
+--   constructed.
 data Extent
 	= Extent Int Int Int Int
 	deriving (Eq, Show)
@@ -136,8 +138,9 @@ pathToCoord extent coord
 		return	$ quad : rest
 
 
--- | If a line segment (P1-P2) intersects the outer edge of an extent then return the intersection point, 
---   that is closest to P1, if any. If P1 is inside the extent then `Nothing`.
+-- | If a line segment (P1-P2) intersects the outer edge of an extent then
+--   return the intersection point, that is closest to P1, if any.
+--   If P1 is inside the extent then `Nothing`.
 --
 --   @
 --                   P2
@@ -182,7 +185,8 @@ intersectSegExtent p1@(x1, y1) p2 (Extent n' s' e' w')
 		w	= fromIntegral w'
 
 
--- | Check whether a line segment's endpoints are inside an extent, or if it intersects with the boundary.
+-- | Check whether a line segment's endpoints are inside an extent, or if it
+--   intersects with the boundary.
 touchesSegExtent :: Point -> Point -> Extent -> Bool
 touchesSegExtent p1 p2 extent
 	=   pointInExtent extent p1

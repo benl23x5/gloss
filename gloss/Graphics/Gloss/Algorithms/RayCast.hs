@@ -74,9 +74,9 @@ traceSegIntoCellularQuadTree p1 p2 extent tree
 	TNode nw ne sw se
 	 | touchesSegExtent p1 p2 extent 
 	 -> concat
-	 	[ traceSegIntoCellularQuadTree p1 p2 (cutQuadOfExtent NW extent) nw
-		, traceSegIntoCellularQuadTree p1 p2 (cutQuadOfExtent NE extent) ne
-		, traceSegIntoCellularQuadTree p1 p2 (cutQuadOfExtent SW extent) sw
-		, traceSegIntoCellularQuadTree p1 p2 (cutQuadOfExtent SE extent) se ]
+             [ traceSegIntoCellularQuadTree p1 p2 (cutQuadOfExtent NW extent) nw
+             , traceSegIntoCellularQuadTree p1 p2 (cutQuadOfExtent NE extent) ne
+             , traceSegIntoCellularQuadTree p1 p2 (cutQuadOfExtent SW extent) sw
+             , traceSegIntoCellularQuadTree p1 p2 (cutQuadOfExtent SE extent) se ]
 	
 	_ -> []

@@ -6,7 +6,8 @@ module Graphics.Gloss.Data.Point
 where
 
 -- | A point on the x-y plane.
---   Points can also be treated as `Vector`s, so "Graphics.Gloss.Data.Vector" may also be useful.
+--   Points can also be treated as `Vector`s, so "Graphics.Gloss.Data.Vector"
+--   may also be useful.
 type Point	= (Float, Float)			
 
 
