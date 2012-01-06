@@ -21,7 +21,6 @@ import Control.Monad
 import Graphics.Rendering.OpenGL		(($=), get)
 import qualified Graphics.Rendering.OpenGL.GL	as GL
 import qualified Graphics.UI.GLUT		as GLUT
-import Debug.Trace
 
 
 -- | Render a picture using the given render options and viewport.
@@ -58,8 +57,7 @@ renderPicture
 	setLineSmooth	(stateLineSmooth renderS)
 	setBlendAlpha	(stateBlendAlpha renderS)
 	
-	trace ("scale = " ++ show (viewPortScale viewS))
-         $ drawPicture (viewPortScale viewS) picture
+        drawPicture (viewPortScale viewS) picture
 
 
 drawPicture
@@ -118,8 +116,7 @@ drawPicture circScale picture
 	-- colors with float components.
 	Color col p
 	 |  ?modeColor
-	 ->  {-# SCC "draw.color" #-}
-   	     do	oldColor 	 <- get GL.currentColor
+	 ->  do	oldColor 	 <- get GL.currentColor
 
 		let (r, g, b, a) = rgbaOfColor col
 
@@ -185,7 +182,7 @@ drawPicture circScale picture
 		let mscale	= max sx sy
 		drawPicture (circScale * mscale) p
 			
-	-----
+	-- Bitmap -------------------------------
 	Bitmap width height imgData cacheMe
 	 -> do	
                 -- Load the image data into a texture,

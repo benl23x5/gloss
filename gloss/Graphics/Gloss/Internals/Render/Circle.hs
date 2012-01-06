@@ -12,28 +12,44 @@ import	qualified Graphics.Rendering.OpenGL.GL		as GL
 import	GHC.Exts
 
 
--- | Decide how many line segments to use to render the circle
+-- | Decide how many line segments to use to render the circle.
+--   The number of segments we should use to get a nice picture depends on 
+--   the size of the circle on the screen, not its intrinsic radius.
+--   If the viewport has been zoomed-in then we need to use more segments.
+--
 {-# INLINE circleSteps #-}
 circleSteps :: Float -> Int
 circleSteps sDiam
-        | sDiam < 1     = 1
-        | sDiam < 2     = 4
-        | sDiam < 10    = 8
-        | sDiam < 20    = 16
-        | sDiam < 30    = 32
-        | otherwise     = 40
+        | sDiam < 8     = 8
+        | sDiam < 16    = 16
+        | sDiam < 32    = 32
+        | otherwise     = 64
 
 
 -- Circle ---------------------------------------------------------------------
 -- | Render a circle with the given thickness
 renderCircle :: Float -> Float -> Float -> Float -> Float -> IO ()
-renderCircle posX posY scaleFactor radius_ thickness
- 	| radius        <- abs radius_
+renderCircle posX posY scaleFactor radius_ thickness_
+ = go (abs radius_) (abs thickness_)
+ where go radius thickness
+
+        -- If the circle is smaller than a pixel, render it as a point.
+        | thickness     == 0
+        , radScreen     <- scaleFactor * (radius + thickness / 2)
+        , radScreen     <= 1
+        = GL.renderPrimitive GL.Points
+            $ GL.vertex $ GL.Vertex2 (gf posX) (gf posY)
+
+        -- Render zero thickness circles with lines.
+        | thickness == 0
         , radScreen	<- scaleFactor * radius
-	, steps		<- circleSteps (2 * radScreen)
-	= if thickness == 0 
-		then renderCircleLine  posX posY steps radius
-		else renderCircleStrip posX posY steps radius thickness
+	, steps		<- circleSteps radScreen
+        = renderCircleLine  posX posY steps radius
+
+        -- Some thick circle.
+        | radScreen     <- scaleFactor * (radius + thickness / 2)
+        , steps         <- circleSteps radScreen
+        = renderCircleStrip posX posY steps radius thickness
 
 
 -- | Render a circle as a line.
@@ -66,13 +82,20 @@ renderCircleStrip (F# posX) (F# posY) steps r width
 -- Arc ------------------------------------------------------------------------
 -- | Render an arc with the given thickness.
 renderArc :: Float -> Float -> Float -> Float -> Float -> Float -> Float -> IO ()
-renderArc posX posY scaleFactor radius_ a1 a2 thickness
- 	| radius        <- abs radius_
-        , radScreen	<- scaleFactor * radius
-	, steps		<- circleSteps (2 * radScreen)
-	= if thickness == 0 
-		then renderArcLine posX posY steps radius a1 a2
-		else renderArcStrip posX posY steps radius a1 a2 thickness
+renderArc posX posY scaleFactor radius_ a1 a2 thickness_
+ = go (abs radius_) (abs thickness_)
+ where go radius thickness
+
+        -- Render zero thickness arcs with lines.
+        | thickness == 0
+        , radScreen     <- scaleFactor * radius
+        , steps         <- circleSteps radScreen
+        = renderArcLine posX posY steps radius a1 a2
+
+        -- Some thick arc.
+        | radScreen     <- scaleFactor * (radius + thickness / 2)
+        , steps         <- circleSteps radScreen
+        = renderArcStrip posX posY steps radius a1 a2 thickness
   
 
 -- | Render an arc as a line.
@@ -97,7 +120,7 @@ renderArcStrip :: Float -> Float -> Int -> Float -> Float -> Float -> Float -> I
 renderArcStrip (F# posX) (F# posY) steps r a1 a2 width
  = let	n		= fromIntegral steps
  	!(F# tStep)	= (2 * pi) / n
-        -- TODO: could extend tStart/tStop to account for non-zero width
+
         !(F# tStart)    = degToRad a1
 	!(F# tStop)	= degToRad a2 + if a1 >= a2 then 2 * pi else 0
 	!(F# r1)	= r - width / 2
