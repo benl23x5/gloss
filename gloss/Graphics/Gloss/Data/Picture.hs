@@ -8,10 +8,16 @@ module Graphics.Gloss.Data.Picture
 	, BitmapData
 
 	-- * Aliases for Picture constructors
-	, blank, polygon, line, circle, thickCircle
-        , arc, thickArc, sector
-        , text, bitmap
-	, color, translate, rotate, scale
+	, blank
+        , polygon
+        , line
+        , circle, thickCircle
+        , arc,    thickArc
+        , sector
+        , text
+        , bitmap
+	, color
+        , translate, rotate, scale
 	, pictures
 
         -- * Loading Bitmaps
@@ -22,7 +28,8 @@ module Graphics.Gloss.Data.Picture
 
 	-- * Miscellaneous
  	, lineLoop
- 	, circleSolid, arcSolid, arcPath
+ 	, circleSolid
+        , arcSolid
 	
 	-- * Rectangles
 	, rectanglePath, 	rectangleWire, 		rectangleSolid
@@ -31,7 +38,6 @@ where
 import Graphics.Gloss.Data.Color
 import Graphics.Gloss.Data.Point
 import Graphics.Gloss.Data.Vector
-import Graphics.Gloss.Geometry.Angle
 import Graphics.Gloss.Internals.Render.Bitmap
 import Codec.BMP
 import Foreign.ForeignPtr
@@ -44,7 +50,6 @@ import Data.ByteString
 import System.IO.Unsafe
 import qualified Data.ByteString.Unsafe as BSU
 import Prelude hiding (map)
-import qualified Prelude as P
 
 -- | A path through the x-y plane.
 type Path	= [Point]				
@@ -68,13 +73,13 @@ data Picture
 
 	-- | A circle with the given thickness and radius.
 	--   If the thickness is 0 then this is equivalent to `Circle`.
-	| ThickCircle	Float		Float
+	| ThickCircle	Float Float
 
 	-- | A circular arc between two angles (a1 and a2) and
         --   with the given radius (r). The arc is drawn
         --   counter-clockwise from a1 to a2, where the angles  
         --   are in degrees.  
-        | Arc	Float Float Float
+        | Arc           Float Float Float
 
 	-- | A circular arc between two angles (a1 and a2) and
         --   with the given radius (r) and thickness.
@@ -368,28 +373,3 @@ arcSolid
         -> Float        -- ^ radius
         -> Picture
 arcSolid a1 a2 r = thickArc a1 a2 (r/2) r 
-
-
--- Ideally we would hide the Int argument, using
--- Graphics.Gloss.Internals.Render.Circle.circleSteps, to
--- better match the behavior of circle, but it's not clear
--- how to do this.
-
--- | A path representing an arc, centered about the origin.
-arcPath :: Float        -- ^ start angle, in degrees
-        -> Float        -- ^ end angle, in degrees
-        -> Float        -- ^ radius
-        -> Int          -- ^ number of segments
-        -> Path
-arcPath a1 a2 r n =  
-  let  n'        = if n == 0 then 1 else n
-       tStart    = degToRad a1
-       tStop     = degToRad a2 + if a1 >= a2 then 2 * pi else 0
-       tStep     = (tStop - tStart) / fromIntegral n'
-       
-       -- not the most efficient
-       arcPos t  = (r * cos t, r * sin t)
-       angles    = P.map ((tStart +) . (tStep *) . fromIntegral) [0..n']
-       
-  in   P.map arcPos angles
-  
