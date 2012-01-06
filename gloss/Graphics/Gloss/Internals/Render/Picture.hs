@@ -131,9 +131,8 @@ drawPicture circScale picture
 	 -> 	drawPicture circScale p
 
 
-	-- ease up on GL.preservingMatrix
-	--	This is an important optimisation for the Eden example,
-	--	as it draws lots of translated circles.
+        -- Translation --------------------------
+        -- Easy translations are done directly to avoid calling GL.perserveMatrix.
 	Translate posX posY (Circle radius)
 	 -> renderCircle posX posY circScale radius 0
 
@@ -149,27 +148,37 @@ drawPicture circScale picture
 	Translate tx ty (Rotate deg p)
 	 -> GL.preservingMatrix
 	  $ do	GL.translate (GL.Vector3 (gf tx) (gf ty) 0)
-		GL.rotate (gf deg) (GL.Vector3 0 0 (-1))
+		GL.rotate    (gf deg) (GL.Vector3 0 0 (-1))
 		drawPicture circScale p
 
-	-----
 	Translate tx ty	p
 	 -> GL.preservingMatrix
 	  $ do	GL.translate (GL.Vector3 (gf tx) (gf ty) 0)
 		drawPicture circScale p
 
-        -- Are these worthwhile optimizations?
-        -- Rotate deg (Arc a1 a2 r)
-        --  ->  renderArc 0 0 circScale r (a1-deg) (a2-deg) 0
 
-        -- Rotate deg (Sector a1 a2 r)
-        --  ->  renderSector 0 0 circScale r (a1-deg) (a2-deg)
+        -- Rotation -----------------------------
+        -- Easy rotations are done directly to avoid calling GL.perserveMatrix.
+        Rotate _   (Circle radius)
+         -> renderCircle   0 0 circScale radius 0
 
+        Rotate _   (ThickCircle radius thickness)
+         -> renderCircle   0 0 circScale radius thickness
+
+        Rotate deg (Arc a1 a2 radius)
+         -> renderArc      0 0 circScale radius (a1-deg) (a2-deg) 0
+
+        Rotate deg (ThickArc a1 a2 radius thickness)
+         -> renderArc      0 0 circScale radius (a1-deg) (a2-deg) thickness
+
+        
 	Rotate deg p
 	 -> GL.preservingMatrix
 	  $ do	GL.rotate (gf deg) (GL.Vector3 0 0 (-1))
 		drawPicture circScale p
 
+
+        -- Scale --------------------------------
 	Scale sx sy p
 	 -> GL.preservingMatrix
 	  $ do	GL.scale (gf sx) (gf sy) 1

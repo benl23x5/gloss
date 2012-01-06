@@ -12,11 +12,6 @@ import	qualified Graphics.Rendering.OpenGL.GL		as GL
 import	GHC.Exts
 
 
--- NOTE: All these functions are inlined because the top level ones
--- renderCircle and renderArc are only ever called from Render.Picture,
--- and we don't want function call overheads when drawing each shape.
-
-
 -- | Decide how many line segments to use to render the circle
 {-# INLINE circleSteps #-}
 circleSteps :: Float -> Int
@@ -39,7 +34,6 @@ renderCircle posX posY scaleFactor radius_ thickness
 	= if thickness == 0 
 		then renderCircleLine  posX posY steps radius
 		else renderCircleStrip posX posY steps radius thickness
-{-# INLINE renderCircle #-}
 
 
 -- | Render a circle as a line.
@@ -79,7 +73,6 @@ renderArc posX posY scaleFactor radius_ a1 a2 thickness
 	= if thickness == 0 
 		then renderArcLine posX posY steps radius a1 a2
 		else renderArcStrip posX posY steps radius a1 a2 thickness
-{-# INLINE renderArc #-}
   
 
 -- | Render an arc as a line.
