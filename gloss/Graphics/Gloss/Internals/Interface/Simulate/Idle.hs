@@ -21,7 +21,7 @@ callback_simulate_idle
 	-> IORef ViewPort				-- ^ the viewport state
 	-> IORef world					-- ^ the current world
 	-> world					-- ^ the initial world
-	-> (ViewPort -> Float -> world -> world) 	-- ^ fn to advance the world
+	-> (ViewPort -> Float -> world -> IO world) 	-- ^ fn to advance the world
 	-> Float					-- ^ how much time to advance world by 
 							--	in single step mode
 	-> IdleCallback
@@ -64,7 +64,7 @@ simulate_run
 	-> IORef AN.State
 	-> IORef ViewPort
 	-> IORef world
-	-> (ViewPort -> Float -> world -> world)
+	-> (ViewPort -> Float -> world -> IO world)
 	-> IdleCallback
 	
 simulate_run simSR _ viewSR worldSR worldAdvance backendRef
@@ -103,11 +103,10 @@ simulate_run simSR _ viewSR worldSR worldAdvance backendRef
 	let nFinal 	= nStart + thisSteps
 
 	-- keep advancing the world until we get to the final iteration number
-	let (_, world')	= 
-		until 	(\(n, _) 	-> n >= nFinal)
-			(\(n, w)	-> (n+1, worldAdvance viewS timePerStep w))
-			(nStart, worldS)
-	
+	(_,world') <- untilM 	(\(n, _) 	-> n >= nFinal)
+				(\(n, w)	-> liftM (\w' -> (n+1,w')) ( worldAdvance viewS timePerStep w))
+				(nStart, worldS)
+
 	-- write the world back into its IORef
 	-- We need to seq on the world to avoid space leaks when the window is not showing.
 	world' `seq` writeIORef worldSR world'
@@ -127,7 +126,7 @@ simulate_step
 	:: IORef SM.State
 	-> IORef ViewPort
 	-> IORef world
-	-> (ViewPort -> Float -> world -> world) 
+	-> (ViewPort -> Float -> world -> IO world) 
 	-> Float
 	-> IdleCallback
 
@@ -135,7 +134,7 @@ simulate_step simSR viewSR worldSR worldAdvance singleStepTime backendRef
  = do
 	viewS		<- readIORef viewSR
  	world		<- readIORef worldSR
-	let world'	= worldAdvance viewS singleStepTime world
+	world'		<- worldAdvance viewS singleStepTime world
 	
 	writeIORef worldSR world'
 	simSR `modifyIORef` \c -> c 	
@@ -148,3 +147,10 @@ simulate_step simSR viewSR worldSR worldAdvance singleStepTime backendRef
 getsIORef :: IORef a -> (a -> r) -> IO r
 getsIORef ref fun
  = liftM fun $ readIORef ref
+
+untilM :: (Monad m) => (a -> Bool) -> (a -> m a) -> a -> m a
+untilM test op i = go i
+  where
+  go x | test x    = return x
+       | otherwise = op x >>= go
+	

@@ -51,7 +51,7 @@ playIO  :: forall world
 	-> world 			-- ^ The initial world.
 	-> (world -> IO Picture)	-- ^ An action to convert the world a picture.
 	-> (Event -> world -> world)	-- ^ A function to handle input events.
-	-> (Float -> world -> world)   	-- ^ A function to step the world one iteration.
+	-> (Float -> world -> IO world) -- ^ A function to step the world one iteration.
 					--   It is passed the period of time (in seconds) needing to be advanced.
 	-> IO ()
 playIO = playWithBackendIO defaultBackendState
@@ -79,7 +79,7 @@ playWithBackend
 	worldToPicture
 	worldHandleEvent
 	worldAdvance
- = playWithBackendIO backend display backgroundColor simResolution worldStart (return . worldToPicture) worldHandleEvent worldAdvance
+ = playWithBackendIO backend display backgroundColor simResolution worldStart (return . worldToPicture) worldHandleEvent (\f w -> return (worldAdvance f w))
 
 playWithBackendIO
 	:: forall world a
@@ -91,7 +91,7 @@ playWithBackendIO
 	-> world 			-- ^ The initial world.
 	-> (world -> IO Picture)	-- ^ A function to convert the world to a picture.
 	-> (Event -> world -> world)	-- ^ A function to handle input events.
-	-> (Float -> world -> world)   	-- ^ A function to step the world one iteration.
+	-> (Float -> world -> IO world)	-- ^ A function to step the world one iteration.
 					--   It is passed the period of time (in seconds) needing to be advanced.
 	-> IO ()
 
