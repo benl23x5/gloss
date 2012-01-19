@@ -2,7 +2,9 @@
 
 module Graphics.Gloss.Internals.Interface.Simulate
 	( simulate
-	, simulateWithBackend)
+	, simulateWithBackend
+        , simulateIO
+        , simulateWithBackendIO)
 where
 import Graphics.Gloss.Data.Display
 import Graphics.Gloss.Data.Color
@@ -45,6 +47,18 @@ simulate :: forall model
 
 simulate = simulateWithBackend defaultBackendState
 
+simulateIO :: forall model
+        .  Display                      -- ^ Display mode.
+	-> Color			-- ^ Background color.
+	-> Int				-- ^ Number of simulation steps to take for each second of real time.
+	-> model 			-- ^ The initial model.
+	-> (model -> IO Picture)	-- ^ A function to convert the model to a picture.
+	-> (ViewPort -> Float -> model -> model) -- ^ A function to step the model one iteration. It is passed the 
+						 --	current viewport and the amount of time for this simulation
+						 --     step (in seconds).
+	-> IO ()
+simulateIO = simulateWithBackendIO defaultBackendState
+
 simulateWithBackend
 	:: forall model a
 	.  Backend a
@@ -58,8 +72,31 @@ simulateWithBackend
 						 --	current viewport and the amount of time for this simulation
 						 --     step (in seconds).
 	-> IO ()
-
 simulateWithBackend
+	backend
+        display
+	backgroundColor
+	simResolution
+	worldStart
+	worldToPicture
+	worldAdvance
+ = simulateWithBackendIO backend display backgroundColor simResolution worldStart (return . worldToPicture) worldAdvance
+
+simulateWithBackendIO
+	:: forall model a
+	.  Backend a
+	=> a				-- ^ Initial state of the backend
+        -> Display                      -- ^ Display mode.
+	-> Color			-- ^ Background color.
+	-> Int				-- ^ Number of simulation steps to take for each second of real time.
+	-> model 			-- ^ The initial model.
+	-> (model -> IO Picture)	 	-- ^ A function to convert the model to a picture.
+	-> (ViewPort -> Float -> model -> model) -- ^ A function to step the model one iteration. It is passed the
+						 --	current viewport and the amount of time for this simulation
+						 --     step (in seconds).
+	-> IO ()
+
+simulateWithBackendIO
 	backend
         display
 	backgroundColor
@@ -87,7 +124,7 @@ simulateWithBackend
 	     = do
 		-- convert the world to a picture
 		world		<- readIORef worldSR
-		let picture	= worldToPicture world
+		picture	        <- worldToPicture world
 	
 		-- display the picture in the current view
 		renderS		<- readIORef renderSR

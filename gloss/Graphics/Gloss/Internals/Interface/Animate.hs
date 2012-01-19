@@ -1,7 +1,9 @@
 
 module Graphics.Gloss.Internals.Interface.Animate
 	( animate
-	, animateWithBackend)
+	, animateWithBackend
+        , animateIO
+        , animateWithBackendIO)
 where	
 import Graphics.Gloss.Data.Color
 import Graphics.Gloss.Data.Picture
@@ -37,6 +39,12 @@ animate :: Display              -- ^ Display mode.
 
 animate = animateWithBackend defaultBackendState
 
+animateIO :: Display             -- ^ Display mode.
+	-> Color                 -- ^ Background color.
+	-> (Float -> IO Picture) -- ^ Action to produce the next frame of animation. 
+                                 --   It is passed the time in seconds since the program started.
+	-> IO ()
+animateIO = animateWithBackendIO defaultBackendState
 
 animateWithBackend
 	:: Backend a
@@ -48,6 +56,18 @@ animateWithBackend
 	-> IO ()
 
 animateWithBackend backend display backColor frameFun
+ = animateWithBackendIO backend display backColor (return . frameFun)
+
+animateWithBackendIO
+	:: Backend a
+	=> a                     -- ^ Initial State of the backend
+        -> Display               -- ^ Display mode.
+	-> Color                 -- ^ Background color.
+	-> (Float -> IO Picture) -- ^ Function to produce the next frame of animation.
+                                 --     It is passed the time in seconds since the program started.
+	-> IO ()
+
+animateWithBackendIO backend display backColor frameOp
  = do	
         -- 
 	viewSR		<- newIORef viewPortInit
@@ -58,10 +78,10 @@ animateWithBackend backend display backColor frameFun
 
  	let displayFun backendRef = do
 		-- extract the current time from the state
-  	 	timeS		<- animateSR `getsIORef` AN.stateAnimateTime
+		timeS		<- animateSR `getsIORef` AN.stateAnimateTime
 
-		-- call the user function to get the animation frame
-		let picture	= frameFun (double2Float timeS)
+		-- call the user action to get the animation frame
+		picture		<- frameOp (double2Float timeS)
 
 		renderS		<- readIORef renderSR
 		viewS		<- readIORef viewSR

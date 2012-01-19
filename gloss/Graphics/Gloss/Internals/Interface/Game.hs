@@ -43,6 +43,19 @@ play    :: forall world
 
 play    = playWithBackend defaultBackendState
 
+-- | Play a game in a window, using IO actions to build the pictures. 
+playIO  :: forall world
+        .  Display                      -- ^ Display mode.
+        -> Color                        -- ^ Background color.
+	-> Int				-- ^ Number of simulation steps to take for each second of real time.
+	-> world 			-- ^ The initial world.
+	-> (world -> IO Picture)	-- ^ An action to convert the world a picture.
+	-> (Event -> world -> world)	-- ^ A function to handle input events.
+	-> (Float -> world -> world)   	-- ^ A function to step the world one iteration.
+					--   It is passed the period of time (in seconds) needing to be advanced.
+	-> IO ()
+playIO = playWithBackendIO defaultBackendState
+
 playWithBackend
 	:: forall world a
 	.  Backend a
@@ -51,13 +64,38 @@ playWithBackend
 	-> Color			-- ^ Background color.
 	-> Int				-- ^ Number of simulation steps to take for each second of real time.
 	-> world 			-- ^ The initial world.
-	-> (world -> Picture)	 	-- ^ A function to convert the world a picture.
+	-> (world -> Picture)	 	-- ^ A function to convert the world to a picture.
 	-> (Event -> world -> world)	-- ^ A function to handle input events.
 	-> (Float -> world -> world)   	-- ^ A function to step the world one iteration.
 					--   It is passed the period of time (in seconds) needing to be advanced.
 	-> IO ()
 
 playWithBackend
+	backend
+        display
+	backgroundColor
+	simResolution
+	worldStart
+	worldToPicture
+	worldHandleEvent
+	worldAdvance
+ = playWithBackendIO backend display backgroundColor simResolution worldStart (return . worldToPicture) worldHandleEvent worldAdvance
+
+playWithBackendIO
+	:: forall world a
+	.  Backend a
+	=> a				-- ^ Initial state of the backend
+        -> Display                      -- ^ Display mode.
+	-> Color			-- ^ Background color.
+	-> Int				-- ^ Number of simulation steps to take for each second of real time.
+	-> world 			-- ^ The initial world.
+	-> (world -> IO Picture)	-- ^ A function to convert the world to a picture.
+	-> (Event -> world -> world)	-- ^ A function to handle input events.
+	-> (Float -> world -> world)   	-- ^ A function to step the world one iteration.
+					--   It is passed the period of time (in seconds) needing to be advanced.
+	-> IO ()
+
+playWithBackendIO
 	backend
         display
 	backgroundColor
@@ -85,7 +123,7 @@ playWithBackend
 	     = do
 		-- convert the world to a picture
 		world		<- readIORef worldSR
-		let picture	= worldToPicture world
+		picture		<- worldToPicture world
 	
 		-- display the picture in the current view
 		renderS		<- readIORef renderSR
