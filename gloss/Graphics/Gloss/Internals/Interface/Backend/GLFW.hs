@@ -12,7 +12,7 @@ import Graphics.Gloss.Data.Display
 import Graphics.UI.GLFW                    (WindowValue(..))
 import qualified Graphics.UI.GLFW          as GLFW
 import qualified Graphics.Rendering.OpenGL as GL
-
+import qualified Control.Excpetion         as X
 
 -- [Note: FreeGlut]
 -- ~~~~~~~~~~~~~~~~
@@ -434,9 +434,19 @@ runMainLoopGLFW
         -> IO ()
 
 runMainLoopGLFW stateRef 
- = do   windowIsOpen <- GLFW.windowIsOpen
-        when windowIsOpen 
-         $ do   dirty <- fmap dirtyScreen $ readIORef stateRef
+ = X.catch go recover
+ where
+ recover :: SomeException -> IO ()x
+ recover = do
+#ifdef linux_HOST_OS
+-- See [Note: FreeGlut] for why we need this.
+        GLUT.exit
+#endif
+        return True 
+ go :: IO ()
+ go = do windowIsOpen <- GLFW.windowIsOpen
+         when windowIsOpen 
+          $ do  dirty <- fmap dirtyScreen $ readIORef stateRef
 
                 when dirty
                  $ do   s <- readIORef stateRef
