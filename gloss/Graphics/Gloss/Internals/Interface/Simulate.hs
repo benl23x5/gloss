@@ -1,10 +1,7 @@
 {-# LANGUAGE RankNTypes #-}
 
 module Graphics.Gloss.Internals.Interface.Simulate
-	( simulate
-	, simulateWithBackend
-        , simulateIO
-        , simulateWithBackendIO)
+	(simulateWithBackendIO)
 where
 import Graphics.Gloss.Data.Display
 import Graphics.Gloss.Data.Color
@@ -28,59 +25,6 @@ import qualified Graphics.Gloss.Internals.Render.State	        		as RS
 import Data.IORef
 import System.Mem
 
--- | Run a finite-time-step simulation in a window. You decide how the model is represented,
---	how to convert the model to a picture, and how to advance the model for each unit of time. 
---	This function does the rest.
---
---   Once the window is open you can use the same commands as with @display@.
---
-simulate :: forall model
-        .  Display                      -- ^ Display mode.
-	-> Color			-- ^ Background color.
-	-> Int				-- ^ Number of simulation steps to take for each second of real time.
-	-> model 			-- ^ The initial model.
-	-> (model -> Picture)	 	-- ^ A function to convert the model to a picture.
-	-> (ViewPort -> Float -> model -> model) -- ^ A function to step the model one iteration. It is passed the 
-						 --	current viewport and the amount of time for this simulation
-						 --     step (in seconds).
-	-> IO ()
-
-simulate = simulateWithBackend defaultBackendState
-
-simulateIO :: forall model
-        .  Display                      -- ^ Display mode.
-	-> Color			-- ^ Background color.
-	-> Int				-- ^ Number of simulation steps to take for each second of real time.
-	-> model 			-- ^ The initial model.
-	-> (model -> IO Picture)	-- ^ A function to convert the model to a picture.
-	-> (ViewPort -> Float -> model -> IO model) -- ^ A function to step the model one iteration. It is passed the 
-						 --	current viewport and the amount of time for this simulation
-						 --     step (in seconds).
-	-> IO ()
-simulateIO = simulateWithBackendIO defaultBackendState
-
-simulateWithBackend
-	:: forall model a
-	.  Backend a
-	=> a				-- ^ Initial state of the backend
-        -> Display                      -- ^ Display mode.
-	-> Color			-- ^ Background color.
-	-> Int				-- ^ Number of simulation steps to take for each second of real time.
-	-> model 			-- ^ The initial model.
-	-> (model -> Picture)	 	-- ^ A function to convert the model to a picture.
-	-> (ViewPort -> Float -> model -> model) -- ^ A function to step the model one iteration. It is passed the
-						 --	current viewport and the amount of time for this simulation
-						 --     step (in seconds).
-	-> IO ()
-simulateWithBackend
-	backend
-        display
-	backgroundColor
-	simResolution
-	worldStart
-	worldToPicture
-	worldAdvance
- = simulateWithBackendIO backend display backgroundColor simResolution worldStart (return . worldToPicture) (\v f m -> return $ worldAdvance v f m)
 
 simulateWithBackendIO
 	:: forall model a

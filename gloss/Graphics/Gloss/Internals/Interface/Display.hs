@@ -1,7 +1,6 @@
 
 module Graphics.Gloss.Internals.Interface.Display
-	( display
-	, displayWithBackend)
+	(displayWithBackend)
 where	
 import Graphics.Gloss.Data.Color
 import Graphics.Gloss.Data.Picture
@@ -19,25 +18,6 @@ import qualified Graphics.Gloss.Internals.Interface.ViewPort.ControlState	as VPC
 import qualified Graphics.Gloss.Internals.Interface.Callback			as Callback
 
 import Data.IORef
-
--- | Open a new window and display the given picture.
---
---   Use the following commands once the window is open:
---
--- 	* Quit - esc-key.
---
---	* Move Viewport - left-click drag, arrow keys.
---
---	* Rotate Viewport - right-click drag, control-left-click drag, or home\/end-keys.
---
---	* Zoom Viewport - mouse wheel, or page up\/down-keys.
---
-display :: Display          -- ^ Display mode.
-	-> Color            -- ^ Background color.
-	-> Picture          -- ^ The picture to draw.
-	-> IO ()
-
-display = displayWithBackend defaultBackendState
 
 
 displayWithBackend

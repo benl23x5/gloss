@@ -128,7 +128,7 @@ renderArcStrip (F# posX) (F# posY) steps r a1 a2 width
         
         !dt             = tStep `divideFloat#` 2.0#
         
-   in	GL.renderPrimitive GL.TriangleStrip
+   in	GL.renderPrimitive GL.LineStrip
    	 $ do    -- start vector
                  addPointOnCircle posX posY r2 tStart
 

@@ -59,10 +59,13 @@ Library
         Graphics.Gloss.Data.Color
         Graphics.Gloss.Data.Picture
         Graphics.Gloss.Algorithms.RayCast
-        Graphics.Gloss.Interface.Display
-        Graphics.Gloss.Interface.Animate
-        Graphics.Gloss.Interface.Simulate
-        Graphics.Gloss.Interface.Game
+        Graphics.Gloss.Interface.Pure.Display
+        Graphics.Gloss.Interface.Pure.Animate
+        Graphics.Gloss.Interface.Pure.Simulate
+        Graphics.Gloss.Interface.Pure.Game
+        Graphics.Gloss.Interface.IO.Animate
+        Graphics.Gloss.Interface.IO.Simulate
+        Graphics.Gloss.Interface.IO.Game
 
   Other-modules:
         Graphics.Gloss.Internals.Color

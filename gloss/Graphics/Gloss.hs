@@ -71,7 +71,7 @@ where
 import Graphics.Gloss.Data.Display
 import Graphics.Gloss.Data.Picture
 import Graphics.Gloss.Data.Color
-import Graphics.Gloss.Internals.Interface.Display
-import Graphics.Gloss.Internals.Interface.Animate
-import Graphics.Gloss.Internals.Interface.Simulate
-import Graphics.Gloss.Internals.Interface.Game
+import Graphics.Gloss.Interface.Pure.Display
+import Graphics.Gloss.Interface.Pure.Animate
+import Graphics.Gloss.Interface.Pure.Simulate
+import Graphics.Gloss.Interface.Pure.Game

@@ -1,9 +1,6 @@
 
 module Graphics.Gloss.Internals.Interface.Animate
-	( animate
-	, animateWithBackend
-        , animateIO
-        , animateWithBackendIO)
+	(animateWithBackendIO)
 where	
 import Graphics.Gloss.Data.Color
 import Graphics.Gloss.Data.Picture
@@ -21,42 +18,10 @@ import qualified Graphics.Gloss.Internals.Render.State	        		as RS
 import qualified Graphics.Gloss.Internals.Interface.ViewPort.ControlState	as VPC
 import qualified Graphics.Gloss.Internals.Interface.Animate.State		as AN
 import qualified Graphics.Gloss.Internals.Interface.Callback			as Callback
-
 import Data.IORef
 import Control.Monad
 import System.Mem
 import GHC.Float (double2Float)
-
--- | Open a new window and display the given animation.
---
---   Once the window is open you can use the same commands as with @display@.
---
-animate :: Display              -- ^ Display mode.
-	-> Color		-- ^ Background color.
-	-> (Float -> Picture)	-- ^ Function to produce the next frame of animation. 
-				--	It is passed the time in seconds since the program started.
-	-> IO ()
-
-animate = animateWithBackend defaultBackendState
-
-animateIO :: Display             -- ^ Display mode.
-	-> Color                 -- ^ Background color.
-	-> (Float -> IO Picture) -- ^ Action to produce the next frame of animation. 
-                                 --   It is passed the time in seconds since the program started.
-	-> IO ()
-animateIO = animateWithBackendIO defaultBackendState
-
-animateWithBackend
-	:: Backend a
-	=> a			-- ^ Initial State of the backend
-        -> Display              -- ^ Display mode.
-	-> Color		-- ^ Background color.
-	-> (Float -> Picture)	-- ^ Function to produce the next frame of animation.
-				--	It is passed the time in seconds since the program started.
-	-> IO ()
-
-animateWithBackend backend display backColor frameFun
- = animateWithBackendIO backend display backColor (return . frameFun)
 
 animateWithBackendIO
 	:: Backend a
