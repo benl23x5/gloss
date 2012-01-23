@@ -39,6 +39,8 @@
 --   * Increased frame rate cap to 100hz.
 --   Thanks to Doug Burke
 --   * Primitives for drawing arcs and sectors.
+--   Thanks to Thomas DuBuisson
+--   * IO versions of animate, simplate and play.
 --
 -- For 1.6.0:
 --   Thanks to Anthony Cowley
