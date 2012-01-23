@@ -1,7 +1,7 @@
 {-# LANGUAGE PatternGuards #-}
 -- | Simple picture drawing application. 
 --   Like MSPaint, but you can only draw lines.
-import Graphics.Gloss.Interface.Game
+import Graphics.Gloss.Interface.Pure.Game
 import Graphics.Gloss
 import Data.Maybe (maybe)
 import Debug.Trace

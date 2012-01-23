@@ -3,7 +3,6 @@ module Main where
 import World
 import Cell
 import Graphics.Gloss
-import Graphics.Gloss.Interface.Simulate
 import qualified Data.Vector	as Vec
 
 main :: IO ()

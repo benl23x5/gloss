@@ -1,7 +1,7 @@
 module World where
 
 import Graphics.Gloss
-import Graphics.Gloss.Interface.Simulate
+import Graphics.Gloss.Interface.Pure.Simulate
 import System.Random
 import Community
 import Cell

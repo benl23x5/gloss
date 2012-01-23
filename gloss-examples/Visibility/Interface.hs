@@ -4,7 +4,7 @@ module Interface
 	, stepState)
 where
 import State
-import qualified Graphics.Gloss.Interface.Game	as G
+import qualified Graphics.Gloss.Interface.Pure.Game	as G
 
 -- Input ------------------------------------------------------------------------------------------
 -- | Handle an input event.

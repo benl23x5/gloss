@@ -26,7 +26,7 @@ Executable gloss-bitmap
         bmp            == 1.2.*
   Main-is: Main.hs
   hs-source-dirs: Bitmap
-  ghc-options: -O2
+  ghc-options: -threaded -O2
 
 
 Executable gloss-boids
@@ -36,7 +36,7 @@ Executable gloss-boids
   Main-is: Main.hs
   other-modules: KDTree2d Vec2
   hs-source-dirs: Boids
-  ghc-options: -O2
+  ghc-options: -threaded -O2
 
 
 Executable gloss-clock
@@ -44,7 +44,7 @@ Executable gloss-clock
         base            == 4.*,
         gloss           == 1.7.*
   Main-is: Clock/Main.hs
-  ghc-options: -O2
+  ghc-options: -threaded -O2
 
 
 Executable gloss-conway
@@ -55,7 +55,7 @@ Executable gloss-conway
   Main-is: Main.hs
   other-modules: Cell World
   hs-source-dirs: Conway
-  ghc-options: -O2
+  ghc-options: -threaded -O2
 
 
 Executable gloss-draw
@@ -64,7 +64,7 @@ Executable gloss-draw
         gloss          == 1.7.*
   Main-is: Main.hs
   hs-source-dirs: Draw
-  ghc-options: -O2
+  ghc-options: -threaded -O2
 
 
 Executable gloss-easy
@@ -72,7 +72,7 @@ Executable gloss-easy
         base            == 4.*,
         gloss           == 1.7.*
   Main-is: Easy/Main.hs
-  ghc-options: -O2
+  ghc-options: -threaded -O2
 
 
 Executable gloss-eden
@@ -83,7 +83,7 @@ Executable gloss-eden
   Main-is: Main.hs
   other-modules: Cell Community World
   hs-source-dirs: Eden
-  ghc-options: -O2
+  ghc-options: -threaded -O2
 
 
 Executable gloss-flake
@@ -91,7 +91,7 @@ Executable gloss-flake
         base            == 4.*,
         gloss           == 1.7.*
   Main-is: Flake/Main.hs
-  ghc-options: -O2
+  ghc-options: -threaded -O2
 
 
 Executable gloss-gameevent
@@ -100,7 +100,7 @@ Executable gloss-gameevent
         gloss           == 1.7.*
   Main-is: Main.hs
   hs-source-dirs: GameEvent
-  ghc-options: -O2
+  ghc-options: -threaded -O2
 
 
 Executable gloss-hello
@@ -108,7 +108,7 @@ Executable gloss-hello
         base            == 4.*, 
         gloss           == 1.7.*
   Main-is: Hello/Main.hs
-  ghc-options: -O2
+  ghc-options: -threaded -O2
 
 
 Executable gloss-lifespan
@@ -119,7 +119,7 @@ Executable gloss-lifespan
   Main-is: Main.hs
   other-modules: Cell Community World
   hs-source-dirs: Lifespan
-  ghc-options: -O2
+  ghc-options: -threaded -O2
 
 
 Executable gloss-machina
@@ -127,7 +127,7 @@ Executable gloss-machina
         base            == 4.*, 
         gloss           == 1.7.*
   Main-is: Machina/Main.hs
-  ghc-options: -O2
+  ghc-options: -threaded -O2
 
 
 Executable gloss-occlusion
@@ -137,7 +137,7 @@ Executable gloss-occlusion
   Main-is: Main.hs
   other-modules: Cell World State Data
   hs-source-dirs: Occlusion
-  ghc-options: -O2
+  ghc-options: -threaded -O2
 
 
 Executable gloss-styrene
@@ -149,7 +149,7 @@ Executable gloss-styrene
   Main-is: Main.hs
   other-modules: Actor Advance Collide Config Contact QuadTree World
   hs-source-dirs: Styrene
-  ghc-options: -O2
+  ghc-options: -threaded -O2
 
 
 Executable gloss-tree
@@ -157,7 +157,7 @@ Executable gloss-tree
         base            == 4.*, 
         gloss           == 1.7.*
   Main-is: Tree/Main.hs
-  ghc-options: -O2
+  ghc-options: -threaded -O2
 
 
 Executable gloss-visibility
@@ -168,7 +168,7 @@ Executable gloss-visibility
   Main-is: Main.hs
   other-modules: Draw Interface State World Geometry.Randomish Geometry.Segment
   hs-source-dirs: Visibility 
-  ghc-options: -O2
+  ghc-options: -threaded -O2
 
 
 Executable gloss-zen
@@ -176,6 +176,6 @@ Executable gloss-zen
         base            == 4.*, 
         gloss           == 1.7.*
   Main-is: Zen/Main.hs
-  ghc-options: -O2
+  ghc-options: -threaded -O2
 
 

@@ -15,7 +15,7 @@ import Interface
 import Draw
 import State
 import World
-import Graphics.Gloss.Interface.Game
+import Graphics.Gloss.Interface.Pure.Game
 
 main :: IO ()
 main

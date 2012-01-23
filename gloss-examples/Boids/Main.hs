@@ -11,7 +11,7 @@ import System.IO.Unsafe
 import Debug.Trace
 import Graphics.Gloss
 import Graphics.Gloss.Data.Picture
-import Graphics.Gloss.Interface.Simulate
+import Graphics.Gloss.Interface.Pure.Simulate
 
 
 -- Parameters -----------------------------------------------------------------

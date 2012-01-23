@@ -9,7 +9,7 @@ import Config
 
 import Graphics.Gloss
 import Graphics.Gloss.Geometry
-import Graphics.Gloss.Interface.Simulate
+import Graphics.Gloss.Interface.Pure.Simulate
 import Graphics.Gloss.Data.Vector
 
 import qualified Data.Map	as Map

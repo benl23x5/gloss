@@ -10,7 +10,7 @@ import Actor
 import Config
 
 import Graphics.Gloss.Geometry
-import Graphics.Gloss.Interface.Simulate
+import Graphics.Gloss.Interface.Pure.Simulate
 import Graphics.Gloss.Data.Point
 import Graphics.Gloss.Data.Vector
 

@@ -5,7 +5,7 @@ import Cell
 import System.Random
 import Control.Monad
 import Graphics.Gloss
-import Graphics.Gloss.Interface.Simulate
+import Graphics.Gloss.Interface.Pure.Simulate
 import qualified Data.Vector	as Vec
 type Vec	= Vec.Vector
 

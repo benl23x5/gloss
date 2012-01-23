@@ -3,7 +3,7 @@
 module Main where
 import World
 import Graphics.Gloss
-import Graphics.Gloss.Interface.Simulate
+import Graphics.Gloss.Interface.Pure.Simulate
 import System.Random
 
 -- varying prng sequence
