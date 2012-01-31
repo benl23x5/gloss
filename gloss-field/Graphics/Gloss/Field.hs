@@ -4,8 +4,8 @@ module Graphics.Gloss.Field
         , playField)
 where
 import Graphics.Gloss.Data.Display
-import Graphics.Gloss.Interface.Game
-import Graphics.Gloss.Interface.Animate
+import Graphics.Gloss.Interface.Pure.Game
+import Graphics.Gloss.Interface.Pure.Animate
 import Data.Array.Repa                  as R
 import Data.Array.Repa.Repr.ForeignPtr  as R
 import Data.Word
