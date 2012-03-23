@@ -39,8 +39,8 @@ Library
         ghc-prim   == 0.2.*,
         containers >= 0.3.0 && < 0.5.0,
         bytestring == 0.9.*,
-        OpenGL     == 2.4.*,
-        GLUT       == 2.2.*,
+        OpenGL     == 2.5.*,
+        GLUT       == 2.3.*,
         bmp        == 1.2.*
 
   ghc-options:      -O2 -Wall
