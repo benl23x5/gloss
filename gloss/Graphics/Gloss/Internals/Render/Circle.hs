@@ -119,25 +119,47 @@ renderArcLine (F# posX) (F# posY) steps (F# rad) a1 a2
 renderArcStrip :: Float -> Float -> Int -> Float -> Float -> Float -> Float -> IO ()
 renderArcStrip (F# posX) (F# posY) steps r a1 a2 width
  = let	n		= fromIntegral steps
- 	!(F# tStep)	= (2 * pi) / n
+        tStep           = (2 * pi) / n
 
-        !(F# tStart)    = degToRad a1
-	!(F# tStop)	= degToRad a2 + if a1 >= a2 then 2 * pi else 0
-	!(F# r1)	= r - width / 2
-	!(F# r2)	= r + width / 2
-        
-        !dt             = tStep `divideFloat#` 2.0#
-        
-   in	GL.renderPrimitive GL.LineStrip
-   	 $ do    -- start vector
-                 addPointOnCircle posX posY r2 tStart
+        t1              = normaliseAngle $ degToRad a1
+        t2              = normaliseAngle $ degToRad a2
+        (tStart, tStop) = if t1 <= t2 then (t1, t2) else (t2, t1)
+        tDiff           = tStop - tStart
+        tMid            = tStart + tDiff / 2
 
-                 renderCircleStrip_step posX posY tStep tStop r1 tStart r2
-                    (tStart `plusFloat#` dt)
+ 	!(F# tStep')	= tStep
+        !(F# tStep2')   = tStep / 2
+        !(F# tStart')   = tStart
+        !(F# tStop')    = tStop
+        !(F# tCut')     = tStop - tStep
+        !(F# tMid')     = tMid
+	!(F# r1')	= r - width / 2
+	!(F# r2')	= r + width / 2
+                
+   in	GL.renderPrimitive GL.TriangleStrip
+   	 $ do  
+                 -- start vector
+                 addPointOnCircle posX posY r1' tStart'
+                 addPointOnCircle posX posY r2' tStart'
 
-                 -- end vectors
-                 addPointOnCircle posX posY r1 tStop
-                 addPointOnCircle posX posY r2 tStop
+                 -- If we don't have a complete step then just drop a point
+                 -- between the two ending lines.
+                 if tDiff < tStep
+                   then do
+                        addPointOnCircle posX posY r1' tMid'
+
+                        -- end vectors
+                        addPointOnCircle posX posY r2' tStop'
+                        addPointOnCircle posX posY r1' tStop'
+
+
+                   else do
+                        renderCircleStrip_step posX posY tStep' tCut' r1' tStart' r2'
+                                (tStart' `plusFloat#` tStep2')
+
+                        -- end vectors
+                        addPointOnCircle posX posY r1' tStop'
+                        addPointOnCircle posX posY r2' tStop'
 {-# INLINE renderArcStrip #-}
 
 
