@@ -38,5 +38,5 @@ play    display backColor simResolution
         display backColor simResolution
         worldStart 
         (return . worldToPicture)
-        (\event world -> worldHandleEvent event world)
+        (\event world -> return $ worldHandleEvent event world)
         (\time  world -> return $ worldAdvance     time  world)

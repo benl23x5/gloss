@@ -38,7 +38,7 @@ playWithBackendIO
 	-> Int				-- ^ Number of simulation steps to take for each second of real time.
 	-> world 			-- ^ The initial world.
 	-> (world -> IO Picture)	-- ^ A function to convert the world to a picture.
-	-> (Event -> world -> world)	-- ^ A function to handle input events.
+	-> (Event -> world -> IO world)	-- ^ A function to handle input events.
 	-> (Float -> world -> IO world)	-- ^ A function to step the world one iteration.
 					--   It is passed the period of time (in seconds) needing to be advanced.
 	-> IO ()
@@ -106,7 +106,7 @@ playWithBackendIO
 callback_keyMouse 
 	:: IORef world	 		-- ^ ref to world state
 	-> IORef ViewPort
-	-> (Event -> world -> world)	-- ^ fn to handle input events
+	-> (Event -> world -> IO world)	-- ^ fn to handle input events
 	-> Callback
 
 callback_keyMouse worldRef viewRef eventFn
@@ -116,18 +116,20 @@ callback_keyMouse worldRef viewRef eventFn
 handle_keyMouse 
 	:: IORef a
 	-> t
-	-> (Event -> a -> a)
+	-> (Event -> a -> IO a)
 	-> KeyboardMouseCallback
 
 handle_keyMouse worldRef _ eventFn backendRef key keyState keyMods pos
- = do	pos' <- convertPoint backendRef pos
-	worldRef `modifyIORef` \world -> eventFn (EventKey key keyState keyMods pos') world
+ = do	pos'       <- convertPoint backendRef pos
+        world      <- readIORef worldRef
+        world'     <- eventFn (EventKey key keyState keyMods pos') world
+        writeIORef worldRef world'
 
 
 -- | Callback for Motion events.
 callback_motion
 	:: IORef world	 		-- ^ ref to world state
-	-> (Event -> world -> world)	-- ^ fn to handle input events
+	-> (Event -> world -> IO world)	-- ^ fn to handle input events
 	-> Callback
 
 callback_motion worldRef eventFn
@@ -136,12 +138,14 @@ callback_motion worldRef eventFn
 
 handle_motion 
 	:: IORef a
-	-> (Event -> a -> a)
+	-> (Event -> a -> IO a)
 	-> MotionCallback
 
 handle_motion worldRef eventFn backendRef pos
- = do pos' <- convertPoint backendRef pos
-      worldRef `modifyIORef` \world -> eventFn (EventMotion pos') world
+ = do   pos'     <- convertPoint backendRef pos
+        world    <- readIORef worldRef
+        world'   <- eventFn (EventMotion pos') world
+        writeIORef worldRef world'
 
 
 convertPoint ::

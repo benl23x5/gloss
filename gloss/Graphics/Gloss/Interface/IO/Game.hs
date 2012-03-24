@@ -23,7 +23,7 @@ playIO  :: forall world
         -> Int                          -- ^ Number of simulation steps to take for each second of real time.
         -> world                        -- ^ The initial world.
         -> (world -> IO Picture)        -- ^ An action to convert the world a picture.
-        -> (Event -> world -> world)    -- ^ A function to handle input events.
+        -> (Event -> world -> IO world) -- ^ A function to handle input events.
         -> (Float -> world -> IO world) -- ^ A function to step the world one iteration.
                                         --   It is passed the period of time (in seconds) needing to be advanced.
         -> IO ()
