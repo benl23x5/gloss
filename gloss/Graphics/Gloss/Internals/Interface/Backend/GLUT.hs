@@ -311,13 +311,13 @@ glutKeyToKey key
         GLUT.SpecialKey GLUT.KeyNumLock            -> SpecialKey KeyNumLock
         GLUT.SpecialKey GLUT.KeyBegin              -> SpecialKey KeyBegin
         GLUT.SpecialKey GLUT.KeyDelete             -> SpecialKey KeyDelete
+        GLUT.SpecialKey (GLUT.KeyUnknown _)        -> SpecialKey KeyUnknown
         GLUT.MouseButton GLUT.LeftButton           -> MouseButton LeftButton
         GLUT.MouseButton GLUT.MiddleButton         -> MouseButton MiddleButton
         GLUT.MouseButton GLUT.RightButton          -> MouseButton RightButton
         GLUT.MouseButton GLUT.WheelUp              -> MouseButton WheelUp
         GLUT.MouseButton GLUT.WheelDown            -> MouseButton WheelDown
         GLUT.MouseButton (GLUT.AdditionalButton i) -> MouseButton (AdditionalButton i)
-
 
 -- | Convert GLUTs key states to our internal ones.
 glutKeyStateToKeyState :: GLUT.KeyState -> KeyState
