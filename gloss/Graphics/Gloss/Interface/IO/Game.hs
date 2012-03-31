@@ -7,7 +7,7 @@ module Graphics.Gloss.Interface.IO.Game
         , module Graphics.Gloss.Data.Picture
         , module Graphics.Gloss.Data.Color
         , playIO
-        , Event(..), Key(..), SpecialKey(..), MouseButton(..))
+        , Event(..), Key(..), SpecialKey(..), MouseButton(..), KeyState(..), Modifiers(..))
 where
 import Graphics.Gloss.Data.Display
 import Graphics.Gloss.Data.Picture
