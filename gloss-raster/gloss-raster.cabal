@@ -23,12 +23,12 @@ Library
         base       == 4.*,
         ghc-prim   == 0.2.*,
         containers >= 0.3.0 && < 0.5.0,
-        gloss      == 1.7.0.*,
-        repa       == 3.0.0.*
+        gloss      == 1.7.*,
+        repa       == 3.0.*
 
   ghc-options:      -O2 -Wall
 
   Exposed-modules:
-        Graphics.Gloss.Field
+        Graphics.Gloss.Raster.Field
 
 

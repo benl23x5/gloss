@@ -1,6 +1,13 @@
 {-# LANGUAGE BangPatterns #-}
-module Graphics.Gloss.Raster 
-        ( animateField
+
+-- | Rendering of continuous 2D functions as raster fields.
+--
+--  Gloss programs should be compiled with @-threaded@, otherwise the GHC runtime
+--  will limit the frame-rate to around 20Hz.
+
+module Graphics.Gloss.Raster.Field
+        ( Display       (..)
+        , animateField
         , playField)
 where
 import Graphics.Gloss.Data.Display
@@ -10,14 +17,19 @@ import Data.Array.Repa                  as R
 import Data.Array.Repa.Repr.ForeignPtr  as R
 import Data.Word
 
--- TODO: add another version for a static picture
--- TODO: add another version that takes the viewport.
--- TODO: scale buffer size as window size changes.
+
 -- Animate --------------------------------------------------------------------
+-- | Animate a continuous 2D function.
 animateField
-        :: Display
-        -> (Int, Int)
-        -> (Float -> Point -> Color)
+        :: Display                      
+                -- ^ Display mode.
+        -> (Int, Int)                   
+                -- ^ Pixel multiplication.
+        -> (Float -> Point -> Color)    
+                -- ^ Function to compute the color at a particular point.
+                --
+                --   It is passed the time in seconds since the program started,
+                --   and a point between (-1, -1) and (+1, +1).
         -> IO ()
         
 animateField display (zoomX, zoomY) makePixel
@@ -28,16 +40,24 @@ animateField display (zoomX, zoomY) makePixel
 --  INLINE so the repa functions fuse with the users client functions.
 
 
-
 -- Play -----------------------------------------------------------------------
+-- | Play a game with a continous 2D function.
 playField 
-        :: Display
-        -> (Int, Int)
-        -> Int
-        -> world
-        -> (world -> Point -> Color)
-        -> (Event -> world -> world)
-        -> (Float -> world -> world)
+        :: Display                      
+                -- ^ Display mode.
+        -> (Int, Int)   
+                -- ^ Pixel multiplication.
+        -> Int  -- ^ Number of simulation steps to take
+                --   for each second of real time
+        -> world 
+                -- ^ The initial world.
+        -> (world -> Point -> Color)    
+                -- ^ Function to compute the color of the world at the given point.
+        -> (Event -> world -> world)    
+                -- ^ Function to handle input events.
+        -> (Float -> world -> world)    
+                -- ^ Function to step the world one iteration.
+                --   It is passed the time in seconds since the program started.
         -> IO ()
 playField !display (zoomX, zoomY) !stepRate !initWorld !makePixel !handleEvent !stepWorld
  = zoomX `seq` zoomY `seq`
@@ -52,6 +72,7 @@ playField !display (zoomX, zoomY) !stepRate !initWorld !makePixel !handleEvent !
            handleEvent
            stepWorld
 {-# INLINE playField #-}
+
 
 -- Frame ----------------------------------------------------------------------
 {-# INLINE sizeOfDisplay #-}
