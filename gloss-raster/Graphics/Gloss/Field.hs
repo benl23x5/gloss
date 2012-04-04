@@ -1,5 +1,5 @@
 {-# LANGUAGE BangPatterns #-}
-module Graphics.Gloss.Field 
+module Graphics.Gloss.Raster 
         ( animateField
         , playField)
 where
