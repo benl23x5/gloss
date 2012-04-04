@@ -5,7 +5,7 @@
 --   http://mainisusuallyafunction.blogspot.com/2011/10/quasicrystals-as-sums-of-waves-in-plane.html
 --
 {-# LANGUAGE BangPatterns #-}
-import Graphics.Gloss
+import Graphics.Gloss                   (Point, Color, rawColor)
 import Graphics.Gloss.Raster.Field
 import System.Environment
 
@@ -22,12 +22,7 @@ type Degree = Int
 -- | Feature size of visualisation.
 type Scale  = Float
 
--- | Size of image to render.
-type Size   = Int
-
--- | How many times to duplicate each pixel / image zoom.
-type Zoom   = Int
-
+-- | Time in seconds since the program started.
 type Time   = Float
 
 

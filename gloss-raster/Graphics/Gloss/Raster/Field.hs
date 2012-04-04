@@ -12,7 +12,7 @@ module Graphics.Gloss.Raster.Field
 where
 import Graphics.Gloss.Data.Display
 import Graphics.Gloss.Interface.Pure.Game
-import Graphics.Gloss.Interface.Pure.Animate
+import Graphics.Gloss.Interface.IO.Animate
 import Data.Array.Repa                  as R
 import Data.Array.Repa.Repr.ForeignPtr  as R
 import Data.Word
@@ -34,8 +34,12 @@ animateField
         
 animateField display (zoomX, zoomY) makePixel
  = let  (winSizeX, winSizeY) = sizeOfDisplay display
-   in   animate display black 
-                $ (\time -> makeFrame winSizeX winSizeY zoomX zoomY (makePixel time))
+
+        frame time
+                = return
+                $ makeFrame winSizeX winSizeY zoomX zoomY (makePixel time)
+
+   in   animateFixedIO display black frame
 {-# INLINE animateField #-}
 --  INLINE so the repa functions fuse with the users client functions.
 

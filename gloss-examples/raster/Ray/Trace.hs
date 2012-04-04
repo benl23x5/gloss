@@ -16,7 +16,7 @@ traceRay
         -> Int          -- maximum reflection count
         -> Color        -- visible color for this ray
         
-traceRay !objs !lights !ambient !orig@(Vec3 gX gY gZ) !dir !limit
+traceRay !objs !lights !ambient !(Vec3 gX gY gZ) !dir !limit
  = go gX gY gZ dir limit
  where 
        -- too many reflections,

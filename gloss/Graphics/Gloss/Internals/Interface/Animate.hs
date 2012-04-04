@@ -26,13 +26,14 @@ import GHC.Float (double2Float)
 animateWithBackendIO
 	:: Backend a
 	=> a                     -- ^ Initial State of the backend
+        -> Bool                  -- ^ Whether to allow the image to be panned around.
         -> Display               -- ^ Display mode.
 	-> Color                 -- ^ Background color.
 	-> (Float -> IO Picture) -- ^ Function to produce the next frame of animation.
                                  --     It is passed the time in seconds since the program started.
 	-> IO ()
 
-animateWithBackendIO backend display backColor frameOp
+animateWithBackendIO backend pannable display backColor frameOp
  = do	
         -- 
 	viewSR		<- newIORef viewPortInit
@@ -66,11 +67,14 @@ animateWithBackendIO backend display backColor frameOp
 		, Callback.Display	(animateEnd   animateSR)
 		, Callback.Idle		(\s -> postRedisplay s)
 		, callback_exit () 
-		, callback_viewPort_keyMouse viewSR viewControlSR 
 		, callback_viewPort_motion   viewSR viewControlSR 
 		, callback_viewPort_reshape ]
+ 
+             ++ (if pannable 
+                  then [callback_viewPort_keyMouse viewSR viewControlSR]
+                  else [])
 
-	createWindow backend display backColor callbacks
+        createWindow backend display backColor callbacks
 
 getsIORef :: IORef a -> (a -> r) -> IO r
 getsIORef ref fun

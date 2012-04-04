@@ -1,5 +1,5 @@
 Name:                gloss-examples
-Version:             1.7.1.1
+Version:             1.7.2.1
 License:             MIT
 License-file:        LICENSE
 Author:              Ben Lippmeier
@@ -190,8 +190,19 @@ Executable gloss-crystal
   Build-depends:
         base           == 4.*,
         gloss          == 1.7.*,
-        gloss-raster   == 1.7.*
+        gloss-raster   == 1.7.2.*
   Main-is:        Main.hs
   hs-source-dirs: raster/Crystal
-  ghc-options:    -threaded -O2
+  ghc-options:    -Wall -threaded -Odph -fllvm -optlo-O3 
+
+
+Executable gloss-ray
+  Build-depends:
+        base           == 4.*,
+        gloss          == 1.7.*,
+        gloss-raster   == 1.7.2.*
+  Main-is:        Main.hs
+  other-modules:  Light Object Trace Vec3 World
+  hs-source-dirs: raster/Ray
+  ghc-options:    -Wall -threaded -Odph -fllvm -optlo-O3 
 

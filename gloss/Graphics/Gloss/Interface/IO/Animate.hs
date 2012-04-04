@@ -4,7 +4,8 @@ module Graphics.Gloss.Interface.IO.Animate
         ( module Graphics.Gloss.Data.Display
         , module Graphics.Gloss.Data.Picture
         , module Graphics.Gloss.Data.Color
-        , animateIO)
+        , animateIO
+        , animateFixedIO)
 where
 import Graphics.Gloss.Data.Display
 import Graphics.Gloss.Data.Picture
@@ -17,7 +18,8 @@ import Graphics.Gloss.Internals.Interface.Backend
 --
 --   Once the window is open you can use the same commands as with @display@.
 --
-animateIO :: Display              -- ^ Display mode.
+animateIO 
+        :: Display                -- ^ Display mode.
         -> Color                  -- ^ Background color.
         -> (Float -> IO Picture)  -- ^ Function to produce the next frame of animation. 
                                   --      It is passed the time in seconds since the program started.
@@ -25,5 +27,23 @@ animateIO :: Display              -- ^ Display mode.
 
 animateIO display backColor frameFunIO
         = animateWithBackendIO 
-                defaultBackendState display backColor
+                defaultBackendState 
+                True              -- pannable
+                display backColor
+                frameFunIO
+
+
+-- | Like `animateIO` but don't allow the display to be panned around.
+--
+animateFixedIO
+        :: Display                -- ^ Display mode.
+        -> Color                  -- ^ Background color.
+        -> (Float -> IO Picture)  -- ^ Function to produce the next frame of animation. 
+                                  --      It is passed the time in seconds since the program started.
+        -> IO ()
+animateFixedIO display backColor frameFunIO
+        = animateWithBackendIO 
+                defaultBackendState 
+                False
+                display backColor
                 frameFunIO

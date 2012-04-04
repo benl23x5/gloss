@@ -12,7 +12,6 @@ module Object
         , shineOfObject)
 where
 import Vec3
-import Data.Maybe
 
 type Color      = Vec3
 
@@ -171,6 +170,7 @@ surfaceNormal obj point
     Plane      _ normal _ _ -> normal
     PlaneCheck _ normal _   -> normal
 {-# INLINE surfaceNormal #-}
+
 
 -- | Get the color of an object at the given point.
 colorOfObject :: Object -> Vec3 -> Color

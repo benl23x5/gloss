@@ -8,8 +8,6 @@ import Object
 import Light
 import Vec3
 
-type Time = Float
-
 
 -- | Lights in the world
 {-# NOINLINE makeLights #-}
@@ -51,16 +49,9 @@ makeObjects time =
                 (Vec3 1.0 1.0 1.0)
                 0.8
                 
-{-}
-        , Sphere
-                (Vec3 0 (1000100) 0) 1000000
-                (Vec3 1.0 1.0 1.0)
-                0.5 
--}
-
         , PlaneCheck
                 (Vec3 0.0 100.0 0.0)
                 (normaliseV3 (Vec3 0 (-1) (-0.2)))
-                0.6
+                0.2
 
         ]

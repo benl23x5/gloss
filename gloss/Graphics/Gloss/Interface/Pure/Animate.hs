@@ -25,5 +25,7 @@ animate :: Display              -- ^ Display mode.
 
 animate display backColor frameFun
         = animateWithBackendIO 
-                defaultBackendState display backColor
+                defaultBackendState
+                True            -- pannable
+                display backColor
                 (return . frameFun) 

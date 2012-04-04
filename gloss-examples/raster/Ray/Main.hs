@@ -1,27 +1,27 @@
-{-# LANGUAGE BangPatterns #-}
+{-# LANGUAGE BangPatterns, PatternGuards #-}
 import World
 import Trace
 import Light
 import Object
 import Vec3
 import System.Environment
-import qualified Graphics.Gloss                 as G
-import qualified Graphics.Gloss.Interface.Game  as G
-import qualified Graphics.Gloss.Field           as G
+import qualified Graphics.Gloss                         as G
+import qualified Graphics.Gloss.Interface.Pure.Game     as G
+import qualified Graphics.Gloss.Raster.Field            as G
 
 main :: IO ()
 main 
  = do   args    <- getArgs
         case args of
-         []     -> run 1440 600 3 100 4
+         []     -> run 800 600 4 100 4
 
          [sizeX, sizeY, zoom, fov, bounces]
                 -> run (read sizeX) (read sizeY) (read zoom) (read fov) (read bounces)
 
          _ -> putStr $ unlines
            [ "trace <sizeX::Int> <sizeY::Int> <zoom::Int> (fov::Int) (bounces::Int)"
-           , "    sizeX, sizeY - visualisation size        (default 1440, 600)"
-           , "    zoom         - pixel replication factor  (default 3)"
+           , "    sizeX, sizeY - visualisation size        (default 800, 600)"
+           , "    zoom         - pixel replication factor  (default 4)"
            , "    fov          - field of view             (default 100)"
            , "    bounces      - ray bounce limit          (default 4)"
            , ""
@@ -57,8 +57,8 @@ initState :: State
 initState
         = State
         { stateTime             = 0
-        , stateEyePos           = Vec3 50 (-100) (-600)
-        , stateEyeLoc           = Vec3 15 100 796
+        , stateEyePos           = Vec3 50    (-100) (-700)
+        , stateEyeLoc           = Vec3 (-50) 200   1296
 
         , stateLeftClick        = Nothing 
 
@@ -75,18 +75,18 @@ initState
         , stateLightsView       = makeLights  0 }
 
 
-{-# NOINLINE run #-}
 -- | Run the game.
 run :: Int -> Int -> Int -> Int -> Int -> IO ()                     
 run sizeX sizeY zoom fov bounces
  = G.playField 
-        (G.FullScreen (sizeX, sizeY))
+        (G.InWindow "Ray" (sizeX, sizeY) (10, 10))
         (zoom, zoom)
         100
         initState
         (tracePixel sizeX sizeY fov bounces)
         handleEvent
         advanceState
+{-# NOINLINE run #-}
 
 
 -- | Render a single pixel of the image.
@@ -113,7 +113,6 @@ tracePixel !sizeX !sizeY !fov !bounces !state (x, y)
 {-# INLINE tracePixel #-}
 
 
-{-# NOINLINE handleEvent #-}
 -- | Handle an event from the user interface.
 handleEvent :: G.Event -> State -> State
 handleEvent event state 
@@ -168,9 +167,9 @@ handleEvent event state
         
         | otherwise
         = state
+{-# NOINLINE handleEvent #-}
 
 
-{-# NOINLINE advanceState #-}
 -- | Advance the world forward in time.
 advanceState :: Float -> State -> State
 advanceState advTime state
@@ -191,9 +190,9 @@ advanceState advTime state
                         else id)
 
    in   setTime time' $ move state
+{-# NOINLINE advanceState #-}
 
 
-{-# NOINLINE setEyeLoc #-}
 -- | Set the location of the eye.
 setEyeLoc :: Vec3 -> State -> State
 setEyeLoc eyeLoc state
@@ -204,9 +203,9 @@ setEyeLoc eyeLoc state
         , stateObjectsView      = map (translateObject (stateEyeLoc state)) objects
         , stateLightsView       = map (translateLight  (stateEyeLoc state)) lights 
         }
+{-# NOINLINE setEyeLoc #-}
 
 
-{-# NOINLINE moveEyeLoc #-}
 moveEyeLoc :: Vec3 -> State -> State
 moveEyeLoc v state
  = let  objects = stateObjects state
@@ -217,8 +216,9 @@ moveEyeLoc v state
         , stateObjectsView      = map (translateObject eyeLoc) objects
         , stateLightsView       = map (translateLight  eyeLoc) lights
         }
+{-# NOINLINE moveEyeLoc #-}
 
-{-# NOINLINE setTime #-}
+
 -- | Set the time of the world.
 setTime   :: Float -> State -> State
 setTime time state
@@ -232,3 +232,4 @@ setTime time state
         , stateLights           = lights
         , stateLightsView       = map (translateLight  (stateEyeLoc state)) lights 
         }
+{-# NOINLINE setTime #-}
