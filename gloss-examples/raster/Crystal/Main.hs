@@ -5,9 +5,8 @@
 --   http://mainisusuallyafunction.blogspot.com/2011/10/quasicrystals-as-sums-of-waves-in-plane.html
 --
 {-# LANGUAGE BangPatterns #-}
-import qualified Data.Array.Repa                        as R
 import Graphics.Gloss
-import Graphics.Gloss.Field
+import Graphics.Gloss.Raster.Field
 import System.Environment
 
 -- Types ----------------------------------------------------------------------
@@ -91,24 +90,24 @@ main :: IO ()
 main 
  = do   args    <- getArgs
         case args of
-         []     -> run 360 225 3 30 5
+         []     -> run 800 600 5 30 5
 
          [sizeX, sizeY, zoom, scale, degree]
                 -> run (read sizeX) (read sizeY) (read zoom) (read scale) (read degree)
 
          _ -> putStr $ unlines
-           [ "quazicrystal <size::Int> <zoom::Int> <scale::Float> <degree::Int>"
-           , "    size    - visualisation size                  (default 200)"
-           , "    zoom    - pixel replication factor            (default 3)"
-           , "    scale   - feature size of visualisation       (default 30)"
-           , "    degree  - number waves to sum for each point  (default 5)" 
+           [ "quazicrystal <sizeX::Int> <sizeY::Int> <zoom::Int> <scale::Float> <degree::Int>"
+           , "    sizeX, sizeY - visualisation size                  (default 800, 600)"
+           , "    zoom         - pixel replication factor            (default 5)"
+           , "    scale        - feature size of visualisation       (default 30)"
+           , "    degree       - number waves to sum for each point  (default 5)" 
            , ""
            , " You'll want to run this with +RTS -N to enable threads" ]
    
 
 run :: Int -> Int -> Int -> Scale -> Degree -> IO ()                     
 run sizeX sizeY zoom scale degree
- = animateField (FullScreen (sizeX, sizeY)) 
+ = animateField (InWindow "Crystal" (sizeX, sizeY) (10, 10)) 
         (zoom, zoom)
         (quasicrystal scale degree)
 
