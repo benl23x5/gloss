@@ -17,7 +17,6 @@ Description:
 Synopsis:
         Examples using the gloss library
 
-
 Executable gloss-bitmap
   Build-depends:
         base           == 4.*,
@@ -183,7 +182,7 @@ Executable gloss-zen
         gloss           == 1.7.*
   Main-is:        Main.hs
   hs-source-dirs: picture/Zen
-  ghc-options:    -threaded -O2
+--  ghc-options:    -threaded -O2
 
 
 Executable gloss-crystal
@@ -193,7 +192,7 @@ Executable gloss-crystal
         gloss-raster   == 1.7.2.*
   Main-is:        Main.hs
   hs-source-dirs: raster/Crystal
-  ghc-options:    -Wall -threaded -Odph -fllvm -optlo-O3 
+  ghc-options:    -Wall -threaded -Odph -fno-liberate-case -fllvm -optlo-O3 -eventlog
 
 
 Executable gloss-ray
@@ -204,5 +203,29 @@ Executable gloss-ray
   Main-is:        Main.hs
   other-modules:  Light Object Trace Vec3 World
   hs-source-dirs: raster/Ray
-  ghc-options:    -Wall -threaded -Odph -fllvm -optlo-O3 
+  ghc-options:    -Wall -threaded -Odph -fno-liberate-case -fllvm -optlo-O3  -eventlog
+
+Executable gloss-pulse
+  Build-depends:
+        base           == 4.*,
+        gloss          == 1.7.*,
+        gloss-raster   == 1.7.2.*
+  Main-is:        Main.hs
+  hs-source-dirs: raster/Pulse
+  ghc-options:    -Wall -threaded -Odph -fno-liberate-case -fllvm -optlo-O3  -eventlog
+
+Executable gloss-wave
+  Build-depends:
+        base           == 4.*,
+        gloss          == 1.7.*,
+        gloss-raster   == 1.7.2.*,
+        vector         == 0.9.*,
+        ghc-prim
+  Main-is:        Main.hs
+  hs-source-dirs: raster/Wave
+  ghc-options:    -Wall -threaded -Odph -fno-liberate-case -fllvm -optlo-O3  -eventlog
+
+
+
+
 

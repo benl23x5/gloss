@@ -26,7 +26,7 @@ Library
         gloss      == 1.7.2.*,
         repa       == 3.0.*
 
-  ghc-options:      -O2 -Wall
+  ghc-options:      -Odph -fno-liberate-case -fllvm -optlo-O3
 
   Exposed-modules:
         Graphics.Gloss.Raster.Field

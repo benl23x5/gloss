@@ -4,7 +4,9 @@ module Graphics.Gloss.Data.Color
 	( 
 	-- ** Color data type
 	  Color
-	, makeColor, makeColor8
+	, makeColor
+        , makeColor'
+        , makeColor8
 	, rawColor
 	, rgbaOfColor
 
@@ -74,7 +76,15 @@ makeColor r g b a
 	= clampColor 
 	$ RGBA r g b a
 {-# INLINE makeColor #-}
-        
+
+
+-- | Make a custom color. 
+--   You promise that all components are clamped to the range [0..1]
+makeColor' :: Float -> Float -> Float -> Float -> Color
+makeColor' r g b a
+        = RGBA r g b a
+{-# INLINE makeColor' #-}
+
 
 -- | Make a custom color. All components are clamped to the range [0..255].
 makeColor8 

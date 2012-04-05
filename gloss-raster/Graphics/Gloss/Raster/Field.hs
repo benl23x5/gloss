@@ -1,4 +1,4 @@
-{-# LANGUAGE BangPatterns #-}
+{-# LANGUAGE BangPatterns, MagicHash, PatternGuards, ScopedTypeVariables #-}
 
 -- | Rendering of continuous 2D functions as raster fields.
 --
@@ -6,16 +6,52 @@
 --  will limit the frame-rate to around 20Hz.
 
 module Graphics.Gloss.Raster.Field
-        ( Display       (..)
+        ( -- * Color
+          module Graphics.Gloss.Data.Color
+        , rgb, rgb8, rgb8w
+
+          -- * Display functions
+        , Display       (..)
+        , Point
         , animateField
-        , playField)
+        , playField
+
+        , convertImage)
 where
+import Graphics.Gloss.Data.Color
+import Graphics.Gloss.Data.Picture
 import Graphics.Gloss.Data.Display
 import Graphics.Gloss.Interface.Pure.Game
 import Graphics.Gloss.Interface.IO.Animate
 import Data.Array.Repa                  as R
 import Data.Array.Repa.Repr.ForeignPtr  as R
 import Data.Word
+import System.IO.Unsafe
+import Unsafe.Coerce
+import Debug.Trace
+import Data.Bits
+
+-- Color ----------------------------------------------------------------------
+-- | Construct a color from red, green, blue components.
+--  
+--   Each component is clipped to the range [0..1]
+rgb  :: Float -> Float -> Float -> Color
+rgb r g b   = makeColor r g b 1.0
+{-# INLINE rgb #-}
+
+
+-- | Construct a color from red, green, blue components.
+--
+--   Each component is clipped to the range [0..255]
+rgb8 :: Int -> Int -> Int -> Color
+rgb8 r g b  = makeColor8 r g b 255
+{-# INLINE rgb8 #-}
+
+
+-- | Construct a color from red, green, blue components.
+rgb8w :: Word8 -> Word8 -> Word8 -> Color
+rgb8w r g b = makeColor8 (fromIntegral r) (fromIntegral g) (fromIntegral b) 255
+{-# INLINE rgb8w #-}
 
 
 -- Animate --------------------------------------------------------------------
@@ -35,7 +71,8 @@ animateField
 animateField display (zoomX, zoomY) makePixel
  = let  (winSizeX, winSizeY) = sizeOfDisplay display
 
-        frame time
+        {-# INLINE frame #-}
+        frame !time
                 = return
                 $ makeFrame winSizeX winSizeY zoomX zoomY (makePixel time)
 
@@ -87,11 +124,11 @@ sizeOfDisplay display
         FullScreen s    -> s
 
 {-# INLINE makeFrame #-}
-makeFrame :: Int -> Int -> Int -> Int -> (Point -> Color) -> Picture
+makeFrame 
+        :: Int -> Int -> Int -> Int 
+        -> (Point -> Color) -> Picture
 makeFrame !winSizeX !winSizeY !zoomX !zoomY !makePixel
- = picture
- where
-        -- Size of the raw image to render.
+ = let  -- Size of the raw image to render.
         sizeX = winSizeX `div` zoomX
         sizeY = winSizeY `div` zoomY
 
@@ -112,39 +149,61 @@ makeFrame !winSizeX !winSizeY !zoomX !zoomY !makePixel
         pixelOfIndex (Z :. y :. x)
          = let  x'      = fromIntegral (x - midX) / fsizeX2
                 y'      = fromIntegral (y - midY) / fsizeY2
-           in   (x', y')
-         
+           in   makePixel (x', y')
+        
+   in unsafePerformIO $ do
+
         -- Define the image, and extract out just the RGB color components.
         -- We don't need the alpha because we're only drawing one image.
-        arrRGB :: Array D DIM2 (Float, Float, Float)
-        arrRGB  = R.map (\c -> case rgbaOfColor c of 
-                                (r, g, b, _) -> (r, g, b))
-                $ R.fromFunction (Z :. sizeY  :. sizeX)
-                $ (makePixel . pixelOfIndex)
-         
-         -- Convert the RGB Float colors to a flat image.
-        arr8 :: Array F DIM2 Word8
-        arr8    = R.computeP
-                $ R.traverse
-                        arrRGB
-                        (\(Z :. height :. width) -> Z :. height :. width * 4)
-                        (\get (Z :. y :. x) 
-                         -> let (r, g, b)     = get (Z :. y :. x `div` 4)
-                            in  r `seq` g `seq` b `seq`
-                                case x `mod` 4 of
-                                  0 -> 255
-                                  1 -> word8OfFloat (b * 255)
-                                  2 -> word8OfFloat (g * 255)
-                                  3 -> word8OfFloat (r * 255)
-                                  _ -> 0)
+        traceEventIO "Gloss.Raster[makeFrame]: start frame evaluation."
+        (arrRGB :: Array U DIM2 (Word8, Word8, Word8))
+         <- now  $ R.computeUnboxedP
+                        $ R.map unpackColor 
+                        $ R.fromFunction (Z :. sizeY  :. sizeX)
+                        $ pixelOfIndex
 
+        traceEventIO "Gloss.Raster[makeFrame]: start image conversion."
+        -- Convert the RGB Float colors to a flat image.
+        (arr8   :: Array F DIM2 Word8)
+         <- now $ convertImage arrRGB
+
+        traceEventIO "Gloss.Raster[makeFrame]: done, returning picture."
         -- Wrap the ForeignPtr from the Array as a gloss picture.
-        picture = arr8 
-                `seq` Scale (fromIntegral zoomX) (fromIntegral zoomY)
-                    $ bitmapOfForeignPtr
-                        sizeX sizeY             -- raw image size
-                        (R.toForeignPtr arr8)   -- the image data.
-                        False                   -- don't cache this in texture memory.
+        let picture     = Scale (fromIntegral zoomX) (fromIntegral zoomY)
+                        $ bitmapOfForeignPtr
+                                sizeX sizeY             -- raw image size
+                                (R.toForeignPtr arr8)   -- the image data.
+                                False                   -- don't cache this in texture memory.
+
+        return picture
+
+
+-- Convert --------------------------------------------------------------------
+-- | Collect RGB components into a flat array.
+convertImage
+        :: Array U DIM2 (Word8, Word8, Word8) 
+        -> Array F DIM2 Word8
+
+convertImage arr
+ = let  {-# INLINE conv #-} 
+        conv (r, g, b)
+         = let  r'      = fromIntegral r
+                g'      = fromIntegral g
+                b'      = fromIntegral b
+                a       = 255 
+
+                !w      =   unsafeShiftL r' 24
+                        .|. unsafeShiftL g' 16
+                        .|. unsafeShiftL b' 8
+                        .|. a
+           in   w
+
+        -- Do the writes as 32-bit then convert back to 8bit for speed.
+        arr' :: Array F DIM2 Word32
+        arr' = arr `deepSeqArray` R.computeP $ R.map conv arr
+
+   in   unsafeCoerce arr'
+{-# INLINE convertImage #-}
 
 
 -- | Float to Word8 conversion because the one in the GHC libraries
@@ -153,3 +212,14 @@ makeFrame !winSizeX !winSizeY !zoomX !zoomY !makePixel
 word8OfFloat :: Float -> Word8
 word8OfFloat f
         = fromIntegral (truncate f :: Int) 
+
+{-# INLINE unpackColor #-}
+unpackColor :: Color -> (Word8, Word8, Word8)
+unpackColor c
+        | (r, g, b, _) <- rgbaOfColor c
+        = ( word8OfFloat (r * 255)
+          , word8OfFloat (g * 255)
+          , word8OfFloat (b * 255))
+
+
+

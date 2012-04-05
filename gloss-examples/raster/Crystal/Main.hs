@@ -5,7 +5,6 @@
 --   http://mainisusuallyafunction.blogspot.com/2011/10/quasicrystals-as-sums-of-waves-in-plane.html
 --
 {-# LANGUAGE BangPatterns #-}
-import Graphics.Gloss                   (Point, Color, rawColor)
 import Graphics.Gloss.Raster.Field
 import System.Environment
 
@@ -85,7 +84,7 @@ main :: IO ()
 main 
  = do   args    <- getArgs
         case args of
-         []     -> run 800 600 5 30 5
+         []     -> run 800 600 2 30 5
 
          [sizeX, sizeY, zoom, scale, degree]
                 -> run (read sizeX) (read sizeY) (read zoom) (read scale) (read degree)
