@@ -157,7 +157,7 @@ makeFrame !winSizeX !winSizeY !zoomX !zoomY !makePixel
         -- We don't need the alpha because we're only drawing one image.
         traceEventIO "Gloss.Raster[makeFrame]: start frame evaluation."
         (arrRGB :: Array U DIM2 (Word8, Word8, Word8))
-         <- now  $ R.computeUnboxedP
+         <- R.computeUnboxedP
                         $ R.map unpackColor 
                         $ R.fromFunction (Z :. sizeY  :. sizeX)
                         $ pixelOfIndex
@@ -165,7 +165,7 @@ makeFrame !winSizeX !winSizeY !zoomX !zoomY !makePixel
         traceEventIO "Gloss.Raster[makeFrame]: start image conversion."
         -- Convert the RGB Float colors to a flat image.
         (arr8   :: Array F DIM2 Word8)
-         <- now $ convertImage arrRGB
+         <- convertImage arrRGB
 
         traceEventIO "Gloss.Raster[makeFrame]: done, returning picture."
         -- Wrap the ForeignPtr from the Array as a gloss picture.
@@ -181,11 +181,13 @@ makeFrame !winSizeX !winSizeY !zoomX !zoomY !makePixel
 -- Convert --------------------------------------------------------------------
 -- | Collect RGB components into a flat array.
 convertImage
-        :: Array U DIM2 (Word8, Word8, Word8) 
-        -> Array F DIM2 Word8
+        :: Monad m 
+        => Array U DIM2 (Word8, Word8, Word8) 
+        -> m (Array F DIM2 Word8)
 
 convertImage arr
- = let  {-# INLINE conv #-} 
+ = arr `deepSeqArray` 
+   let  {-# INLINE conv #-} 
         conv (r, g, b)
          = let  r'      = fromIntegral r
                 g'      = fromIntegral g
@@ -197,12 +199,12 @@ convertImage arr
                         .|. unsafeShiftL b' 8
                         .|. a
            in   w
-
+   in do 
         -- Do the writes as 32-bit then convert back to 8bit for speed.
-        arr' :: Array F DIM2 Word32
-        arr' = arr `deepSeqArray` R.computeP $ R.map conv arr
+        (arr' :: Array F DIM2 Word32)
+          <- R.computeP $ R.map conv arr
 
-   in   unsafeCoerce arr'
+        return $ unsafeCoerce arr'
 {-# INLINE convertImage #-}
 
 
