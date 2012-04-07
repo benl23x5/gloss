@@ -7,6 +7,7 @@ import GHC.Exts
 main :: IO ()
 main 
  = let  !n               = 65536
+
         !sins            = U.fromList [sin ( (i / n) * (2 * pi)) | i <- [0..n]]
 
         usin :: Float -> Float
@@ -20,10 +21,10 @@ main
         get :: Float -> Point -> Color
         get !t (x, y)
          = t `seq` 
-           let  x' = abs $ x + 1
-                y' = abs $ y + 1
-                r1 = abs $ 0.5 * (usin (x' + 0.2 * (sin t)) + ucos y')
-                r2 = abs $ 0.5 * (usin y' + usin (0.3 * t))
+           let  !x' = abs $ x + 1
+                !y' = abs $ y + 1
+                !r1 = abs $ 0.5 * (usin (x' + 0.2 * (usin t)) + ucos y')
+                !r2 = abs $ 0.5 * (usin y' + usin (0.3 * t))
            in  makeColor' r1 0 r2  1.0
         {-# INLINE get #-}
 

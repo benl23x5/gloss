@@ -1,5 +1,5 @@
 Name:                gloss-examples
-Version:             1.7.2.1
+Version:             1.7.2.2
 License:             MIT
 License-file:        LICENSE
 Author:              Ben Lippmeier
@@ -182,7 +182,7 @@ Executable gloss-zen
         gloss           == 1.7.*
   Main-is:        Main.hs
   hs-source-dirs: picture/Zen
---  ghc-options:    -threaded -O2
+  ghc-options:    -threaded -O2
 
 
 Executable gloss-crystal
@@ -192,7 +192,12 @@ Executable gloss-crystal
         gloss-raster   == 1.7.2.*
   Main-is:        Main.hs
   hs-source-dirs: raster/Crystal
-  ghc-options:    -Wall -threaded -Odph -fno-liberate-case -fllvm -optlo-O3 -eventlog
+  ghc-options:    
+        -Wall -threaded -eventlog
+        -Odph -fno-liberate-case
+        -funfolding-use-threshold1000
+        -funfolding-keeness-factor1000
+        -fllvm -optlo-O3
 
 
 Executable gloss-ray
@@ -203,7 +208,12 @@ Executable gloss-ray
   Main-is:        Main.hs
   other-modules:  Light Object Trace Vec3 World
   hs-source-dirs: raster/Ray
-  ghc-options:    -Wall -threaded -Odph -fno-liberate-case -fllvm -optlo-O3  -eventlog
+  ghc-options:    
+        -Wall -threaded -eventlog
+        -Odph -fno-liberate-case
+        -funfolding-use-threshold1000
+        -funfolding-keeness-factor1000
+        -fllvm -optlo-O3
 
 Executable gloss-pulse
   Build-depends:
@@ -212,7 +222,12 @@ Executable gloss-pulse
         gloss-raster   == 1.7.2.*
   Main-is:        Main.hs
   hs-source-dirs: raster/Pulse
-  ghc-options:    -Wall -threaded -Odph -fno-liberate-case -fllvm -optlo-O3  -eventlog
+  ghc-options:
+        -Wall -threaded -eventlog
+        -Odph -fno-liberate-case
+        -funfolding-use-threshold1000
+        -funfolding-keeness-factor1000
+        -fllvm -optlo-O3
 
 Executable gloss-wave
   Build-depends:
@@ -223,8 +238,12 @@ Executable gloss-wave
         ghc-prim
   Main-is:        Main.hs
   hs-source-dirs: raster/Wave
-  ghc-options:    -Wall -threaded -Odph -fno-liberate-case -fllvm -optlo-O3  -eventlog
-
+  ghc-options:
+        -Wall -threaded -eventlog
+        -Odph -fno-liberate-case
+        -funfolding-use-threshold1000
+        -funfolding-keeness-factor1000
+        -fllvm -optlo-O3
 
 
 

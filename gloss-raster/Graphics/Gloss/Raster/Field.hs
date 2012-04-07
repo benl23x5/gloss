@@ -4,7 +4,17 @@
 --
 --  Gloss programs should be compiled with @-threaded@, otherwise the GHC runtime
 --  will limit the frame-rate to around 20Hz.
-
+--
+--  The performance of programs using this interface is sensitive to how much
+--  boxing and unboxing the GHC simplifier manages to eliminate. For the best
+--  result add INLINE pragmas to all of your numeric functions and use the following
+--  compile options.  
+--
+--  @-threaded -Odph -fno-liberate-case -funfolding-use-threshold1000 -funfolding-keeness-factor1000 -fllvm -optlo-O3@
+--
+--  See the examples the @raster@ directory of the @gloss-examples@ package 
+--  for more details.
+--
 module Graphics.Gloss.Raster.Field
         ( -- * Color
           module Graphics.Gloss.Data.Color
@@ -14,22 +24,21 @@ module Graphics.Gloss.Raster.Field
         , Display       (..)
         , Point
         , animateField
-        , playField
-
-        , convertImage)
+        , playField)
 where
 import Graphics.Gloss.Data.Color
 import Graphics.Gloss.Data.Picture
 import Graphics.Gloss.Data.Display
 import Graphics.Gloss.Interface.Pure.Game
 import Graphics.Gloss.Interface.IO.Animate
-import Data.Array.Repa                  as R
-import Data.Array.Repa.Repr.ForeignPtr  as R
 import Data.Word
 import System.IO.Unsafe
 import Unsafe.Coerce
 import Debug.Trace
 import Data.Bits
+import Data.Array.Repa                          as R
+import Data.Array.Repa.Repr.ForeignPtr          as R
+import Prelude                                  as P
 
 -- Color ----------------------------------------------------------------------
 -- | Construct a color from red, green, blue components.
@@ -60,7 +69,7 @@ animateField
         :: Display                      
                 -- ^ Display mode.
         -> (Int, Int)                   
-                -- ^ Pixel multiplication.
+                -- ^ Pixels per point.
         -> (Float -> Point -> Color)    
                 -- ^ Function to compute the color at a particular point.
                 --
@@ -87,7 +96,7 @@ playField
         :: Display                      
                 -- ^ Display mode.
         -> (Int, Int)   
-                -- ^ Pixel multiplication.
+                -- ^ Pixels per point.
         -> Int  -- ^ Number of simulation steps to take
                 --   for each second of real time
         -> world 
@@ -102,16 +111,18 @@ playField
         -> IO ()
 playField !display (zoomX, zoomY) !stepRate !initWorld !makePixel !handleEvent !stepWorld
  = zoomX `seq` zoomY `seq`
-   let  (winSizeX, winSizeY) = sizeOfDisplay display
-        
-   in   winSizeX `seq` winSizeY `seq`
-         play display black stepRate 
-           initWorld
-           (\world -> 
-              world `seq` 
-              makeFrame winSizeX winSizeY zoomX zoomY (makePixel world))
-           handleEvent
-           stepWorld
+   if zoomX < 1 || zoomY < 1
+     then  error $ "Graphics.Gloss.Raster.Field: invalid pixel multiplication " 
+                 P.++ show (zoomX, zoomY)
+     else  let  (winSizeX, winSizeY) = sizeOfDisplay display
+           in   winSizeX `seq` winSizeY `seq`
+                play display black stepRate 
+                   initWorld
+                   (\world -> 
+                      world `seq` 
+                      makeFrame winSizeX winSizeY zoomX zoomY (makePixel world))
+                   handleEvent
+                   stepWorld
 {-# INLINE playField #-}
 
 
@@ -150,44 +161,8 @@ makeFrame !winSizeX !winSizeY !zoomX !zoomY !makePixel
          = let  x'      = fromIntegral (x - midX) / fsizeX2
                 y'      = fromIntegral (y - midY) / fsizeY2
            in   makePixel (x', y')
-        
-   in unsafePerformIO $ do
 
-        -- Define the image, and extract out just the RGB color components.
-        -- We don't need the alpha because we're only drawing one image.
-        traceEventIO "Gloss.Raster[makeFrame]: start frame evaluation."
-        (arrRGB :: Array U DIM2 (Word8, Word8, Word8))
-         <- R.computeUnboxedP
-                        $ R.map unpackColor 
-                        $ R.fromFunction (Z :. sizeY  :. sizeX)
-                        $ pixelOfIndex
-
-        traceEventIO "Gloss.Raster[makeFrame]: start image conversion."
-        -- Convert the RGB Float colors to a flat image.
-        (arr8   :: Array F DIM2 Word8)
-         <- convertImage arrRGB
-
-        traceEventIO "Gloss.Raster[makeFrame]: done, returning picture."
-        -- Wrap the ForeignPtr from the Array as a gloss picture.
-        let picture     = Scale (fromIntegral zoomX) (fromIntegral zoomY)
-                        $ bitmapOfForeignPtr
-                                sizeX sizeY             -- raw image size
-                                (R.toForeignPtr arr8)   -- the image data.
-                                False                   -- don't cache this in texture memory.
-
-        return picture
-
-
--- Convert --------------------------------------------------------------------
--- | Collect RGB components into a flat array.
-convertImage
-        :: Monad m 
-        => Array U DIM2 (Word8, Word8, Word8) 
-        -> m (Array F DIM2 Word8)
-
-convertImage arr
- = arr `deepSeqArray` 
-   let  {-# INLINE conv #-} 
+        {-# INLINE conv #-} 
         conv (r, g, b)
          = let  r'      = fromIntegral r
                 g'      = fromIntegral g
@@ -199,13 +174,30 @@ convertImage arr
                         .|. unsafeShiftL b' 8
                         .|. a
            in   w
-   in do 
-        -- Do the writes as 32-bit then convert back to 8bit for speed.
-        (arr' :: Array F DIM2 Word32)
-          <- R.computeP $ R.map conv arr
 
-        return $ unsafeCoerce arr'
-{-# INLINE convertImage #-}
+   in unsafePerformIO $ do
+
+        -- Define the image, and extract out just the RGB color components.
+        -- We don't need the alpha because we're only drawing one image.
+        traceEventIO "Gloss.Raster[makeFrame]: start frame evaluation."
+        (arrRGB :: Array F DIM2 Word32)
+                <- R.computeP  
+                        $ R.map conv
+                        $ R.map unpackColor 
+                        $ R.fromFunction (Z :. sizeY  :. sizeX)
+                        $ pixelOfIndex
+        traceEventIO "Gloss.Raster[makeFrame]: done, returning picture."
+
+        -- Wrap the ForeignPtr from the Array as a gloss picture.
+        let picture     
+                = Scale (fromIntegral zoomX) (fromIntegral zoomY)
+                $ bitmapOfForeignPtr
+                        sizeX sizeY     -- raw image size
+                        (R.toForeignPtr $ unsafeCoerce arrRGB)   
+                                        -- the image data.
+                        False           -- don't cache this in texture memory.
+
+        return picture
 
 
 -- | Float to Word8 conversion because the one in the GHC libraries
@@ -222,6 +214,3 @@ unpackColor c
         = ( word8OfFloat (r * 255)
           , word8OfFloat (g * 255)
           , word8OfFloat (b * 255))
-
-
-

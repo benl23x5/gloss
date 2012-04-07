@@ -11,10 +11,10 @@ Category:            Graphics
 Homepage:            http://gloss.ouroborus.net
 Bug-reports:         gloss@ouroborus.net
 Description:
-        Parallel rendering of raster fields.
+        Parallel rendering of raster images.
 
 Synopsis:
-        Painless 2D vector graphics, animations and simulations.
+        Parallel rendering of raster images.
 
 Tested-with: GHC == 6.12.1, GHC == 7.0.1
 
