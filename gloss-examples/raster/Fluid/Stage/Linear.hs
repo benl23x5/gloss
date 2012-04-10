@@ -10,6 +10,8 @@ import Data.Array.Repa.Stencil          as R
 import Data.Array.Repa.Stencil.Dim2     as R
 import Data.Array.Repa.Eval             as R
 import Data.Vector.Unboxed
+import Debug.Trace
+
 
 linearSolver 
         :: (FieldElt a, Repr U a, Unbox a, Elt a, Num a)
@@ -33,7 +35,10 @@ linearSolver origF f !a !c !i
  = origF `deepSeqArray` f `deepSeqArray`
    do   
         let !c' = 1/c
+        traceEventIO "Fluid: linear solver mapStencil"
         f'      <- computeUnboxedP $ mapStencil2 (BoundConst E.zero) (linearSolverStencil a c) f
+
+        traceEventIO "Fluid: linear solver zipWith"
         f''     <- computeUnboxedP $ R.zipWith (zipFunc c') origF f'
 
         linearSolver origF f'' a c (i - 1)

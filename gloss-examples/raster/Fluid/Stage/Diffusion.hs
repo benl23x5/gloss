@@ -8,7 +8,8 @@ import Constants
 import Stage.Linear
 import Data.Array.Repa          as R
 import Data.Array.Repa.Eval     as R
-import Data.Vector.Unboxed      
+import Data.Vector.Unboxed
+import Debug.Trace
 
 diffusion 
         :: (FieldElt a, Num a, Elt a, Unbox a) 
@@ -18,6 +19,7 @@ diffusion f !rate
    do   let !a       = dt * rate * widthF * widthF
         let !c       = 1 + 4 * a
         let !repeats = 20
+        traceEventIO "Fluid: diffusion"
         linearSolver f f a c repeats
 
 {-# SPECIALIZE diffusion 

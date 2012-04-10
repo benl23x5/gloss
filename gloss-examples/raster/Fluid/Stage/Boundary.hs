@@ -11,7 +11,7 @@ import Data.Array.Repa          as R
 import Data.Array.Repa.Eval     as R
 import Data.Vector.Unboxed      (Unbox)
 import Control.Monad
-
+import Debug.Trace
 
 setBoundary :: VelocityField -> IO VelocityField
 setBoundary f
@@ -22,7 +22,8 @@ setBoundary f
 rebuild :: VelocityField -> VelocityField -> IO VelocityField
 rebuild f e
  = f `deepSeqArray` e `deepSeqArray` 
-   computeUnboxedP $ backpermuteDft f rebuildPosMap e
+   do   traceEventIO "Fluid: rebuild"
+        computeUnboxedP $ backpermuteDft f rebuildPosMap e
 {-# INLINE rebuild #-}
 
 
@@ -51,8 +52,9 @@ rebuildPosMap (Z:.j:.i)
 
 setBoundary' :: VelocityField -> IO VelocityField
 setBoundary' e
-        = e `deepSeqArray` 
-          computeUnboxedP $ traverse e id revBoundary
+ = e `deepSeqArray` 
+   do   traceEventIO "Fluid: setBoundary'"
+        computeUnboxedP $ traverse e id revBoundary
 {-# INLINE setBoundary' #-}
 
 
@@ -89,7 +91,8 @@ grabCornerCase loc pos1 pos2
 grabBorders :: VelocityField -> IO VelocityField
 grabBorders f
  = f `deepSeqArray` 
-   computeUnboxedP $ backpermute (Z:.4:.widthI) edgeCases f
+   do   traceEventIO "Fluid: grabBorders"
+        computeUnboxedP $ backpermute (Z:.4:.widthI) edgeCases f
 {-# INLINE grabBorders #-}
 
 -- Maps a position in the edges array to what they were in the original

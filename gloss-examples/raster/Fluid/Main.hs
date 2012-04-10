@@ -1,3 +1,4 @@
+{-# LANGUAGE ScopedTypeVariables #-}
 module Main
         (main)
 where
@@ -8,8 +9,10 @@ import UserEvent
 import Constants
 import Graphics.Gloss
 import Graphics.Gloss.Interface.IO.Game
-import Data.Array.Repa          as A
-import Data.Array.Repa.Index    as I
+import Data.Array.Repa                  as A
+import Data.Array.Repa.Repr.ByteString  as A
+import Data.Array.Repa.Repr.ForeignPtr  as A
+import Data.Array.Repa.Index            as I
 import Codec.BMP
 import System.Environment( getArgs )
 import System.Console.GetOpt
@@ -17,28 +20,31 @@ import Data.IORef
 import System.Mem
 import Prelude as P
 import System.IO.Unsafe
+import qualified Data.ByteString        as B
+import Unsafe.Coerce
+import Data.Word
 
+main 
+ = do   args <- getArgs
+        case getOpt RequireOrder options args of
+         (actions,      [],   []) 
+          -> foldl (>>) (return ()) actions
 
-main = do
-   -- get and process arguments
-   args <- getArgs
-   case getOpt RequireOrder options args of
-      (actions,      [],   []) -> foldl (>>) (return ()) actions
-      (      _, nonOpts,   []) -> error $ "unrecognized arguments: " P.++ unwords nonOpts
-      (      _,       _, msgs) -> error $ concat msgs P.++ usageInfo "Usage: fluid [OPTION...]" options
-   
-   main'   
+         (      _, nonOpts,   []) 
+          -> error $ "unrecognized arguments: " P.++ unwords nonOpts
 
-{--
-   case batchMode of
-      False -> main'
-      True  -> runBatchMode model
--}
+         (      _,       _, msgs) 
+          -> error $ concat msgs P.++ usageInfo "Usage: fluid [OPTION...]" options
+
+        case batchMode of
+         False -> main'
+         True  -> runBatchMode initModel
 
 addArgs []         = return ()
 addArgs (arg:args) = arg `seq` (addArgs args)
       
--- Specifies the various command line options
+
+-- | Command line options.
 options :: [OptDescr (IO ())]
 options = [
       Option [] ["width"]       (ReqArg getWidthArg       "INT")
@@ -104,7 +110,7 @@ stepFluid dt m@(Model df ds vf vs cl sp cb)
 
 -- | Specifies the steps per second to take, default is 10
 rate :: IORef Int
-rate = unsafePerformIO $ newIORef 10
+rate = unsafePerformIO $ newIORef 25
 
 
 -- | IORef and wrapper function for the batch-mode flag
@@ -124,36 +130,41 @@ maxStepsArg = unsafePerformIO $ newIORef 0
 
 
 
-{-
-
 -- For benchmarking, use this function to run without
---  graphical front-end
-runBatchMode m =
-   do outputBMP $ densityField $ runBatchMode' m
+-- graphical front-end
+runBatchMode :: Model -> IO ()
+runBatchMode m 
+ = do   m'      <- runBatchMode' m
+        outputBMP $ densityField m
 
 runBatchMode' m@(Model df ds vf vs cl sp cb)
    | sp > maxSteps
-   , maxSteps > 0  = m
-   | otherwise     = performGC `seq` m' `seq`
-                     runBatchMode' m'
-                   where
-                     m' = stepFluid dt m
+   , maxSteps > 0  
+   = return m
+
+   | otherwise     
+   = do performGC 
+        m'      <- stepFluid dt m
+        runBatchMode' m'
 
 -- Writes bitmap data to test batch-mode ran correctly
 outputBMP :: DensityField -> IO ()
-outputBMP df = writeBMP "./output.bmp" $
-               packRGBA32ToBMP widthI widthI $
-               dfToByteString df
+outputBMP df 
+ = do   bs      <- dfToByteString df
+        writeBMP "./output.bmp" 
+                $ packRGBA32ToBMP widthI widthI bs
 
-dfToByteString :: DensityField -> B.ByteString
 {-# INLINE dfToByteString #-}
+dfToByteString :: DensityField -> IO B.ByteString
 dfToByteString df
-   = (print bytestring) `seq` bytestring
-   where
-      bytestring  = RB.toByteString convertedM'
-      convertedM' = convertedM A.++ alpha
-      convertedM  = A.extend (Z :. A.All :. A.All :. (3::Int)) word8M
-      word8M      = A.map (floatToWord8) $ df
-      alpha       = A.fromList (Z:.widthI:.widthI:.1) 
-                     $ replicate (widthI*widthI) 255
--}
+ = do   (arr :: Array F DIM2 Word32)     
+                <- computeP $  A.map pixelOfDensity df
+
+        let (arr' :: Array F DIM2 Word8)
+                = unsafeCoerce arr
+
+        return $ B.pack $ A.toList arr'
+
+
+
+

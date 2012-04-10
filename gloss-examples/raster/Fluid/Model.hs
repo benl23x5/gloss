@@ -10,8 +10,7 @@ module Model
         , initModel
 
         , pictureOfModel
-        , floatToWord8
-        )
+        , pixelOfDensity)
 where
 import Graphics.Gloss                   
 import Data.Array.Repa                  as R
@@ -84,20 +83,9 @@ pictureOfModel m
         width           = fromIntegral width'
         height          = fromIntegral height'
 
-        {-# INLINE conv #-} 
-        conv x
-         = let  x'      = floatToWord8 x
-                a       = 255 
-
-                !w      =   unsafeShiftL x' 24
-                        .|. unsafeShiftL x' 16
-                        .|. unsafeShiftL x' 8
-                        .|. a
-           in   w
-
    in do
         (arrDensity :: Array F DIM2 Word32)
-         <- computeP $ R.map conv $ densityField m
+         <- computeP $ R.map pixelOfDensity $ densityField m
 
         return  $ Scale scaleX scaleY 
                 $ bitmapOfForeignPtr width height
@@ -106,12 +94,19 @@ pictureOfModel m
 
 
 -- | Converts Float value to Word8 for pixel data
-floatToWord8 :: Float -> Word32
-floatToWord8 f
-        | f <  0.0  = 0
-        | f >= 1.0  = 255
-        | otherwise = truncate $ f * 255
-{-# INLINE floatToWord8 #-}
+pixelOfDensity :: Float -> Word32
+pixelOfDensity f
+ = let  !fsat
+          | f <  0       = 0
+          | f >= 1       = 1
+          | otherwise    = f
+
+        !x      = truncate $ fsat * 255
+        !a      = 255
+
+    in   unsafeShiftL x 24 .|. unsafeShiftL x 16 
+     .|. unsafeShiftL x  8 .|. a
+{-# INLINE pixelOfDensity #-}
 
 
 -- | Creates alpha values for display

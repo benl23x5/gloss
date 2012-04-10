@@ -8,7 +8,7 @@ import Stage.Linear
 import Data.Array.Repa          as R
 import Data.Array.Repa.Eval     as R
 import Data.Vector.Unboxed      (Unbox)
-
+import Debug.Trace
 
 advection 
         :: (FieldElt a, Unbox a)
@@ -16,7 +16,8 @@ advection
 
 advection vf f
  = vf `deepSeqArray` f `deepSeqArray`
-   computeP $ traverse f id (advection' vf f)
+   do   traceEventIO "Fluid: advection"
+        computeP $ traverse f id (advection' vf f)
 
 
 {-# SPECIALIZE advection 

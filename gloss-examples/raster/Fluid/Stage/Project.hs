@@ -9,14 +9,19 @@ import Stage.Linear
 import Data.Array.Repa          as R
 import Data.Array.Repa.Eval     as R
 import Data.Vector.Unboxed      (Unbox)
-
+import Debug.Trace
 
 project :: Field (Float, Float) -> IO (Field (Float, Float))
 project f
  = f `deepSeqArray` 
    do   let !repeats    = 20
+        traceEventIO "Fluid: project gradient"
         div     <- computeUnboxedP $ fromFunction (Z:.widthI:.widthI) (genDiv f)
+
+        traceEventIO "Fluid: project linear solver"
         p       <- linearSolver div div 1 4 repeats
+
+        traceEventIO "Fluid: project apply"
         f'      <- computeUnboxedP $ traverse f id (project' p)
         return f'
 {-# INLINE project #-}
