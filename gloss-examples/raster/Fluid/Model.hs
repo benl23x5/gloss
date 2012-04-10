@@ -1,4 +1,4 @@
-{-# LANGUAGE ScopedTypeVariables #-}
+{-# LANGUAGE ScopedTypeVariables, BangPatterns #-}
 module Model
         ( Field
         , DensityField
@@ -18,6 +18,7 @@ import Data.Array.Repa                  as R
 import Data.Array.Repa.Repr.ForeignPtr  as R
 import Foreign
 import Constants
+import Unsafe.Coerce
 
 -- | A 2d field.
 type Field a        
@@ -63,7 +64,7 @@ initModel
                         $ replicate (widthI * widthI) 0
 
         velocity        = R.fromListUnboxed (Z:.widthI:.widthI)
-                        $ replicate (widthI*widthI) (0,0)
+                        $ replicate (widthI*widthI) (0, 0)
 
    in   Model
         { densityField   = density
@@ -83,21 +84,29 @@ pictureOfModel m
         width           = fromIntegral width'
         height          = fromIntegral height'
 
-        word8M          = R.map floatToWord8 $ densityField m
-        convertedM      = extend (Z :. All :. All :. (3::Int)) word8M
+        {-# INLINE conv #-} 
+        conv x
+         = let  x'      = floatToWord8 x
+                a       = 255 
+
+                !w      =   unsafeShiftL x' 24
+                        .|. unsafeShiftL x' 16
+                        .|. unsafeShiftL x' 8
+                        .|. a
+           in   w
 
    in do
-        (arrDensity :: Array F DIM3 Word8)
-         <- computeP $ convertedM R.++ alpha
+        (arrDensity :: Array F DIM2 Word32)
+         <- computeP $ R.map conv $ densityField m
 
         return  $ Scale scaleX scaleY 
                 $ bitmapOfForeignPtr width height
-                        (R.toForeignPtr arrDensity)
+                        (R.toForeignPtr $ unsafeCoerce arrDensity)
                         False
 
 
 -- | Converts Float value to Word8 for pixel data
-floatToWord8 :: Float -> Word8
+floatToWord8 :: Float -> Word32
 floatToWord8 f
         | f <  0.0  = 0
         | f >= 1.0  = 255
