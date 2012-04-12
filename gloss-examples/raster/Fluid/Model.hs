@@ -10,7 +10,8 @@ module Model
         , initModel
 
         , pictureOfModel
-        , pixelOfDensity)
+        , pixel32OfDensity
+        , pixel8OfDensity)
 where
 import Graphics.Gloss                   
 import Data.Array.Repa                  as R
@@ -85,17 +86,18 @@ pictureOfModel m
 
    in do
         (arrDensity :: Array F DIM2 Word32)
-         <- computeP $ R.map pixelOfDensity $ densityField m
+         <- computeP $ R.map pixel32OfDensity $ densityField m
 
         return  $ Scale scaleX scaleY 
                 $ bitmapOfForeignPtr width height
                         (R.toForeignPtr $ unsafeCoerce arrDensity)
                         False
+{-# NOINLINE pictureOfModel #-}
 
 
--- | Converts Float value to Word8 for pixel data
-pixelOfDensity :: Float -> Word32
-pixelOfDensity f
+-- | Converts Float value to Word32 for pixel data
+pixel32OfDensity :: Float -> Word32
+pixel32OfDensity f
  = let  !fsat
           | f <  0       = 0
           | f >= 1       = 1
@@ -106,7 +108,20 @@ pixelOfDensity f
 
     in   unsafeShiftL x 24 .|. unsafeShiftL x 16 
      .|. unsafeShiftL x  8 .|. a
-{-# INLINE pixelOfDensity #-}
+{-# INLINE pixel32OfDensity #-}
+
+
+-- | Converts Float value to a tuple of pixel components.
+pixel8OfDensity :: Float -> (Word8, Word8, Word8)
+pixel8OfDensity f
+ = let  !fsat
+          | f <  0       = 0
+          | f >= 1       = 1
+          | otherwise    = f
+
+        !x      = truncate $ fsat * 255
+    in  (x, x, x)
+{-# INLINE pixel8OfDensity #-}
 
 
 -- | Creates alpha values for display

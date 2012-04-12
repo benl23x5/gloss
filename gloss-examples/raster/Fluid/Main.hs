@@ -9,10 +9,6 @@ import UserEvent
 import Constants
 import Graphics.Gloss
 import Graphics.Gloss.Interface.IO.Game
-import Data.Array.Repa                  as A
-import Data.Array.Repa.Repr.ByteString  as A
-import Data.Array.Repa.Repr.ForeignPtr  as A
-import Data.Array.Repa.Index            as I
 import Codec.BMP
 import System.Environment( getArgs )
 import System.Console.GetOpt
@@ -20,9 +16,13 @@ import Data.IORef
 import System.Mem
 import Prelude as P
 import System.IO.Unsafe
-import qualified Data.ByteString        as B
-import Unsafe.Coerce
 import Data.Word
+import Data.Array.Repa                  as A
+import Data.Array.Repa.Repr.ByteString  as A
+import Data.Array.Repa.Repr.ForeignPtr  as A
+import Data.Array.Repa.Index            as I
+import Data.Array.Repa.IO.BMP           as A
+import qualified Data.ByteString        as B
 
 main 
  = do   args <- getArgs
@@ -150,21 +150,6 @@ runBatchMode' m@(Model df ds vf vs cl sp cb)
 -- Writes bitmap data to test batch-mode ran correctly
 outputBMP :: DensityField -> IO ()
 outputBMP df 
- = do   bs      <- dfToByteString df
-        writeBMP "./output.bmp" 
-                $ packRGBA32ToBMP widthI widthI bs
-
-{-# INLINE dfToByteString #-}
-dfToByteString :: DensityField -> IO B.ByteString
-dfToByteString df
- = do   (arr :: Array F DIM2 Word32)     
-                <- computeP $  A.map pixelOfDensity df
-
-        let (arr' :: Array F DIM2 Word8)
-                = unsafeCoerce arr
-
-        return $ B.pack $ A.toList arr'
-
-
-
+ = do   arr     <- computeUnboxedP $ A.map pixel8OfDensity df
+        A.writeImageToBMP "./output.bmp" arr
 
