@@ -65,7 +65,7 @@ userEvent config
         | Char 'r' <- key
         , Down     <- keyState
         = let   (_ :. height :. width) = R.extent (densityField model)
-          in    initModel width height
+          in    initModel (width, height)
 
         | Char 'q' <- key
         , Down     <- keyState

@@ -7,26 +7,22 @@ import Stage.Advection
 import Stage.Sources
 import Stage.Project
 import Model
-import Constants
-import Data.IORef
+import Config
 
 velocitySteps 
-        :: VelocityField 
+        :: Config
+        -> VelocityField 
         -> Maybe (Source (Float, Float)) 
         -> IO VelocityField
 
-velocitySteps vf vs 
+velocitySteps config vf vs 
  = {-# SCC "Solve.velocitySteps" #-}
-   do   visc            <- readIORef $ viscArg
-        delta           <- readIORef $ dtArg
-        velocity        <- readIORef $ velArg
-
-        vf1     <- addSources  delta velocity vs vf
-        vf2     <- diffusion   delta visc vf1 
+   do   vf1     <- addSources  (configDelta config) (configVelocity config)  vs vf
+        vf2     <- diffusion   (configDelta config) (configViscosity config) vf1 
 --        vf3     <- setBoundary vf2
         vf4     <- project     vf2
 --        vf5     <- setBoundary vf4
-        vf6     <- advection   delta vf4 vf4
+        vf6     <- advection   (configDelta config) vf4 vf4
 --        vf7     <- setBoundary vf6
         vf8     <- project     vf6
 --        vf'     <- setBoundary vf8

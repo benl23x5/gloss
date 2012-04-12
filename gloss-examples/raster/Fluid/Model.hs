@@ -69,8 +69,8 @@ data Model
 
 
 -- | Creates an initial blank model
-initModel :: Int -> Int -> Model
-initModel width height
+initModel :: (Int, Int) -> Model
+initModel (width, height)
  = let  density         = R.fromListUnboxed (Z:. height :. width) 
                         $ replicate (height * width) 0
 
@@ -90,8 +90,8 @@ initModel width height
 
 -- Picture --------------------------------------------------------------------
 -- | Function to convert the Model into a Bitmap for displaying in Gloss
-pictureOfModel :: Monad m => Int -> Int -> Model -> m Picture
-pictureOfModel scaleX scaleY m 
+pictureOfModel :: Monad m => (Float, Float) -> Model -> m Picture
+pictureOfModel (scaleX, scaleY) m 
  = let  (Z :. width' :. height') = R.extent $ densityField m
         width           = fromIntegral width'
         height          = fromIntegral height'
@@ -100,7 +100,7 @@ pictureOfModel scaleX scaleY m
         (arrDensity :: Array F DIM2 Word32)
          <- computeP $ R.map pixel32OfDensity $ densityField m
 
-        return  $ Scale (fromIntegral scaleX) (fromIntegral scaleY)
+        return  $ Scale scaleX scaleY
                 $ bitmapOfForeignPtr width height
                         (R.toForeignPtr $ unsafeCoerce arrDensity)
                         False

@@ -31,11 +31,33 @@ main
          (      _,       _, msgs) 
           -> error $ concat msgs P.++ usageInfo "Usage: fluid [OPTION...]" options
 
+        windowWidth      <- readIORef windowWidthArg
+        let windowHeight = windowWidth
+
+        width           <- readIORef widthArg
+        let height      = width
+
+
+        delta           <- readIORef dtArg
+        diff            <- readIORef diffArg
+        visc            <- readIORef viscArg
+        dens            <- readIORef densArg
+        vel             <- readIORef velArg
+
+        let config
+                = Config
+                { configWindowSize      = (windowWidth, windowHeight)
+                , configModelSize       = (width, height)
+                , configDelta           = delta
+                , configDiffusion       = diff
+                , configViscosity       = visc
+                , configDensity         = dens
+                , configVelocity        = vel }
+
+
         case batchMode of
-         False -> main'
-         True  -> do
-                width   <- readIORef widthArg
-                runBatchMode (initModel width width)
+         False -> main' config
+         True  -> runBatchMode config (initModel (configModelSize config))
 
 
 -- | Command line options.
@@ -109,43 +131,20 @@ maxStepsArg = unsafePerformIO $ newIORef 0
 
 -- Main -----------------------------------------------------------------------
 -- Regular simulator starts here
-main' 
- = do   windowWidth      <- readIORef windowWidthArg 
-        let windowHeight = windowWidth
-
-        width           <- readIORef widthArg
-        let height      = width
-
-        let scaleX      = fromIntegral $ windowWidth `div` width
-        let scaleY      = fromIntegral $ windowHeight `div` height
-        delta           <- readIORef dtArg
-        diff            <- readIORef diffArg
-        visc            <- readIORef viscArg
-        dens            <- readIORef densArg
-        vel             <- readIORef velArg
-
-        let config
-                = Config
-                { configWindowSize      = (windowWidth, windowHeight)
-                , configModelSize       = (width, height)
-                , configDelta           = delta
-                , configDiffusion       = diff
-                , configViscosity       = visc
-                , configDensity         = dens
-                , configVelocity        = vel }
-
-
-        playIO  (InWindow "fluid" (windowWidth, windowHeight) (500, 20))
+main' config
+ =      playIO  (InWindow "fluid" 
+                        (configWindowSize config) 
+                        (500, 20))
                 black
                 (unsafePerformIO $ readIORef rate)
-                (initModel width height)
-                (pictureOfModel scaleX scaleY)
+                (initModel      (configModelSize config))
+                (pictureOfModel (configScale     config))
                 (\event model -> return $ userEvent config event model)
-                stepFluid
+                (stepFluid config)
 
 
 -- Function to step simulator one step forward in time
-stepFluid _dt m@(Model df ds vf vs cl sp cb)
+stepFluid config _dt m@(Model df ds vf vs cl sp cb)
    | sp > maxSteps
    , maxSteps > 0  
    = case batchMode of
@@ -154,7 +153,7 @@ stepFluid _dt m@(Model df ds vf vs cl sp cb)
 
    | otherwise 
    = do performGC 
-        vf'     <- velocitySteps vf vs
+        vf'     <- velocitySteps config vf vs
         df'     <- densitySteps df ds vf'
         return  $ Model df' Nothing vf' Nothing cl (sp + 1) cb
 
@@ -162,20 +161,20 @@ stepFluid _dt m@(Model df ds vf vs cl sp cb)
 
 -- For benchmarking, use this function to run without
 -- graphical front-end
-runBatchMode :: Model -> IO ()
-runBatchMode m 
- = do   m'      <- runBatchMode' m
+runBatchMode :: Config -> Model -> IO ()
+runBatchMode config m 
+ = do   m'      <- runBatchMode' config m
         outputBMP $ densityField m'
 
-runBatchMode' model
+runBatchMode' config model
         | stepsPassed model > maxSteps
         , maxSteps > 0  
         = return model
 
         | otherwise     
         = do    dt      <- readIORef dtArg 
-                model'  <- stepFluid dt model
-                runBatchMode' model'
+                model'  <- stepFluid config dt model
+                runBatchMode' config model'
 
 
 -- Writes bitmap data to test batch-mode ran correctly
