@@ -7,51 +7,62 @@ import FieldElt
 import Constants
 import Stage.Linear
 import Data.Array.Repa          as R
+import Data.Array.Repa.Unsafe   as R
 import Data.Array.Repa.Eval     as R
 import Data.Vector.Unboxed      (Unbox)
 import Debug.Trace
+import Data.IORef
 
 project :: Field (Float, Float) -> IO (Field (Float, Float))
 project f
- = f `deepSeqArray` 
+ = {-# SCC project #-}
+   f `deepSeqArray` 
    do   let !repeats    = 20
+        !width  <- readIORef widthArg
+
         traceEventIO "Fluid: project gradient"
-        div     <- computeUnboxedP $ fromFunction (Z:.widthI:.widthI) (genDiv f)
+        div     <- {-# SCC "project.genDiv" #-}
+                   computeUnboxedP $ fromFunction (Z:. width :. width) (genDiv width f)
 
         traceEventIO "Fluid: project linear solver"
-        p       <- linearSolver div div 1 4 repeats
+        p       <- {-# SCC "project.linearSolver" #-}
+                   linearSolver div div 1 4 repeats
 
         traceEventIO "Fluid: project apply"
-        f'      <- computeUnboxedP $ traverse f id (project' p)
+        f'      <- {-# SCC "project.apply" #-}
+                   computeUnboxedP $ unsafeTraverse f id (project' width p)
         return f'
-{-# INLINE project #-}
+{-# NOINLINE project #-}
 
 
 -- | Helper for project, used to subtract gradient field from regular field
 --   to create mass conserving field
 project' 
-        :: Field Float
+        :: Int                          -- ^ Width of model.
+        -> Field Float
         -> (DIM2 -> (Float, Float)) 
-        -> DIM2 -> (Float, Float)
-project' p locate pos@(Z:.j:.i)
- = p `deepSeqArray` 
-   (locate pos) ~-~ (0.5 * widthF * (p0 - p1),
-                     0.5 * widthF * (p2 - p3))
+        -> DIM2 
+        -> (Float, Float)
+
+project' !width !p !locate !pos@(Z:.j:.i)
+ = (locate pos) ~-~ (0.5 * width' * (p0 - p1),
+                     0.5 * width' * (p2 - p3))
  where
-        p0 = useIf (i < widthI-1) (p `unsafeIndex` (Z:.j  :.i+1))
-        p1 = useIf (i >        0) (p `unsafeIndex` (Z:.j  :.i-1))
-        p2 = useIf (j < widthI-1) (p `unsafeIndex` (Z:.j+1:.i  ))
-        p3 = useIf (j >        0) (p `unsafeIndex` (Z:.j-1:.i  ))
+        !width' = fromIntegral width
+        !p0     = useIf (i < width - 1) (p `unsafeIndex` (Z :. j   :. i+1))
+        !p1     = useIf (i >         0) (p `unsafeIndex` (Z :. j   :. i-1))
+        !p2     = useIf (j < width - 1) (p `unsafeIndex` (Z :. j+1 :. i  ))
+        !p3     = useIf (j >         0) (p `unsafeIndex` (Z :. j-1 :. i  ))
 {-# INLINE project' #-}
 
 
 -- | Used to create approximate for gradient field
-genDiv :: VelocityField -> DIM2 -> Float
-genDiv f (Z:.j:.i)
-   = (-0.5 * ((u0 - u1) + (v0 - v1))) / widthF
-   where
-      (u0, _) = useIf (i < widthI-1) (f `unsafeIndex` (Z:.j  :.i+1))
-      (u1, _) = useIf (i >        0) (f `unsafeIndex` (Z:.j  :.i-1))
-      ( _,v0) = useIf (j < widthI-1) (f `unsafeIndex` (Z:.j+1:.i  ))
-      ( _,v1) = useIf (j >        0) (f `unsafeIndex` (Z:.j-1:.i  ))
+genDiv :: Int -> VelocityField -> DIM2 -> Float
+genDiv !width !f (Z :. j :. i)
+ = (-0.5 * ((u0 - u1) + (v0 - v1))) / (fromIntegral width)
+ where
+      (u0, _) = useIf (i < width - 1) (f `unsafeIndex` (Z:.j  :.i+1))
+      (u1, _) = useIf (i >         0) (f `unsafeIndex` (Z:.j  :.i-1))
+      ( _,v0) = useIf (j < width - 1) (f `unsafeIndex` (Z:.j+1:.i  ))
+      ( _,v1) = useIf (j >         0) (f `unsafeIndex` (Z:.j-1:.i  ))
 {-# INLINE genDiv #-}

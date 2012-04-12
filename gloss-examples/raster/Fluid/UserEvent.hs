@@ -5,7 +5,8 @@ import Constants
 import Model                                    as M
 import Data.Array.Repa                          as A
 import Graphics.Gloss.Interface.Pure.Game       as G
-
+import System.IO.Unsafe
+import Data.IORef
 
 -- Handler for user events from gameInWindow
 userEvent :: Event -> Model -> Model
@@ -100,8 +101,16 @@ userEvent _ m = m
 -- simulation.
 -- NOTE: Only gives proper mapping if the window width and the width of the
 --    simulator are multiples
-windowToModel :: (Float,Float) -> (Int,Int)
+windowToModel :: (Float, Float) -> (Int, Int)
 windowToModel (x,y) = (x',y')
- where  x' = round ((x + ((fromIntegral windowWidth) / 2)) / scaleX)
+ where  width           = unsafePerformIO $ readIORef widthArg
+        windowWidth     = unsafePerformIO $ readIORef windowWidthArg
+        scaleX          = fromIntegral $ windowWidth `div` width
+        scaleY          = scaleX
+
+
+        x' = round ((x + ((fromIntegral windowWidth) / 2)) / scaleX)
         y' = round ((y + ((fromIntegral windowHeight) / 2)) / scaleY)
+
+
 

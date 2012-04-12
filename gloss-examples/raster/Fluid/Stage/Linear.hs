@@ -35,13 +35,22 @@ linearSolver origF f !a !c !i
  = origF `deepSeqArray` f `deepSeqArray`
    do   
         let !c' = 1/c
+        let {-# INLINE zipFunc #-}
+            zipFunc !orig !new
+                = new ~+~ (orig ~*~ c')
+
         traceEventIO "Fluid: linear solver mapStencil"
-        f'      <- computeUnboxedP $ mapStencil2 (BoundConst E.zero) (linearSolverStencil a c) f
+        f'      <- {-# SCC "linearSolver.mapStencil" #-}
+                   computeUnboxedP 
+                 $ R.czipWith zipFunc origF
+                 $ mapStencil2 (BoundConst E.zero) (linearSolverStencil a c) f
 
+{-
         traceEventIO "Fluid: linear solver zipWith"
-        f''     <- computeUnboxedP $ R.zipWith (zipFunc c') origF f'
-
-        linearSolver origF f'' a c (i - 1)
+        f''     <- {-# SCC "linearSolver.zipWith" #-}
+                   computeUnboxedP $ R.zipWith zipFunc origF f'
+-}
+        linearSolver origF f' a c (i - 1)
 
 {-# SPECIALIZE linearSolver 
         :: Field Float 
@@ -59,14 +68,10 @@ linearSolver origF f !a !c !i
 
 -- Function is specialised, rather than inlined, as GHC would not inline the function
 -- therwise
-zipFunc :: (FieldElt a) => Float -> a -> a -> a
-zipFunc !c !orig !new = new ~+~ (orig ~*~ c)
+-- zipFunc :: (FieldElt a) => Float -> a -> a -> a
+-- zipFunc !c !orig !new = new ~+~ (orig ~*~ c)
+-- {-# INLINE zipFunc #-}
 
-{-# SPECIALIZE zipFunc 
-        :: Float -> Float -> Float -> Float #-}
-
-{-# SPECIALIZE zipFunc 
-        :: Float -> (Float,Float) -> (Float,Float) -> (Float,Float) #-}
 
 
 linearSolverStencil 

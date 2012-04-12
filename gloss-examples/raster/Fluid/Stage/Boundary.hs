@@ -12,6 +12,9 @@ import Data.Array.Repa.Eval     as R
 import Data.Vector.Unboxed      (Unbox)
 import Control.Monad
 import Debug.Trace
+import System.IO.Unsafe
+import Data.IORef
+
 
 setBoundary :: VelocityField -> IO VelocityField
 setBoundary f
@@ -22,17 +25,18 @@ setBoundary f
 rebuild :: VelocityField -> VelocityField -> IO VelocityField
 rebuild f e
  = f `deepSeqArray` e `deepSeqArray` 
-   do   traceEventIO "Fluid: rebuild"
-        computeUnboxedP $ backpermuteDft f rebuildPosMap e
+   do   width   <- readIORef widthArg
+        traceEventIO "Fluid: rebuild"
+        computeUnboxedP $ backpermuteDft f (rebuildPosMap width) e
 {-# INLINE rebuild #-}
 
 
-rebuildPosMap :: DIM2 -> Maybe DIM2
-rebuildPosMap (Z:.j:.i)
+rebuildPosMap :: Int -> DIM2 -> Maybe DIM2
+rebuildPosMap !width (Z:.j:.i)
         | j == 0          
         = Just (Z:.0:.i)
 
-        | j == widthI - 1 
+        | j == width - 1 
         = Just (Z:.1:.i)
 
         | i == 0          
@@ -40,16 +44,49 @@ rebuildPosMap (Z:.j:.i)
           else if j == end then Just (Z:.1:.0)
                            else Just (Z:.2:.j)
 
-        | i == widthI - 1 
-        = if j == 0        then Just (Z:.0:.(widthI-1))
-          else if j == end then Just (Z:.1:.(widthI-1))
+        | i == width - 1 
+        = if j == 0        then Just (Z:.0:.(width-1))
+          else if j == end then Just (Z:.1:.(width-1))
                            else Just (Z:.3:.j)
 
         | otherwise       = Nothing
-        where   end = widthI - 1
+        where   end = width - 1
 {-# INLINE rebuildPosMap #-}
 
 
+-- | Corner cases are special and are calculated with this function
+grabCornerCase :: (DIM2 -> (Float, Float)) -> DIM2 -> DIM2 -> (Float, Float)
+grabCornerCase loc pos1 pos2
+ = (p1 * q1, p2 * q2) ~*~ 0.5
+ where  (p1,p2) = loc pos1
+        (q1,q2) = loc pos2
+{-# INLINE grabCornerCase #-}
+
+
+-- | Grabs the border elements of the VelocityField and outputs them as
+--   one array, for ease of adding back into the original VelocityField later
+grabBorders :: VelocityField -> IO VelocityField
+grabBorders f
+ = f `deepSeqArray` 
+   do   traceEventIO "Fluid: grabBorders"
+        width   <- readIORef widthArg
+        computeUnboxedP $ backpermute (Z:.4:.width) (edgeCases width) f
+{-# INLINE grabBorders #-}
+
+-- Maps a position in the edges array to what they were in the original
+-- array
+edgeCases :: Int -> DIM2 -> DIM2
+edgeCases width (Z:.j:.i)
+        | j == 0    = (Z:.0         :.i)
+        | j == 1    = (Z:.(width-1) :.i)
+        | j == 2    = (Z:.i         :.0)
+        | j == 3    = (Z:.i         :.(width-1))
+        | otherwise = error "Incorrect coordinate given in setBoundary"
+{-# INLINE edgeCases #-}
+
+
+
+{-
 setBoundary' :: VelocityField -> IO VelocityField
 setBoundary' e
  = e `deepSeqArray` 
@@ -75,34 +112,5 @@ revBoundary loc pos@(Z:.j:.i)
         where (p1,p2)   = loc pos
               end       = widthI - 1
 {-# INLINE revBoundary #-}
-
-
--- | Corner cases are special and are calculated with this function
-grabCornerCase :: (DIM2 -> (Float, Float)) -> DIM2 -> DIM2 -> (Float, Float)
-grabCornerCase loc pos1 pos2
- = (p1*q1,p2*q2) ~*~ 0.5
- where  (p1,p2) = loc pos1
-        (q1,q2) = loc pos2
-{-# INLINE grabCornerCase #-}
-
-
--- | Grabs the border elements of the VelocityField and outputs them as
---   one array, for ease of adding back into the original VelocityField later
-grabBorders :: VelocityField -> IO VelocityField
-grabBorders f
- = f `deepSeqArray` 
-   do   traceEventIO "Fluid: grabBorders"
-        computeUnboxedP $ backpermute (Z:.4:.widthI) edgeCases f
-{-# INLINE grabBorders #-}
-
--- Maps a position in the edges array to what they were in the original
--- array
-edgeCases :: DIM2 -> DIM2
-edgeCases (Z:.j:.i)
-        | j == 0    = (Z:.0         :.i)
-        | j == 1    = (Z:.(widthI-1):.i)
-        | j == 2    = (Z:.i         :.0)
-        | j == 3    = (Z:.i         :.(widthI-1))
-        | otherwise = error "Incorrect coordinate given in setBoundary"
-{-# INLINE edgeCases #-}
+-}
 

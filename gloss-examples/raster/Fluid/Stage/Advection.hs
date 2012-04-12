@@ -11,13 +11,16 @@ import Data.Array.Repa.Unsafe   as R
 import Data.Array.Repa.Eval     as R
 import Data.Vector.Unboxed      (Unbox)
 import Debug.Trace
+import System.IO.Unsafe
+import Data.IORef
 
 advection 
         :: (FieldElt a, Unbox a)
         => VelocityField -> Field a -> IO (Field a)
 
 advection vf f
- = vf `deepSeqArray` f `deepSeqArray`
+ = {-# SCC "advection" #-} 
+   vf `deepSeqArray` f `deepSeqArray`
    do   traceEventIO "Fluid: advection"
         computeP $ unsafeTraverse f id (advection' vf f)
 
@@ -45,10 +48,12 @@ advection' vf orig locate pos@(Z:.j:.i)
       (((d00 ~*~ t0) ~+~ (d01 ~*~ t1)) ~*~ s0) 
   ~+~ (((d10 ~*~ t0) ~+~ (d11 ~*~ t1)) ~*~ s1)
  where
+        !width  = fromIntegral $ unsafePerformIO $ readIORef widthArg
+
         -- backtrack densities to point based on velocity field
         -- and make sure they are in field
-        !x = checkLocation $ fromIntegral i - dt0 * u
-        !y = checkLocation $ fromIntegral j - dt0 * v
+        !x = checkLocation width $ fromIntegral i - dt0 * u
+        !y = checkLocation width $ fromIntegral j - dt0 * v
 
         -- calculate discrete locations surrounding point
         !i0 = truncate x
@@ -71,7 +76,8 @@ advection' vf orig locate pos@(Z:.j:.i)
         !d11 = orig `unsafeIndex` (Z:. j1 :. i1)
 
         -- helper values
-        !dt0    = dt * widthF
+
+        !dt0    = dt * width
         !(u, v) = vf `unsafeIndex` pos
 
 {-# SPECIALIZE advection' 
@@ -85,9 +91,9 @@ advection' vf orig locate pos@(Z:.j:.i)
 
 
 -- Safety check that we are within the simulation area
-checkLocation :: Float -> Float
-checkLocation x
+checkLocation :: Float -> Float -> Float
+checkLocation width x
    | x < 0.5          = 0.5
-   | x > widthF - 1.5 = widthF - 1.5
+   | x > width - 1.5 = width - 1.5
    | otherwise        = x
 {-# INLINE checkLocation #-}

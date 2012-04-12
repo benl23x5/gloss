@@ -18,7 +18,8 @@ densitySteps
         -> IO DensityField
 
 densitySteps df ds vf 
- = do   df1     <- addSources ds df
+ = {-# SCC "Solve.densitySteps" #-}
+   do   df1     <- addSources ds df
         df2     <- diffusion df1 diff
         df'     <- advection vf df2
         return  df'

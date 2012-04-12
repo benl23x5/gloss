@@ -18,7 +18,8 @@ velocitySteps
         -> IO VelocityField
 
 velocitySteps vf vs 
- = do   vf1     <- addSources  vs vf
+ = {-# SCC "Solve.velocitySteps" #-}
+   do   vf1     <- addSources  vs vf
         vf2     <- diffusion   vf1 visc
 --        vf3     <- setBoundary vf2
         vf4     <- project     vf2

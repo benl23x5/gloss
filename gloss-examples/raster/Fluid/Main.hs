@@ -49,22 +49,31 @@ options :: [OptDescr (IO ())]
 options = [
       Option [] ["width"]       (ReqArg getWidthArg       "INT")
          "length of dimensions in fluid simulator",
+
       Option [] ["dt"]          (ReqArg getDtArg        "FLOAT")
          "size of time step",
+
       Option [] ["diff"]        (ReqArg getDiffArg      "FLOAT")
          "diffusion rate for the density",
+
       Option [] ["visc"]        (ReqArg getViscArg      "FLOAT")
          "viscosity rate for the velocity",
+
       Option [] ["windowWidth"] (ReqArg getWindowWidthArg "INT")
          "length of a side of the window",
+
       Option [] ["dens"]        (ReqArg getDensArg      "FLOAT")
          "magnitude of a newly inserted density",
+
       Option [] ["vel"]         (ReqArg getVelArg       "FLOAT")
          "magnitude of a newly inserted velocity",
+
       Option [] ["rate"]        (ReqArg getRate           "INT")
          "frame rate for simulator",
+
       Option [] ["maxSteps"]    (ReqArg getMaxSteps       "INT")
          "maximum number of steps for simulator",
+
       Option [] ["batch-mode"]  (NoArg  batchArg               )
          "sets batch-mode, simulator won't display graphics window"
    ]
@@ -81,32 +90,6 @@ getVelArg         arg = let a = read arg in
 getRate           arg = writeIORef rate           (read arg)
 getMaxSteps       arg = writeIORef maxStepsArg    (read arg)
 batchArg              = writeIORef batchModeArg    True
-
--- Regular simulator starts here
-main' 
- = playIO
-        (InWindow "fluid" (windowWidth, windowHeight) (500, 20))
-        black
-        (unsafePerformIO $ readIORef rate)
-        initModel
-        pictureOfModel
-        (\event model -> return $ userEvent event model)
-        stepFluid
-
-
--- Function to step simulator one step forward in time
-stepFluid dt m@(Model df ds vf vs cl sp cb)
-   | sp > maxSteps
-   , maxSteps > 0  
-   = case batchMode of
-                True  -> return m
-                False -> error "Finished simulation"
-
-   | otherwise 
-   = do vf'     <- velocitySteps vf vs
-        df'     <- densitySteps df ds vf'
-        return  $ Model df' Nothing vf' Nothing cl (sp + 1) cb
-
 
 -- | Specifies the steps per second to take, default is 10
 rate :: IORef Int
@@ -130,6 +113,35 @@ maxStepsArg = unsafePerformIO $ newIORef 0
 
 
 
+-- Main -----------------------------------------------------------------------
+-- Regular simulator starts here
+main' 
+ = playIO
+        (InWindow "fluid" (windowWidth, windowHeight) (500, 20))
+        black
+        (unsafePerformIO $ readIORef rate)
+        initModel
+        pictureOfModel
+        (\event model -> return $ userEvent event model)
+        stepFluid
+
+
+-- Function to step simulator one step forward in time
+stepFluid dt m@(Model df ds vf vs cl sp cb)
+   | sp > maxSteps
+   , maxSteps > 0  
+   = case batchMode of
+                True  -> return m
+                False -> error "Finished simulation"
+
+   | otherwise 
+   = do performGC 
+        vf'     <- velocitySteps vf vs
+        df'     <- densitySteps df ds vf'
+        return  $ Model df' Nothing vf' Nothing cl (sp + 1) cb
+
+
+
 -- For benchmarking, use this function to run without
 -- graphical front-end
 runBatchMode :: Model -> IO ()
@@ -143,13 +155,14 @@ runBatchMode' m@(Model df ds vf vs cl sp cb)
    = return m
 
    | otherwise     
-   = do performGC 
-        m'      <- stepFluid dt m
+   = do m'      <- stepFluid dt m
         runBatchMode' m'
+
 
 -- Writes bitmap data to test batch-mode ran correctly
 outputBMP :: DensityField -> IO ()
 outputBMP df 
  = do   arr     <- computeUnboxedP $ A.map pixel8OfDensity df
         A.writeImageToBMP "./output.bmp" arr
+
 

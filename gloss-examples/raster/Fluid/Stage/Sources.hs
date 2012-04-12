@@ -20,7 +20,8 @@ addSources
         -> IO (Field a)
 
 addSources (Just (Source aim mul)) field
- = field `deepSeqArray` 
+ = {-# SCC addSources #-}
+   field `deepSeqArray` 
    do   traceEventIO "Fluid: addSources"
         computeP $ unsafeTraverse field id (insertSource aim mul)
 

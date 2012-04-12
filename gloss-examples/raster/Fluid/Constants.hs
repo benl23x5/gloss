@@ -1,18 +1,17 @@
 module Constants
-        ( widthI
-        , widthF
+        ( widthArg
         , dt
         , diff
         , windowWidth
         , windowHeight
-        , scaleX
-        , scaleY
+--        , scaleX
+--        , scaleY
         , visc
         , newDensity
         , newVelocity
 
         -- Arguments: defined as IORefs
-        , widthArg
+--        , widthArg
         , dtArg
         , diffArg
         , viscArg
@@ -28,14 +27,6 @@ import Data.IORef
 widthArg :: IORef Int
 widthArg        = unsafePerformIO $ newIORef 100
 {-# NOINLINE widthArg #-}
-
-widthI :: Int
-widthI = unsafePerformIO $ readIORef widthArg
-{-# INLINE widthI #-}
-
-widthF :: Float
-widthF = fromIntegral widthI
-{-# INLINE widthF #-}
 
 
 -- dt -------------------------------------------------------------------------
@@ -83,13 +74,13 @@ windowHeight = windowWidth
 
 
 -- scale ----------------------------------------------------------------------
-scaleX :: Float
-scaleX = fromIntegral (windowWidth `div` widthI)
-{-# INLINE scaleX #-}
+--scaleX :: Float
+--scaleX = fromIntegral (windowWidth `div` widthI)
+--{-# INLINE scaleX #-}
 
-scaleY :: Float
-scaleY = scaleX
-{-# INLINE scaleY #-}
+--scaleY :: Float
+--scaleY = scaleX
+--{-# INLINE scaleY #-}
 
 
 -- density --------------------------------------------------------------------

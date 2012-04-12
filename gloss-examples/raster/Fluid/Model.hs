@@ -19,6 +19,7 @@ import Data.Array.Repa.Repr.ForeignPtr  as R
 import Foreign
 import Constants
 import Unsafe.Coerce
+import Data.IORef
 
 -- | A 2d field.
 type Field a        
@@ -60,11 +61,13 @@ data Model
 -- | Creates an initial blank model
 initModel :: Model
 initModel   
- = let  density         = R.fromListUnboxed (Z:.widthI:.widthI) 
-                        $ replicate (widthI * widthI) 0
+ = let  width           = unsafePerformIO $ readIORef widthArg
 
-        velocity        = R.fromListUnboxed (Z:.widthI:.widthI)
-                        $ replicate (widthI*widthI) (0, 0)
+        density         = R.fromListUnboxed (Z:.width:.width) 
+                        $ replicate (width * width) 0
+
+        velocity        = R.fromListUnboxed (Z:.width:.width)
+                        $ replicate (width * width) (0, 0)
 
    in   Model
         { densityField   = density
@@ -83,6 +86,10 @@ pictureOfModel m
  = let  (Z :. width' :. height') = R.extent $ densityField m
         width           = fromIntegral width'
         height          = fromIntegral height'
+
+        windowWidth     = unsafePerformIO $ readIORef windowWidthArg
+        scaleX          = fromIntegral $ windowWidth `div` width
+        scaleY          = scaleX
 
    in do
         (arrDensity :: Array F DIM2 Word32)
@@ -126,6 +133,8 @@ pixel8OfDensity f
 
 -- | Creates alpha values for display
 alpha :: Array U DIM3 Word8
-alpha   = R.fromListUnboxed (Z:. widthI :. widthI :. 1) 
-        $ replicate (widthI*widthI) 255
+alpha   
+ = let  width   = unsafePerformIO $ readIORef widthArg
+   in   R.fromListUnboxed (Z:. width :. width :. 1) 
+        $ replicate (width * width) 255
 {-# INLINE alpha #-}
