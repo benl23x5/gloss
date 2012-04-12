@@ -5,24 +5,20 @@ where
 import Stage.Diffusion
 import Stage.Advection
 import Stage.Sources
+import Config
 import Model
-import Constants
-import Data.IORef
 
 -- | Run the stages for processing the density field in one time step
 densitySteps 
-        :: DensityField 
+        :: Config
+        -> DensityField 
         -> Maybe (Source Float) 
         -> VelocityField 
         -> IO DensityField
 
-densitySteps df ds vf 
+densitySteps config df ds vf 
  = {-# SCC "Solve.densitySteps" #-}
-   do   diff    <- readIORef diffArg
-        delta   <- readIORef dtArg
-        density <- readIORef densArg
-   
-        df1     <- addSources delta density ds df
-        df2     <- diffusion  delta diff df1
-        df'     <- advection  delta vf df2
+   do   df1     <- addSources (configDelta config) (configDensity   config) ds df
+        df2     <- diffusion  (configDelta config) (configDiffusion config) df1
+        df'     <- advection  (configDelta config) vf df2
         return  df'

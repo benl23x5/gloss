@@ -67,7 +67,7 @@ stepFluid config m@(Model df ds vf vs cl sp cb)
    | otherwise 
    = do performGC 
         vf'     <- velocitySteps config vf vs
-        df'     <- densitySteps df ds vf'
+        df'     <- densitySteps  config df ds vf'
         return  $ Model df' Nothing vf' Nothing cl (sp + 1) cb
 
 
