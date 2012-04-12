@@ -7,6 +7,7 @@ import FieldElt
 import Constants
 import Stage.Linear
 import Data.Array.Repa          as R
+import Data.Array.Repa.Unsafe   as R
 import Data.Array.Repa.Eval     as R
 import Data.Vector.Unboxed      (Unbox)
 import Debug.Trace
@@ -21,7 +22,7 @@ addSources
 addSources (Just (Source aim mul)) field
  = field `deepSeqArray` 
    do   traceEventIO "Fluid: addSources"
-        computeP $ traverse field id (insertSource aim mul)
+        computeP $ unsafeTraverse field id (insertSource aim mul)
 
 addSources Nothing field
    = return field
