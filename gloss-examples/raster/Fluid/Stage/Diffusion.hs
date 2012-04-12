@@ -15,15 +15,18 @@ import Data.IORef
 
 diffusion 
         :: (FieldElt a, Num a, Elt a, Unbox a) 
-        => Field a -> Float -> IO (Field a)
+        => Field a 
+        -> Float 
+        -> IO (Field a)
 diffusion f !rate
  = {-# SCC diffusion #-}
    f `deepSeqArray`  
-   do   let !width   = fromIntegral $ unsafePerformIO $ readIORef widthArg
+   do   let !width      = fromIntegral $ unsafePerformIO $ readIORef widthArg
+        let !dt         = unsafePerformIO $ readIORef dtArg
 
-        let !a       = dt * rate * width * width
-        let !c       = 1 + 4 * a
-        let !repeats = 20
+        let !a          = dt * rate * width * width
+        let !c          = 1 + 4 * a
+        let !repeats    = 20
         traceEventIO "Fluid: diffusion"
         linearSolver f f a c repeats
 

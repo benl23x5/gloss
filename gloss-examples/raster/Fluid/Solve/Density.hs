@@ -7,7 +7,7 @@ import Stage.Advection
 import Stage.Sources
 import Model
 import Constants
-
+import Data.IORef
 
 -- | Run the stages for processing the density field in one time step
 densitySteps 
@@ -18,7 +18,9 @@ densitySteps
 
 densitySteps df ds vf 
  = {-# SCC "Solve.densitySteps" #-}
-   do   df1     <- addSources ds df
+   do   diff    <- readIORef diffArg
+   
+        df1     <- addSources ds df
         df2     <- diffusion df1 diff
         df'     <- advection vf df2
         return  df'

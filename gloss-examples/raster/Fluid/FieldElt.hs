@@ -2,7 +2,6 @@
 
 -- | Field operations 
 module FieldElt where
-import Constants
 
 class FieldElt a where
         zero      :: a
@@ -28,8 +27,6 @@ class FieldElt a where
         -- | Masked filter, members with their corresponding flags set
         --   to False get zero.
         useIf     :: Bool -> a     -> a
-
-        addSource :: a    -> a     -> a
 
 
 instance FieldElt Float where
@@ -58,9 +55,6 @@ instance FieldElt Float where
         useIf True  a = a
         useIf False _ = 0
         {-# INLINE useIf #-}
-
-        addSource a mul = a ~+~ (newDensity * dt * mul)
-        {-# INLINE addSource #-}
 
 
 instance FieldElt (Float, Float) where
@@ -98,10 +92,4 @@ instance FieldElt (Float, Float) where
         negate (a1, a2) 
          = (~-~) (0, 0) (a1, a2)
         {-# INLINE negate #-}
-
-        addSource (a,b) (mulA, mulB)
-         = let (newA, newB) = newVelocity 
-           in  ( a + (newA * dt * (-mulA))
-               , b + (newB*dt*(-mulB)))
-        {-# INLINE addSource #-}
 

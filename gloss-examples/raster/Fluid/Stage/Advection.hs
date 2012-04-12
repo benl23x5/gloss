@@ -75,6 +75,7 @@ advection' vf orig _locate pos@(Z:.j:.i)
 
         -- helper values
 
+        !dt     = unsafePerformIO $ readIORef dtArg
         !dt0    = dt * width
         !(u, v) = vf `unsafeIndex` pos
 

@@ -8,7 +8,7 @@ import Stage.Sources
 import Stage.Project
 import Model
 import Constants
-
+import Data.IORef
 
 velocitySteps 
         :: VelocityField 
@@ -17,7 +17,9 @@ velocitySteps
 
 velocitySteps vf vs 
  = {-# SCC "Solve.velocitySteps" #-}
-   do   vf1     <- addSources  vs vf
+   do   visc    <- readIORef $ viscArg
+
+        vf1     <- addSources  vs vf
         vf2     <- diffusion   vf1 visc
 --        vf3     <- setBoundary vf2
         vf4     <- project     vf2

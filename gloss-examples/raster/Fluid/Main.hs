@@ -147,7 +147,8 @@ runBatchMode' model
         = return model
 
         | otherwise     
-        = do    model'  <- stepFluid dt model
+        = do    dt      <- readIORef dtArg 
+                model'  <- stepFluid dt model
                 runBatchMode' model'
 
 
