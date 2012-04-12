@@ -17,6 +17,7 @@ import Prelude as P
 import System.IO.Unsafe
 import Data.Array.Repa                  as A
 import Data.Array.Repa.IO.BMP           as A
+import Config
 
 main 
  = do   args <- getArgs
@@ -32,7 +33,9 @@ main
 
         case batchMode of
          False -> main'
-         True  -> runBatchMode initModel
+         True  -> do
+                width   <- readIORef widthArg
+                runBatchMode (initModel width width)
 
 
 -- | Command line options.
@@ -109,12 +112,35 @@ maxStepsArg = unsafePerformIO $ newIORef 0
 main' 
  = do   windowWidth      <- readIORef windowWidthArg 
         let windowHeight = windowWidth
+
+        width           <- readIORef widthArg
+        let height      = width
+
+        let scaleX      = fromIntegral $ windowWidth `div` width
+        let scaleY      = fromIntegral $ windowHeight `div` height
+        delta           <- readIORef dtArg
+        diff            <- readIORef diffArg
+        visc            <- readIORef viscArg
+        dens            <- readIORef densArg
+        vel             <- readIORef velArg
+
+        let config
+                = Config
+                { configWindowSize      = (windowWidth, windowHeight)
+                , configModelSize       = (width, height)
+                , configDelta           = delta
+                , configDiffusion       = diff
+                , configViscosity       = visc
+                , configDensity         = dens
+                , configVelocity        = vel }
+
+
         playIO  (InWindow "fluid" (windowWidth, windowHeight) (500, 20))
                 black
                 (unsafePerformIO $ readIORef rate)
-                initModel
-                pictureOfModel
-                (\event model -> return $ userEvent event model)
+                (initModel width height)
+                (pictureOfModel scaleX scaleY)
+                (\event model -> return $ userEvent config event model)
                 stepFluid
 
 

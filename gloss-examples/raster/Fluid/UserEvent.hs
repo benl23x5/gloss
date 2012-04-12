@@ -1,20 +1,21 @@
 module UserEvent
         (userEvent)
 where
-import Constants
+import Config
 import Model                                    as M
-import Data.Array.Repa                          as A
+import Data.Array.Repa                          as R
 import Graphics.Gloss.Interface.Pure.Game       as G
-import System.IO.Unsafe
-import Data.IORef
 
--- Handler for user events from gameInWindow
-userEvent :: Event -> Model -> Model
-userEvent (EventKey key keyState _mods (x, y)) 
-        (Model df ds vf vs cl sp _cb)
+
+-- | Handle user events for the Gloss `playIO` wrapper.
+userEvent :: Config -> Event -> Model -> Model
+userEvent config
+              (EventKey key keyState _mods (x, y)) 
+        model@(Model df ds vf vs cl sp _cb)
+
         | MouseButton G.LeftButton <- key
-        , Down                     <- keyState
-        , (x',y')       <- windowToModel (x,y) 
+        , Down                          <- keyState
+        , (x',y')                       <- windowToModel config (x, y) 
         = Model { densityField   = df
                 , densitySource  = Just (Source (Z:.y':.x') 1)
                 , velocityField  = vf
@@ -35,9 +36,9 @@ userEvent (EventKey key keyState _mods (x, y))
                 , currButton     = M.None
                 }
 
-        | MouseButton G.RightButton <- key
-        , Down                      <- keyState
-        , (x',y')       <-  windowToModel (x,y)
+        | MouseButton G.RightButton     <- key
+        , Down                          <- keyState
+        , (x',y')                       <- windowToModel config (x,y)
         = Model { densityField   = df
                 , densitySource  = ds
                 , velocityField  = vf
@@ -50,7 +51,7 @@ userEvent (EventKey key keyState _mods (x, y))
         | MouseButton G.RightButton     <- key
         , Up                            <- keyState
         , Just (locX, locY)             <- cl
-        , (x',y')                       <- windowToModel (x,y)
+        , (x',y')                       <- windowToModel config (x,y)
         =  Model { densityField   = df
                  , densitySource  = ds
                  , velocityField  = vf
@@ -63,17 +64,18 @@ userEvent (EventKey key keyState _mods (x, y))
 
         | Char 'r' <- key
         , Down     <- keyState
-        = initModel
+        = let   (_ :. height :. width) = R.extent (densityField model)
+          in    initModel width height
 
         | Char 'q' <- key
         , Down     <- keyState
         = error "Quitting"
 
 
-userEvent (EventMotion (x,y)) 
-          (Model df _ds vf vs cl sp M.LeftButton)
- = let (x',y') = windowToModel (x,y) 
-   in   Model   { densityField   = df
+userEvent config (EventMotion (x, y)) 
+        (Model df _ds vf vs cl sp M.LeftButton)
+        | (x',y')                       <- windowToModel config (x, y) 
+        = Model { densityField   = df
                 , densitySource  = Just (Source (Z:.y':.x') 1)
                 , velocityField  = vf
                 , velocitySource = vs
@@ -82,35 +84,33 @@ userEvent (EventMotion (x,y))
                 , currButton     = M.LeftButton
                 }
 
-userEvent (EventMotion (x,y)) 
-          (Model df ds vf _vs (Just (clx,cly)) sp M.RightButton)
- = let (x',y') = windowToModel (x,y) 
-   in  Model    { densityField   = df
+userEvent config (EventMotion (x, y)) 
+          (Model df ds vf _vs (Just (clx, cly)) sp M.RightButton)
+        | (x', y')                      <- windowToModel config (x,y)
+        = Model { densityField   = df
                 , densitySource  = ds
                 , velocityField  = vf
                 , velocitySource = Just (Source (Z:.y':.x')
-                                      (fromIntegral (clx-x'), fromIntegral (cly-y')))
+                                        (fromIntegral (clx-x'), fromIntegral (cly-y')))
                 , clickLoc       = Just (x',y')
                 , stepsPassed    = sp
                 , currButton     = M.RightButton
                 }
 
-userEvent _ m = m
+userEvent _ _ m = m
 
 -- Converts a window location to the corresponding location in the
 -- simulation.
--- NOTE: Only gives proper mapping if the window width and the width of the
---    simulator are multiples
-windowToModel :: (Float, Float) -> (Int, Int)
-windowToModel (x,y) = (x',y')
- where  width           = unsafePerformIO $ readIORef widthArg
-        windowWidth     = unsafePerformIO $ readIORef windowWidthArg
-        windowHeight    = windowWidth
-        scaleX          = fromIntegral $ windowWidth `div` width
-        scaleY          = scaleX
+windowToModel :: Config -> (Float, Float) -> (Int, Int)
+windowToModel config (x, y) = (x', y')
+ where  (scaleX, scaleY)                = configScale config
+        (windowWidth, windowHeight)     = configWindowSize config
 
-        x' = round ((x + ((fromIntegral windowWidth) / 2)) / scaleX)
-        y' = round ((y + ((fromIntegral windowHeight) / 2)) / scaleY)
+        x' = round ((x + (fromIntegral windowWidth  / 2)) / scaleX)
+        y' = round ((y + (fromIntegral windowHeight / 2)) / scaleY)
+
+
+
 
 
 

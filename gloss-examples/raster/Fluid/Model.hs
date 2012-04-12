@@ -18,12 +18,9 @@ where
 import Graphics.Gloss                   
 import Data.Array.Repa                  as R
 import Data.Array.Repa.Repr.ForeignPtr  as R
-import System.IO.Unsafe
-import Constants
-import Unsafe.Coerce
-import Data.IORef
 import Data.Bits
 import Data.Word
+import Unsafe.Coerce
 
 
 -- | Time delta (seconds)
@@ -57,6 +54,7 @@ data Source a
         = Source DIM2 a
 
 
+-- Model ----------------------------------------------------------------------
 -- | The world model.
 data Model
         = Model
@@ -71,15 +69,13 @@ data Model
 
 
 -- | Creates an initial blank model
-initModel :: Model
-initModel   
- = let  width           = unsafePerformIO $ readIORef widthArg
+initModel :: Int -> Int -> Model
+initModel width height
+ = let  density         = R.fromListUnboxed (Z:. height :. width) 
+                        $ replicate (height * width) 0
 
-        density         = R.fromListUnboxed (Z:.width:.width) 
-                        $ replicate (width * width) 0
-
-        velocity        = R.fromListUnboxed (Z:.width:.width)
-                        $ replicate (width * width) (0, 0)
+        velocity        = R.fromListUnboxed (Z:. height :. width)
+                        $ replicate (height * width) (0, 0)
 
    in   Model
         { densityField   = density
@@ -92,22 +88,19 @@ initModel
 {-# INLINE initModel #-}
 
 
+-- Picture --------------------------------------------------------------------
 -- | Function to convert the Model into a Bitmap for displaying in Gloss
-pictureOfModel :: Monad m => Model -> m Picture
-pictureOfModel m 
+pictureOfModel :: Monad m => Int -> Int -> Model -> m Picture
+pictureOfModel scaleX scaleY m 
  = let  (Z :. width' :. height') = R.extent $ densityField m
         width           = fromIntegral width'
         height          = fromIntegral height'
-
-        windowWidth     = unsafePerformIO $ readIORef windowWidthArg
-        scaleX          = fromIntegral $ windowWidth `div` width
-        scaleY          = scaleX
 
    in do
         (arrDensity :: Array F DIM2 Word32)
          <- computeP $ R.map pixel32OfDensity $ densityField m
 
-        return  $ Scale scaleX scaleY 
+        return  $ Scale (fromIntegral scaleX) (fromIntegral scaleY)
                 $ bitmapOfForeignPtr width height
                         (R.toForeignPtr $ unsafeCoerce arrDensity)
                         False
