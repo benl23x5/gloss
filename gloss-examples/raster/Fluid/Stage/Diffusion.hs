@@ -4,36 +4,37 @@ module Stage.Diffusion
 where
 import Model
 import FieldElt
-import Constants
 import Stage.Linear
 import Data.Array.Repa          as R
 import Data.Array.Repa.Eval     as R
 import Data.Vector.Unboxed
 import Debug.Trace
-import System.IO.Unsafe
-import Data.IORef
 
+
+-- | Diffuse a field at a certain rate.
 diffusion 
         :: (FieldElt a, Num a, Elt a, Unbox a) 
-        => Field a 
-        -> Float 
+        => Delta -> Rate
+        -> Field a 
         -> IO (Field a)
-diffusion f !rate
+diffusion !delta !rate field 
  = {-# SCC diffusion #-}
-   f `deepSeqArray`  
-   do   let !width      = fromIntegral $ unsafePerformIO $ readIORef widthArg
-        let !dt         = unsafePerformIO $ readIORef dtArg
-
-        let !a          = dt * rate * width * width
-        let !c          = 1 + 4 * a
-        let !repeats    = 20
+   field `deepSeqArray`  
+   let  _ :. _ :. width' = R.extent field
+        !width           = fromIntegral width'
+        !a               = delta * rate * width * width
+        !c               = 1 + 4 * a
+        !repeats         = 20
+   in do
         traceEventIO "Fluid: diffusion"
-        linearSolver f f a c repeats
+        linearSolver field field a c repeats
 
 {-# SPECIALIZE diffusion 
-        :: Field Float -> Float 
+        :: Delta -> Rate
+        -> Field Float 
         -> IO (Field Float) #-}
 
 {-# SPECIALIZE diffusion 
-        :: Field (Float, Float) -> Float 
+        :: Delta -> Rate
+        -> Field (Float, Float) 
         -> IO (Field (Float, Float)) #-}

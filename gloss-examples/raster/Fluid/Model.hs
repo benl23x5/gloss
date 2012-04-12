@@ -1,6 +1,8 @@
 {-# LANGUAGE ScopedTypeVariables, BangPatterns #-}
 module Model
-        ( Field
+        ( Delta
+        , Rate
+        , Field
         , DensityField
         , VelocityField
         , Source        (..)
@@ -22,6 +24,14 @@ import Unsafe.Coerce
 import Data.IORef
 import Data.Bits
 import Data.Word
+
+
+-- | Time delta (seconds)
+type Delta      = Float
+
+-- | Time rate (or period) (1/seconds)
+type Rate       = Float
+
 
 -- | A 2d field.
 type Field a        

@@ -19,8 +19,9 @@ densitySteps
 densitySteps df ds vf 
  = {-# SCC "Solve.densitySteps" #-}
    do   diff    <- readIORef diffArg
+        delta   <- readIORef dtArg
    
         df1     <- addSources ds df
-        df2     <- diffusion df1 diff
-        df'     <- advection vf df2
+        df2     <- diffusion  delta diff df1
+        df'     <- advection  delta vf df2
         return  df'
