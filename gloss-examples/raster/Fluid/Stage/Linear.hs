@@ -57,6 +57,7 @@ linearSolver origField curField !a !c !i
         -> IO (Field (Float, Float)) #-}
 
 
+
 -- | Stencil function for the linear solver.
 linearSolverStencil 
         :: FieldElt a
@@ -82,4 +83,6 @@ linearSolverCoeffs a c (Z:.j:.i)
    | i ==  0, j == -1 = Just (a/c)
    | otherwise        = Nothing
 {-# INLINE linearSolverCoeffs #-}
+
+
 

@@ -17,10 +17,11 @@ velocitySteps
 
 velocitySteps vf vs 
  = {-# SCC "Solve.velocitySteps" #-}
-   do   visc    <- readIORef $ viscArg
-        delta   <- readIORef $ dtArg
+   do   visc            <- readIORef $ viscArg
+        delta           <- readIORef $ dtArg
+        velocity        <- readIORef $ velArg
 
-        vf1     <- addSources  vs vf
+        vf1     <- addSources  delta velocity vs vf
         vf2     <- diffusion   delta visc vf1 
 --        vf3     <- setBoundary vf2
         vf4     <- project     vf2
