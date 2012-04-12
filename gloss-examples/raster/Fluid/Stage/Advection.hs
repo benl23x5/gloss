@@ -5,10 +5,8 @@ where
 import Model
 import FieldElt
 import Constants
-import Stage.Linear
 import Data.Array.Repa          as R
 import Data.Array.Repa.Unsafe   as R
-import Data.Array.Repa.Eval     as R
 import Data.Vector.Unboxed      (Unbox)
 import Debug.Trace
 import System.IO.Unsafe
@@ -43,7 +41,7 @@ advection'
         -> DIM2 
         -> a
 
-advection' vf orig locate pos@(Z:.j:.i)
+advection' vf orig _locate pos@(Z:.j:.i)
  = vf `deepSeqArray` orig `deepSeqArray`
       (((d00 ~*~ t0) ~+~ (d01 ~*~ t1)) ~*~ s0) 
   ~+~ (((d10 ~*~ t0) ~+~ (d11 ~*~ t1)) ~*~ s1)

@@ -10,8 +10,8 @@ import Data.IORef
 
 -- Handler for user events from gameInWindow
 userEvent :: Event -> Model -> Model
-userEvent (EventKey key keyState mods (x, y)) 
-        m@(Model df ds vf vs cl sp cb)
+userEvent (EventKey key keyState _mods (x, y)) 
+        (Model df ds vf vs cl sp _cb)
         | MouseButton G.LeftButton <- key
         , Down                     <- keyState
         , (x',y')       <- windowToModel (x,y) 
@@ -71,7 +71,7 @@ userEvent (EventKey key keyState mods (x, y))
 
 
 userEvent (EventMotion (x,y)) 
-        m@(Model df ds vf vs cl sp M.LeftButton)
+          (Model df _ds vf vs cl sp M.LeftButton)
  = let (x',y') = windowToModel (x,y) 
    in   Model   { densityField   = df
                 , densitySource  = Just (Source (Z:.y':.x') 1)
@@ -83,7 +83,7 @@ userEvent (EventMotion (x,y))
                 }
 
 userEvent (EventMotion (x,y)) 
-        m@(Model df ds vf vs (Just (clx,cly)) sp M.RightButton)
+          (Model df ds vf _vs (Just (clx,cly)) sp M.RightButton)
  = let (x',y') = windowToModel (x,y) 
    in  Model    { densityField   = df
                 , densitySource  = ds
@@ -105,9 +105,9 @@ windowToModel :: (Float, Float) -> (Int, Int)
 windowToModel (x,y) = (x',y')
  where  width           = unsafePerformIO $ readIORef widthArg
         windowWidth     = unsafePerformIO $ readIORef windowWidthArg
+        windowHeight    = windowWidth
         scaleX          = fromIntegral $ windowWidth `div` width
         scaleY          = scaleX
-
 
         x' = round ((x + ((fromIntegral windowWidth) / 2)) / scaleX)
         y' = round ((y + ((fromIntegral windowHeight) / 2)) / scaleY)

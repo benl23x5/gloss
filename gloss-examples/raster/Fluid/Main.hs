@@ -9,20 +9,14 @@ import UserEvent
 import Constants
 import Graphics.Gloss
 import Graphics.Gloss.Interface.IO.Game
-import Codec.BMP
 import System.Environment( getArgs )
 import System.Console.GetOpt
 import Data.IORef
 import System.Mem
 import Prelude as P
 import System.IO.Unsafe
-import Data.Word
 import Data.Array.Repa                  as A
-import Data.Array.Repa.Repr.ByteString  as A
-import Data.Array.Repa.Repr.ForeignPtr  as A
-import Data.Array.Repa.Index            as I
 import Data.Array.Repa.IO.BMP           as A
-import qualified Data.ByteString        as B
 
 main 
  = do   args <- getArgs
@@ -40,9 +34,6 @@ main
          False -> main'
          True  -> runBatchMode initModel
 
-addArgs []         = return ()
-addArgs (arg:args) = arg `seq` (addArgs args)
-      
 
 -- | Command line options.
 options :: [OptDescr (IO ())]
@@ -116,18 +107,19 @@ maxStepsArg = unsafePerformIO $ newIORef 0
 -- Main -----------------------------------------------------------------------
 -- Regular simulator starts here
 main' 
- = playIO
-        (InWindow "fluid" (windowWidth, windowHeight) (500, 20))
-        black
-        (unsafePerformIO $ readIORef rate)
-        initModel
-        pictureOfModel
-        (\event model -> return $ userEvent event model)
-        stepFluid
+ = do   windowWidth      <- readIORef windowWidthArg 
+        let windowHeight = windowWidth
+        playIO  (InWindow "fluid" (windowWidth, windowHeight) (500, 20))
+                black
+                (unsafePerformIO $ readIORef rate)
+                initModel
+                pictureOfModel
+                (\event model -> return $ userEvent event model)
+                stepFluid
 
 
 -- Function to step simulator one step forward in time
-stepFluid dt m@(Model df ds vf vs cl sp cb)
+stepFluid _dt m@(Model df ds vf vs cl sp cb)
    | sp > maxSteps
    , maxSteps > 0  
    = case batchMode of
@@ -147,16 +139,16 @@ stepFluid dt m@(Model df ds vf vs cl sp cb)
 runBatchMode :: Model -> IO ()
 runBatchMode m 
  = do   m'      <- runBatchMode' m
-        outputBMP $ densityField m
+        outputBMP $ densityField m'
 
-runBatchMode' m@(Model df ds vf vs cl sp cb)
-   | sp > maxSteps
-   , maxSteps > 0  
-   = return m
+runBatchMode' model
+        | stepsPassed model > maxSteps
+        , maxSteps > 0  
+        = return model
 
-   | otherwise     
-   = do m'      <- stepFluid dt m
-        runBatchMode' m'
+        | otherwise     
+        = do    model'  <- stepFluid dt model
+                runBatchMode' model'
 
 
 -- Writes bitmap data to test batch-mode ran correctly

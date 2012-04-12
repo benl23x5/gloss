@@ -5,11 +5,9 @@ where
 import Stage.Diffusion
 import Stage.Advection
 import Stage.Sources
-import Stage.Boundary
 import Stage.Project
 import Model
 import Constants
-import Data.Array.Repa
 
 
 velocitySteps 

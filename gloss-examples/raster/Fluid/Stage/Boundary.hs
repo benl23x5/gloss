@@ -4,15 +4,10 @@ module Stage.Boundary
         (setBoundary)
 where
 import Model
-import FieldElt
 import Constants
-import Stage.Linear
 import Data.Array.Repa          as R
-import Data.Array.Repa.Eval     as R
-import Data.Vector.Unboxed      (Unbox)
 import Control.Monad
 import Debug.Trace
-import System.IO.Unsafe
 import Data.IORef
 
 
@@ -53,14 +48,6 @@ rebuildPosMap !width (Z:.j:.i)
         where   end = width - 1
 {-# INLINE rebuildPosMap #-}
 
-
--- | Corner cases are special and are calculated with this function
-grabCornerCase :: (DIM2 -> (Float, Float)) -> DIM2 -> DIM2 -> (Float, Float)
-grabCornerCase loc pos1 pos2
- = (p1 * q1, p2 * q2) ~*~ 0.5
- where  (p1,p2) = loc pos1
-        (q1,q2) = loc pos2
-{-# INLINE grabCornerCase #-}
 
 
 -- | Grabs the border elements of the VelocityField and outputs them as
@@ -112,5 +99,15 @@ revBoundary loc pos@(Z:.j:.i)
         where (p1,p2)   = loc pos
               end       = widthI - 1
 {-# INLINE revBoundary #-}
+
+-- | Corner cases are special and are calculated with this function
+grabCornerCase :: (DIM2 -> (Float, Float)) -> DIM2 -> DIM2 -> (Float, Float)
+grabCornerCase loc pos1 pos2
+ = (p1 * q1, p2 * q2) ~*~ 0.5
+ where  (p1,p2) = loc pos1
+        (q1,q2) = loc pos2
+{-# INLINE grabCornerCase #-}
+
+
 -}
 

@@ -7,7 +7,6 @@ import Stage.Advection
 import Stage.Sources
 import Model
 import Constants
-import Data.Array.Repa
 
 
 -- | Run the stages for processing the density field in one time step

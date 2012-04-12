@@ -16,10 +16,12 @@ where
 import Graphics.Gloss                   
 import Data.Array.Repa                  as R
 import Data.Array.Repa.Repr.ForeignPtr  as R
-import Foreign
+import System.IO.Unsafe
 import Constants
 import Unsafe.Coerce
 import Data.IORef
+import Data.Bits
+import Data.Word
 
 -- | A 2d field.
 type Field a        
@@ -130,11 +132,3 @@ pixel8OfDensity f
     in  (x, x, x)
 {-# INLINE pixel8OfDensity #-}
 
-
--- | Creates alpha values for display
-alpha :: Array U DIM3 Word8
-alpha   
- = let  width   = unsafePerformIO $ readIORef widthArg
-   in   R.fromListUnboxed (Z:. width :. width :. 1) 
-        $ replicate (width * width) 255
-{-# INLINE alpha #-}

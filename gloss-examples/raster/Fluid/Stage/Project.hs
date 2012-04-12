@@ -8,8 +8,6 @@ import Constants
 import Stage.Linear
 import Data.Array.Repa          as R
 import Data.Array.Repa.Unsafe   as R
-import Data.Array.Repa.Eval     as R
-import Data.Vector.Unboxed      (Unbox)
 import Debug.Trace
 import Data.IORef
 
@@ -21,12 +19,12 @@ project f
         !width  <- readIORef widthArg
 
         traceEventIO "Fluid: project gradient"
-        div     <- {-# SCC "project.genDiv" #-}
+        divergence <- {-# SCC "project.genDiv" #-}
                    computeUnboxedP $ fromFunction (Z:. width :. width) (genDiv width f)
 
         traceEventIO "Fluid: project linear solver"
         p       <- {-# SCC "project.linearSolver" #-}
-                   linearSolver div div 1 4 repeats
+                   linearSolver divergence divergence 1 4 repeats
 
         traceEventIO "Fluid: project apply"
         f'      <- {-# SCC "project.apply" #-}

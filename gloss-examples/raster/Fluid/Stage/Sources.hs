@@ -4,11 +4,8 @@ module Stage.Sources
 where
 import Model
 import FieldElt
-import Constants
-import Stage.Linear
 import Data.Array.Repa          as R
 import Data.Array.Repa.Unsafe   as R
-import Data.Array.Repa.Eval     as R
 import Data.Vector.Unboxed      (Unbox)
 import Debug.Trace
 

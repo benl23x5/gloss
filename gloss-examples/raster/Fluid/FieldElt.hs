@@ -2,7 +2,6 @@
 
 -- | Field operations 
 module FieldElt where
-import Data.Array.Repa
 import Constants
 
 class FieldElt a where
@@ -89,7 +88,7 @@ instance FieldElt (Float, Float) where
         {-# INLINE (~/~) #-}
 
         addIf True  a b  = a ~+~ b
-        addIf False a b  = b 
+        addIf False _ b  = b 
         {-# INLINE addIf #-}
 
         useIf True  a   = a

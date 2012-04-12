@@ -3,7 +3,6 @@ module Stage.Linear
         (linearSolver)
 where
 import Model
-import Constants
 import FieldElt                         as E
 import Data.Array.Repa                  as R
 import Data.Array.Repa.Stencil          as R
