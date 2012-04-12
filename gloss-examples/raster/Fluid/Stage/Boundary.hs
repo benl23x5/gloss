@@ -11,18 +11,20 @@ import Debug.Trace
 import Data.IORef
 
 
+-- | Apply boundary conditions to a velocity field.
 setBoundary :: VelocityField -> IO VelocityField
 setBoundary f
         = (rebuild f <=< setBoundary <=< grabBorders) f 
 
+
 -- | Takes the original VelocityField and the array of edges and replaces
 --   edge values with new values
 rebuild :: VelocityField -> VelocityField -> IO VelocityField
-rebuild f e
+rebuild field edges
  = f `deepSeqArray` e `deepSeqArray` 
    do   width   <- readIORef widthArg
         traceEventIO "Fluid: rebuild"
-        computeUnboxedP $ backpermuteDft f (rebuildPosMap width) e
+        computeUnboxedP $ backpermuteDft field (rebuildPosMap width) edges
 {-# INLINE rebuild #-}
 
 
@@ -35,14 +37,14 @@ rebuildPosMap !width (Z:.j:.i)
         = Just (Z:.1:.i)
 
         | i == 0          
-        = if j == 0        then Just (Z:.0:.0)
-          else if j == end then Just (Z:.1:.0)
-                           else Just (Z:.2:.j)
+        = if j == 0        then Just (Z:. 0 :. 0)
+          else if j == end then Just (Z:. 1 :. 0)
+                           else Just (Z:. 2 :. j)
 
         | i == width - 1 
-        = if j == 0        then Just (Z:.0:.(width-1))
-          else if j == end then Just (Z:.1:.(width-1))
-                           else Just (Z:.3:.j)
+        = if j == 0        then Just (Z:. 0 :. (width-1))
+          else if j == end then Just (Z:. 1 :. (width-1))
+                           else Just (Z:. 3 :. j)
 
         | otherwise       = Nothing
         where   end = width - 1
@@ -60,8 +62,9 @@ grabBorders f
         computeUnboxedP $ backpermute (Z:.4:.width) (edgeCases width) f
 {-# INLINE grabBorders #-}
 
--- Maps a position in the edges array to what they were in the original
--- array
+
+-- | Map a position in the edges array to what they were in the original
+--   array.
 edgeCases :: Int -> DIM2 -> DIM2
 edgeCases width (Z:.j:.i)
         | j == 0    = (Z:.0         :.i)

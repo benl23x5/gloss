@@ -15,44 +15,37 @@ import Debug.Trace
 linearSolver 
         :: (FieldElt a, Repr U a, Unbox a, Elt a, Num a)
         => Field a      -- ^ Original field.
-        -> Field a      -- ^ current field.
-        -> Float        -- 
+        -> Field a      -- ^ Current field.
+        -> Float
         -> Float
         -> Int          -- ^ Number of iterations to apply.
         -> IO (Field a)
 
--- If linearSolver would not actually change anything by running, skip
-linearSolver origF _  !0  !_  !_
-        = return origF
+linearSolver origField curField !a !c !i
+        -- If nothing would change by running the solver, then skip it.
+        | 0 <- a       = return origField
 
--- If linearSolver has finished loop
-linearSolver _     f  !_  !_  !0
-        = return f
+        -- The solver has finished its loop
+        | 0 <- i       = return curField
 
--- Calculate intermediate array
-linearSolver origF f !a !c !i
- = origF `deepSeqArray` f `deepSeqArray`
-   do   
-        let !c' = 1/c
-        let {-# INLINE zipFunc #-}
-            zipFunc !orig !new
-                = new ~+~ (orig ~*~ c')
+        -- Do one iteration
+        | otherwise
+        = origField `deepSeqArray` curField `deepSeqArray`
+          do    let !c' = 1/c
+                let {-# INLINE zipFunc #-}
+                    zipFunc !orig !new
+                        = new ~+~ (orig ~*~ c')
 
-        traceEventIO "Fluid: linear solver mapStencil"
-        f'      <- {-# SCC "linearSolver.mapStencil" #-}
-                   computeUnboxedP 
-                 $ R.czipWith zipFunc origF
-                 $ mapStencil2 (BoundConst E.zero) (linearSolverStencil a c) f
+                traceEventIO "Fluid: linear solver mapStencil"
+                newField <- {-# SCC "linearSolver.mapStencil" #-}
+                           computeUnboxedP 
+                         $ R.czipWith zipFunc origField
+                         $ mapStencil2 (BoundConst E.zero) (linearSolverStencil a c) curField
 
-{-
-        traceEventIO "Fluid: linear solver zipWith"
-        f''     <- {-# SCC "linearSolver.zipWith" #-}
-                   computeUnboxedP $ R.zipWith zipFunc origF f'
--}
-        linearSolver origF f' a c (i - 1)
+                linearSolver origField newField a c (i - 1)
 
 {-# SPECIALIZE linearSolver 
-        :: Field Float 
+        :: Field Float
         -> Field Float 
         -> Float -> Float -> Int 
         -> IO (Field Float) #-}
@@ -64,33 +57,24 @@ linearSolver origF f !a !c !i
         -> IO (Field (Float, Float)) #-}
 
 
-
--- Function is specialised, rather than inlined, as GHC would not inline the function
--- therwise
--- zipFunc :: (FieldElt a) => Float -> a -> a -> a
--- zipFunc !c !orig !new = new ~+~ (orig ~*~ c)
--- {-# INLINE zipFunc #-}
-
-
-
+-- | Stencil function for the linear solver.
 linearSolverStencil 
         :: FieldElt a
-        => Float -> Float
-        -> Stencil DIM2 a
+        => Float -> Float -> Stencil DIM2 a
 
 linearSolverStencil a c 
  = StencilStatic (Z:.3:.3) E.zero
       (\ix val acc ->
          case linearSolverCoeffs a c ix of
-            Nothing -> acc
+            Nothing    -> acc
             Just coeff -> acc ~+~ (val ~*~ coeff))
 {-# INLINE linearSolverStencil #-}
          
 
+-- | Linear solver stencil kernel.
 linearSolverCoeffs 
-        :: Float -> Float
-        -> DIM2  
-        -> Maybe Float
+        :: Float -> Float -> DIM2 -> Maybe Float
+
 linearSolverCoeffs a c (Z:.j:.i)
    | i ==  1, j ==  0 = Just (a/c)
    | i == -1, j ==  0 = Just (a/c)
