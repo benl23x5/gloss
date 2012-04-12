@@ -4,26 +4,25 @@ module Stage.Boundary
         (setBoundary)
 where
 import Model
-import Constants
 import Data.Array.Repa          as R
 import Control.Monad
 import Debug.Trace
-import Data.IORef
-
+import Config
+import FieldElt
 
 -- | Apply boundary conditions to a velocity field.
-setBoundary :: VelocityField -> IO VelocityField
-setBoundary f
-        = (rebuild f <=< setBoundary <=< grabBorders) f 
+setBoundary :: Config -> VelocityField -> IO VelocityField
+setBoundary config f
+ = let  (width, _)      = configModelSize config
+   in   (rebuild width f <=< setBoundary' width <=< grabBorders width) f 
 
 
 -- | Takes the original VelocityField and the array of edges and replaces
 --   edge values with new values
-rebuild :: VelocityField -> VelocityField -> IO VelocityField
-rebuild field edges
- = f `deepSeqArray` e `deepSeqArray` 
-   do   width   <- readIORef widthArg
-        traceEventIO "Fluid: rebuild"
+rebuild :: Int -> VelocityField -> VelocityField -> IO VelocityField
+rebuild width field edges
+ = field `deepSeqArray` edges `deepSeqArray` 
+   do   traceEventIO "Fluid: rebuild"
         computeUnboxedP $ backpermuteDft field (rebuildPosMap width) edges
 {-# INLINE rebuild #-}
 
@@ -54,12 +53,11 @@ rebuildPosMap !width (Z:.j:.i)
 
 -- | Grabs the border elements of the VelocityField and outputs them as
 --   one array, for ease of adding back into the original VelocityField later
-grabBorders :: VelocityField -> IO VelocityField
-grabBorders f
+grabBorders :: Int -> VelocityField -> IO VelocityField
+grabBorders width f
  = f `deepSeqArray` 
    do   traceEventIO "Fluid: grabBorders"
-        width   <- readIORef widthArg
-        computeUnboxedP $ backpermute (Z:.4:.width) (edgeCases width) f
+        computeUnboxedP $ backpermute (Z:. 4 :. width) (edgeCases width) f
 {-# INLINE grabBorders #-}
 
 
@@ -76,31 +74,34 @@ edgeCases width (Z:.j:.i)
 
 
 
-{-
-setBoundary' :: VelocityField -> IO VelocityField
-setBoundary' e
+setBoundary' :: Int -> VelocityField -> IO VelocityField
+setBoundary' width e
  = e `deepSeqArray` 
    do   traceEventIO "Fluid: setBoundary'"
-        computeUnboxedP $ traverse e id revBoundary
+        computeUnboxedP $ traverse e id (revBoundary width)
 {-# INLINE setBoundary' #-}
 
 
 -- | Based on position in edges array set the velocity accordingly
-revBoundary :: (DIM2 -> (Float,Float)) -> DIM2 -> (Float,Float)
-revBoundary loc pos@(Z:.j:.i)
+revBoundary :: Int -> (DIM2 -> (Float,Float)) -> DIM2 -> (Float,Float)
+revBoundary width loc pos@(Z:.j:.i)
         | j == 0    
         = if i == 0        then grabCornerCase loc (Z:.2:.1) (Z:.0:.1)
-          else if i == end then grabCornerCase loc (Z:.0:.(widthI-2)) (Z:.3:.1)
+          else if i == end then grabCornerCase loc (Z:.0:.(width-2)) (Z:.3:.1)
                            else (-p1,p2)
         | j == 1    
-        = if i == 0        then grabCornerCase loc (Z:.2:.(widthI-2)) (Z:.1:.1)
-          else if i == end then grabCornerCase loc (Z:.1:.(widthI-2)) (Z:.3:.(widthI-2))
+        = if i == 0        then grabCornerCase loc (Z:.2:.(width-2)) (Z:.1:.1)
+          else if i == end then grabCornerCase loc (Z:.1:.(width-2)) (Z:.3:.(width-2))
                            else (-p1,p2)
 
         | j == 2        = (p1,-p2)
         | j == 3        = (p1,-p2)
+
+        | otherwise     = error "Fluid: revBoundary"
         where (p1,p2)   = loc pos
-              end       = widthI - 1
+              end       = width - 1
+
+
 {-# INLINE revBoundary #-}
 
 -- | Corner cases are special and are calculated with this function
@@ -112,5 +113,4 @@ grabCornerCase loc pos1 pos2
 {-# INLINE grabCornerCase #-}
 
 
--}
 

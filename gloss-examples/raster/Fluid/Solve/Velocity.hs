@@ -6,6 +6,7 @@ import Stage.Diffusion
 import Stage.Advection
 import Stage.Sources
 import Stage.Project
+import Stage.Boundary
 import Model
 import Config
 
