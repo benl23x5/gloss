@@ -10,6 +10,15 @@ data Config
         { -- | Size of window in pixels
           configWindowSize      :: (Int, Int)
 
+          -- | Simulation rate (frames per second)
+        , configRate            :: Int
+
+          -- | Maximum number of steps in simulation
+        , configMaxSteps        :: Int
+
+          -- | Whether to run in batch-mode, non-interactively.
+        , configBatchMode       :: Bool
+
           -- | Number of cells in model.
         , configModelSize       :: (Int, Int)
 
