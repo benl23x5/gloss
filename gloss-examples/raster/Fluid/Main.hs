@@ -1,6 +1,11 @@
+
+-- | Stable fluid flow-solver.
+--   Based on "Real-time Fluid Dynamics for Games", Jos Stam, Game developer conference, 2003.
+--   Implementation by Ben Lambert-Smith.
+--   Converted to Repa 3 by Ben Lippmeier.
+--
 {-# LANGUAGE ScopedTypeVariables #-}
-module Main
-        (main)
+module Main (main)
 where
 import Solve.Density
 import Solve.Velocity
@@ -17,23 +22,31 @@ import Data.Array.Repa                  as R
 import Data.Array.Repa.IO.BMP           as R
 
 
+main :: IO ()
 main 
- = do   args    <- getArgs
-        config  <- loadConfig args
+ = do   -- Parse the command-line arguments.
+        args            <- getArgs
+        config          <- loadConfig args
+
+        -- Setup the initial fluid model.
+        let model       = initModel 
+                                (configInitialDensity  config)
+                                (configInitialVelocity config)
 
         case configBatchMode config of
-         False -> runInteractive config
-         True  -> runBatchMode   config (initModel (configModelSize config))
+         False -> runInteractive config model
+         True  -> runBatchMode   config model
 
 
 -- | Run the simulation interactively.
-runInteractive config
- =      playIO  (InWindow "fluid" 
+runInteractive :: Config -> Model -> IO ()
+runInteractive config model0
+ =      playIO  (InWindow "Stam's stable fluid. Use left-click right-drag to add density / velocity." 
                         (configWindowSize config) 
                         (500, 20))
                 black
                 (configRate config)
-                (initModel      (configModelSize config))
+                model0
                 (pictureOfModel (configScale     config))
                 (\event model -> return $ userEvent config event model)
                 (\_           -> stepFluid config)
@@ -41,22 +54,19 @@ runInteractive config
 
 -- | Run in batch mode and dump a .bmp of the final state.
 runBatchMode :: Config -> Model -> IO ()
-runBatchMode config m 
- = do   m'      <- runBatchMode' config m
-        outputBMP $ densityField m'
-
-runBatchMode' config model
+runBatchMode config model
         | stepsPassed model     > configMaxSteps config
         , configMaxSteps config > 0  
-        = return model
+        = do    outputBMP $ densityField model
+                return ()
 
         | otherwise     
         = do    model'  <- stepFluid config model
-                runBatchMode' config model'
-
+                runBatchMode config model'
 
 
 -- Function to step simulator one step forward in time
+stepFluid :: Config -> Model -> IO Model
 stepFluid config m@(Model df ds vf vs cl sp cb)
    | sp > configMaxSteps config
    , configMaxSteps config > 0  

@@ -215,6 +215,7 @@ Executable gloss-ray
         -funfolding-keeness-factor1000
         -fllvm -optlo-O3
 
+
 Executable gloss-pulse
   Build-depends:
         base           == 4.*,
@@ -228,6 +229,7 @@ Executable gloss-pulse
         -funfolding-use-threshold1000
         -funfolding-keeness-factor1000
         -fllvm -optlo-O3
+
 
 Executable gloss-wave
   Build-depends:
@@ -246,5 +248,28 @@ Executable gloss-wave
         -fllvm -optlo-O3
 
 
-
-
+Executable gloss-fluid
+  Build-depends:
+        base            == 4.*,
+        gloss           == 1.7.*,
+        vector          == 0.9.*,
+        repa            == 3.1.*,
+        repa-io         == 3.1.*,
+        repa-algorithms == 3.1.*,
+        ghc-prim
+  Main-is:        Main.hs
+  other-modules:  
+        Args Config FieldElt Model UserEvent
+        Solve.Density   Solve.Velocity
+        Stage.Advection Stage.Boundary Stage.Diffusion
+        Stage.Linear    Stage.Project  Stage.Sources
+  hs-source-dirs: raster/Fluid
+  ghc-options:
+        -Wall -threaded -eventlog -rtsopts
+        -Odph -fno-liberate-case
+        -funfolding-use-threshold1000
+        -funfolding-keeness-factor1000
+        -fllvm -optlo-O3
+  extensions:
+        PatternGuards
+        

@@ -69,15 +69,17 @@ data Model
 
 
 -- | Creates an initial blank model
-initModel :: (Int, Int) -> Model
-initModel (width, height)
- = let  density         = R.fromListUnboxed (Z:. height :. width) 
-                        $ replicate (height * width) 0
+initModel 
+        :: Array U DIM2 Float
+        -> Array U DIM2 (Float, Float)
+        -> Model
 
-        velocity        = R.fromListUnboxed (Z:. height :. width)
-                        $ replicate (height * width) (0, 0)
+initModel density velocity
+ | extent density /= extent velocity
+ = error "Fluid: initModel density and velocity extents do not  match"
 
-   in   Model
+ | otherwise
+ =      Model
         { densityField   = density
         , densitySource  = Nothing
         , velocityField  = velocity

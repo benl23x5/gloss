@@ -4,6 +4,7 @@ module Config
         , configScale)
 where
 import Model
+import Data.Array.Repa
 
 data Config
         = Config
@@ -36,6 +37,12 @@ data Config
 
           -- | Magnitude of velocity to add with user interface.
         , configVelocity        :: !(Float, Float) 
+
+          -- | Initial density array
+        , configInitialDensity  :: !(Array U DIM2 Float)
+
+          -- | BMP file to use as the initial velocity
+        , configInitialVelocity :: !(Array U DIM2 (Float, Float))
         } 
 
 

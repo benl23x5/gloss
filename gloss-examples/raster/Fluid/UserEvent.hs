@@ -10,8 +10,8 @@ import Graphics.Gloss.Interface.Pure.Game       as G
 -- | Handle user events for the Gloss `playIO` wrapper.
 userEvent :: Config -> Event -> Model -> Model
 userEvent config
-              (EventKey key keyState _mods (x, y)) 
-        model@(Model df ds vf vs cl sp _cb)
+        (EventKey key keyState _mods (x, y)) 
+        (Model df ds vf vs cl sp _cb)
 
         | MouseButton G.LeftButton <- key
         , Down                          <- keyState
@@ -62,11 +62,13 @@ userEvent config
                  , currButton     = M.None
                  }
 
+        -- Reset model
         | Char 'r' <- key
         , Down     <- keyState
-        = let   (_ :. height :. width) = R.extent (densityField model)
-          in    initModel (width, height)
+        = initModel (configInitialDensity config)
+                    (configInitialVelocity config)
 
+        -- Quit program
         | Char 'q' <- key
         , Down     <- keyState
         = error "Quitting"

@@ -1,10 +1,13 @@
 
 module Args where
 import Config
+import Data.Array.Repa                  as R
+import Data.Array.Repa.Algorithms.Pixel as R
+import Data.Array.Repa.IO.BMP           as R
 import System.Console.GetOpt
 import Data.IORef
 import Prelude                          as P
-
+import Control.Monad
 
 -- | Command line options.
 loadConfig :: [String] -> IO Config
@@ -13,7 +16,7 @@ loadConfig args
         batchModeArg    <- newIORef False
         maxStepsArg     <- newIORef 0
         widthArg        <- newIORef 100
-        scaleArg        <- newIORef 4
+        scaleArg        <- newIORef 5
         rateArg         <- newIORef 25
         deltaArg        <- newIORef 0.1
         diffArg         <- newIORef 0
@@ -21,16 +24,21 @@ loadConfig args
         densArg         <- newIORef 100
         velArg          <- newIORef (20, 20)
 
-        let setWidthArg arg = writeIORef widthArg         (read arg)
-        let setScaleArg arg = writeIORef scaleArg         (read arg)
-        let setDeltaArg arg = writeIORef deltaArg         (read arg)
-        let setDiffArg  arg = writeIORef diffArg          (read arg)
-        let setViscArg  arg = writeIORef viscArg          (read arg)
-        let setDensArg  arg = writeIORef densArg          (read arg)
-        let setVelArg   arg = let a = read arg in writeIORef velArg (a, a)
-        let setRate     arg = writeIORef rateArg          (read arg)
-        let setMaxSteps arg = writeIORef maxStepsArg      (read arg)
-        let setBatchArg     = writeIORef batchModeArg     True
+        densityBmpArg   <- newIORef Nothing
+        velocityBmpArg  <- newIORef Nothing
+        
+        let setWidthArg arg     = writeIORef widthArg         (read arg)
+        let setScaleArg arg     = writeIORef scaleArg         (read arg)
+        let setDeltaArg arg     = writeIORef deltaArg         (read arg)
+        let setDiffArg  arg     = writeIORef diffArg          (read arg)
+        let setViscArg  arg     = writeIORef viscArg          (read arg)
+        let setDensArg  arg     = writeIORef densArg          (read arg)
+        let setVelArg   arg     = let a = read arg in writeIORef velArg (a, a)
+        let setRate     arg     = writeIORef rateArg          (read arg)
+        let setMaxSteps arg     = writeIORef maxStepsArg      (read arg)
+        let setBatchArg         = writeIORef batchModeArg     True
+        let setDensityBMP  arg  = writeIORef densityBmpArg    (Just arg)
+        let setVelocityBMP arg  = writeIORef velocityBmpArg   (Just arg)
 
         let options :: [OptDescr (IO ())]
             options
@@ -62,7 +70,13 @@ loadConfig args
                         "Magnitude of a user inserted density (100)",
 
                 Option [] ["user-velocity"]     (ReqArg setVelArg       "FLOAT")
-                        "Magnitude of a user inserted velocity (20)"
+                        "Magnitude of a user inserted velocity (20)",
+
+                Option [] ["bmp-density"]       (ReqArg setDensityBMP   "FILE.bmp")
+                        "File for initial fluid density",
+
+                Option [] ["bmp-velocity"]      (ReqArg setVelocityBMP  "FILE.bmp")
+                        "File for initial fluid velocity"
                 ]
 
         case getOpt RequireOrder options args of
@@ -79,6 +93,7 @@ loadConfig args
         batchMode       <- readIORef batchModeArg
         maxSteps        <- readIORef maxStepsArg
         width           <- readIORef widthArg
+        let height      = width
         scale           <- readIORef scaleArg
         rate            <- readIORef rateArg
         delta           <- readIORef deltaArg
@@ -86,6 +101,68 @@ loadConfig args
         visc            <- readIORef viscArg
         dens            <- readIORef densArg
         vel             <- readIORef velArg
+        densityBmp      <- readIORef densityBmpArg
+        velocityBmp     <- readIORef velocityBmpArg
+
+
+        -- Load the initial desity bmp if we were given one.
+        initialDensity
+         <- case densityBmp of
+                -- No density file given, so just set the field to zero.
+                Nothing 
+                 -> return
+                        $ R.fromListUnboxed (Z :. height :. width)
+                        $ replicate (height * width) 0
+
+                -- Load density from a .bmp, using the luminance as
+                -- the scalar density value.
+                Just filePath
+                 -> do  result   <- readImageFromBMP filePath
+                        let arr  =  case result of
+                                        Right arr'      -> arr'
+                                        Left err        -> error $ show err
+
+                        let Z :. height' :. width' 
+                                 = extent arr
+
+                        when (height /= height' || width /= width')
+                         $ error "Fluid: bmp size does not match --width argument"
+
+                        density  <- computeUnboxedP 
+                                  $ R.map floatLuminanceOfRGB8 arr
+                        return density
+
+
+        -- Load the initial velocity bmp if we were given one
+        initialVelocity
+         <- case velocityBmp of
+                -- No velocity file given, so just set the field to zero.
+                Nothing
+                 -> return 
+                        $ R.fromListUnboxed (Z :. height :. width)
+                        $ replicate (height * width) (0, 0)
+
+                -- Load 
+                Just filePath
+                 -> do  result  <- readImageFromBMP filePath
+                        let arr  =  case result of
+                                        Right arr'      -> arr'
+                                        Left err        -> error $ show err
+
+                        let Z :. height' :. width' 
+                                 = extent arr
+
+                        when (height /= height' || width /= width')
+                         $ error "Fluid: bmp size does not match --width argument"
+
+                        let {-# INLINE conv #-}
+                            conv (r, g, _b) 
+                             = let r'   = fromIntegral (-128 + fromIntegral r :: Int)
+                                   g'   = fromIntegral (-128 + fromIntegral g :: Int)
+                               in  (r' * 0.0001, g' * 0.0001)
+
+                        velocity  <- computeUnboxedP $ R.map conv arr
+                        return velocity
 
         return  Config
                 { configRate            = rate
@@ -97,5 +174,7 @@ loadConfig args
                 , configDiffusion       = diff
                 , configViscosity       = visc
                 , configDensity         = dens
-                , configVelocity        = vel }
+                , configVelocity        = vel 
+                , configInitialDensity  = initialDensity
+                , configInitialVelocity = initialVelocity }
 
