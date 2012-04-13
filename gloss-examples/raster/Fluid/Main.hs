@@ -43,7 +43,7 @@ runInteractive :: Config -> Model -> IO ()
 runInteractive config model0
  =      playIO  (InWindow "Stam's stable fluid. Use left-click right-drag to add density / velocity." 
                         (configWindowSize config) 
-                        (500, 20))
+                        (20, 20))
                 black
                 (configRate config)
                 model0
