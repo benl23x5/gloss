@@ -189,7 +189,11 @@ callbackDisplay ref callbacks
 
         -- swap front and back buffers
         GLUT.swapBuffers
-        GLUT.reportErrors
+
+    -- Don't report errors by default.
+    -- The windows OpenGL implementation seems to complain for no reason. 
+    --  GLUT.reportErrors
+
         return ()
 
 -- Reshape Callback -----------------------------------------------------------
