@@ -23,8 +23,8 @@ module Graphics.Gloss.Raster.Array
 
           -- * Display functions
         , Display       (..)
-        , animateArray)
---        , playArray)
+        , animateArray
+        , playArray)
 where
 import Graphics.Gloss.Data.Color
 import Graphics.Gloss.Data.Picture
@@ -64,12 +64,12 @@ rgb8w r g b = makeColor8 (fromIntegral r) (fromIntegral g) (fromIntegral b) 255
 
 
 -- Animate --------------------------------------------------------------------
--- | Animate a continuous 2D function.
+-- | Animate a bitmap generated from a Repa array.
 animateArray
         :: Display                      
                 -- ^ Display mode.
         -> (Int, Int)
-                -- ^ Scale factor
+                -- ^ Scale factor.
         -> (Float -> Array D DIM2 Color)
                 -- ^ A function to construct a delayed array for the given time.
                 --   The function should return an array of the same extent each 
@@ -78,49 +78,53 @@ animateArray
                 --   It is passed the time in seconds since the program started.
         -> IO ()
         
-animateArray display scale makeArray
- = let  {-# INLINE frame #-}
-        frame !time          = return $ makeFrame scale (makeArray time)
-   in   animateFixedIO display black frame
+animateArray display scale@(scaleX, scaleY) makeArray
+ = scaleX `seq` scaleY `seq`
+ if scaleX < 1 || scaleY < 1
+   then error $ "Graphics.Gloss.Raster.Field: invalid pixel scale factor"
+                P.++ show (scaleX, scaleY)
+   else let {-# INLINE frame #-}
+            frame !time          = return $ makeFrame scale (makeArray time)
+        in  animateFixedIO display black frame
 {-# INLINE animateArray #-}
 --  INLINE so the repa functions fuse with the users client functions.
 
-{-
+
 -- Play -----------------------------------------------------------------------
--- | Play a game with a continous 2D function.
-playField 
+-- | Play with a bitmap generated from a Repa array.
+playArray
         :: Display                      
                 -- ^ Display mode.
         -> (Int, Int)   
-                -- ^ Pixels per point.
+                -- ^ Scale factor.
         -> Int  -- ^ Number of simulation steps to take
                 --   for each second of real time
         -> world 
                 -- ^ The initial world.
-        -> (world -> Point -> Color)    
-                -- ^ Function to compute the color of the world at the given point.
+        -> (world -> Array D DIM2 Color)
+                -- ^ Function to convert the world to an array.
         -> (Event -> world -> world)    
                 -- ^ Function to handle input events.
         -> (Float -> world -> world)    
                 -- ^ Function to step the world one iteration.
                 --   It is passed the time in seconds since the program started.
         -> IO ()
-playField !display (zoomX, zoomY) !stepRate !initWorld !makePixel !handleEvent !stepWorld
- = zoomX `seq` zoomY `seq`
-   if zoomX < 1 || zoomY < 1
+playArray !display scale@(scaleX, scaleY) !stepRate !initWorld !makeArray !handleEvent !stepWorld
+ = scaleX `seq` scaleY `seq`
+   if scaleX < 1 || scaleY < 1
      then  error $ "Graphics.Gloss.Raster.Field: invalid pixel multiplication " 
-                 P.++ show (zoomX, zoomY)
-     else  let  (winSizeX, winSizeY) = sizeOfDisplay display
-           in   winSizeX `seq` winSizeY `seq`
-                play display black stepRate 
-                   initWorld
-                   (\world -> 
-                      world `seq` 
-                      makeFrame winSizeX winSizeY zoomX zoomY (makePixel world))
-                   handleEvent
-                   stepWorld
-{-# INLINE playField #-}
--}
+                 P.++ show scale
+     else  let  {-# INLINE frame #-}
+                frame !world    = makeFrame scale (makeArray world)
+
+           in   play display black
+                        stepRate 
+                        initWorld
+                        frame
+                        handleEvent
+                        stepWorld
+{-# INLINE playArray #-}
+
 
 -- Frame ----------------------------------------------------------------------
 {-# INLINE makeFrame #-}
