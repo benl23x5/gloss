@@ -66,6 +66,7 @@ loadConfig
                 let config = foldr parseConfig defaultConfig $ lines str
                 return config
 
+
 parseConfig :: String -> Config -> Config
 parseConfig str config
         | isPrefixOf "InWindow" str
