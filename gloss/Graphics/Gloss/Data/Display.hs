@@ -10,4 +10,4 @@ data Display
 
         -- | Display full screen with a drawing area of the given size.
         | FullScreen (Int, Int) 
-        deriving (Eq, Show)
+        deriving (Eq, Read, Show)

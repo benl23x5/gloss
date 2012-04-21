@@ -2,14 +2,17 @@
 import Graphics.Gloss.Raster.Array
 import Data.Array.Repa.Algorithms.Randomish
 import Data.Array.Repa                  as R
-import Data.Bits
 import System.Directory
+import System.FilePath
+import Data.List
+import Data.Bits
 import Prelude                          as P
 
 
 main
- = do   (windowX, windowY, scaleX, scaleY)
-                <- loadConfig
+ = do   config  <- loadConfig
+        let (windowX, windowY)     = sizeOfDisplay $ configDisplay config
+        let Scale (scaleX, scaleY) = configScale config
 
         let !sizeX  = windowX `div` scaleX
         let !sizeY  = windowY `div` scaleY
@@ -29,13 +32,57 @@ main
                in   R.zipWith makePixel arr1 arr2
 
         animateArray 
-                (FullScreen (windowX, windowY))
+                (configDisplay config)
                 (scaleX, scaleY)
                 frame
 
 
-loadConfig :: IO (Int, Int, Int, Int)
+-- Config ---------------------------------------------------------------------
+data Scale 
+        = Scale (Int, Int)
+        deriving (Read, Show)
+
+data Config
+        = Config
+        { configDisplay :: Display
+        , configScale   :: Scale }
+
+defaultConfig
+        = Config
+        { configDisplay = InWindow "digital snow" (800, 600) (0, 0)
+        , configScale   = Scale (4, 4) }
+
+
+loadConfig :: IO Config
 loadConfig
  = do   dir     <- getCurrentDirectory
-        putStrLn $ "current directory is " P.++ dir
-        return  (1440, 900, 4, 4)
+        let fileConfig  = dir </> "config.txt"
+        exists  <- doesFileExist fileConfig
+
+        case exists of
+         False  -> return defaultConfig
+         True
+          -> do str     <- readFile fileConfig
+                let config = foldr parseConfig defaultConfig $ lines str
+                return config
+
+parseConfig :: String -> Config -> Config
+parseConfig str config
+        | isPrefixOf "InWindow" str
+        = config { configDisplay = read str }
+
+        | isPrefixOf "FullScreen" str
+        = config { configDisplay = read str}
+
+        | isPrefixOf "Scale" str
+        = config { configScale   = read str }
+
+        | otherwise
+        = config
+
+
+sizeOfDisplay :: Display -> (Int, Int)
+sizeOfDisplay display
+ = case display of
+        InWindow _ s _  -> s
+        FullScreen s    -> s
