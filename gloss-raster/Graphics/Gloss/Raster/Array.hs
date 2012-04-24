@@ -69,7 +69,7 @@ animateArray
         :: Display                      
                 -- ^ Display mode.
         -> (Int, Int)
-                -- ^ Scale factor.
+                -- ^ Number of pixels to draw per element.
         -> (Float -> Array D DIM2 Color)
                 -- ^ A function to construct a delayed array for the given time.
                 --   The function should return an array of the same extent each 
@@ -81,7 +81,7 @@ animateArray
 animateArray display scale@(scaleX, scaleY) makeArray
  = scaleX `seq` scaleY `seq`
  if scaleX < 1 || scaleY < 1
-   then error $ "Graphics.Gloss.Raster.Field: invalid pixel scale factor"
+   then error $ "Graphics.Gloss.Raster.Array: invalid pixel scale factor "
                 P.++ show (scaleX, scaleY)
    else let {-# INLINE frame #-}
             frame !time          = return $ makeFrame scale (makeArray time)
@@ -96,7 +96,7 @@ playArray
         :: Display                      
                 -- ^ Display mode.
         -> (Int, Int)   
-                -- ^ Scale factor.
+                -- ^ Number of pixels to draw per element.
         -> Int  -- ^ Number of simulation steps to take
                 --   for each second of real time
         -> world 
@@ -112,7 +112,7 @@ playArray
 playArray !display scale@(scaleX, scaleY) !stepRate !initWorld !makeArray !handleEvent !stepWorld
  = scaleX `seq` scaleY `seq`
    if scaleX < 1 || scaleY < 1
-     then  error $ "Graphics.Gloss.Raster.Field: invalid pixel multiplication " 
+     then  error $ "Graphics.Gloss.Raster.Array: invalid pixel scale factor " 
                  P.++ show scale
      else  let  {-# INLINE frame #-}
                 frame !world    = makeFrame scale (makeArray world)

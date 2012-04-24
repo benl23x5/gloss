@@ -69,7 +69,7 @@ animateField
         :: Display                      
                 -- ^ Display mode.
         -> (Int, Int)                   
-                -- ^ Pixels per point.
+                -- ^ Number of pixels to draw per point.
         -> (Float -> Point -> Color)    
                 -- ^ Function to compute the color at a particular point.
                 --
@@ -78,7 +78,12 @@ animateField
         -> IO ()
         
 animateField display (zoomX, zoomY) makePixel
- = let  (winSizeX, winSizeY) = sizeOfDisplay display
+ = zoomX `seq` zoomY `seq`
+ if zoomX < 1 || zoomY < 1
+   then error $ "Graphics.Gloss.Raster.Field: invalid pixel scale factor "
+                P.++ show (zoomX, zoomY)
+   else 
+    let (winSizeX, winSizeY) = sizeOfDisplay display
 
         {-# INLINE frame #-}
         frame !time
@@ -89,14 +94,13 @@ animateField display (zoomX, zoomY) makePixel
 {-# INLINE animateField #-}
 --  INLINE so the repa functions fuse with the users client functions.
 
-
 -- Play -----------------------------------------------------------------------
 -- | Play a game with a continous 2D function.
 playField 
         :: Display                      
                 -- ^ Display mode.
         -> (Int, Int)   
-                -- ^ Pixels per point.
+                -- ^ Number of pixels to draw per point.
         -> Int  -- ^ Number of simulation steps to take
                 --   for each second of real time
         -> world 
@@ -112,7 +116,7 @@ playField
 playField !display (zoomX, zoomY) !stepRate !initWorld !makePixel !handleEvent !stepWorld
  = zoomX `seq` zoomY `seq`
    if zoomX < 1 || zoomY < 1
-     then  error $ "Graphics.Gloss.Raster.Field: invalid pixel multiplication " 
+     then  error $ "Graphics.Gloss.Raster.Field: invalid pixel scale factor " 
                  P.++ show (zoomX, zoomY)
      else  let  (winSizeX, winSizeY) = sizeOfDisplay display
            in   winSizeX `seq` winSizeY `seq`

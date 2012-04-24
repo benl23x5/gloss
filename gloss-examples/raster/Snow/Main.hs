@@ -10,10 +10,21 @@ import Prelude                          as P
 
 
 main
- = do   config  <- loadConfig
-        let (windowX, windowY)     = sizeOfDisplay $ configDisplay config
-        let Scale (scaleX, scaleY) = configScale config
+ = do   args    <- getArgs
+        case args of
+         []     -> run 800 600
 
+         [sizeX, sizeY, scaleX scaleY]
+                -> run (read sizeX) (read sizeY) (read scaleX) (read scaleY)
+
+         _ -> putStr $ unlines
+           [ "gloss-snow <sizeX::Int> <sizeY::Int> <scaleX::Int> <scaleY::Int>"
+           , "    sizeX, sizeY   - visualisation size        (default 800, 600)"
+           , "    scaleX, scaleY - pixel scaling factor      (default 4, 4)" ]
+   
+
+run windowX windowY scaleX scaleY
+ = do
         let !sizeX  = windowX `div` scaleX
         let !sizeY  = windowY `div` scaleY
 
@@ -35,55 +46,3 @@ main
                 (configDisplay config)
                 (scaleX, scaleY)
                 frame
-
-
--- Config ---------------------------------------------------------------------
-data Scale 
-        = Scale (Int, Int)
-        deriving (Read, Show)
-
-data Config
-        = Config
-        { configDisplay :: Display
-        , configScale   :: Scale }
-
-defaultConfig
-        = Config
-        { configDisplay = InWindow "digital snow" (800, 600) (0, 0)
-        , configScale   = Scale (4, 4) }
-
-
-loadConfig :: IO Config
-loadConfig
- = do   dir     <- getCurrentDirectory
-        let fileConfig  = dir </> "config.txt"
-        exists  <- doesFileExist fileConfig
-
-        case exists of
-         False  -> return defaultConfig
-         True
-          -> do str     <- readFile fileConfig
-                let config = foldr parseConfig defaultConfig $ lines str
-                return config
-
-
-parseConfig :: String -> Config -> Config
-parseConfig str config
-        | isPrefixOf "InWindow" str
-        = config { configDisplay = read str }
-
-        | isPrefixOf "FullScreen" str
-        = config { configDisplay = read str}
-
-        | isPrefixOf "Scale" str
-        = config { configScale   = read str }
-
-        | otherwise
-        = config
-
-
-sizeOfDisplay :: Display -> (Int, Int)
-sizeOfDisplay display
- = case display of
-        InWindow _ s _  -> s
-        FullScreen s    -> s

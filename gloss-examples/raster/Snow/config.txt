@@ -1,9 +1,0 @@
-
-# Digital Snow configuration.
-
-# Comment-in the display mode you want.
-InWindow "digital snow" (800, 600) (0, 0)
-# FullScreen (1440, 900)
-
-# Scaling of each pixel.
-Scale (4, 4)

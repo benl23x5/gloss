@@ -20,6 +20,15 @@ velocitySteps config vf vs
  = {-# SCC "Solve.velocitySteps" #-}
    do   vf1     <- addSources  (configDelta config) (configVelocity config)  vs vf
         vf2     <- diffusion   (configDelta config) (configViscosity config) vf1 
+v v v v v v v
+        vf3     <- setBoundary vf2
+        vf4     <- project     vf3
+        vf5     <- setBoundary vf4
+        vf6     <- advection   vf4 vf5
+        vf7     <- setBoundary vf6
+        vf8     <- project     vf7
+        vf'     <- setBoundary vf8
+*************
 --        vf3     <- setBoundary vf2
         vf4     <- project     vf2
 --        vf5     <- setBoundary vf4
@@ -27,4 +36,5 @@ velocitySteps config vf vs
 --        vf7     <- setBoundary vf6
         vf8     <- project     vf6
 --        vf'     <- setBoundary vf8
+^ ^ ^ ^ ^ ^ ^
         return  vf8
