@@ -1,5 +1,5 @@
 Name:                gloss-examples
-Version:             1.7.3.2
+Version:             1.7.4.1
 License:             MIT
 License-file:        LICENSE
 Author:              Ben Lippmeier
@@ -189,7 +189,7 @@ Executable gloss-crystal
   Build-depends:
         base           == 4.*,
         gloss          == 1.7.*,
-        gloss-raster   == 1.7.2.*
+        gloss-raster   == 1.7.4.*
   Main-is:        Main.hs
   hs-source-dirs: raster/Crystal
   ghc-options:    
@@ -204,7 +204,7 @@ Executable gloss-ray
   Build-depends:
         base           == 4.*,
         gloss          == 1.7.*,
-        gloss-raster   == 1.7.2.*
+        gloss-raster   == 1.7.4.*
   Main-is:        Main.hs
   other-modules:  Light Object Trace Vec3 World
   hs-source-dirs: raster/Ray
@@ -220,7 +220,7 @@ Executable gloss-pulse
   Build-depends:
         base           == 4.*,
         gloss          == 1.7.*,
-        gloss-raster   == 1.7.2.*
+        gloss-raster   == 1.7.4.*
   Main-is:        Main.hs
   hs-source-dirs: raster/Pulse
   ghc-options:
@@ -235,7 +235,7 @@ Executable gloss-wave
   Build-depends:
         base           == 4.*,
         gloss          == 1.7.*,
-        gloss-raster   == 1.7.2.*,
+        gloss-raster   == 1.7.4.*,
         vector         == 0.9.*,
         ghc-prim
   Main-is:        Main.hs
@@ -273,3 +273,19 @@ Executable gloss-fluid
   extensions:
         PatternGuards
         
+
+Executable gloss-snow
+  Build-depends
+        base            == 4.*,
+        gloss           == 1.7.*,
+        repa            == 3.1.*,
+  Main-is:      Main.hs
+  hs-source-dirs: raster/Snow
+  ghc-options:
+        -Wall -threaded -eventlog -rtsopts
+        -Odph -fno-liberate-case
+        -funfolding-use-threshold1000
+        -funfolding-keeness-factor1000
+        -fllvm -optlo-O3
+
+

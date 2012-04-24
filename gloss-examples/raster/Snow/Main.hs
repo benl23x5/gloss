@@ -1,20 +1,19 @@
 {-# LANGUAGE BangPatterns #-}
 import Graphics.Gloss.Raster.Array
+import System.Environment
 import Data.Array.Repa.Algorithms.Randomish
 import Data.Array.Repa                  as R
-import System.Directory
-import System.FilePath
 import Data.List
 import Data.Bits
 import Prelude                          as P
 
-
+main :: IO ()
 main
  = do   args    <- getArgs
         case args of
-         []     -> run 800 600
+         []     -> run 800 600 4 4
 
-         [sizeX, sizeY, scaleX scaleY]
+         [sizeX, sizeY, scaleX, scaleY]
                 -> run (read sizeX) (read sizeY) (read scaleX) (read scaleY)
 
          _ -> putStr $ unlines
@@ -23,6 +22,7 @@ main
            , "    scaleX, scaleY - pixel scaling factor      (default 4, 4)" ]
    
 
+run :: Int -> Int -> Int -> Int -> IO ()
 run windowX windowY scaleX scaleY
  = do
         let !sizeX  = windowX `div` scaleX
@@ -43,6 +43,6 @@ run windowX windowY scaleX scaleY
                in   R.zipWith makePixel arr1 arr2
 
         animateArray 
-                (configDisplay config)
+                (InWindow "Digital Snow" (windowX, windowY) (10, 10))
                 (scaleX, scaleY)
                 frame

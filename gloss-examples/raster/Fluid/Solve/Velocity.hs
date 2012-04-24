@@ -6,9 +6,12 @@ import Stage.Diffusion
 import Stage.Advection
 import Stage.Sources
 import Stage.Project
--- import Stage.Boundary
 import Model
 import Config
+
+-- The pass that sets boundary conditions is buggy and 
+-- currently disabled.
+-- import Stage.Boundary
 
 velocitySteps 
         :: Config
@@ -20,15 +23,6 @@ velocitySteps config vf vs
  = {-# SCC "Solve.velocitySteps" #-}
    do   vf1     <- addSources  (configDelta config) (configVelocity config)  vs vf
         vf2     <- diffusion   (configDelta config) (configViscosity config) vf1 
-v v v v v v v
-        vf3     <- setBoundary vf2
-        vf4     <- project     vf3
-        vf5     <- setBoundary vf4
-        vf6     <- advection   vf4 vf5
-        vf7     <- setBoundary vf6
-        vf8     <- project     vf7
-        vf'     <- setBoundary vf8
-*************
 --        vf3     <- setBoundary vf2
         vf4     <- project     vf2
 --        vf5     <- setBoundary vf4
@@ -36,5 +30,4 @@ v v v v v v v
 --        vf7     <- setBoundary vf6
         vf8     <- project     vf6
 --        vf'     <- setBoundary vf8
-^ ^ ^ ^ ^ ^ ^
         return  vf8
