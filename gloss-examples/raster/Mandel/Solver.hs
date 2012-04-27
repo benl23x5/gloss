@@ -21,27 +21,30 @@ import Prelude                                  as P
 mandelFrame 
         :: Int          -- Window Size X
         -> Int          -- Window Size Y
-        -> Int          -- Zoom X
-        -> Int          -- Zoom Y
+        -> Int          -- Pixels X
+        -> Int          -- Pixels Y
         -> Double       -- Offset X
         -> Double       -- Offset Y
+        -> Double       -- zoom
+        -> Double       -- radius
+        -> Int          -- iterations
         -> Picture
-mandelFrame winX winY zoomX zoomY offX offY
+mandelFrame winX winY pixelsX pixelsY offX offY zoom radius iters
  = let  scaleX  :: Double = 1
         scaleY  :: Double = fromIntegral winY / fromIntegral winX
    in   makeFrame 
                 winX winY
-                zoomX zoomY
-                (mandelPixel scaleX scaleY offX offY)
+                pixelsX pixelsY
+                (mandelPixel scaleX scaleY offX offY zoom iters radius)
 {-# NOINLINE mandelFrame #-}
 
 -- Frame ----------------------------------------------------------------------
 makeFrame 
         :: Int                  -- Window Size X
         -> Int                  -- Window Size Y
-        -> Int                  -- Zoom X
-        -> Int                  -- Zoom Y
-        -> (Double -> Double -> Color) 
+        -> Int                  -- Pixels X
+        -> Int                  -- Pixels Y
+        -> (Double -> Double -> Color)
         -> Picture
 
 makeFrame !winSizeX !winSizeY !zoomX !zoomY !makePixel
@@ -113,15 +116,16 @@ mandelPixel
         -> Double               -- Scale Y
         -> Double               -- Offset X
         -> Double               -- Offset Y
+        -> Double               -- Zoom
+        -> Int                  -- iterations
+        -> Double               -- max radius
         -> Double               -- X (Real)
         -> Double               -- Y (Imaginary)
         -> Color
-mandelPixel scaleX scaleY x0 y0 x y
- = let  !cMax   = 100 :: Int
-        !rMax   = 100 :: Double
-
-        !x'     = (x0 + x) * scaleX
-        !y'     = (y0 + y) * scaleY
+mandelPixel scaleX scaleY x0 y0 zoom cMax rMax x y 
+ = let
+        !x'     = (x0 + (x * zoom)) * scaleX
+        !y'     = (y0 + (y * zoom)) * scaleY
 
         !count  = mandelRun (fromIntegral cMax) rMax x' y'
         !v      = fromIntegral count / fromIntegral cMax
