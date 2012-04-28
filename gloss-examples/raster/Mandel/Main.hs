@@ -14,8 +14,9 @@ main
  = do   args            <- getArgs
         config          <- parseArgs args defaultConfig
         let world       = configPreset config
-                        $ initWorld (configSizeX config)
-                                    (configSizeY config)
+                        $ (initWorld (configSizeX config)
+                                     (configSizeY config))
+                          { worldPixelsDynamic = configPixelsDynamic config}
 
         case configFileName config of
          -- Run interactively.
@@ -43,6 +44,7 @@ data Config
         { configDisplay         :: Display 
         , configFileName        :: Maybe FilePath
         , configPreset          :: World -> World
+        , configPixelsDynamic   :: Int
         , configSizeX           :: Int
         , configSizeY           :: Int }
 
@@ -53,6 +55,7 @@ defaultConfig
         { configDisplay         = InWindow "Mandelbrot" (800, 600) (10, 10) 
         , configFileName        = Nothing
         , configPreset          = id
+        , configPixelsDynamic   = 4
         , configSizeX           = 800
         , configSizeY           = 600 }
 
@@ -86,6 +89,11 @@ parseArgs args config
                  , configSizeX    = read sizeX
                  , configSizeY    = read sizeY }
 
+        | "-dynamic" : num : rest <- args
+        , all isDigit num
+        = parseArgs rest
+        $ config { configPixelsDynamic = read num }
+
         | "-preset" : num : rest <- args
         , length num == 1
         , all isDigit num
@@ -101,18 +109,21 @@ printUsage
  = putStrLn 
         $ unlines
         [ "Usage: gloss-mandel [flags]"
-        , "  -fullscreen <width::INT> <height::INT>"
-        , "  -window     <width::INT> <height::INT>" 
+        , "  -fullscreen  <width::INT> <height::INT>"
+        , "  -window      <width::INT> <height::INT>" 
+        , "  -bmp         <FILE> <width::INT> <height::INT>" 
+        , "  -dynamic     <INT>   Level of detail reduction when zooming and panning. (4) "
         , ""
         , " Controls:"
-        , "  ESC          Quit"
-        , "  mouse drag   Centerpoint"
-        , "  Down/Up      Zoom"
-        , "  Left/Right   Maximum interations"
-        , "  a/s          Pixels per point"
-        , "  z/x          Escape radius for iteration"
-        , "  0 .. 9       Select presets"
-        , "  .            Print current location to stdout" ]
+        , "  ESC                  Quit"
+        , "  mouse drag           Centerpoint"
+        , "  w/s                  Zoom"
+        , "  a/d                  Maximum interations"
+        , "  q/e                  Pixels per point"
+        , "  z/c                  Escape radius for iteration"
+        , "  0 .. 9               Select presets"
+        , "  r                    Reset"
+        , "  .                    Print current location to stdout" ]
 
 
 
@@ -123,6 +134,7 @@ data World
         , worldSizeX            :: Int
         , worldSizeY            :: Int
         , worldPixels           :: Int
+        , worldPixelsDynamic    :: Int
 
         , worldPosX             :: Double
         , worldPosY             :: Double 
@@ -143,6 +155,7 @@ initWorld sizeX sizeY
         , worldSizeX            = sizeX
         , worldSizeY            = sizeY
         , worldPixels           = 1
+        , worldPixelsDynamic    = 4
 
         , worldPosX             = -0.5
         , worldPosY             = 0 
@@ -257,11 +270,11 @@ updateWorld world
                         || isJust (worldZooming   world)
 
         pixels
-         | dynamic      = worldPixels world + 4
+         | dynamic      = worldPixels world + worldPixelsDynamic world
          | otherwise    = worldPixels world
 
-   in   world { worldPicture  
-              = mandelPicture
+   in   world   { worldPicture  
+                = mandelPicture
                         (worldSizeX world) (worldSizeY world)
                         pixels pixels
                         (worldPosX  world) (worldPosY  world)
