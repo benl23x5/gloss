@@ -1,6 +1,7 @@
 {-# LANGUAGE BangPatterns, ScopedTypeVariables #-}
 module Solver 
-        ( mandelFrame
+        ( mandelPicture
+        , mandelArray
         , f2d
         , d2f)
 where
@@ -9,7 +10,6 @@ import Graphics.Gloss.Data.Picture
 import Data.Word
 import System.IO.Unsafe
 import Unsafe.Coerce
-import Debug.Trace
 import Data.Bits
 import GHC.Float
 import Data.Array.Repa                          as R
@@ -18,7 +18,7 @@ import Data.Array.Repa.Algorithms.ColorRamp     as R
 import Prelude                                  as P
 
 
-mandelFrame 
+mandelPicture
         :: Int          -- Window Size X
         -> Int          -- Window Size Y
         -> Int          -- Pixels X
@@ -29,23 +29,94 @@ mandelFrame
         -> Double       -- radius
         -> Int          -- iterations
         -> Picture
-mandelFrame winX winY pixelsX pixelsY offX offY zoom radius iters
+mandelPicture winX winY pixelsX pixelsY offX offY zoom radius iters
  = let  scaleX  :: Double = 1
         scaleY  :: Double = fromIntegral winY / fromIntegral winX
-   in   makeFrame 
+   in   makePicture
                 winX winY
                 pixelsX pixelsY
                 (mandelPixel scaleX scaleY offX offY zoom iters radius)
-{-# NOINLINE mandelFrame #-}
+{-# NOINLINE mandelPicture #-}
 
--- Frame ----------------------------------------------------------------------
-makeFrame 
+
+
+mandelArray
+        :: Int          -- Window Size X
+        -> Int          -- Window Size Y
+        -> Double       -- Offset X
+        -> Double       -- Offset Y
+        -> Double       -- zoom
+        -> Double       -- radius
+        -> Int          -- iterations
+        -> IO (Array U DIM2 (Word8, Word8, Word8))
+
+mandelArray winX winY offX offY zoom radius iters
+ = let  scaleX  :: Double = 1
+        scaleY  :: Double = fromIntegral winY / fromIntegral winX
+
+        arr     = makeFrame winX winY 1 1
+                $ mandelPixel scaleX scaleY offX offY zoom iters radius
+
+   in   R.computeP arr
+{-# NOINLINE mandelArray #-}
+
+
+-- Picture --------------------------------------------------------------------
+makePicture
         :: Int                  -- Window Size X
         -> Int                  -- Window Size Y
         -> Int                  -- Pixels X
         -> Int                  -- Pixels Y
         -> (Double -> Double -> Color)
         -> Picture
+makePicture !winSizeX !winSizeY !zoomX !zoomY !makePixel
+ = let  -- Size of the raw image to render.
+        sizeX = winSizeX `div` zoomX
+        sizeY = winSizeY `div` zoomY
+
+        {-# INLINE conv #-} 
+        conv (r, g, b)
+         = let  r'      = fromIntegral r
+                g'      = fromIntegral g
+                b'      = fromIntegral b
+                a       = 255 
+
+                !w      =   unsafeShiftL r' 24
+                        .|. unsafeShiftL g' 16
+                        .|. unsafeShiftL b' 8
+                        .|. a
+           in   w
+
+   in unsafePerformIO $ do
+
+        -- Define the image, and extract out just the RGB color components.
+        -- We don't need the alpha because we're only drawing one image.
+        (arrRGB :: Array F DIM2 Word32)
+                <- R.computeP  
+                $ R.map conv
+                $ makeFrame winSizeX winSizeY zoomX zoomY makePixel
+
+        -- Wrap the ForeignPtr from the Array as a gloss picture.
+        let picture     
+                = Scale (fromIntegral zoomX) (fromIntegral zoomY)
+                $ bitmapOfForeignPtr
+                        sizeX sizeY     -- raw image size
+                        (R.toForeignPtr $ unsafeCoerce arrRGB)   
+                                        -- the image data.
+                        False           -- don't cache this in texture memory.
+
+        return picture
+{-# INLINE makePicture #-}
+
+
+-- Frame ----------------------------------------------------------------------
+makeFrame
+        :: Int                  -- Window Size X
+        -> Int                  -- Window Size Y
+        -> Int                  -- Pixels X
+        -> Int                  -- Pixels Y
+        -> (Double -> Double -> Color)
+        -> Array D DIM2 (Word8, Word8, Word8)
 
 makeFrame !winSizeX !winSizeY !zoomX !zoomY !makePixel
  = let  -- Size of the raw image to render.
@@ -71,42 +142,9 @@ makeFrame !winSizeX !winSizeY !zoomX !zoomY !makePixel
                 y'      = fromIntegral (y - midY) / fsizeY2
            in   makePixel x' y'
 
-        {-# INLINE conv #-} 
-        conv (r, g, b)
-         = let  r'      = fromIntegral r
-                g'      = fromIntegral g
-                b'      = fromIntegral b
-                a       = 255 
-
-                !w      =   unsafeShiftL r' 24
-                        .|. unsafeShiftL g' 16
-                        .|. unsafeShiftL b' 8
-                        .|. a
-           in   w
-
-   in unsafePerformIO $ do
-
-        -- Define the image, and extract out just the RGB color components.
-        -- We don't need the alpha because we're only drawing one image.
-        traceEventIO "Gloss.Raster[makeFrame]: start frame evaluation."
-        (arrRGB :: Array F DIM2 Word32)
-                <- R.computeP  
-                        $ R.map conv
-                        $ R.map unpackColor 
-                        $ R.fromFunction (Z :. sizeY  :. sizeX)
-                        $ pixelOfIndex
-        traceEventIO "Gloss.Raster[makeFrame]: done, returning picture."
-
-        -- Wrap the ForeignPtr from the Array as a gloss picture.
-        let picture     
-                = Scale (fromIntegral zoomX) (fromIntegral zoomY)
-                $ bitmapOfForeignPtr
-                        sizeX sizeY     -- raw image size
-                        (R.toForeignPtr $ unsafeCoerce arrRGB)   
-                                        -- the image data.
-                        False           -- don't cache this in texture memory.
-
-        return picture
+   in   R.map unpackColor 
+         $ R.fromFunction (Z :. sizeY  :. sizeX)
+         $ pixelOfIndex
 {-# INLINE makeFrame #-}
 
 

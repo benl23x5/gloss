@@ -2,30 +2,46 @@
 
 import Graphics.Gloss.Interface.IO.Game
 import Solver
+import Data.Array.Repa.IO.BMP
 import System.Exit
 import System.Environment
 import Data.Maybe
 import Data.Char
 
+
 main :: IO ()
 main 
- = do   args    <- getArgs
-        config  <- parseArgs args defaultConfig
-        playIO  (configDisplay config)
+ = do   args            <- getArgs
+        config          <- parseArgs args defaultConfig
+        let world       = configPreset config
+                        $ initWorld (configSizeX config)
+                                    (configSizeY config)
+
+        case configFileName config of
+         -- Run interactively.
+         Nothing
+          -> playIO  (configDisplay config)
                 black
                 100
-                (updateWorld
-                  $ configPreset config
-                  $ initWorld 
-                        (configSizeX  config)
-                        (configSizeY  config))
+                (updateWorld world)
                 draw handle advance
+
+         -- Render image and write to .bmp file.
+         Just filePath
+          -> do arr     <- mandelArray  
+                                (worldSizeX world) (worldSizeY  world)
+                                (worldPosX  world) (worldPosY   world)
+                                (worldZoom  world) (worldRadius world)
+                                (truncate $ worldIterations world)
+
+                writeImageToBMP filePath arr
 
 
 -- Config ---------------------------------------------------------------------
 data Config 
         = Config
         { configDisplay         :: Display 
+        , configFileName        :: Maybe FilePath
         , configPreset          :: World -> World
         , configSizeX           :: Int
         , configSizeY           :: Int }
@@ -35,6 +51,7 @@ defaultConfig :: Config
 defaultConfig
         = Config
         { configDisplay         = InWindow "Mandelbrot" (800, 600) (10, 10) 
+        , configFileName        = Nothing
         , configPreset          = id
         , configSizeX           = 800
         , configSizeY           = 600 }
@@ -60,6 +77,14 @@ parseArgs args config
         $ config { configDisplay = InWindow "MandelBrot" (read sizeX, read sizeY) (0, 0)
                  , configSizeX   = read sizeX
                  , configSizeY   = read sizeY }
+
+        | "-bmp" : fileName : sizeX : sizeY : rest <- args
+        , all isDigit sizeX
+        , all isDigit sizeY
+        = parseArgs rest
+        $ config { configFileName = Just fileName
+                 , configSizeX    = read sizeX
+                 , configSizeY    = read sizeY }
 
         | "-preset" : num : rest <- args
         , length num == 1
@@ -110,7 +135,6 @@ data World
         , worldZooming          :: Maybe Double } 
 
 
-
 initWorld :: Int -> Int -> World
 initWorld sizeX sizeY 
  = World
@@ -153,34 +177,34 @@ handle event world
                        $ world { worldDragging = Just (x, y) }
 
         -- Zoom
-        | EventKey (SpecialKey KeyDown) Down   _ _      <- event
+        | EventKey (Char 's') Down   _ _      <- event
         = return $ world { worldZooming = Just 1.01 }
 
-        | EventKey (SpecialKey KeyUp)   Down   _ _      <- event
+        | EventKey (Char 'w') Down   _ _      <- event
         = return $ world { worldZooming = Just 0.99 }
 
         -- Iterations
-        | EventKey (SpecialKey KeyLeft)  Down   _ _      <- event
+        | EventKey (Char 'a')  Down   _ _      <- event
         , iters         <- worldIterations world * 0.8
         , iters'        <- if iters < 1 then 1 else iters
         = return $ world { worldIterations = iters' }
 
-        | EventKey (SpecialKey KeyRight) Down   _ _      <- event
+        | EventKey (Char 'd') Down   _ _      <- event
         = return $ world { worldIterations = worldIterations world * 1.2 }
 
         -- Radius 
         | EventKey (Char 'z')  Down   _ _      <- event
         = return $ world { worldRadius = worldRadius world * 0.5 }
 
-        | EventKey (Char 'x')  Down   _ _      <- event
+        | EventKey (Char 'c')  Down   _ _      <- event
         = return $ world { worldRadius = worldRadius world * 2 }
 
         -- Pixels
-        | EventKey (Char 'a')  Down   _ _      <- event
+        | EventKey (Char 'q')  Down   _ _      <- event
         , worldPixels world > 1
         = return $ world { worldPixels = worldPixels world - 1 }
 
-        | EventKey (Char 's')  Down   _ _      <- event
+        | EventKey (Char 'e')  Down   _ _      <- event
         = return $ world { worldPixels = worldPixels world + 1 }
 
         -- Reset
@@ -188,7 +212,7 @@ handle event world
         = return $ initWorld (worldSizeX world) (worldSizeY world)
 
         -- Dump preset
-        | EventKey (Char '.')  Down  _  _       <- event
+        | EventKey (Char 'p')  Down  _  _       <- event
         = do    putStrLn $ showWorld world
                 return world
 
@@ -220,6 +244,7 @@ moveWorld bumpX bumpY world
  $ world        { worldPosX     = worldPosX world + bumpX
                 , worldPosY     = worldPosY world + bumpY }
 
+
 zoomWorld :: Double -> World -> World
 zoomWorld zoom world
  = updateWorld
@@ -228,15 +253,15 @@ zoomWorld zoom world
 
 updateWorld :: World -> World
 updateWorld world
- = let  dynamic =  isJust (worldDragging  world)
-                || isJust (worldZooming   world)
+ = let  dynamic         =  isJust (worldDragging  world)
+                        || isJust (worldZooming   world)
 
         pixels
-         | dynamic                      = worldPixels world + 4
-         | otherwise                    = worldPixels world
+         | dynamic      = worldPixels world + 4
+         | otherwise    = worldPixels world
 
    in   world { worldPicture  
-                = mandelFrame 
+              = mandelPicture
                         (worldSizeX world) (worldSizeY world)
                         pixels pixels
                         (worldPosX  world) (worldPosY  world)
