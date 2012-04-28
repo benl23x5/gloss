@@ -2,27 +2,93 @@
 
 import Graphics.Gloss.Interface.IO.Game
 import Solver
+import System.Exit
+import System.Environment
 import Data.Maybe
 import Data.Char
 
 main :: IO ()
 main 
- = let  
---        display = (FullScreen (sizeX, sizeY))
-
---        sizeX   = 800
---        sizeY   = 800
---        display = InWindow "mandel" (sizeX, sizeY) (0, 0)
-
-        sizeX   = 1440
-        sizeY   = 900
-        display = FullScreen (sizeX, sizeY)
-
-   in   playIO  display
+ = do   args    <- getArgs
+        config  <- parseArgs args defaultConfig
+        playIO  (configDisplay config)
                 black
                 100
-                (initWorld sizeX sizeY)
+                (updateWorld
+                  $ configPreset config
+                  $ initWorld 
+                        (configSizeX  config)
+                        (configSizeY  config))
                 draw handle advance
+
+
+-- Config ---------------------------------------------------------------------
+data Config 
+        = Config
+        { configDisplay         :: Display 
+        , configPreset          :: World -> World
+        , configSizeX           :: Int
+        , configSizeY           :: Int }
+
+
+defaultConfig :: Config
+defaultConfig
+        = Config
+        { configDisplay         = InWindow "Mandelbrot" (800, 600) (10, 10) 
+        , configPreset          = id
+        , configSizeX           = 800
+        , configSizeY           = 600 }
+
+
+parseArgs :: [String] -> Config -> IO Config
+parseArgs args config
+        | []    <- args
+        = return config
+
+        | "-fullscreen" : sizeX : sizeY : rest <- args
+        , all isDigit sizeX
+        , all isDigit sizeY
+        = parseArgs rest 
+        $ config { configDisplay = FullScreen (read sizeX, read sizeY) 
+                 , configSizeX   = read sizeX
+                 , configSizeY   = read sizeY }
+
+        | "-window" : sizeX : sizeY : rest <- args
+        , all isDigit sizeX
+        , all isDigit sizeY
+        = parseArgs rest
+        $ config { configDisplay = InWindow "MandelBrot" (read sizeX, read sizeY) (0, 0)
+                 , configSizeX   = read sizeX
+                 , configSizeY   = read sizeY }
+
+        | "-preset" : num : rest <- args
+        , length num == 1
+        , all isDigit num
+        = parseArgs rest
+        $ config { configPreset  = presets !! read num }
+
+        | otherwise
+        = do    printUsage
+                exitWith $ ExitFailure 1
+
+printUsage :: IO ()
+printUsage
+ = putStrLn 
+        $ unlines
+        [ "Usage: gloss-mandel [flags]"
+        , "  -fullscreen <width::INT> <height::INT>"
+        , "  -window     <width::INT> <height::INT>" 
+        , ""
+        , " Controls:"
+        , "  ESC          Quit"
+        , "  mouse drag   Centerpoint"
+        , "  Down/Up      Zoom"
+        , "  Left/Right   Maximum interations"
+        , "  a/s          Pixels per point"
+        , "  z/x          Escape radius for iteration"
+        , "  0 .. 9       Select presets"
+        , "  .            Print current location to stdout" ]
+
 
 
 -- World ----------------------------------------------------------------------
@@ -47,8 +113,7 @@ data World
 
 initWorld :: Int -> Int -> World
 initWorld sizeX sizeY 
- = updateWorld
- $ World
+ = World
         { worldPicture          = Blank
 
         , worldSizeX            = sizeX
@@ -83,7 +148,7 @@ handle event world
         | EventMotion (x, y)   <- event
         , Just (x0, y0)        <- worldDragging world
         = let  x'      = 2 * (f2d (x0 - x)) * worldZoom world / (fromIntegral $ worldSizeX world)
-               y'      = 2 * (f2d (y0 - y)) * worldZoom world / (fromIntegral $ worldSizeY world)
+               y'      = 2 * (f2d (y0 - y)) * worldZoom world / (fromIntegral $ worldSizeX world)
           in   return  $ moveWorld x' y'
                        $ world { worldDragging = Just (x, y) }
 
@@ -130,18 +195,7 @@ handle event world
         -- Load preset
         | EventKey (Char d)   Down _ _          <- event
         , isDigit d
-        = case d of
-                '1'     -> return $ updateWorld $ preset1 world
-                '2'     -> return $ updateWorld $ preset2 world
-                '3'     -> return $ updateWorld $ preset3 world
-                '4'     -> return $ updateWorld $ preset4 world
-                '5'     -> return $ updateWorld $ preset5 world
-                '6'     -> return $ updateWorld $ preset6 world
-                '7'     -> return $ updateWorld $ preset7 world
-                '8'     -> return $ updateWorld $ preset8 world
-                '9'     -> return $ updateWorld $ preset9 world
-                '0'     -> return $ updateWorld $ preset0 world
-                _       -> return world
+        = return $ updateWorld ((presets !! read [d]) world)
 
         -- Cancel zoom
         | EventKey _   Up   _ _      <- event
@@ -193,6 +247,7 @@ updateWorld world
 
 
 -- Presets --------------------------------------------------------------------
+-- | Show the current state of the world, in preset form.
 showWorld :: World -> String
 showWorld world
  = show ( worldPosX world
@@ -202,6 +257,7 @@ showWorld world
         , worldRadius world)
 
 
+-- | Load a preset into the world.
 loadWorld :: (Double, Double, Double, Double, Double) -> World -> World
 loadWorld (posX, posY, zoom, iters, radius) world
         = world
@@ -212,15 +268,17 @@ loadWorld (posX, posY, zoom, iters, radius) world
         , worldRadius           = radius }
 
 
-preset0, preset1, preset2, preset3, preset4, preset5, preset6, preset7, preset8, preset9 :: World -> World
-preset0 = loadWorld (-0.5, 0, 2, 100, 2)
-preset1 = loadWorld (0.20508818500545423,0.9014915666351141,6.375321937544527e-6,629.3354966759534,16.0)
-preset2 = loadWorld (0.4510757067879078,0.6144133202705898,7.632248223018773e-5,253.61352386150395,2.0)
-preset3 = loadWorld (0.3469337523117071,0.6866350870407725,3.508380713647269e-5,168.61054759193718,1024.0)
-preset4 = loadWorld (-0.7902001921590814,0.24910667566731381,5.071115028132377e-4,1176.757810813391,3.4359738368e10)
-preset5 = loadWorld (2.3127178455019423e-2,-1.301205470975472,3.6349313304610088e-9,343.0390372557315,2.0)
-preset6 = loadWorld (2.3127176148480418e-2,-1.3012054707668765,2.71444790387451e-10,604.1620768089155,2.0)
-preset7 = loadWorld (2.3127176156746785e-2,-1.301205470242045,4.49615119202067e-12,1731.8575629678642,2.0)
-preset8 = loadWorld (0.2550376327692795,8.962363618058007e-4,7.351698819132829e-5,1412.1093729760698,16.0)
-preset9 = loadWorld (0.25498593633806477,8.726424280526077e-4,1.6858526052251987e-10,10492.090844482025,2.0)
+presets :: [World -> World]
+presets 
+ = map loadWorld 
+ $ [ (-0.5, 0, 2, 100, 2)
+   , (0.20508818500545423,   0.9014915666351141   * 900/1440,6.375321937544527e-6, 629.3354966759534,  16.0)
+   , (0.4510757067879078,    0.6144133202705898   * 900/1440,7.632248223018773e-5, 253.61352386150395, 2.0)
+   , (0.3469337523117071,    0.6866350870407725   * 900/1440,3.508380713647269e-5,  168.61054759193718, 1024.0)
+   , (-0.7902001921590814,   0.24910667566731381  * 900/1440,5.071115028132377e-4,  1176.757810813391,  3.4359738368e10)
+   , (2.3127178455019423e-2,-1.301205470975472    * 900/1440,3.6349313304610088e-9, 343.0390372557315,  2.0)
+   , (2.3127176148480418e-2,-1.3012054707668765   * 900/1440,2.71444790387451e-10,  604.1620768089155,  2.0)
+   , (2.3127176156746785e-2,-1.301205470242045    * 900/1440,4.49615119202067e-12,  1731.8575629678642, 2.0)
+   , (0.2550376327692795,    8.962363618058007e-4 * 900/1440,7.351698819132829e-5,  1412.1093729760698, 16.0)
+   , (0.25498593633806477,   8.726424280526077e-4 * 900/1440,1.6858526052251987e-10,10492.090844482025, 2.0) ]
 

@@ -124,8 +124,8 @@ mandelPixel
         -> Color
 mandelPixel scaleX scaleY x0 y0 zoom cMax rMax x y 
  = let
-        !x'     = (x0 + (x * zoom)) * scaleX
-        !y'     = (y0 + (y * zoom)) * scaleY
+        !x'     = x0 + x * zoom * scaleX
+        !y'     = y0 + y * zoom * scaleY
 
         !count  = mandelRun (fromIntegral cMax) rMax x' y'
         !v      = fromIntegral count / fromIntegral cMax
