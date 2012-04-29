@@ -303,4 +303,7 @@ Executable gloss-mandel
         -funfolding-use-threshold1000
         -funfolding-keeness-factor1000
         -fllvm -optlo-O3
+  extensions:
+        PatternGuards
+
 
