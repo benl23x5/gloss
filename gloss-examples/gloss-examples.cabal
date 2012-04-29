@@ -1,5 +1,5 @@
 Name:                gloss-examples
-Version:             1.7.4.1
+Version:             1.7.4.2
 License:             MIT
 License-file:        LICENSE
 Author:              Ben Lippmeier
@@ -288,4 +288,19 @@ Executable gloss-snow
         -funfolding-keeness-factor1000
         -fllvm -optlo-O3
 
+
+Executable gloss-mandel
+  Build-depends
+        base            == 4.*,
+        gloss           == 1.7.*,
+        repa            == 3.1.*,
+  Main-is:        Main.hs
+  other-modules:  Solver
+  hs-source-dirs: raster/Mandel
+  ghc-options:
+        -Wall -threaded -eventlog -rtsopts
+        -Odph -fno-liberate-case
+        -funfolding-use-threshold1000
+        -funfolding-keeness-factor1000
+        -fllvm -optlo-O3
 
