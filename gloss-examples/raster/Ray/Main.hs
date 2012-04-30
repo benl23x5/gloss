@@ -8,6 +8,8 @@ import System.Environment
 import qualified Graphics.Gloss                         as G
 import qualified Graphics.Gloss.Interface.Pure.Game     as G
 import qualified Graphics.Gloss.Raster.Field            as G
+import qualified Data.Array.Repa                        as R
+import qualified Data.Array.Repa.IO.BMP                 as R
 import Data.Char
 import System.Exit
 
@@ -19,11 +21,16 @@ main
 
         case configFileName config of
          Nothing
-          -> run (configSizeX config) (configSizeY config)
+          -> runInteractive
+                 (configSizeX config) (configSizeY config)
                  (configZoom  config)
                  (configFieldOfView config) (configBounces config)
 
-         Just file -> error "not yet"
+         Just file 
+          -> runBmp
+                file
+                 (configSizeX config) (configSizeY config)
+                 (configFieldOfView config) (configBounces config)
 
    
 -- Config ---------------------------------------------------------------------
@@ -125,10 +132,10 @@ data State
 
 
 -- | Initial world and interface state.
-initState :: State
-initState
+initState :: Float -> State
+initState time
         = State
-        { stateTime             = 0
+        { stateTime             = time
         , stateEyePos           = Vec3 50    (-100) (-700)
         , stateEyeLoc           = Vec3 (-50) 200   1296
 
@@ -140,27 +147,43 @@ initState
         , stateMovingLeft       = False
         , stateMovingRight      = False
 
-        , stateObjects          = makeObjects 0
-        , stateObjectsView      = makeObjects 0
+        , stateObjects          = makeObjects time
+        , stateObjectsView      = makeObjects time
 
-        , stateLights           = makeLights  0
-        , stateLightsView       = makeLights  0 }
+        , stateLights           = makeLights  time
+        , stateLightsView       = makeLights  time }
 
 
--- | Run the game.
-run :: Int -> Int -> Int -> Int -> Int -> IO ()                     
-run sizeX sizeY zoom fov bounces
+-- Run ------------------------------------------------------------------------
+-- | Run the simulation interactively.
+runInteractive :: Int -> Int -> Int -> Int -> Int -> IO ()                     
+runInteractive sizeX sizeY zoom fov bounces
  = G.playField 
         (G.InWindow "Ray" (sizeX, sizeY) (10, 10))
         (zoom, zoom)
         100
-        initState
+        (advanceState 1 $ initState 0)
         (tracePixel sizeX sizeY fov bounces)
         handleEvent
         advanceState
-{-# NOINLINE run #-}
+{-# NOINLINE runInteractive #-}
 
 
+-- BMP ------------------------------------------------------------------------
+-- | Write the first frame to a .bmp file
+runBmp :: FilePath -> Int -> Int -> Int -> Int -> IO ()
+runBmp file sizeX sizeY fov bounces
+ = do   img     <- R.computeUnboxedP 
+                $  G.makeFrame  sizeX sizeY
+                $  tracePixel   sizeX sizeY fov bounces 
+                $  advanceState 1 
+                $  initState 0
+
+        R.writeImageToBMP file img
+{-# NOINLINE runBmp #-}
+
+
+-- Trace ----------------------------------------------------------------------
 -- | Render a single pixel of the image.
 tracePixel :: Int -> Int -> Int -> Int -> State -> G.Point -> G.Color
 tracePixel !sizeX !sizeY !fov !bounces !state (x, y)

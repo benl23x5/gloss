@@ -175,8 +175,8 @@ makePicture !winSizeX !winSizeY !zoomX !zoomY !makePixel
         traceEventIO "Gloss.Raster[makePicture]: start frame evaluation."
         (arrRGB :: Array F DIM2 Word32)
                 <- R.computeP  
-                $ R.map conv
-                $ makeFrame winSizeX winSizeY zoomX zoomY makePixel
+                $  R.map conv
+                $  makeFrame sizeX sizeY makePixel
         traceEventIO "Gloss.Raster[makePicture]: done, returning picture."
 
         -- Wrap the ForeignPtr from the Array as a gloss picture.
@@ -194,18 +194,13 @@ makePicture !winSizeX !winSizeY !zoomX !zoomY !makePixel
 
 -- Frame ----------------------------------------------------------------------
 makeFrame
-        :: Int                  -- Window Size X
-        -> Int                  -- Window Size Y
-        -> Int                  -- Pixels X
-        -> Int                  -- Pixels Y
+        :: Int                  -- Array Size X
+        -> Int                  -- Array Size Y
         -> (Point -> Color)
         -> Array D DIM2 (Word8, Word8, Word8)
 
-makeFrame !winSizeX !winSizeY !zoomX !zoomY !makePixel
+makeFrame !sizeX !sizeY !makePixel
  = let  -- Size of the raw image to render.
-        sizeX = winSizeX `div` zoomX
-        sizeY = winSizeY `div` zoomY
-
         fsizeX, fsizeY  :: Float
         !fsizeX          = fromIntegral sizeX
         !fsizeY          = fromIntegral sizeY
