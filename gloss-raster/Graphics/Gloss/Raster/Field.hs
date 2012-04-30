@@ -24,7 +24,11 @@ module Graphics.Gloss.Raster.Field
         , Display       (..)
         , Point
         , animateField
-        , playField)
+        , playField
+
+         -- * Frame creation
+        , makePicture
+        , makeFrame)
 where
 import Graphics.Gloss.Data.Color
 import Graphics.Gloss.Data.Picture
@@ -88,7 +92,7 @@ animateField display (zoomX, zoomY) makePixel
         {-# INLINE frame #-}
         frame !time
                 = return
-                $ makeFrame winSizeX winSizeY zoomX zoomY (makePixel time)
+                $ makePicture winSizeX winSizeY zoomX zoomY (makePixel time)
 
    in   animateFixedIO display black frame
 {-# INLINE animateField #-}
@@ -124,24 +128,79 @@ playField !display (zoomX, zoomY) !stepRate !initWorld !makePixel !handleEvent !
                    initWorld
                    (\world -> 
                       world `seq` 
-                      makeFrame winSizeX winSizeY zoomX zoomY (makePixel world))
+                      makePicture winSizeX winSizeY zoomX zoomY (makePixel world))
                    handleEvent
                    stepWorld
 {-# INLINE playField #-}
 
 
--- Frame ----------------------------------------------------------------------
-{-# INLINE sizeOfDisplay #-}
 sizeOfDisplay :: Display -> (Int, Int)
 sizeOfDisplay display
  = case display of
         InWindow _ s _  -> s
         FullScreen s    -> s
+{-# INLINE sizeOfDisplay #-}
 
-{-# INLINE makeFrame #-}
-makeFrame 
-        :: Int -> Int -> Int -> Int 
-        -> (Point -> Color) -> Picture
+
+-- Picture --------------------------------------------------------------------
+makePicture
+        :: Int                  -- Window Size X
+        -> Int                  -- Window Size Y
+        -> Int                  -- Pixels X
+        -> Int                  -- Pixels Y
+        -> (Point -> Color)
+        -> Picture
+makePicture !winSizeX !winSizeY !zoomX !zoomY !makePixel
+ = let  -- Size of the raw image to render.
+        sizeX = winSizeX `div` zoomX
+        sizeY = winSizeY `div` zoomY
+
+        {-# INLINE conv #-} 
+        conv (r, g, b)
+         = let  r'      = fromIntegral r
+                g'      = fromIntegral g
+                b'      = fromIntegral b
+                a       = 255 
+
+                !w      =   unsafeShiftL r' 24
+                        .|. unsafeShiftL g' 16
+                        .|. unsafeShiftL b' 8
+                        .|. a
+           in   w
+
+   in unsafePerformIO $ do
+
+        -- Define the image, and extract out just the RGB color components.
+        -- We don't need the alpha because we're only drawing one image.
+        traceEventIO "Gloss.Raster[makePicture]: start frame evaluation."
+        (arrRGB :: Array F DIM2 Word32)
+                <- R.computeP  
+                $ R.map conv
+                $ makeFrame winSizeX winSizeY zoomX zoomY makePixel
+        traceEventIO "Gloss.Raster[makePicture]: done, returning picture."
+
+        -- Wrap the ForeignPtr from the Array as a gloss picture.
+        let picture     
+                = Scale (fromIntegral zoomX) (fromIntegral zoomY)
+                $ bitmapOfForeignPtr
+                        sizeX sizeY     -- raw image size
+                        (R.toForeignPtr $ unsafeCoerce arrRGB)   
+                                        -- the image data.
+                        False           -- don't cache this in texture memory.
+
+        return picture
+{-# INLINE makePicture #-}
+
+
+-- Frame ----------------------------------------------------------------------
+makeFrame
+        :: Int                  -- Window Size X
+        -> Int                  -- Window Size Y
+        -> Int                  -- Pixels X
+        -> Int                  -- Pixels Y
+        -> (Point -> Color)
+        -> Array D DIM2 (Word8, Word8, Word8)
+
 makeFrame !winSizeX !winSizeY !zoomX !zoomY !makePixel
  = let  -- Size of the raw image to render.
         sizeX = winSizeX `div` zoomX
@@ -166,42 +225,11 @@ makeFrame !winSizeX !winSizeY !zoomX !zoomY !makePixel
                 y'      = fromIntegral (y - midY) / fsizeY2
            in   makePixel (x', y')
 
-        {-# INLINE conv #-} 
-        conv (r, g, b)
-         = let  r'      = fromIntegral r
-                g'      = fromIntegral g
-                b'      = fromIntegral b
-                a       = 255 
+   in   R.map unpackColor 
+         $ R.fromFunction (Z :. sizeY  :. sizeX)
+         $ pixelOfIndex
+{-# INLINE makeFrame #-}
 
-                !w      =   unsafeShiftL r' 24
-                        .|. unsafeShiftL g' 16
-                        .|. unsafeShiftL b' 8
-                        .|. a
-           in   w
-
-   in unsafePerformIO $ do
-
-        -- Define the image, and extract out just the RGB color components.
-        -- We don't need the alpha because we're only drawing one image.
-        traceEventIO "Gloss.Raster[makeFrame]: start frame evaluation."
-        (arrRGB :: Array F DIM2 Word32)
-                <- R.computeP  
-                        $ R.map conv
-                        $ R.map unpackColor 
-                        $ R.fromFunction (Z :. sizeY  :. sizeX)
-                        $ pixelOfIndex
-        traceEventIO "Gloss.Raster[makeFrame]: done, returning picture."
-
-        -- Wrap the ForeignPtr from the Array as a gloss picture.
-        let picture     
-                = Scale (fromIntegral zoomX) (fromIntegral zoomY)
-                $ bitmapOfForeignPtr
-                        sizeX sizeY     -- raw image size
-                        (R.toForeignPtr $ unsafeCoerce arrRGB)   
-                                        -- the image data.
-                        False           -- don't cache this in texture memory.
-
-        return picture
 
 
 -- | Float to Word8 conversion because the one in the GHC libraries

@@ -8,26 +8,98 @@ import System.Environment
 import qualified Graphics.Gloss                         as G
 import qualified Graphics.Gloss.Interface.Pure.Game     as G
 import qualified Graphics.Gloss.Raster.Field            as G
+import Data.Char
+import System.Exit
+
 
 main :: IO ()
 main 
  = do   args    <- getArgs
-        case args of
-         []     -> run 800 600 4 100 4
+        config  <- parseArgs args defaultConfig
 
-         [sizeX, sizeY, zoom, fov, bounces]
-                -> run (read sizeX) (read sizeY) (read zoom) (read fov) (read bounces)
+        case configFileName config of
+         Nothing
+          -> run (configSizeX config) (configSizeY config)
+                 (configZoom  config)
+                 (configFieldOfView config) (configBounces config)
 
-         _ -> putStr $ unlines
-           [ "trace <sizeX::Int> <sizeY::Int> <zoom::Int> (fov::Int) (bounces::Int)"
-           , "    sizeX, sizeY - visualisation size        (default 800, 600)"
-           , "    zoom         - pixel replication factor  (default 4)"
-           , "    fov          - field of view             (default 100)"
-           , "    bounces      - ray bounce limit          (default 4)"
+         Just file -> error "not yet"
+
+   
+-- Config ---------------------------------------------------------------------
+data Config
+        = Config
+        { configSizeX           :: Int
+        , configSizeY           :: Int
+        , configFieldOfView     :: Int
+        , configBounces         :: Int
+        , configZoom            :: Int
+        , configFileName        :: Maybe FilePath }
+        deriving Show
+
+
+defaultConfig :: Config
+defaultConfig
+        = Config
+        { configSizeX           = 800
+        , configSizeY           = 600
+        , configFieldOfView     = 100
+        , configBounces         = 4
+        , configZoom            = 4
+        , configFileName        = Nothing }
+
+
+parseArgs :: [String] -> Config -> IO Config
+parseArgs args config
+        | []    <- args
+        = return config
+
+        | "-window" : sizeX : sizeY : zoom : rest <- args
+        , all isDigit sizeX
+        , all isDigit sizeY
+        , all isDigit zoom
+        = parseArgs rest
+        $ config { configSizeX          = read sizeX
+                 , configSizeY          = read sizeY
+                 , configZoom           = read zoom
+                 , configFileName       = Nothing }
+
+        | "-bmp" : sizeX : sizeY : file : rest   <- args
+        , all isDigit sizeX
+        , all isDigit sizeY
+        = parseArgs rest
+        $ config { configSizeX          = read sizeX
+                 , configSizeY          = read sizeY
+                 , configZoom           = 1
+                 , configFileName       = Just file }
+
+        | "-fov" : fov : rest <- args
+        , all isDigit fov
+        = parseArgs rest
+        $ config { configFieldOfView    = read fov }
+
+        | "-bounces" : bounces : rest <- args
+        , all isDigit bounces
+        = parseArgs rest
+        $ config { configBounces        = read bounces }
+
+        | otherwise
+        = do    printUsage
+                exitWith $ ExitFailure 1
+
+printUsage :: IO ()
+printUsage 
+ = putStrLn $ unlines
+          [ "gloss-ray [flags]"
+           , "    -window  <sizeX::INT> <sizeY::INT> <zoom::INT>  (800, 400, 4)"
+           , "    -bmp     <sizeX::INT> <sizeY::INT> <FILE>"
+           , "    -fov     <INT>    Field of view                 (100)"
+           , "    -bounces <INT>    Ray bounce limit              (4)"
            , ""
            , " You'll want to run this with +RTS -N to enable threads" ]
-   
 
+
+-- World ----------------------------------------------------------------------
 -- | World and interface state.
 data State
         = State
