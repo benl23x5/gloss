@@ -193,7 +193,7 @@ Executable gloss-crystal
   Main-is:        Main.hs
   hs-source-dirs: raster/Crystal
   ghc-options:    
-        -Wall -threaded -eventlog
+        -Wall -threaded -rtsopts -eventlog
         -Odph -fno-liberate-case
         -funfolding-use-threshold1000
         -funfolding-keeness-factor1000
@@ -209,7 +209,7 @@ Executable gloss-ray
   other-modules:  Light Object Trace Vec3 World
   hs-source-dirs: raster/Ray
   ghc-options:    
-        -Wall -threaded -eventlog
+        -Wall -threaded -rtsopts -eventlog
         -Odph -fno-liberate-case
         -funfolding-use-threshold1000
         -funfolding-keeness-factor1000
@@ -224,7 +224,7 @@ Executable gloss-pulse
   Main-is:        Main.hs
   hs-source-dirs: raster/Pulse
   ghc-options:
-        -Wall -threaded -eventlog
+        -Wall -threaded -rtsopts -eventlog
         -Odph -fno-liberate-case
         -funfolding-use-threshold1000
         -funfolding-keeness-factor1000
@@ -241,7 +241,7 @@ Executable gloss-wave
   Main-is:        Main.hs
   hs-source-dirs: raster/Wave
   ghc-options:
-        -Wall -threaded -eventlog
+        -Wall -threaded -rtsopts -eventlog
         -Odph -fno-liberate-case
         -funfolding-use-threshold1000
         -funfolding-keeness-factor1000
@@ -265,7 +265,7 @@ Executable gloss-fluid
         Stage.Linear    Stage.Project  Stage.Sources
   hs-source-dirs: raster/Fluid
   ghc-options:
-        -Wall -threaded -eventlog -rtsopts
+        -Wall -threaded -rtsopts -eventlog
         -Odph -fno-liberate-case
         -funfolding-use-threshold1000
         -funfolding-keeness-factor1000
@@ -282,7 +282,7 @@ Executable gloss-snow
   Main-is:      Main.hs
   hs-source-dirs: raster/Snow
   ghc-options:
-        -Wall -threaded -eventlog -rtsopts
+        -Wall -threaded -rtsopts -eventlog
         -Odph -fno-liberate-case
         -funfolding-use-threshold1000
         -funfolding-keeness-factor1000
@@ -298,7 +298,7 @@ Executable gloss-mandel
   other-modules:  Solver
   hs-source-dirs: raster/Mandel
   ghc-options:
-        -Wall -threaded -eventlog -rtsopts
+        -Wall -threaded -rtsopts -eventlog
         -Odph -fno-liberate-case
         -funfolding-use-threshold1000
         -funfolding-keeness-factor1000
