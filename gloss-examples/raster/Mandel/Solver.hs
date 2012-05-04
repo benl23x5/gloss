@@ -117,7 +117,7 @@ makeFrame
         -> Int                  -- Pixels X
         -> Int                  -- Pixels Y
         -> (Double -> Double -> Color)
-        -> Array (NI D) DIM2 (Word8, Word8, Word8)
+        -> Array (I D) DIM2 (Word8, Word8, Word8)
 
 makeFrame !winSizeX !winSizeY !zoomX !zoomY !makePixel
  = let  -- Size of the raw image to render.
