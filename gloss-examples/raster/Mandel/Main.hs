@@ -81,7 +81,7 @@ parseArgs args config
                  , configSizeX   = read sizeX
                  , configSizeY   = read sizeY }
 
-        | "-bmp" : fileName : sizeX : sizeY : rest <- args
+        | "-bmp" : sizeX : sizeY : fileName : rest <- args
         , all isDigit sizeX
         , all isDigit sizeY
         = parseArgs rest
@@ -111,7 +111,7 @@ printUsage
         [ "Usage: gloss-mandel [flags]"
         , "  -fullscreen  <width::INT> <height::INT>"
         , "  -window      <width::INT> <height::INT>" 
-        , "  -bmp         <FILE> <width::INT> <height::INT>" 
+        , "  -bmp         <width::INT> <height::INT> <FILE>" 
         , "  -dynamic     <INT>   Level of detail reduction when zooming and panning. (4) "
         , ""
         , " Controls:"
