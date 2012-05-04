@@ -14,7 +14,7 @@ import Data.Bits
 import GHC.Float
 import Data.Array.Repa                          as R
 import Data.Array.Repa.Repr.ForeignPtr          as R
-import Data.Array.Repa.Repr.HintUnbalanced      as R
+import Data.Array.Repa.Repr.HintInterleave      as R
 import Data.Array.Repa.Algorithms.ColorRamp     as R
 import Prelude                                  as P
 
@@ -143,7 +143,7 @@ makeFrame !winSizeX !winSizeY !zoomX !zoomY !makePixel
                 y'      = fromIntegral (y - midY) / fsizeY2
            in   makePixel x' y'
 
-   in   R.hintUnbalancedI
+   in   R.hintInterleave
          $ R.map unpackColor 
          $ R.fromFunction (Z :. sizeY  :. sizeX)
          $ pixelOfIndex
