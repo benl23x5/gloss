@@ -42,6 +42,7 @@ import Debug.Trace
 import Data.Bits
 import Data.Array.Repa                          as R
 import Data.Array.Repa.Repr.ForeignPtr          as R
+import Data.Array.Repa.Repr.HintInterleave      as R
 import Prelude                                  as P
 
 -- Color ----------------------------------------------------------------------
@@ -197,7 +198,7 @@ makeFrame
         :: Int                  -- Array Size X
         -> Int                  -- Array Size Y
         -> (Point -> Color)
-        -> Array D DIM2 (Word8, Word8, Word8)
+        -> Array (I D) DIM2 (Word8, Word8, Word8)
 
 makeFrame !sizeX !sizeY !makePixel
  = let  -- Size of the raw image to render.
@@ -220,7 +221,8 @@ makeFrame !sizeX !sizeY !makePixel
                 y'      = fromIntegral (y - midY) / fsizeY2
            in   makePixel (x', y')
 
-   in   R.map unpackColor 
+   in   R.hintInterleave
+         $ R.map unpackColor 
          $ R.fromFunction (Z :. sizeY  :. sizeX)
          $ pixelOfIndex
 {-# INLINE makeFrame #-}

@@ -14,6 +14,7 @@ import Data.Bits
 import GHC.Float
 import Data.Array.Repa                          as R
 import Data.Array.Repa.Repr.ForeignPtr          as R
+import Data.Array.Repa.Repr.HintUnbalanced      as R
 import Data.Array.Repa.Algorithms.ColorRamp     as R
 import Prelude                                  as P
 
@@ -116,7 +117,7 @@ makeFrame
         -> Int                  -- Pixels X
         -> Int                  -- Pixels Y
         -> (Double -> Double -> Color)
-        -> Array D DIM2 (Word8, Word8, Word8)
+        -> Array (NI D) DIM2 (Word8, Word8, Word8)
 
 makeFrame !winSizeX !winSizeY !zoomX !zoomY !makePixel
  = let  -- Size of the raw image to render.
@@ -142,7 +143,8 @@ makeFrame !winSizeX !winSizeY !zoomX !zoomY !makePixel
                 y'      = fromIntegral (y - midY) / fsizeY2
            in   makePixel x' y'
 
-   in   R.map unpackColor 
+   in   R.hintUnbalancedI
+         $ R.map unpackColor 
          $ R.fromFunction (Z :. sizeY  :. sizeX)
          $ pixelOfIndex
 {-# INLINE makeFrame #-}
