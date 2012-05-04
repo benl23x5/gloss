@@ -1,5 +1,5 @@
 Name:                gloss-examples
-Version:             1.7.4.2
+Version:             1.7.4.4
 License:             MIT
 License-file:        LICENSE
 Author:              Ben Lippmeier
@@ -253,9 +253,9 @@ Executable gloss-fluid
         base            == 4.*,
         gloss           == 1.7.*,
         vector          == 0.9.*,
-        repa            == 3.1.*,
-        repa-io         == 3.1.*,
-        repa-algorithms == 3.1.*,
+        repa            == 3.2.*,
+        repa-io         == 3.2.*,
+        repa-algorithms == 3.2.*,
         ghc-prim
   Main-is:        Main.hs
   other-modules:  
@@ -278,7 +278,7 @@ Executable gloss-snow
   Build-depends
         base            == 4.*,
         gloss           == 1.7.*,
-        repa            == 3.1.*,
+        repa            == 3.2.*,
   Main-is:      Main.hs
   hs-source-dirs: raster/Snow
   ghc-options:
@@ -293,7 +293,7 @@ Executable gloss-mandel
   Build-depends
         base            == 4.*,
         gloss           == 1.7.*,
-        repa            >= 3.1.4.2 && < 3.2
+        repa            >= 3.2.1 && < 3.3
   Main-is:        Main.hs
   other-modules:  Solver
   hs-source-dirs: raster/Mandel
