@@ -7,6 +7,7 @@ import Stage.Advection
 import Stage.Sources
 import Config
 import Model
+import Debug.Trace
 
 -- | Run the stages for processing the density field in one time step
 densitySteps 
@@ -18,7 +19,14 @@ densitySteps
 
 densitySteps config df ds vf 
  = {-# SCC "Solve.densitySteps" #-}
-   do   df1     <- addSources (configDelta config) (configDensity   config) ds df
+   do   traceEventIO "Fluid: densitySteps addSources"
+        df1     <- addSources (configDelta config) (configDensity   config) ds df
+
+        traceEventIO "Fluid: densitySteps diffusion"
         df2     <- diffusion  (configDelta config) (configDiffusion config) df1
+
+        traceEventIO "Fluid: densitySteps advection"
         df'     <- advection  (configDelta config) vf df2
+
+        traceEventIO "Fluid: densitySteps done"
         return  df'

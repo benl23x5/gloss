@@ -18,8 +18,10 @@ import Graphics.Gloss
 import Graphics.Gloss.Interface.IO.Game
 import System.Mem
 import System.Environment       (getArgs)
-import Data.Array.Repa                  as R
-import Data.Array.Repa.IO.BMP           as R
+import Data.Array.Repa          as R
+import Data.Array.Repa.IO.BMP   as R
+import Prelude                  as P
+import Debug.Trace
 
 
 main :: IO ()
@@ -76,14 +78,15 @@ stepFluid config m@(Model df ds vf vs cl sp cb)
 
    | otherwise 
    = do performGC 
+        traceEventIO $ "stepFluid frame " P.++ show sp P.++ " start"
         vf'     <- velocitySteps config vf vs
         df'     <- densitySteps  config df ds vf'
+        traceEventIO $ "stepFluid frame " P.++ show sp P.++ " done"
         return  $ Model df' Nothing vf' Nothing cl (sp + 1) cb
-
 
 -- Writes bitmap data to test batch-mode ran correctly
 outputBMP :: DensityField -> IO ()
 outputBMP df 
  = do   arr     <- computeUnboxedP $ R.map pixel8OfDensity df
-        R.writeImageToBMP "./output.bmp" arr
+        R.writeImageToBMP "./out.bmp" arr
 
