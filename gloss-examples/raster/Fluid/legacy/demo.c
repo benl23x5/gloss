@@ -356,8 +356,6 @@ static void open_glut_window ( void )
 
 int main ( int argc, char ** argv )
 {
-	glutInit ( &argc, argv );
-
 	if ( argc != 1 && argc != 7 ) {
 		fprintf (stderr, "argc = %d\n", argc);
 		fprintf ( stderr, "usage : %s N dt diff visc force source\n", argv[0] );
@@ -403,11 +401,11 @@ int main ( int argc, char ** argv )
 	if ( !allocate_data () ) exit ( 1 );
 	clear_data ();
 
-
         int interactive = 0;
         int maxSteps    = 10;
 
         if (interactive) {
+                glutInit ( &argc, argv );
                 open_glut_window ();
                 glutMainLoop ();
         }
