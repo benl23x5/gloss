@@ -79,6 +79,7 @@ stepFluid config m@(Model df ds vf vs cl sp cb)
    | otherwise 
    = do performGC 
         traceEventIO $ "stepFluid frame " P.++ show sp P.++ " start"
+        putStrLn  $ "Step " ++ show sp
         vf'     <- velocitySteps config vf vs
         df'     <- densitySteps  config df ds vf'
         traceEventIO $ "stepFluid frame " P.++ show sp P.++ " done"
