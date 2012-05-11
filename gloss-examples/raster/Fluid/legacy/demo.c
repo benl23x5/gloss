@@ -43,13 +43,9 @@ static int mouse_down[3];
 static int omx, omy, mx, my;
 
 
-/*
-  ----------------------------------------------------------------------
-   free/clear/allocate simulation data
-  ----------------------------------------------------------------------
-*/
-
-
+// ----------------------------------------------------------------------
+//  free/clear/allocate simulation data
+// ----------------------------------------------------------------------
 static void free_data ( void )
 {
 	if ( u ) free ( u );
@@ -89,12 +85,9 @@ static int allocate_data ( void )
 }
 
 
-/*
-  ----------------------------------------------------------------------
-   OpenGL specific drawing routines
-  ----------------------------------------------------------------------
-*/
-
+// ----------------------------------------------------------------------
+//  OpenGL specific drawing routines
+// ----------------------------------------------------------------------
 static void pre_display ( void )
 {
 	glViewport ( 0, 0, win_x, win_y );
@@ -172,12 +165,12 @@ static void draw_density ( void )
 	glEnd ();
 }
 
-/*
-  ----------------------------------------------------------------------
-   relates mouse movements to forces sources
-  ----------------------------------------------------------------------
-*/
 
+
+
+// ----------------------------------------------------------------------
+//  relates mouse movements to forces sources
+// ----------------------------------------------------------------------
 static void get_from_UI ( float * d, float * u, float * v )
 {
 	int i, j, size = (N+2)*(N+2);
@@ -208,12 +201,10 @@ static void get_from_UI ( float * d, float * u, float * v )
 	return;
 }
 
-/*
-  ----------------------------------------------------------------------
-   GLUT callback routines
-  ----------------------------------------------------------------------
-*/
 
+// ----------------------------------------------------------------------
+//  GLUT callback routines
+// ----------------------------------------------------------------------
 static void key_func_up ( unsigned char key, int x, int y)
 {
 	switch (key)
@@ -316,12 +307,9 @@ static void display_func ( void )
 }
 
 
-/*
-  ----------------------------------------------------------------------
-   open_glut_window --- open a glut compatible window and set callbacks
-  ----------------------------------------------------------------------
-*/
-
+// ----------------------------------------------------------------------
+//  open_glut_window --- open a glut compatible window and set callbacks
+// ----------------------------------------------------------------------
 static void open_glut_window ( void )
 {
 	glutInitDisplayMode ( GLUT_RGBA | GLUT_DOUBLE );
@@ -348,15 +336,15 @@ static void open_glut_window ( void )
 }
 
 
-/*
-  ----------------------------------------------------------------------
-   main --- main routine
-  ----------------------------------------------------------------------
-*/
-
+// ----------------------------------------------------------------------
+//  main --- main routine
+// ----------------------------------------------------------------------
 int main ( int argc, char ** argv )
 {
-	if ( argc != 1 && argc != 7 ) {
+        int mode_benchmark      = 0;
+        int mode_interactive    = 0;
+
+	if ( argc != 1 && argc != 2 && argc != 7 ) {
 		fprintf (stderr, "argc = %d\n", argc);
 		fprintf ( stderr, "usage : %s N dt diff visc force source\n", argv[0] );
 		fprintf ( stderr, "where:\n" );\
@@ -369,8 +357,25 @@ int main ( int argc, char ** argv )
 		exit ( 1 );
 	}
 
-	if ( argc == 1 ) {
-		N      = 200;
+        else if ( argc == 2 ) {
+                mode_benchmark   = 1;
+                mode_interactive = 0;
+                N      = atoi (argv[1]);
+                dt     = 0.1f;
+                diff   = 0.0f;
+                visc   = 0.0f;
+                force  = 5.0f;
+                source = 100.0f;
+
+                win_x   = 512;
+                win_y   = 512;
+        }
+
+	else if ( argc == 1 ) {
+                mode_benchmark   = 0;
+                mode_interactive = 1;
+
+		N      = 256;
 		dt     = 0.1f;
 		diff   = 0.0f;
 		visc   = 0.0f;
@@ -378,38 +383,59 @@ int main ( int argc, char ** argv )
 		source = 100.0f;
 		fprintf ( stderr, "Using defaults : N=%d dt=%g diff=%g visc=%g force = %g source=%g\n",
 			N, dt, diff, visc, force, source );
+
+                win_x   = N;
+                win_y   = N;
+
 	} else {
+                mode_benchmark   = 0;
+                mode_interactive = 1;
+
 		N      = atoi(argv[1]);
 		dt     = atof(argv[2]);
 		diff   = atof(argv[3]);
 		visc   = atof(argv[4]);
 		force  = atof(argv[5]);
 		source = atof(argv[6]);
+
+                win_x  = N;
+                win_y  = N;
 	}
 
+/*
 	printf ( "\n\nHow to use this demo:\n\n" );
 	printf ( "\t Add densities with the right mouse button\n" );
 	printf ( "\t Add velocities with the left mouse button and dragging the mouse\n" );
 	printf ( "\t Toggle density/velocity display with the 'v' key\n" );
 	printf ( "\t Clear the simulation by pressing the 'c' key\n" );
 	printf ( "\t Quit by pressing the 'q' key\n" );
-
+*/
 	dvel = 0;
-        win_x = 800;
-        win_y = 600;
 
 	if ( !allocate_data () ) exit ( 1 );
 	clear_data ();
 
-        int interactive = 0;
-        int maxSteps    = 10;
 
-        if (interactive) {
+        // In benchmark mode set some standard initial conditions.
+        if (mode_benchmark)
+        {
+                int y;
+                for (y = 10; y < 250; y += 10) {
+                        dens[IX(10, y)] = 10 * y;
+                        u[IX(10, y)]    = y;
+                }
+        }
+
+        // In interactive mode, display the simulation in a window.
+        if (mode_interactive) {
                 glutInit ( &argc, argv );
                 open_glut_window ();
                 glutMainLoop ();
         }
+
+        // In non-interactive mode, just step it a fixed number of times.
         else {
+                int maxSteps    = 100;
                 int i;
                 for (i = 0; i < maxSteps; i++) {
                         vel_step    ( N, u, v, u_prev, v_prev, visc, dt );

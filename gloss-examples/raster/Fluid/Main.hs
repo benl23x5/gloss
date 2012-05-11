@@ -70,7 +70,7 @@ runBatchMode config model
 -- Function to step simulator one step forward in time
 stepFluid :: Config -> Model -> IO Model
 stepFluid config m@(Model df ds vf vs cl sp cb)
-   | sp > configMaxSteps config
+   | sp                    > configMaxSteps config
    , configMaxSteps config > 0  
    = case configBatchMode config of
                 True  -> return m
