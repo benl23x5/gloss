@@ -38,7 +38,7 @@ int state_mouse_down[3];
 int state_mouse_x, state_mouse_oldx;
 int state_mouse_y, state_mouse_oldy;
 
-int           state_draw_vel;
+int           state_draw_vel    = 0;
 struct Model* state_model;
 
 float state_gui_force   = 5;
@@ -143,9 +143,9 @@ display_func (void)
 static void get_from_UI (struct Model* model)
 {
         assert(model);
-        float*  d       = model->dens;
-        float*  u       = model->u;
-        float*  v       = model->v;
+        float*  d       = model->dens_prev;
+        float*  u       = model->u_prev;
+        float*  v       = model->v_prev;
 
         int i, j;
         int N           = model->width;
@@ -163,7 +163,7 @@ static void get_from_UI (struct Model* model)
         j = (int)(((state_window_height - state_mouse_y)
                 /(float)state_window_height) * N+1);
 
-        if ( i<1 || i>state_window_width || j<1 || j>state_window_height )
+        if ( i < 1 || i > state_window_width || j < 1 || j > state_window_height)
                 return;
 
         if ( state_mouse_down[0] ) {

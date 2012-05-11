@@ -10,7 +10,8 @@
 void add_source ( int N, float * x, float * s, float dt )
 {
 	int i, size=(N+2)*(N+2);
-	for ( i=0 ; i<size ; i++ ) x[i] += dt*s[i];
+	for ( i=0 ; i<size ; i++ ) 
+                x[i] += dt * s[i];
 }
 
 
@@ -93,14 +94,12 @@ void advect ( int N, int b, float * d, float * d0, float * u, float * v, float d
 
 		if (x < 0.5f)   x = 0.5f; 
                 if (x > N+0.5f) x = N+0.5f; 
-                assert (x == x);
 
                 i0=(int)x; 
                 i1=i0+1;
 
 		if (y < 0.5f)   y = 0.5f; 
                 if (y > N+0.5f) y = N + 0.5f; 
-                assert (y == y);
 
                 j0=(int)y; 
                 j1=j0+1;
@@ -143,6 +142,7 @@ void project ( int N, float * u, float * v, float * p, float * div )
 void dens_step (int N, float* x, float* x0, float* u, float* v, float diff, float dt)
 {
 	add_source ( N, x, x0, dt );
+
 	SWAP ( x0, x ); diffuse ( N, 0, x, x0, diff, dt );
 	SWAP ( x0, x ); advect  ( N, 0, x, x0, u, v, dt );
 }
@@ -150,6 +150,7 @@ void dens_step (int N, float* x, float* x0, float* u, float* v, float diff, floa
 
 void vel_step (int N, float* u, float* v, float* u0, float* v0, float visc, float dt)
 {
+
 	add_source ( N, u, u0, dt ); add_source ( N, v, v0, dt );
 	SWAP ( u0, u ); diffuse ( N, 1, u, u0, visc, dt );
 	SWAP ( v0, v ); diffuse ( N, 2, v, v0, visc, dt );
@@ -162,5 +163,6 @@ void vel_step (int N, float* u, float* v, float* u0, float* v0, float visc, floa
         advect ( N, 2, v, v0, u0, v0, dt );
 
 	project ( N, u, v, u0, v0 );
+
 }
 

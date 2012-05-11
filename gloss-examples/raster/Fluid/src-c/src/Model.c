@@ -41,12 +41,14 @@ model_clear (struct Model* model)
 struct Model* 
 model_new (int width, int height)
 {
-        struct Model*   model   = malloc(sizeof(struct Model));
-        assert(model);
+        assert (width  > 0); 
+        assert (height > 0);
 
         int size         = (width + 2) * (height + 2);
-        int bytes        = model->size * sizeof(float);
+        int bytes        = size        * sizeof(float);
 
+        struct Model*   model   = malloc(sizeof(struct Model));
+        assert(model);
         model->size      = size;
         model->height    = height;
         model->width     = width;
@@ -57,7 +59,7 @@ model_new (int width, int height)
         model->dens      = (float *) malloc (bytes);
         model->dens_prev = (float *) malloc (bytes);
         model->delta     = 0.1;
-        model->diff      = 0;
+        model->diff      = 0.001;
         model->visc      = 0;
 
         assert ( model->u    && model->u_prev

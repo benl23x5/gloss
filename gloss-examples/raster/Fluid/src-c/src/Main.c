@@ -17,6 +17,8 @@
 #include "Model.h"
 #include "Interface.h"
 
+#define IX(i,j) ((i)+(N+2)*(j))
+
 
 int main ( int argc, char ** argv )
 {
@@ -39,16 +41,16 @@ int main ( int argc, char ** argv )
                 mode_benchmark      = 1;
                 mode_interactive    = 1;
                 width               = atoi (argv[1]);
-                state_window_width  = width * 2;
-                state_window_height = width * 2;
+                state_window_width  = width * 4;
+                state_window_height = width * 4;
         }
 
 	else {
                 mode_benchmark      = 0;
                 mode_interactive    = 1;
-                width               = 256;
-                state_window_width  = width * 2;
-                state_window_height = width * 2;
+                width               = 128;
+                state_window_width  = width * 4;
+                state_window_height = width * 4;
 
 	} 
 
@@ -62,15 +64,16 @@ int main ( int argc, char ** argv )
 
 
         // // In benchmark mode set some standard initial conditions.
-        // if (mode_benchmark)
-        // {
-        //         int y;
-        //         for (y = 10; y <= N - 10; y += 10) {
-        //                 dens[IX(40, y)] = 10 * y;
-        //                 u   [IX(20,  y)] = ((float)y / (float)N) * 10;
-        //         }
-        // }
-
+/*        if (mode_benchmark)
+        {
+                 int y;
+                 int N  = model->width;
+                 for (y = 10; y <= N - 10; y += 10) {
+                         model->dens[IX(40, y)] = 10 * y;
+                         model->u   [IX(20,  y)] = ((float)y / (float)N) * 10;
+                 }
+        }
+*/
         // In interactive mode, display the simulation in a window.
 //        if (mode_interactive) {
                 glutInit (&argc, argv);
