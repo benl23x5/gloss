@@ -2,22 +2,36 @@
 
 #include <stdlib.h>
 #include <stdio.h>
+#include <assert.h>
 #include <GLUT/glut.h>
 
 #include "Interface.h"
 #include "Model.h"
 
+#define IX(i,j) ((i)+(N+2)*(j))
 
+// From Solver
+extern void
+dens_step (int N, float* x, float* x0, float* u, float* v, float diff, float dt);
+
+extern void
+vel_step (int N, float* u, float* v, float* u0, float* v0, float visc, float dt);
+
+
+// ----------------------------------------------------------------------------
 static void
 pre_display  (void);
 
 static void
 post_display (void);
 
+static void
+get_from_UI (struct Model* model);
+
 
 // -- Global Window State ----------------------------------------------------
-int state_window_width;
-int state_window_height;
+int state_window_width          = 256;
+int state_window_height         = 256;
 int state_window_id;
 
 int state_mouse_down[3];
@@ -27,15 +41,20 @@ int state_mouse_y, state_mouse_oldy;
 int           state_draw_vel;
 struct Model* state_model;
 
+float state_gui_force   = 5;
+float state_gui_source  = 100;
+
 
 // ----------------------------------------------------------------------------
 // Draw the velocity of a model as lines.
 static void
 draw_velocity (struct Model* model)
 {
+        assert(model);
+
         float* u = model->u;
         float* v = model->v;
-        int n    = model->width;
+        int N    = model->width;
 
         float hx = 1.0f / model->width;
         float hy = 1.0f / model->height;
@@ -53,7 +72,7 @@ draw_velocity (struct Model* model)
                         y = (j-0.5f)*hy;
 
                         glVertex2f (x, y);
-                        glVertex2f (x+u[IXN(n,i,j)], y+v[IXN(n,i,j)]);
+                        glVertex2f (x+u[IX(i,j)], y+v[IX(i,j)]);
                 }
         }
         glEnd ();
@@ -64,8 +83,10 @@ draw_velocity (struct Model* model)
 static void
 draw_density (struct Model* model)
 {
+        assert (model);
+
         float* dens = model->dens;
-        float n     = model->width;
+        int N       = model->width;
 
         float hx = 1.0f / model->width;
         float hy = 1.0f / model->height;
@@ -78,7 +99,7 @@ draw_density (struct Model* model)
                 x = (i-0.5f)*hx;
                 for ( j=0 ; j<=model->height ; j++ ) {
                         y = (j-0.5f)*hy;
-                        d00 = dens[IXN(n,i,j)];
+                        d00 = dens[IX(i,j)];
                         glColor3f (d00, d00, d00);
                         glVertex2f ( x,    y );
                         glVertex2f ( x+hx, y );
@@ -94,8 +115,9 @@ static void
 display_func (void)
 {
         struct Model* model   = state_model;
+        assert(model);
 
-        get_from_UI (model->dens_prev, model->u_prev, model->v_prev);
+        get_from_UI (model);
 
         vel_step    ( model->width
                     , model->u,      model->v
@@ -114,6 +136,49 @@ display_func (void)
         else    draw_density  (model);
 
         post_display ();
+}
+
+
+// Handle user input ----------------------------------------------------------
+static void get_from_UI (struct Model* model)
+{
+        assert(model);
+        float*  d       = model->dens;
+        float*  u       = model->u;
+        float*  v       = model->v;
+
+        int i, j;
+        int N           = model->width;
+
+        for ( i=0 ; i<model->size ; i++ ) {
+                u[i] = v[i] = d[i] = 0.0f;
+        }
+
+        if ( !state_mouse_down[0] && !state_mouse_down[2] )
+                return;
+
+        i = (int)((state_mouse_x 
+                /(float)state_window_width)  * N+1);
+
+        j = (int)(((state_window_height - state_mouse_y)
+                /(float)state_window_height) * N+1);
+
+        if ( i<1 || i>state_window_width || j<1 || j>state_window_height )
+                return;
+
+        if ( state_mouse_down[0] ) {
+                int mouse_diffx = state_mouse_x    - state_mouse_oldx;
+                int mouse_diffy = state_mouse_oldy - state_mouse_y;
+                u[IX(i,j)] = state_gui_force * mouse_diffx;
+                v[IX(i,j)] = state_gui_force * mouse_diffy;
+        }
+
+        if ( state_mouse_down[2] ) {
+                d[IX(i,j)] = state_gui_source;
+        }
+
+        state_mouse_oldx = state_mouse_x;
+        state_mouse_oldy = state_mouse_y;
 }
 
 
@@ -162,13 +227,14 @@ key_func ( unsigned char key, int x, int y )
                 
                 case 'c':
                 case 'C':
-                        clear_data ();
+                        model_clear (state_model);
                         break;
 
                 case 'q':
                 case 'Q':
-                        free_data ();
-                        exit ( 0 );
+                        model_free (state_model);
+                        state_model     = 0;
+                        exit (0);
                         break;
 
                 case 'v':
@@ -211,14 +277,13 @@ reshape_func  (int width, int height)
 static void
 idle_func (void)
 {
-
         glutSetWindow     (state_window_id);
         glutPostRedisplay ();
 }
 
 
 // Window ---------------------------------------------------------------------
-static void
+void
 open_glut_window (void)
 {
         glutInitDisplayMode ( GLUT_RGBA | GLUT_DOUBLE );

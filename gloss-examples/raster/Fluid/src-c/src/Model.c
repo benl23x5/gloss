@@ -22,7 +22,7 @@ model_free (struct Model* model)
 
 // Clear all data in a model.
 void 
-model_clean (struct Model* model)
+model_clear (struct Model* model)
 {
         int i;
         for ( i=0 ; i < model->size ; i++ ) {
@@ -42,6 +42,8 @@ struct Model*
 model_new (int width, int height)
 {
         struct Model*   model   = malloc(sizeof(struct Model));
+        assert(model);
+
         model->size      = (model->width+2)*(model->height+2);
         model->height    = height;
         model->width     = width;
@@ -59,6 +61,7 @@ model_new (int width, int height)
               && model->v    && model->v_prev
               && model->dens && model->dens_prev);
 
+        model_clear (model);
         return model;
 }
 

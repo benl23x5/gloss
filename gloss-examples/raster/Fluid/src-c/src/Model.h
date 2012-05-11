@@ -19,7 +19,7 @@ extern void
 model_free      (struct Model* model);
 
 extern void
-model_clean     (struct Model* model);
+model_clear     (struct Model* model);
 
 extern struct Model*
 model_new       (int width, int height);
