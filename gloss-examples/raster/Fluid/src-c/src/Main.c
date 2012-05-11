@@ -13,6 +13,7 @@
 //
 #include <stdlib.h>
 #include <stdio.h>
+#include <math.h>
 #include <GLUT/glut.h>
 #include "Model.h"
 #include "Interface.h"
@@ -27,7 +28,7 @@ int main ( int argc, char ** argv )
 
         int   width     = 0;
         float delta     = 0.1;
-        float diff      = 0;
+        float diff      = 0.00001;
         float visc      = 0;
 
         struct Model* model     = 0;
@@ -64,16 +65,30 @@ int main ( int argc, char ** argv )
 
 
         // // In benchmark mode set some standard initial conditions.
-/*        if (mode_benchmark)
+        if (mode_benchmark)
         {
-                 int y;
-                 int N  = model->width;
-                 for (y = 10; y <= N - 10; y += 10) {
-                         model->dens[IX(40, y)] = 10 * y;
-                         model->u   [IX(20,  y)] = ((float)y / (float)N) * 10;
-                 }
+                float yc        = width / 2;
+                float xc        = width / 2;
+
+                int y, x;
+                int N  = model->width;
+                for (y = 0; y < N; y++)
+                for (x = 0; x < N; x++) {
+                        float xk1       = cos (10 * (x - xc) / width);
+                        float yk1       = cos (10 * (y - yc) / width);
+                        float d1        = xk1 * yk1;
+
+                        float xk2       = cos (5 * (x - xc) / width);
+                        float yk2       = cos (5 * (y - yc) / width);
+                        float d2        = xk2 * yk2;
+
+                        model->dens     [IX(x, y)] = 5 * d1;
+                        model->dens_prev[IX(x, y)] = 5 * d1;
+                        model->v        [IX(x, y)] = d2 / 20;
+                        model->v_prev   [IX(x, y)] = d2 / 20;
+                }
         }
-*/
+
         // In interactive mode, display the simulation in a window.
 //        if (mode_interactive) {
                 glutInit (&argc, argv);

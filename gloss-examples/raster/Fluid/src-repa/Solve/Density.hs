@@ -12,15 +12,18 @@ import Debug.Trace
 -- | Run the stages for processing the density field in one time step
 densitySteps 
         :: Config
+        -> Int
         -> DensityField 
         -> Maybe (Source Float) 
         -> VelocityField 
         -> IO DensityField
 
-densitySteps config df ds vf 
+densitySteps config step df ds vf 
  = {-# SCC "Solve.densitySteps" #-}
    do   traceEventIO "Fluid: densitySteps addSources"
         df1     <- addSources (configDelta config) (configDensity   config) ds df
+
+--        outputPPM step "density" df1
 
         traceEventIO "Fluid: densitySteps diffusion"
         df2     <- diffusion  (configDelta config) (configDiffusion config) df1

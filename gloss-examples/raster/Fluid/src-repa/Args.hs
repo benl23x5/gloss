@@ -20,7 +20,7 @@ loadConfig args
         scaleArg        <- newIORef 5
         rateArg         <- newIORef 25
         deltaArg        <- newIORef 0.1
-        diffArg         <- newIORef 0
+        diffArg         <- newIORef 0.00001
         viscArg         <- newIORef 0
         densArg         <- newIORef 100
         velArg          <- newIORef (20, 20)
@@ -132,11 +132,17 @@ loadConfig args
                         return density
 
                 | benchMode
-                = return
+                = let   yc      = fromIntegral width / 2
+                        xc      = fromIntegral width / 2
+                        width'  = fromIntegral width
+                  in return
                         $ R.fromListUnboxed (Z :. height :. width)
-                        $ [ if y >= 10 && y <= width - 10 && y `mod` 10 == 0 && x == 40
-                                then 10 * fromIntegral y
-                                else 0
+                        $ [ let x'      = fromIntegral x
+                                y'      = fromIntegral y
+                                xk1     = cos (20 * (x' - xc) / width')
+                                yk1     = cos (20 * (y' - yc) / width')
+                                d1      = xk1 * yk1
+                            in  5 * d1
                                 | y     <- [0..width-1]
                                 , x     <- [0..width-1] ]
 
@@ -175,11 +181,17 @@ loadConfig args
                         return velocity
 
                 | benchMode
-                = return
+                = let   yc      = fromIntegral width / 2
+                        xc      = fromIntegral width / 2
+                        width'  = fromIntegral width
+                  in return
                         $ R.fromListUnboxed (Z :. height :. width)
-                        $ [ if y >= 10 && y < width - 10 && y `mod` 10 == 0 && x == 20
-                                then ((fromIntegral  y / fromIntegral height) * 100, 0)
-                                else (0, 0)
+                        $ [ let x'      = fromIntegral x
+                                y'      = fromIntegral y
+                                xk2     = cos (5 * (x' - xc) / width')
+                                yk2     = cos (10 * (y' - yc) / width')
+                                d2      = xk2 * yk2
+                            in  (0, d2 / 20)
                                 | y     <- [0..width-1]
                                 , x     <- [0..width-1] ]
 

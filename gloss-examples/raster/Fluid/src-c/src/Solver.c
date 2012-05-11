@@ -60,9 +60,13 @@ void set_bnd (int N, int b, float* x)
 void lin_solve ( int N, int b, float* x, float* x0, float a, float c )
 {
 	int i, j, k;
-	for ( k=0 ; k<10 ; k++ ) {
+	for ( k=0 ; k<20 ; k++ ) {
 		FOR_EACH_CELL(
-			x[IX(i,j)] = (x0[IX(i,j)] + a*(x[IX(i-1,j)]+x[IX(i+1,j)]+x[IX(i,j-1)]+x[IX(i,j+1)]))/c;
+			x[IX(i,j)] = ( x0[IX(i,j)] 
+                                     + a * (x[IX(i-1,j)]
+                                          + x[IX(i+1,j)]
+                                          + x[IX(i,j-1)]
+                                          + x[IX(i,j+1)]))/c;
                 )
 		set_bnd ( N, b, x );
 	}
@@ -70,10 +74,10 @@ void lin_solve ( int N, int b, float* x, float* x0, float a, float c )
 
 
 // -- Diffusion ---------------------------------------------------------------
-void diffuse ( int N, int b, float * x, float * x0, float diff, float dt )
+void diffuse ( int N, int b, float *x, float *x0, float diff, float dt )
 {
-	float a=dt*diff*N*N;
-	lin_solve ( N, b, x, x0, a, 1+4*a );
+	float a = dt * diff * N * N;
+	lin_solve (N, b, x, x0, a, 1 + 4 * a);
 }
 
 
@@ -116,6 +120,17 @@ void advect ( int N, int b, float * d, float * d0, float * u, float * v, float d
 	set_bnd ( N, b, d );
 }
 
+void copy (int N, float * d, float * d0)
+{
+        assert (d); assert (d0);
+        int i, j;
+
+        for ( i=1 ; i <= N ; i++ ) 
+        for ( j=1 ; j <= N ; j++ ) {
+                d[IX(i,j)] = d0[IX(i,j)];
+        }
+}
+
 
 // -- Projection --------------------------------------------------------------
 void project ( int N, float * u, float * v, float * p, float * div )
@@ -141,20 +156,20 @@ void project ( int N, float * u, float * v, float * p, float * div )
 // -- Steps -------------------------------------------------------------------
 void dens_step (int N, float* x, float* x0, float* u, float* v, float diff, float dt)
 {
-	add_source ( N, x, x0, dt );
+//	add_source ( N, x, x0, dt );
 
-	SWAP ( x0, x ); diffuse ( N, 0, x, x0, diff, dt );
-	SWAP ( x0, x ); advect  ( N, 0, x, x0, u, v, dt );
+	SWAP (x0, x); diffuse (N, 0, x, x0, diff, dt);
+	SWAP (x0, x); advect  (N, 0, x, x0, u, v, dt);
 }
 
 
 void vel_step (int N, float* u, float* v, float* u0, float* v0, float visc, float dt)
 {
 
-	add_source ( N, u, u0, dt ); add_source ( N, v, v0, dt );
+//	add_source ( N, u, u0, dt ); add_source ( N, v, v0, dt );
 	SWAP ( u0, u ); diffuse ( N, 1, u, u0, visc, dt );
 	SWAP ( v0, v ); diffuse ( N, 2, v, v0, visc, dt );
-	
+
         project ( N, u, v, u0, v0 );
 	SWAP ( u0, u );
         SWAP ( v0, v );

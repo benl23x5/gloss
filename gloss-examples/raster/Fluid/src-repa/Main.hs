@@ -82,7 +82,7 @@ stepFluid config m@(Model df ds vf vs cl step cb)
 
         vf'     <- velocitySteps config step vf vs
 
-        df'     <- densitySteps  config df ds vf'
+        df'     <- densitySteps  config step df ds vf'
 
         traceEventIO $ "stepFluid frame " P.++ show step P.++ " done"
         return  $ Model df' Nothing vf' Nothing cl (step + 1) cb

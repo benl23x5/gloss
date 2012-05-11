@@ -59,7 +59,7 @@ model_new (int width, int height)
         model->dens      = (float *) malloc (bytes);
         model->dens_prev = (float *) malloc (bytes);
         model->delta     = 0.1;
-        model->diff      = 0.001;
+        model->diff      = 0;
         model->visc      = 0;
 
         assert ( model->u    && model->u_prev
@@ -72,11 +72,11 @@ model_new (int width, int height)
 
 
 void 
-dump_density (int step_count, int N, float* d)
+dump_array (int step_count, char* name, int N, float scale, float* d)
 {
         int i, j;
         char str[256];
-        snprintf(str, 256, "out/density%04d.ppm", step_count);
+        snprintf(str, 256, "out/%04d-%s.ppm", step_count, name);
         FILE* file = fopen (str, "w+");
         fprintf (file, "P2\n");
         fprintf (file, "%d %d\n", N, N);
@@ -92,9 +92,9 @@ dump_density (int step_count, int N, float* d)
         }
 
         // Write out image file.
-        for (j = 0; j < N; j++) {
+        for (j = N-1; j >= 0; j--) {
                for (i = 0; i < N; i++) {
-                        float d00       = d[IXN(N, i, j)];
+                        float d00       = d[IXN(N, i, j)] * scale;
                         d00             = d00;
                         fprintf (file, "%d ", (int)d00);
                 }

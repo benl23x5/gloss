@@ -40,6 +40,7 @@ int state_mouse_y, state_mouse_oldy;
 
 int           state_draw_vel    = 0;
 struct Model* state_model;
+int           state_step_count  = 0;
 
 float state_gui_force   = 5;
 float state_gui_source  = 100;
@@ -117,6 +118,12 @@ display_func (void)
         struct Model* model   = state_model;
         assert(model);
 
+        if (  state_step_count < 10
+           || (state_step_count % 10) == 0) {
+                dump_array(state_step_count, "density", model->width, 1,   model->dens);
+                dump_array(state_step_count, "velctyU", model->width, 1000, model->u);
+        }
+
         get_from_UI (model);
 
         vel_step    ( model->width
@@ -136,6 +143,7 @@ display_func (void)
         else    draw_density  (model);
 
         post_display ();
+        state_step_count++;
 }
 
 

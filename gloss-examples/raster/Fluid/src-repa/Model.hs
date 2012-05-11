@@ -150,8 +150,8 @@ outputBMP df
         R.writeImageToBMP "./out.bmp" arr
 
 
-outputPPM :: String -> Int -> Array U DIM2 Float -> IO ()
-outputPPM name step df
+outputPPM :: Int -> String -> Array U DIM2 Float -> IO ()
+outputPPM step name df
  = do   let (Z :. h :. w) = extent df
         let vals          = R.toList df
         let mx            = maximum vals
@@ -163,9 +163,9 @@ outputPPM name step df
                 , "256"]
                 P.++ [ concat [ (show $ truncate (df R.! (Z :. y :. x))) P.++ " "
                               | x <- [0..w - 1]]
-                     | y <- [0..h - 1]]
+                     | y <- [h - 1, h - 2 .. 0]]
 
-        writeFile ("out/dump" P.++ step' P.++ "-" P.++ name P.++ ".ppm") out
+        writeFile ("out/" P.++ step' P.++ "-" P.++ name P.++ ".ppm") out
 
 
 
