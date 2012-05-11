@@ -1,9 +1,10 @@
 
 #include <assert.h>
+#include <stdio.h>
 
 #define IX(i,j) ((i)+(N+2)*(j))
 #define SWAP(x0,x) {float * tmp=x0;x0=x;x=tmp;}
-#define FOR_EACH_CELL(BODY) for ( i=1 ; i<=N ; i++ ) { for ( j=1 ; j<=N ; j++ ) { BODY }}
+#define FOR_EACH_CELL(BODY) for ( i=1 ; i <= N ; i++ ) { for ( j=1 ; j <= N ; j++ ) { BODY }}
 
 
 void add_source ( int N, float * x, float * s, float dt )
@@ -58,7 +59,7 @@ void set_bnd (int N, int b, float* x)
 void lin_solve ( int N, int b, float* x, float* x0, float a, float c )
 {
 	int i, j, k;
-	for ( k=0 ; k<100 ; k++ ) {
+	for ( k=0 ; k<10 ; k++ ) {
 		FOR_EACH_CELL(
 			x[IX(i,j)] = (x0[IX(i,j)] + a*(x[IX(i-1,j)]+x[IX(i+1,j)]+x[IX(i,j-1)]+x[IX(i,j+1)]))/c;
                 )
@@ -83,18 +84,24 @@ void advect ( int N, int b, float * d, float * d0, float * u, float * v, float d
 	int   i, j, i0, j0, i1, j1;
 	float x, y, s0, t0, s1, t1, dt0;
 
-	dt0 = dt*N;
-	FOR_EACH_CELL(
+	dt0 = dt * N;
+        for ( i=1 ; i <= N ; i++ ) 
+        for ( j=1 ; j <= N ; j++ ) {
 
-		x = i-dt0*u[IX(i,j)]; 
-                y = j-dt0*v[IX(i,j)];
-		if (x<0.5f) x=0.5f; 
-                if (x>N+0.5f) x=N+0.5f; 
+		x = i - dt0 * u[IX(i,j)]; 
+                y = j - dt0 * v[IX(i,j)];
+
+		if (x < 0.5f)   x = 0.5f; 
+                if (x > N+0.5f) x = N+0.5f; 
+                assert (x == x);
+
                 i0=(int)x; 
                 i1=i0+1;
 
-		if (y<0.5f) y=0.5f; 
-                if (y>N+0.5f) y=N+0.5f; 
+		if (y < 0.5f)   y = 0.5f; 
+                if (y > N+0.5f) y = N + 0.5f; 
+                assert (y == y);
+
                 j0=(int)y; 
                 j1=j0+1;
 
@@ -104,9 +111,9 @@ void advect ( int N, int b, float * d, float * d0, float * u, float * v, float d
                 t1 = y-j0; 
                 t0 = 1-t1;
 
-		d[IX(i,j)] = s0*(t0*d0[IX(i0,j0)]+t1*d0[IX(i0,j1)])+
-					 s1*(t0*d0[IX(i1,j0)]+t1*d0[IX(i1,j1)]);
-        )
+		d[IX(i,j)] = s0 * (t0 * d0[IX(i0,j0)] + t1 * d0[IX(i0,j1)])
+                           + s1 * (t0 * d0[IX(i1,j0)] + t1 * d0[IX(i1,j1)]);
+        }
 	set_bnd ( N, b, d );
 }
 

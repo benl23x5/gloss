@@ -44,18 +44,21 @@ model_new (int width, int height)
         struct Model*   model   = malloc(sizeof(struct Model));
         assert(model);
 
-        model->size      = (model->width+2)*(model->height+2);
-        model->height    = height;
-        model->width     = width;
-
+        int size         = (width + 2) * (height + 2);
         int bytes        = model->size * sizeof(float);
 
+        model->size      = size;
+        model->height    = height;
+        model->width     = width;
         model->u         = (float *) malloc (bytes);
-        model->v         = (float *) malloc (bytes);
         model->u_prev    = (float *) malloc (bytes);
+        model->v         = (float *) malloc (bytes);
         model->v_prev    = (float *) malloc (bytes);
         model->dens      = (float *) malloc (bytes);
         model->dens_prev = (float *) malloc (bytes);
+        model->delta     = 0.1;
+        model->diff      = 0;
+        model->visc      = 0;
 
         assert ( model->u    && model->u_prev
               && model->v    && model->v_prev
@@ -67,7 +70,7 @@ model_new (int width, int height)
 
 
 void 
-dump_density ( int step_count, int N, float * d )
+dump_density (int step_count, int N, float* d)
 {
         int i, j;
         char str[256];
