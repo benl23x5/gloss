@@ -166,6 +166,35 @@ static void draw_density ( void )
 }
 
 
+static void dump_density (void)
+{
+        int i, j;
+        FILE* file = fopen ("density.ppm", "w+");
+        fprintf (file, "P2\n");
+        fprintf (file, "%d %d\n", N, N);
+        fprintf (file, "256\n");
+
+        // find maximum value in image.
+        float max = 0;
+        for (j = 0; j < N; j++) {
+                for (i = 0; i < N; i++) {
+                        float d00       = dens[IX(i, j)];
+                        if (d00 >= max) max = d00;
+                }
+        }
+
+        // Write out image file.
+        for (j = 0; j < N; j++) {
+               for (i = 0; i < N; i++) {
+                        float d00       = dens[IX(i, j)];
+                        d00             = (d00 / max) * 256;
+                        fprintf (file, "%d ", (int)d00);
+                }
+
+                fprintf(file, "\n");
+        }
+}
+
 
 
 // ----------------------------------------------------------------------
@@ -359,7 +388,7 @@ int main ( int argc, char ** argv )
 
         else if ( argc == 2 ) {
                 mode_benchmark   = 1;
-                mode_interactive = 0;
+                mode_interactive = 1;
                 N      = atoi (argv[1]);
                 dt     = 0.1f;
                 diff   = 0.0f;
@@ -420,7 +449,7 @@ int main ( int argc, char ** argv )
         if (mode_benchmark)
         {
                 int y;
-                for (y = 10; y < 250; y += 10) {
+                for (y = 10; y < N - 10; y += 10) {
                         dens[IX(10, y)] = 10 * y;
                         u[IX(10, y)]    = y;
                 }
@@ -441,6 +470,8 @@ int main ( int argc, char ** argv )
                         vel_step    ( N, u, v, u_prev, v_prev, visc, dt );
                         dens_step   ( N, dens, dens_prev, u, v, diff, dt );
                 }
+
+                dump_density();
         }
 
 	exit ( 0 );
