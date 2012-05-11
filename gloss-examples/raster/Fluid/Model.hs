@@ -13,15 +13,19 @@ module Model
 
         , pictureOfModel
         , pixel32OfDensity
-        , pixel8OfDensity)
+        , pixel8OfDensity
+
+        , outputBMP
+        , outputPPM)
 where
 import Graphics.Gloss                   
 import Data.Array.Repa                  as R
+import Data.Array.Repa.IO.BMP           as R
 import Data.Array.Repa.Repr.ForeignPtr  as R
 import Data.Bits
 import Data.Word
 import Unsafe.Coerce
-
+import Prelude                          as P
 
 -- | Time delta (seconds)
 type Delta      = Float
@@ -136,4 +140,33 @@ pixel8OfDensity f
         !x      = truncate $ fsat * 255
     in  (x, x, x)
 {-# INLINE pixel8OfDensity #-}
+
+
+-- Dump -----------------------------------------------------------------------
+-- Writes bitmap data to test batch-mode ran correctly
+outputBMP :: DensityField -> IO ()
+outputBMP df 
+ = do   arr     <- computeUnboxedP $ R.map pixel8OfDensity df
+        R.writeImageToBMP "./out.bmp" arr
+
+
+outputPPM :: String -> Int -> Array U DIM2 Float -> IO ()
+outputPPM name step df
+ = do   let (Z :. h :. w) = extent df
+        let vals          = R.toList df
+        let mx            = maximum vals
+        let step'         = replicate (4 - length (show step)) '0' P.++ show step
+
+        let out = unlines $ 
+                [ "P2"
+                , show h P.++ " " P.++ show w
+                , "256"]
+                P.++ [ concat [ (show $ truncate (df R.! (Z :. y :. x))) P.++ " "
+                              | x <- [0..w - 1]]
+                     | y <- [0..h - 1]]
+
+        writeFile ("out/dump" P.++ step' P.++ "-" P.++ name P.++ ".ppm") out
+
+
+
 

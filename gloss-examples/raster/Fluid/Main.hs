@@ -22,7 +22,7 @@ import Data.Array.Repa          as R
 import Data.Array.Repa.IO.BMP   as R
 import Prelude                  as P
 import Debug.Trace
-
+import Control.Monad
 
 main :: IO ()
 main 
@@ -69,8 +69,8 @@ runBatchMode config model
 
 -- Function to step simulator one step forward in time
 stepFluid :: Config -> Model -> IO Model
-stepFluid config m@(Model df ds vf vs cl sp cb)
-   | sp                    > configMaxSteps config
+stepFluid config m@(Model df ds vf vs cl step cb)
+   | step                  > configMaxSteps config
    , configMaxSteps config > 0  
    = case configBatchMode config of
                 True  -> return m
@@ -78,16 +78,17 @@ stepFluid config m@(Model df ds vf vs cl sp cb)
 
    | otherwise 
    = do performGC 
-        traceEventIO $ "stepFluid frame " P.++ show sp P.++ " start"
-        putStrLn  $ "Step " ++ show sp
-        vf'     <- velocitySteps config vf vs
-        df'     <- densitySteps  config df ds vf'
-        traceEventIO $ "stepFluid frame " P.++ show sp P.++ " done"
-        return  $ Model df' Nothing vf' Nothing cl (sp + 1) cb
+        traceEventIO $ "stepFluid frame " P.++ show step P.++ " start"
 
--- Writes bitmap data to test batch-mode ran correctly
-outputBMP :: DensityField -> IO ()
-outputBMP df 
- = do   arr     <- computeUnboxedP $ R.map pixel8OfDensity df
-        R.writeImageToBMP "./out.bmp" arr
+        vf'     <- velocitySteps config step vf vs
+
+        df'     <- densitySteps  config df ds vf'
+
+        traceEventIO $ "stepFluid frame " P.++ show step P.++ " done"
+        return  $ Model df' Nothing vf' Nothing cl (step + 1) cb
+
+
+
+
+
 

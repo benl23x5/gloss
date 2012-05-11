@@ -24,8 +24,10 @@
 
 /* external definitions (from solver.c) */
 
-extern void dens_step ( int N, float * x, float * x0, float * u, float * v, float diff, float dt );
-extern void vel_step ( int N, float * u, float * v, float * u0, float * v0, float visc, float dt );
+extern void dens_step    ( int N, float * x, float * x0, float * u, float * v, float diff, float dt );
+extern void vel_step     ( int N, float * u, float * v, float * u0, float * v0, float visc, float dt );
+extern void dump_density ( int step_count, int N, float * d );
+
 
 /* global variables */
 
@@ -41,7 +43,7 @@ static int win_id;
 static int win_x, win_y;
 static int mouse_down[3];
 static int omx, omy, mx, my;
-
+static int step_count   = 0;
 
 // ----------------------------------------------------------------------
 //  free/clear/allocate simulation data
@@ -69,8 +71,8 @@ static int allocate_data ( void )
 {
 	int size = (N+2)*(N+2);
 
-	u			= (float *) malloc ( size*sizeof(float) );
-	v			= (float *) malloc ( size*sizeof(float) );
+	u		= (float *) malloc ( size*sizeof(float) );
+	v		= (float *) malloc ( size*sizeof(float) );
 	u_prev		= (float *) malloc ( size*sizeof(float) );
 	v_prev		= (float *) malloc ( size*sizeof(float) );
 	dens		= (float *) malloc ( size*sizeof(float) );	
@@ -165,35 +167,6 @@ static void draw_density ( void )
 	glEnd ();
 }
 
-
-static void dump_density (void)
-{
-        int i, j;
-        FILE* file = fopen ("density.ppm", "w+");
-        fprintf (file, "P2\n");
-        fprintf (file, "%d %d\n", N, N);
-        fprintf (file, "256\n");
-
-        // find maximum value in image.
-        float max = 0;
-        for (j = 0; j < N; j++) {
-                for (i = 0; i < N; i++) {
-                        float d00       = dens[IX(i, j)];
-                        if (d00 >= max) max = d00;
-                }
-        }
-
-        // Write out image file.
-        for (j = 0; j < N; j++) {
-               for (i = 0; i < N; i++) {
-                        float d00       = dens[IX(i, j)];
-                        d00             = (d00 / max) * 256;
-                        fprintf (file, "%d ", (int)d00);
-                }
-
-                fprintf(file, "\n");
-        }
-}
 
 
 
@@ -317,9 +290,6 @@ static void reshape_func ( int width, int height )
 
 static void idle_func ( void )
 {
-	get_from_UI ( dens_prev, u_prev, v_prev );
-	vel_step    ( N, u, v, u_prev, v_prev, visc, dt );
-	dens_step   ( N, dens, dens_prev, u, v, diff, dt );
 
 	glutSetWindow ( win_id );
 	glutPostRedisplay ();
@@ -327,12 +297,21 @@ static void idle_func ( void )
 
 static void display_func ( void )
 {
+        if (step_count < 10)
+                dump_density(step_count, N, dens);
+
+        get_from_UI ( dens_prev, u_prev, v_prev );
+        vel_step    ( N, u, v, u_prev, v_prev, visc, dt );
+        dens_step   ( N, dens, dens_prev, u, v, diff, dt );
+
 	pre_display ();
 
-		if ( dvel ) draw_velocity ();
-		else	    draw_density ();
+	if ( dvel ) draw_velocity ();
+	else	    draw_density ();
 
 	post_display ();
+
+        step_count++;
 }
 
 
@@ -449,9 +428,9 @@ int main ( int argc, char ** argv )
         if (mode_benchmark)
         {
                 int y;
-                for (y = 10; y < N - 10; y += 10) {
-                        dens[IX(10, y)] = 10 * y;
-                        u[IX(10, y)]    = y;
+                for (y = 10; y <= N - 10; y += 10) {
+                        dens[IX(40, y)] = 10 * y;
+                        u   [IX(20,  y)] = ((float)y / (float)N) * 10;
                 }
         }
 
@@ -471,7 +450,7 @@ int main ( int argc, char ** argv )
                         dens_step   ( N, dens, dens_prev, u, v, diff, dt );
                 }
 
-                dump_density();
+                dump_density(step_count, N, dens);
         }
 
 	exit ( 0 );

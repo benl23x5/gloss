@@ -34,7 +34,7 @@ linearSolver origField curField !a !c !i
           do    let !c' = 1/c
                 let {-# INLINE zipFunc #-}
                     zipFunc !orig !new
-                        = new ~+~ (orig ~*~ c')
+                        = (orig ~+~ (new ~*~ a)) ~*~ c'
 
                 traceEventIO "Fluid: linear solver mapStencil"
                 newField <- {-# SCC "linearSolver.mapStencil" #-}
@@ -66,21 +66,19 @@ linearSolverStencil
 linearSolverStencil a c 
  = StencilStatic (Z:.3:.3) E.zero
       (\ix val acc ->
-         case linearSolverCoeffs a c ix of
+         case linearSolverCoeffs ix of
             Nothing    -> acc
             Just coeff -> acc ~+~ (val ~*~ coeff))
 {-# INLINE linearSolverStencil #-}
          
 
 -- | Linear solver stencil kernel.
-linearSolverCoeffs 
-        :: Float -> Float -> DIM2 -> Maybe Float
-
-linearSolverCoeffs a c (Z:.j:.i)
-   | i ==  1, j ==  0 = Just (a/c)
-   | i == -1, j ==  0 = Just (a/c)
-   | i ==  0, j ==  1 = Just (a/c)
-   | i ==  0, j == -1 = Just (a/c)
+linearSolverCoeffs :: DIM2 -> Maybe Float
+linearSolverCoeffs (Z:.j:.i)
+   | i ==  1, j ==  0 = Just 1
+   | i == -1, j ==  0 = Just 1
+   | i ==  0, j ==  1 = Just 1
+   | i ==  0, j == -1 = Just 1
    | otherwise        = Nothing
 {-# INLINE linearSolverCoeffs #-}
 

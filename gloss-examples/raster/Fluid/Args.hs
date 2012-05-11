@@ -14,6 +14,7 @@ loadConfig :: [String] -> IO Config
 loadConfig args
  = do   
         batchModeArg    <- newIORef False
+        benchModeArg    <- newIORef False
         maxStepsArg     <- newIORef 0
         widthArg        <- newIORef 100
         scaleArg        <- newIORef 5
@@ -37,6 +38,7 @@ loadConfig args
         let setRate     arg     = writeIORef rateArg          (read arg)
         let setMaxSteps arg     = writeIORef maxStepsArg      (read arg)
         let setBatchArg         = writeIORef batchModeArg     True
+        let setBenchArg         = writeIORef benchModeArg     True
         let setDensityBMP  arg  = writeIORef densityBmpArg    (Just arg)
         let setVelocityBMP arg  = writeIORef velocityBmpArg   (Just arg)
 
@@ -44,6 +46,9 @@ loadConfig args
             options
              = [Option [] ["batch"]             (NoArg  setBatchArg            )
                         "Run a fixed number of steps instead of displaying in a window.",
+
+                Option [] ["bench"]             (NoArg  setBenchArg            )
+                        "Set standard initial conditions for benchmarking.",
 
                 Option [] ["max"]               (ReqArg setMaxSteps     "INT")
                         "Quit after this number of steps.",
@@ -91,6 +96,7 @@ loadConfig args
 
 
         batchMode       <- readIORef batchModeArg
+        benchMode       <- readIORef benchModeArg
         maxSteps        <- readIORef maxStepsArg
         width           <- readIORef widthArg
         let height      = width
@@ -106,18 +112,11 @@ loadConfig args
 
 
         -- Load the initial desity bmp if we were given one.
-        initialDensity
-         <- case densityBmp of
-                -- No density file given, so just set the field to zero.
-                Nothing 
-                 -> return
-                        $ R.fromListUnboxed (Z :. height :. width)
-                        $ replicate (height * width) 0
-
+        let mkInitialDensity
                 -- Load density from a .bmp, using the luminance as
                 -- the scalar density value.
-                Just filePath
-                 -> do  result   <- readImageFromBMP filePath
+                | Just filePath <- densityBmp
+                = do    result   <- readImageFromBMP filePath
                         let arr  =  case result of
                                         Right arr'      -> arr'
                                         Left err        -> error $ show err
@@ -132,19 +131,30 @@ loadConfig args
                                   $ R.map floatLuminanceOfRGB8 arr
                         return density
 
+                | benchMode
+                = return
+                        $ R.fromListUnboxed (Z :. height :. width)
+                        $ [ if y >= 10 && y <= width - 10 && y `mod` 10 == 0 && x == 40
+                                then 10 * fromIntegral y
+                                else 0
+                                | y     <- [0..width-1]
+                                , x     <- [0..width-1] ]
+
+                -- No density file given, so just set the field to zero.
+                | otherwise
+                = return
+                        $ R.fromListUnboxed (Z :. height :. width)
+                        $ replicate (height * width) 0
+
+
+        initialDensity <- mkInitialDensity
+
 
         -- Load the initial velocity bmp if we were given one
-        initialVelocity
-         <- case velocityBmp of
-                -- No velocity file given, so just set the field to zero.
-                Nothing
-                 -> return 
-                        $ R.fromListUnboxed (Z :. height :. width)
-                        $ replicate (height * width) (0, 0)
-
+        let mkInitialVelocity
                 -- Load 
-                Just filePath
-                 -> do  result  <- readImageFromBMP filePath
+                | Just filePath <- velocityBmp
+                = do    result  <- readImageFromBMP filePath
                         let arr  =  case result of
                                         Right arr'      -> arr'
                                         Left err        -> error $ show err
@@ -163,6 +173,24 @@ loadConfig args
 
                         velocity  <- computeUnboxedP $ R.map conv arr
                         return velocity
+
+                | benchMode
+                = return
+                        $ R.fromListUnboxed (Z :. height :. width)
+                        $ [ if y >= 10 && y < width - 10 && y `mod` 10 == 0 && x == 20
+                                then ((fromIntegral  y / fromIntegral height) * 100, 0)
+                                else (0, 0)
+                                | y     <- [0..width-1]
+                                , x     <- [0..width-1] ]
+
+                -- No velocity file given, so just set the field to zero.
+                | otherwise
+                = return
+                        $ R.fromListUnboxed (Z :. height :. width)
+                        $ replicate (height * width) (0, 0)
+
+        initialVelocity <- mkInitialVelocity
+
 
         return  Config
                 { configRate            = rate
