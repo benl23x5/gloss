@@ -7,43 +7,40 @@
 
 #include "Interface.h"
 #include "Model.h"
+#include "Solver.h"
 
 #define IX(i,j) ((i)+(N+2)*(j))
 
-// From Solver
-extern void
-dens_step (int N, float* x, float* x0, float* u, float* v, float diff, float dt);
-
-extern void
-vel_step (int N, float* u, float* v, float* u0, float* v0, float visc, float dt);
-
 
 // ----------------------------------------------------------------------------
-static void
-pre_display  (void);
-
-static void
-post_display (void);
-
-static void
-get_from_UI (struct Model* model);
+static void     pre_display  (void);
+static void     post_display (void);
+static void     get_from_UI (struct Model* model);
 
 
 // -- Global Window State ----------------------------------------------------
-int state_window_width          = 256;
-int state_window_height         = 256;
-int state_window_id;
+int             state_window_width      = 256;
+int             state_window_height     = 256;
+int             state_window_id;
 
-int state_mouse_down[3];
-int state_mouse_x, state_mouse_oldx;
-int state_mouse_y, state_mouse_oldy;
+int             state_mouse_down[3];
+int             state_mouse_x, state_mouse_oldx;
+int             state_mouse_y, state_mouse_oldy;
 
-int           state_draw_vel    = 0;
-struct Model* state_model;
-int           state_step_count  = 0;
+int             state_draw_vel          = 0;
+struct Model*   state_model;
+int             state_step_count        = 0;
 
-float state_gui_force   = 5;
-float state_gui_source  = 100;
+float           state_gui_force         = 5;
+float           state_gui_source        = 100;
+
+
+// What linear solver to use.
+// 0 - Gauss-Seidel, 1 - Jacobi.
+int             state_solver_method     = 0;
+
+// Number of iterations to use in the linear solver.
+int             state_solver_iters      = 20;
 
 
 // ----------------------------------------------------------------------------
@@ -117,21 +114,25 @@ display_func (void)
 {
         struct Model* model   = state_model;
         assert(model);
-
+/*
         if (  state_step_count < 10
            || (state_step_count % 10) == 0) {
                 dump_array(state_step_count, "density", model->width, 1,   model->dens);
                 dump_array(state_step_count, "velctyU", model->width, 1000, model->u);
         }
-
+*/
         get_from_UI (model);
 
-        vel_step    ( model->width
+        vel_step    ( state_solver_method
+                    , state_solver_iters
+                    , model->width
                     , model->u,      model->v
                     , model->u_prev, model->v_prev
                     , model->visc,   model->delta);
 
-        dens_step   ( model->width
+        dens_step   ( state_solver_method
+                    , state_solver_iters
+                    , model->width
                     , model->dens,   model->dens_prev
                     , model->u,      model->v
                     , model->diff,   model->delta);
@@ -296,7 +297,7 @@ open_glut_window (void)
 {
         glutInitDisplayMode ( GLUT_RGBA | GLUT_DOUBLE );
 
-        glutInitWindowPosition (0, 0);
+        glutInitWindowPosition (20, 10);
         glutInitWindowSize (state_window_width, state_window_height);
         state_window_id   = glutCreateWindow ( "Fluid" );
 

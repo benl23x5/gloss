@@ -15,49 +15,74 @@
 #include <stdio.h>
 #include <math.h>
 #include <GLUT/glut.h>
+#include <string.h>
+
 #include "Model.h"
 #include "Interface.h"
+#include "Solver.h"
 
 #define IX(i,j) ((i)+(N+2)*(j))
 
 
 int main ( int argc, char ** argv )
 {
-        int mode_benchmark      = 0;
-        int mode_interactive    = 0;
+        // What initial conditions to use.
+        //  0 - zero.  1 - symmetric /w cosine.
+        int mode_initial        = 0;
 
-        int   width     = 0;
-        float delta     = 0.1;
-        float diff      = 0.00001;
-        float visc      = 0;
+        // Quit after this many steps.
+        int mode_max_steps      = 0;
 
+        // In batch mode, don't display the window.
+        int mode_batch          = 0;
+
+        int   width             = 128;
+        int   scale             = 4;
+        float delta             = 0.1;
+        float diff              = 0.00001;
+        float visc              = 0;
         struct Model* model     = 0;
 
-	if ( argc != 1 && argc != 2) {
-                printf("bad usage\n");
-                exit(1);
-	}
+        int i;
 
-        else if ( argc == 2 ) {
-                mode_benchmark      = 1;
-                mode_interactive    = 1;
-                width               = atoi (argv[1]);
-                state_window_width  = width * 4;
-                state_window_height = width * 4;
+        // Read command-line arguments.
+        for (i = 1; i < argc; i++) {
+                if      (strcmp (argv[i], "--batch") == 0)
+                        mode_batch      = 1;
+
+                else if (strcmp (argv[i], "--initial") == 0)
+                        mode_initial  = 1;
+
+                else if (strcmp (argv[i], "--max") == 0)
+                        mode_max_steps  = atoi (argv[++i]);
+
+                else if (strcmp (argv[i], "--width") == 0)
+                        width           = atoi (argv[++i]);
+
+                else if (strcmp (argv[i], "--scale") == 0)
+                        scale           = atoi (argv[++i]);
+
+                else if (strcmp (argv[i], "--iters") == 0)
+                        state_solver_iters = atoi (argv[++i]);
+
+                else if (strcmp (argv[i], "--jacobi") == 0)
+                        state_solver_method = 1;
+
+                else if (strcmp (argv[i], "--gauss-seidel") == 0)
+                        state_solver_method = 0;
+
+                else {
+                        printf ("bad usage\n");
+                        exit(0);
+                }
         }
 
-	else {
-                mode_benchmark      = 0;
-                mode_interactive    = 1;
-                width               = 128;
-                state_window_width  = width * 4;
-                state_window_height = width * 4;
-
-	} 
-
+        // Set the window size based on the model size
+        state_window_width      = width * scale;
+        state_window_height     = width * scale;
 
         // Create the initial model.
-        model   = model_new (width, width);
+        model           = model_new (width, width);
         model->delta    = delta;
         model->diff     = diff;
         model->visc     = visc;
@@ -65,48 +90,63 @@ int main ( int argc, char ** argv )
 
 
         // // In benchmark mode set some standard initial conditions.
-        if (mode_benchmark)
+        if (mode_initial)
         {
-                float yc        = width / 2;
-                float xc        = width / 2;
+                float yc        = 1 + width / 2;
+                float xc        = 1 + width / 2;
 
                 int y, x;
                 int N  = model->width;
-                for (y = 0; y < N; y++)
-                for (x = 0; x < N; x++) {
+                for (y = 1; y <= N; y++)
+                for (x = 1; x <= N; x++) {
                         float xk1       = cos (10 * (x - xc) / width);
                         float yk1       = cos (10 * (y - yc) / width);
-                        float d1        = xk1 * yk1;
+                        float d1        = 5 * xk1 * yk1;
+                        if (d1 < 0) d1 = 0;
 
                         float xk2       = cos (5 * (x - xc) / width);
                         float yk2       = cos (5 * (y - yc) / width);
-                        float d2        = xk2 * yk2;
+                        float d2        = xk2 * yk2 / 20;
 
-                        model->dens     [IX(x, y)] = 5 * d1;
-                        model->dens_prev[IX(x, y)] = 5 * d1;
-                        model->v        [IX(x, y)] = d2 / 20;
-                        model->v_prev   [IX(x, y)] = d2 / 20;
+                        model->dens     [IX(x, y)] = d1;
+                        model->dens_prev[IX(x, y)] = d1;
+                        model->v        [IX(x, y)] = d2;
+                        model->v_prev   [IX(x, y)] = d2;
                 }
+        }
+
+        // In batch mode, just run the simulation a fixed number of times.
+        if (mode_batch) {
+                int i;
+
+                for (i = 0; i < mode_max_steps; i++) {
+                        vel_step    
+                                ( state_solver_method
+                                , state_solver_iters
+                                , model->width
+                                , model->u,      model->v
+                                , model->u_prev, model->v_prev
+                                , model->visc,   model->delta);
+
+                        dens_step
+                                ( state_solver_method
+                                , state_solver_iters
+                                , model->width
+                                , model->dens,   model->dens_prev
+                                , model->u,      model->v
+                                , model->diff,   model->delta);
+                }
+
+                dump_array(i, "final", model->width, 1, model->dens);
         }
 
         // In interactive mode, display the simulation in a window.
-//        if (mode_interactive) {
+        else {
                 glutInit (&argc, argv);
                 open_glut_window ();
                 glutMainLoop     ();
-//        }
-
-        // In non-interactive mode, just step it a fixed number of times.
-/*        else {
-                int maxSteps    = 100;
-                int i;
-                for (i = 0; i < maxSteps; i++) {
-                        vel_step    ( N, u, v, u_prev, v_prev, visc, dt );
-                        dens_step   ( N, dens, dens_prev, u, v, diff, dt );
-                }
-
-                dump_density(step_count, N, dens);
         }
-*/
+
+
 	exit (0);
 }

@@ -1,13 +1,25 @@
 
 #include <assert.h>
 #include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
 
 #define IX(i,j) ((i)+(N+2)*(j))
 #define SWAP(x0,x) {float * tmp=x0;x0=x;x=tmp;}
 #define FOR_EACH_CELL(BODY) for ( i=1 ; i <= N ; i++ ) { for ( j=1 ; j <= N ; j++ ) { BODY }}
 
+// ----------------------------------------------------------------------------
+void    add_source      (int N, float* x, float* s, float dt);
+void    set_bnd         (int N, int b,  float* x);
+void    copy            (int N, float*  d, float* d0);
 
-void add_source ( int N, float * x, float * s, float dt )
+void    diffuse         (int method, int iters, int N, int b,  float* x, float* x0, float diff, float dt);
+void    advect          (int N, int b,  float* d, float* d0, float* u, float* v, float dt);
+
+
+// ----------------------------------------------------------------------------
+void
+add_source (int N, float * x, float * s, float dt)
 {
 	int i, size=(N+2)*(N+2);
 	for ( i=0 ; i<size ; i++ ) 
@@ -16,11 +28,12 @@ void add_source ( int N, float * x, float * s, float dt )
 
 
 // -- Boundary Conditions -----------------------------------------------------
-void set_bnd_zero ( int N, int b, float * x )
+void
+set_bnd_zero ( int N, int b, float * x )
 {
 	int i;
 
-	for ( i=1 ; i<=N ; i++ ) {
+	for ( i = 1 ; i <= N ; i++ ) {
 		x[IX(0  ,i)] = 0;
 		x[IX(N+1,i)] = 0;
 		x[IX(i,0  )] = 0;
@@ -52,37 +65,84 @@ void set_bnd_box (int N, int b, float * x)
 
 void set_bnd (int N, int b, float* x)
 {
-        set_bnd_box (N, b, x);
+        set_bnd_zero (N, b, x);
 }
 
 
 // -- Linear Solver -----------------------------------------------------------
-void lin_solve ( int N, int b, float* x, float* x0, float a, float c )
+void
+solve_gauss_seidel (int iters, int N, int b, float* x, float* x0, float a, float c)
 {
-	int i, j, k;
-	for ( k=0 ; k<20 ; k++ ) {
-		FOR_EACH_CELL(
-			x[IX(i,j)] = ( x0[IX(i,j)] 
+        int i, j, k;
+        for (k=0; k < iters; k++) {
+                FOR_EACH_CELL(
+                        x[IX(i,j)] = ( x0[IX(i,j)] 
                                      + a * (x[IX(i-1,j)]
                                           + x[IX(i+1,j)]
                                           + x[IX(i,j-1)]
                                           + x[IX(i,j+1)]))/c;
                 )
-		set_bnd ( N, b, x );
-	}
+                set_bnd (N, b, x);
+        }
+}
+
+
+void
+solve_jacobi (int iters, int N, int b, float* x, float* x0, float a, float c)
+{
+        int i, j, k;
+        float* x1       = malloc((N+2)*(N+2)*sizeof(float));
+        float* x2       = malloc((N+2)*(N+2)*sizeof(float));
+        copy (N, x1, x);
+
+        set_bnd(N, b, x1);
+        for (k = 0; k < iters; k++) {
+                FOR_EACH_CELL(
+                        x2[IX(i, j)] 
+                                = ( x0[IX(i, j)]
+                                  + a * (x1[IX(i-1, j)]
+                                       + x1[IX(i+1, j)]
+                                       + x1[IX(i, j-1)]
+                                       + x1[IX(i, j+1)]))/c;
+                )
+                set_bnd(N, b, x2);
+                SWAP(x1, x2)
+        }
+
+        copy (N, x, x1);
+
+        free (x1);
+        free (x2);
+}
+
+
+void lin_solve (int method, int iters, int N, int b, float* x, float* x0, float a, float c)
+{
+        switch (method) {
+        case 0: solve_gauss_seidel(iters, N, b, x, x0, a, c);
+                break;
+
+        case 1: solve_jacobi(iters, N, b, x, x0, a, c);
+                break;
+
+        default:
+                abort();
+        }
 }
 
 
 // -- Diffusion ---------------------------------------------------------------
-void diffuse ( int N, int b, float *x, float *x0, float diff, float dt )
+void
+diffuse (int method, int iters, int N, int b, float *x, float *x0, float diff, float dt )
 {
 	float a = dt * diff * N * N;
-	lin_solve (N, b, x, x0, a, 1 + 4 * a);
+	lin_solve (method, iters, N, b, x, x0, a, 1 + 4 * a);
 }
 
 
 // -- Advection ---------------------------------------------------------------
-void advect ( int N, int b, float * d, float * d0, float * u, float * v, float dt )
+void
+advect (int N, int b, float * d, float * d0, float * u, float * v, float dt )
 {
         assert (d); assert (d0); assert (u); assert (v);
 
@@ -133,7 +193,7 @@ void copy (int N, float * d, float * d0)
 
 
 // -- Projection --------------------------------------------------------------
-void project ( int N, float * u, float * v, float * p, float * div )
+void project (int method, int iters, int N, float * u, float * v, float * p, float * div )
 {
 	int i, j;
 
@@ -141,43 +201,61 @@ void project ( int N, float * u, float * v, float * p, float * div )
 		div[IX(i,j)] = -0.5f*(u[IX(i+1,j)]-u[IX(i-1,j)]+v[IX(i,j+1)]-v[IX(i,j-1)])/N;
 		p[IX(i,j)]   = div[IX(i,j)];
 	)
-	set_bnd ( N, 0, div ); set_bnd ( N, 0, p );
+	set_bnd ( N, 0, div );
+        set_bnd ( N, 0, p );
 
-	lin_solve ( N, 0, p, div, 1, 4 );
+	lin_solve (method, iters, N, 0, p, div, 1, 4 );
 
 	FOR_EACH_CELL(
 		u[IX(i,j)] -= 0.5f*N*(p[IX(i+1,j)]-p[IX(i-1,j)]);
 		v[IX(i,j)] -= 0.5f*N*(p[IX(i,j+1)]-p[IX(i,j-1)]);
 	)
-	set_bnd ( N, 1, u ); set_bnd ( N, 2, v );
+	set_bnd ( N, 1, u );
+        set_bnd ( N, 2, v );
 }
 
 
 // -- Steps -------------------------------------------------------------------
-void dens_step (int N, float* x, float* x0, float* u, float* v, float diff, float dt)
+void dens_step 
+        ( int method
+        , int iters, int N
+        , float* x,  float* x0
+        , float* u,  float* v
+        , float diff, float dt)
 {
-//	add_source ( N, x, x0, dt );
+	add_source (N, x, x0, dt );
 
-	SWAP (x0, x); diffuse (N, 0, x, x0, diff, dt);
-	SWAP (x0, x); advect  (N, 0, x, x0, u, v, dt);
+	SWAP (x0, x);
+        diffuse (method, iters, N, 0, x, x0, diff, dt);
+
+	SWAP    (x0, x);
+        advect  (N, 0, x, x0, u, v, dt);
 }
 
 
-void vel_step (int N, float* u, float* v, float* u0, float* v0, float visc, float dt)
+void vel_step 
+        ( int method
+        , int iters, int N
+        , float* u,   float* v
+        , float* u0,  float* v0
+        , float visc, float dt)
 {
+	add_source ( N, u, u0, dt );
+        add_source ( N, v, v0, dt );
 
-//	add_source ( N, u, u0, dt ); add_source ( N, v, v0, dt );
-	SWAP ( u0, u ); diffuse ( N, 1, u, u0, visc, dt );
-	SWAP ( v0, v ); diffuse ( N, 2, v, v0, visc, dt );
+	SWAP    (u0, u);
+        diffuse (method, iters, N, 1, u, u0, visc, dt);
 
-        project ( N, u, v, u0, v0 );
-	SWAP ( u0, u );
-        SWAP ( v0, v );
+	SWAP    (v0, v);
+        diffuse (method, iters, N, 2, v, v0, visc, dt);
 
-	advect ( N, 1, u, u0, u0, v0, dt );
-        advect ( N, 2, v, v0, u0, v0, dt );
+        project (method, iters, N, u, v, u0, v0);
+	SWAP    (u0, u);
+        SWAP    (v0, v);
 
-	project ( N, u, v, u0, v0 );
+	advect  (N, 1, u, u0, u0, v0, dt);
+        advect  (N, 2, v, v0, u0, v0, dt);
 
+	project (method, iters, N, u, v, u0, v0);
 }
 
