@@ -144,20 +144,13 @@ void vel_step
 
         SWAP    (v0, v);
         diffuse (method, iters, N, 2, v, v0, visc, dt);
-        dump_array (step, "veldffU", N, 10, u);
-        dump_array (step, "veldffV", N, 10, v);
 
         project (method, iters, N, u, v, u0, v0);
-        dump_array (step, "velprj1U", N, 10, u);
-        dump_array (step, "velprj1V", N, 10, v);
-
         SWAP    (u0, u);
         SWAP    (v0, v);
 
         advect  (N, 1, u, u0, u0, v0, dt);
         advect  (N, 2, v, v0, u0, v0, dt);
-        dump_array (step, "veladvcU", N, 10, u);
-        dump_array (step, "veladvcV", N, 10, v);
 
         project (method, iters, N, u, v, u0, v0);
 }

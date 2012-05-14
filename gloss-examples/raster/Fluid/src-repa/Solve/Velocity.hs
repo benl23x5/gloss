@@ -29,21 +29,14 @@ velocitySteps config step vf vs
 
         traceEventIO "Fluid: velocitySteps diffusion"
         vf2     <- diffusion   (configDelta config) (configViscosity config) vf1 
-        outputPPM step "veldffU" 10 (R.computeS $ R.map fst vf2)
-        outputPPM step "veldffV" 10 (R.computeS $ R.map snd vf2)
 --      vf3     <- setBoundary vf2
 
         traceEventIO "Fluid: velocitySteps first project"
         vf4     <- project     vf2
-        outputPPM step "velprj1U" 10 (R.computeS $ R.map fst vf4)
-        outputPPM step "velprj1V" 10 (R.computeS $ R.map snd vf4)
-
 --        vf5     <- setBoundary vf4
 
         traceEventIO "Fluid: velocitySteps advection"
         vf6     <- advection   (configDelta config) vf4 vf4
-        outputPPM step "veladvcU" 10 (R.computeS $ R.map fst vf6)
-        outputPPM step "veladvcV" 10 (R.computeS $ R.map snd vf6)
 --        vf7     <- setBoundary vf6
 
         traceEventIO "Fluid: velocitySteps second project"

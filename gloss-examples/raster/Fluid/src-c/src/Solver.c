@@ -164,8 +164,8 @@ advect (int N, int b, float * d, float * d0, float * u, float * v, float dt )
 	float x, y, s0, t0, s1, t1, dt0;
 
 	dt0 = dt * N;
-        for ( i=1 ; i <= N ; i++ ) 
-        for ( j=1 ; j <= N ; j++ ) {
+        for ( j=1 ; j <= N ; j++ ) 
+        for ( i=1 ; i <= N ; i++ ) {
 
 		x = i - dt0 * u[IX(i,j)]; 
                 y = j - dt0 * v[IX(i,j)];

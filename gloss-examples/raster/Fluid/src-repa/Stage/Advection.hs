@@ -1,4 +1,4 @@
-{-# LANGUAGE BangPatterns #-}
+{-# LANGUAGE BangPatterns, ScopedTypeVariables #-}
 module Stage.Advection
         (advection)
 where
@@ -8,7 +8,7 @@ import Data.Array.Repa          as R
 import Data.Array.Repa.Unsafe   as R
 import Data.Vector.Unboxed      (Unbox)
 import Debug.Trace
-
+import Text.Printf
 
 -- | Apply a velocity field to another field.
 --   Both fields must have the same extent.
@@ -23,7 +23,7 @@ advection !delta velField field
  = {-# SCC "advection" #-} 
    velField `deepSeqArray` field `deepSeqArray`
    do   traceEventIO "Fluid: advection"
-        computeP $ unsafeTraverse field id (advectElem delta velField)
+        return $ computeS $ traverse field id (advectElem delta velField)
 
 {-# SPECIALIZE advection 
         :: Delta
@@ -59,28 +59,43 @@ advectElem !delta !velField !get !pos@(Z:. j :. i)
 
         -- backtrack densities to point based on velocity field
         -- and make sure they are in field
-        !x      = checkLocation width $ fromIntegral i - dt0 * u
-        !y      = checkLocation width $ fromIntegral j - dt0 * v
+        !x      = fromIntegral i - dt0 * u
+        !y      = fromIntegral j - dt0 * v
+
+        !x'     | x < -0.5              = -0.5
+                | x > width + 0.5       = width + 0.5
+                | otherwise             = x
+
+        !y'     | y < -0.5              = -0.5
+                | y > width + 0.5       = width + 0.5
+                | otherwise             = y
 
         -- calculate discrete locations surrounding point
-        !i0     = truncate x
+        !i0     = truncate (x' + 1) - 1
         !i1     = i0 + 1
 
-        !j0     = truncate y
+        !j0     = truncate (y' + 1) - 1
         !j1     = j0 + 1
 
         -- calculate ratio point is between the discrete locations
-        !s1     = x - fromIntegral i0
+        !s1     = x' - fromIntegral i0
         !s0     = 1 - s1
 
-        !t1     = y - fromIntegral j0
+        !t1     = y' - fromIntegral j0
         !t0     = 1 - t1
 
+        get' ix@(Z :. jj :. ii)
+         | ii < 0        = zero
+         | ii >= width'  = zero
+         | jj < 0        = zero
+         | jj >= width'  = zero
+         | otherwise     = get ix
+
         -- grab values from grid surrounding advected point
-        !d00    = get (Z:. j0 :. i0)
-        !d01    = get (Z:. j1 :. i0)
-        !d10    = get (Z:. j0 :. i1)
-        !d11    = get (Z:. j1 :. i1)
+        !d00    = get' (Z:. j0 :. i0)
+        !d01    = get' (Z:. j1 :. i0)
+        !d10    = get' (Z:. j0 :. i1)
+        !d11    = get' (Z:. j1 :. i1)
 
 
 {-# SPECIALIZE advectElem
@@ -93,7 +108,7 @@ advectElem !delta !velField !get !pos@(Z:. j :. i)
         -> VelocityField -> (DIM2 -> (Float,Float))
         -> DIM2  -> (Float,Float) #-}
 
-
+{-
 -- | Wrap an index back into the simulation area if it is outside.
 checkLocation :: Float -> Float -> Float
 checkLocation !width !x
@@ -101,3 +116,4 @@ checkLocation !width !x
    | x > width - 1.5  = width - 1.5
    | otherwise        = x
 {-# INLINE checkLocation #-}
+-}
