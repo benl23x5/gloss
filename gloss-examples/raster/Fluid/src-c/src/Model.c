@@ -76,25 +76,28 @@ dump_array (int step_count, char* name, int N, float scale, float* d)
 {
         int i, j;
         char str[256];
-        snprintf(str, 256, "out/%04d-%s.ppm", step_count, name);
-        FILE* file = fopen (str, "w+");
-        fprintf (file, "P2\n");
-        fprintf (file, "%d %d\n", N+2, N+2);
-        fprintf (file, "256\n");
 
         // find maximum value in image.
         float max = 0;
-        for (j = 0; j < N+2; j++) {
-                for (i = 0; i < N+2; i++) {
-                        float d00       = d[IXN(N, i, j)];
+        for (j = 1; j < N+1; j++) {
+                for (i = 1; i < N+1; i++) {
+                        float d00       = d[IXN(N, i, j)] * 255;
                         if (d00 >= max) max = d00;
                 }
         }
 
+        // Write out the file
+        snprintf(str, 256, "out/%04d-%s.ppm", step_count, name);
+        FILE* file = fopen (str, "w+");
+        fprintf (file, "P2\n");
+        fprintf (file, "%d %d\n", N, N);
+        fprintf (file, "%d\n", (int)max);
+
+
         // Write out image file.
-        for (j = N+1; j >= 0; j--) {
-               for (i = 0; i < N+2; i++) {
-                        float d00       = (d[IXN(N, i, j)] / max) * 255;
+        for (j = N; j >= 1; j--) {
+               for (i = 1; i < N+1; i++) {
+                        float d00       = d[IXN(N, i, j)] * 255;
                         fprintf (file, "% 4d ", (int)d00);
                 }
 

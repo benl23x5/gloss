@@ -155,13 +155,25 @@ outputPPM step name df
  = do   let (Z :. h :. w) = extent df
         let vals          = R.toList df
         let mx            = maximum vals
-        let step'         = replicate (4 - length (show step)) '0' P.++ show step
+        let step'         
+             = replicate (4 - length (show step)) '0' P.++ show step
+
+        let getVal x y
+             =  let v     = df R.! (Z :. y :. x)
+                in  truncate (v * 255) :: Int
+
+        let showVal x y
+             =  let  v   = getVal x y
+                in replicate (4 - length (show v)) ' ' P.++ show v
+
+        let mx
+             =  maximum [getVal x y | x <- [0..w-1], y <- [0..h-1]]
 
         let out = unlines $ 
                 [ "P2"
                 , show h P.++ " " P.++ show w
-                , "256"]
-                P.++ [ concat [ (show $ truncate (df R.! (Z :. y :. x))) P.++ " "
+                , show mx]
+                P.++ [ concat [ showVal x y P.++ " "
                               | x <- [0..w - 1]]
                      | y <- [h - 1, h - 2 .. 0]]
 

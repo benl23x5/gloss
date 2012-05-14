@@ -31,8 +31,6 @@ velocitySteps config step vf vs
         vf2     <- diffusion   (configDelta config) (configViscosity config) vf1 
 --      vf3     <- setBoundary vf2
 
---        outputPPM step "velctyU" (R.computeS $ R.map ((* 1000) . fst) vf)
-
         traceEventIO "Fluid: velocitySteps first project"
         vf4     <- project     vf2
 --        vf5     <- setBoundary vf4

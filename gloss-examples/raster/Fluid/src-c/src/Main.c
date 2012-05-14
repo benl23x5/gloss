@@ -92,21 +92,25 @@ int main ( int argc, char ** argv )
         // // In benchmark mode set some standard initial conditions.
         if (mode_initial)
         {
-                float yc        = 1 + width / 2;
-                float xc        = 1 + width / 2;
+                float yc        = width / 2;
+                float xc        = width / 2;
 
                 int y, x;
                 int N  = model->width;
                 for (y = 1; y <= N; y++)
                 for (x = 1; x <= N; x++) {
-                        float xk1       = cos (10 * (x - xc) / width);
-                        float yk1       = cos (10 * (y - yc) / width);
-                        float d1        = 5 * xk1 * yk1;
-                        if (d1 < 0) d1 = 0;
+                        int x2          = x - 1;
+                        int y2          = y - 1;
 
-                        float xk2       = cos (5 * (x - xc) / width);
-                        float yk2       = cos (5 * (y - yc) / width);
-                        float d2        = xk2 * yk2 / 20;
+                        float xk1       = cos (10 * (x2 - xc) / width);
+                        float yk1       = cos (10 * (y2 - yc) / width);
+                        float d1        = xk1 * yk1;
+                        if (d1 < 0) d1 = 0;
+                        printf ("%d %g %d %d %g %d\n", x2, xc, 0, y2, yc, 0);
+
+                        float xk2       = cos (15 * (x2 - xc) / width);
+                        float yk2       = cos (15 * (y2 - yc) / width);
+                        float d2        = xk2 * yk2 / 5;
 
                         model->dens     [IX(x, y)] = d1;
                         model->dens_prev[IX(x, y)] = d1;
@@ -120,6 +124,8 @@ int main ( int argc, char ** argv )
                 int i;
 
                 for (i = 0; i < mode_max_steps; i++) {
+                        get_from_UI (model);
+
                         vel_step    
                                 ( state_solver_method
                                 , state_solver_iters

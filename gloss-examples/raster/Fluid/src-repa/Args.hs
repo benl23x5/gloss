@@ -8,6 +8,7 @@ import System.Console.GetOpt
 import Data.IORef
 import Prelude                          as P
 import Control.Monad
+import Debug.Trace
 
 -- | Command line options.
 loadConfig :: [String] -> IO Config
@@ -132,19 +133,20 @@ loadConfig args
                         return density
 
                 | benchMode
-                = let   yc      = fromIntegral width / 2
-                        xc      = fromIntegral width / 2
-                        width'  = fromIntegral width
+                = let   width'  = fromIntegral width
+                        yc      = fromIntegral (width `div` 2)
+                        xc      = fromIntegral (width `div` 2)
+                        
                   in return
                         $ R.fromListUnboxed (Z :. height :. width)
-                        $ [ let x'      = fromIntegral x
-                                y'      = fromIntegral y
-                                xk1     = cos (20 * (x' - xc) / width')
-                                yk1     = cos (20 * (y' - yc) / width')
+                        $ [ let x'      = fromIntegral (x - 1)
+                                y'      = fromIntegral (y - 1)
+                                xk1     = cos (10 * (x' - xc) / width')
+                                yk1     = cos (10 * (y' - yc) / width')
                                 d1      = xk1 * yk1
-                            in  5 * d1
-                                | y     <- [0..width-1]
-                                , x     <- [0..width-1] ]
+                            in  if (d1 < 0) then 0 else d1
+                                | y     <- [1..width]
+                                , x     <- [1..width] ]
 
                 -- No density file given, so just set the field to zero.
                 | otherwise
@@ -181,17 +183,18 @@ loadConfig args
                         return velocity
 
                 | benchMode
-                = let   yc      = fromIntegral width / 2
-                        xc      = fromIntegral width / 2
-                        width'  = fromIntegral width
+                = let   width'  = fromIntegral width
+                        yc      = fromIntegral (width `div` 2)
+                        xc      = fromIntegral (width `div` 2)
+                        
                   in return
                         $ R.fromListUnboxed (Z :. height :. width)
                         $ [ let x'      = fromIntegral x
                                 y'      = fromIntegral y
-                                xk2     = cos (5 * (x' - xc) / width')
-                                yk2     = cos (10 * (y' - yc) / width')
-                                d2      = xk2 * yk2
-                            in  (0, d2 / 20)
+                                xk2     = cos (15 * (x' - xc) / width')
+                                yk2     = cos (15 * (y' - yc) / width')
+                                d2      = xk2 * yk2 / 5
+                            in  (0, d2)
                                 | y     <- [0..width-1]
                                 , x     <- [0..width-1] ]
 

@@ -15,7 +15,6 @@
 // ----------------------------------------------------------------------------
 static void     pre_display  (void);
 static void     post_display (void);
-static void     get_from_UI (struct Model* model);
 
 
 // -- Global Window State ----------------------------------------------------
@@ -114,13 +113,13 @@ display_func (void)
 {
         struct Model* model   = state_model;
         assert(model);
-/*
+
         if (  state_step_count < 10
            || (state_step_count % 10) == 0) {
                 dump_array(state_step_count, "density", model->width, 1,   model->dens);
                 dump_array(state_step_count, "velctyU", model->width, 1000, model->u);
         }
-*/
+
         get_from_UI (model);
 
         vel_step    ( state_solver_method
@@ -149,7 +148,7 @@ display_func (void)
 
 
 // Handle user input ----------------------------------------------------------
-static void get_from_UI (struct Model* model)
+void get_from_UI (struct Model* model)
 {
         assert(model);
         float*  d       = model->dens_prev;

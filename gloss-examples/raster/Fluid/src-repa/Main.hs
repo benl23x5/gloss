@@ -57,9 +57,11 @@ runInteractive config model0
 -- | Run in batch mode and dump a .bmp of the final state.
 runBatchMode :: Config -> Model -> IO ()
 runBatchMode config model
-        | stepsPassed model     > configMaxSteps config
-        , configMaxSteps config > 0  
+        | stepsPassed model     >= configMaxSteps config
         = do    outputBMP $ densityField model
+                outputPPM (stepsPassed model) "density" (densityField model)
+                outputPPM (stepsPassed model) "velctyU" (R.computeS $ R.map fst $ velocityField model)
+                outputPPM (stepsPassed model) "velctyV" (R.computeS $ R.map snd $ velocityField model)
                 return ()
 
         | otherwise     
@@ -70,8 +72,8 @@ runBatchMode config model
 -- Function to step simulator one step forward in time
 stepFluid :: Config -> Model -> IO Model
 stepFluid config m@(Model df ds vf vs cl step cb)
-   | step                  > configMaxSteps config
-   , configMaxSteps config > 0  
+   | step                  >= configMaxSteps config
+   , configMaxSteps config >  0  
    = case configBatchMode config of
                 True  -> return m
                 False -> error "Finished simulation"
@@ -81,7 +83,6 @@ stepFluid config m@(Model df ds vf vs cl step cb)
         traceEventIO $ "stepFluid frame " P.++ show step P.++ " start"
 
         vf'     <- velocitySteps config step vf vs
-
         df'     <- densitySteps  config step df ds vf'
 
         traceEventIO $ "stepFluid frame " P.++ show step P.++ " done"

@@ -23,8 +23,6 @@ densitySteps config step df ds vf
    do   traceEventIO "Fluid: densitySteps addSources"
         df1     <- addSources (configDelta config) (configDensity   config) ds df
 
---        outputPPM step "density" df1
-
         traceEventIO "Fluid: densitySteps diffusion"
         df2     <- diffusion  (configDelta config) (configDiffusion config) df1
 

@@ -13,3 +13,5 @@ extern int state_solver_method;
 extern int state_solver_iters;
 
 struct Model* state_model;
+
+void get_from_UI (struct Model* model);
