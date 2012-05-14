@@ -17,6 +17,20 @@ void    diffuse         (int method, int iters, int N, int b,  float* x, float* 
 void    advect          (int N, int b,  float* d, float* d0, float* u, float* v, float dt);
 
 
+void
+print_array (int N, float* arr)
+{
+        int i, j;
+
+        for (j = N; j >= 1; j--) {
+                for (i = 1; i <= N; i++)
+                        printf ("% f ", arr[IX(i, j)]);
+                printf ("\n");
+        }
+
+        printf("\n");
+}
+
 // ----------------------------------------------------------------------------
 void
 add_source (int N, float * x, float * s, float dt)
@@ -97,6 +111,8 @@ solve_jacobi (int iters, int N, int b, float* x, float* x0, float a, float c)
 
         set_bnd(N, b, x1);
         for (k = 0; k < iters; k++) {
+                print_array (N, x1);
+
                 FOR_EACH_CELL(
                         x2[IX(i, j)] 
                                 = ( x0[IX(i, j)]
@@ -204,7 +220,14 @@ void project (int method, int iters, int N, float * u, float * v, float * p, flo
 	set_bnd ( N, 0, div );
         set_bnd ( N, 0, p );
 
+        printf("divergence\n");
+        print_array (N, div);
+
+        printf("solving project\n");
 	lin_solve (method, iters, N, 0, p, div, 1, 4 );
+
+        printf("project\n");
+        print_array (N, p);
 
 	FOR_EACH_CELL(
 		u[IX(i,j)] -= 0.5f*N*(p[IX(i+1,j)]-p[IX(i-1,j)]);
@@ -212,50 +235,5 @@ void project (int method, int iters, int N, float * u, float * v, float * p, flo
 	)
 	set_bnd ( N, 1, u );
         set_bnd ( N, 2, v );
-}
-
-
-// -- Steps -------------------------------------------------------------------
-void dens_step 
-        ( int method
-        , int iters, int N
-        , float* x,  float* x0
-        , float* u,  float* v
-        , float diff, float dt)
-{
-	add_source (N, x, x0, dt );
-
-	SWAP (x0, x);
-        diffuse (method, iters, N, 0, x, x0, diff, dt);
-
-	SWAP    (x0, x);
-        advect  (N, 0, x, x0, u, v, dt);
-}
-
-
-void vel_step 
-        ( int method
-        , int iters, int N
-        , float* u,   float* v
-        , float* u0,  float* v0
-        , float visc, float dt)
-{
-	add_source ( N, u, u0, dt );
-        add_source ( N, v, v0, dt );
-
-	SWAP    (u0, u);
-        diffuse (method, iters, N, 1, u, u0, visc, dt);
-
-	SWAP    (v0, v);
-        diffuse (method, iters, N, 2, v, v0, visc, dt);
-
-        project (method, iters, N, u, v, u0, v0);
-	SWAP    (u0, u);
-        SWAP    (v0, v);
-
-	advect  (N, 1, u, u0, u0, v0, dt);
-        advect  (N, 2, v, v0, u0, v0, dt);
-
-	project (method, iters, N, u, v, u0, v0);
 }
 

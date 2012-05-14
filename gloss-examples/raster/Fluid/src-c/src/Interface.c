@@ -122,14 +122,16 @@ display_func (void)
 
         get_from_UI (model);
 
-        vel_step    ( state_solver_method
+        vel_step    ( state_step_count
+                    , state_solver_method
                     , state_solver_iters
                     , model->width
                     , model->u,      model->v
                     , model->u_prev, model->v_prev
                     , model->visc,   model->delta);
 
-        dens_step   ( state_solver_method
+        dens_step   ( state_step_count
+                    , state_solver_method
                     , state_solver_iters
                     , model->width
                     , model->dens,   model->dens_prev

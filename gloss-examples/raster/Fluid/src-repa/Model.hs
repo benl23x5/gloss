@@ -150,8 +150,8 @@ outputBMP df
         R.writeImageToBMP "./out.bmp" arr
 
 
-outputPPM :: Int -> String -> Array U DIM2 Float -> IO ()
-outputPPM step name df
+outputPPM :: Int -> String -> Float -> Array U DIM2 Float -> IO ()
+outputPPM step name scale df
  = do   let (Z :. h :. w) = extent df
         let vals          = R.toList df
         let mx            = maximum vals
@@ -160,7 +160,7 @@ outputPPM step name df
 
         let getVal x y
              =  let v     = df R.! (Z :. y :. x)
-                in  truncate (v * 255) :: Int
+                in  truncate (v * 255 * scale)  :: Int
 
         let showVal x y
              =  let  v   = getVal x y

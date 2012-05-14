@@ -10,10 +10,11 @@ import Data.Array.Repa.Stencil.Dim2     as R
 import Data.Array.Repa.Eval             as R
 import Data.Vector.Unboxed
 import Debug.Trace
+import Prelude as P
 
 
 linearSolver 
-        :: (FieldElt a, Repr U a, Unbox a, Elt a, Num a)
+        :: (FieldElt a, Repr U a, Unbox a, Elt a, Num a, Show a)
         => Field a      -- ^ Original field.
         -> Field a      -- ^ Current field.
         -> Float
@@ -40,7 +41,7 @@ linearSolver origField curField !a !c !i
                 newField <- {-# SCC "linearSolver.mapStencil" #-}
                            computeUnboxedP 
                          $ R.czipWith zipFunc origField
-                         $ mapStencil2 (BoundConst E.zero) (linearSolverStencil a c) curField
+                         $ mapStencil2 (BoundConst 0) linearSolverStencil curField
 
                 linearSolver origField newField a c (i - 1)
 
@@ -61,9 +62,9 @@ linearSolver origField curField !a !c !i
 -- | Stencil function for the linear solver.
 linearSolverStencil 
         :: FieldElt a
-        => Float -> Float -> Stencil DIM2 a
+        => Stencil DIM2 a
 
-linearSolverStencil a c 
+linearSolverStencil
  = StencilStatic (Z:.3:.3) E.zero
       (\ix val acc ->
          case linearSolverCoeffs ix of
@@ -84,3 +85,21 @@ linearSolverCoeffs (Z:.j:.i)
 
 
 
+dumpArray :: (Repr U a, FieldElt a) => Array U DIM2 a -> IO ()
+dumpArray arr
+ = do   let (Z :. h :. w) = extent arr
+        let vals          = R.toList arr
+
+        let getVal x y
+             =  arr R.! (Z :. y :. x)
+
+        let showVal x y
+             =  let  v   = getVal x y
+                in P.replicate (15 - P.length (show v)) ' ' P.++ show v
+
+        let out = unlines $ 
+                [ P.concat [ showVal x y P.++ " "
+                              | x <- [0..w - 1]]
+                     | y <- [h - 1, h - 2 .. 0]]
+
+        putStrLn out

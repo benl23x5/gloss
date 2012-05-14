@@ -3,7 +3,7 @@
 -- | Field operations 
 module FieldElt where
 
-class FieldElt a where
+class Show a => FieldElt a where
         zero      :: a
 
         -- | Add all elements.

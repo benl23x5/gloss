@@ -37,7 +37,7 @@ int main ( int argc, char ** argv )
         int mode_batch          = 0;
 
         int   width             = 128;
-        int   scale             = 4;
+        int   scale             = 5;
         float delta             = 0.1;
         float diff              = 0.00001;
         float visc              = 0;
@@ -106,7 +106,6 @@ int main ( int argc, char ** argv )
                         float yk1       = cos (10 * (y2 - yc) / width);
                         float d1        = xk1 * yk1;
                         if (d1 < 0) d1 = 0;
-                        printf ("%d %g %d %d %g %d\n", x2, xc, 0, y2, yc, 0);
 
                         float xk2       = cos (15 * (x2 - xc) / width);
                         float yk2       = cos (15 * (y2 - yc) / width);
@@ -127,7 +126,8 @@ int main ( int argc, char ** argv )
                         get_from_UI (model);
 
                         vel_step    
-                                ( state_solver_method
+                                ( i
+                                , state_solver_method
                                 , state_solver_iters
                                 , model->width
                                 , model->u,      model->v
@@ -135,7 +135,8 @@ int main ( int argc, char ** argv )
                                 , model->visc,   model->delta);
 
                         dens_step
-                                ( state_solver_method
+                                ( i
+                                , state_solver_method
                                 , state_solver_iters
                                 , model->width
                                 , model->dens,   model->dens_prev
@@ -143,7 +144,7 @@ int main ( int argc, char ** argv )
                                 , model->diff,   model->delta);
                 }
 
-                dump_array(i, "final", model->width, 1, model->dens);
+                dump_array(i, "density", model->width, 1, model->dens);
         }
 
         // In interactive mode, display the simulation in a window.

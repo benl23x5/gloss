@@ -13,7 +13,7 @@ import Debug.Trace
 -- | Apply a velocity field to another field.
 --   Both fields must have the same extent.
 advection 
-        :: (FieldElt a, Unbox a)
+        :: (FieldElt a, Unbox a, Show a)
         => Delta
         -> VelocityField 
         -> Field a 

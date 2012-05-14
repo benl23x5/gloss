@@ -59,9 +59,9 @@ runBatchMode :: Config -> Model -> IO ()
 runBatchMode config model
         | stepsPassed model     >= configMaxSteps config
         = do    outputBMP $ densityField model
-                outputPPM (stepsPassed model) "density" (densityField model)
-                outputPPM (stepsPassed model) "velctyU" (R.computeS $ R.map fst $ velocityField model)
-                outputPPM (stepsPassed model) "velctyV" (R.computeS $ R.map snd $ velocityField model)
+                outputPPM (stepsPassed model) "density" 1 (densityField model)
+                outputPPM (stepsPassed model) "velctyU" 10 (R.computeS $ R.map fst $ velocityField model)
+                outputPPM (stepsPassed model) "velctyV" 10 (R.computeS $ R.map snd $ velocityField model)
                 return ()
 
         | otherwise     

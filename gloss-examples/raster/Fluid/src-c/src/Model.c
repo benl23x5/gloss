@@ -3,8 +3,9 @@
 #include <stdio.h>
 #include <assert.h>
 #include "Model.h"
+#include "Solver.h"
 
-#define IXN(N,i,j) ((i)+(N+2)*(j))
+#define IX(i,j) ((i)+(N+2)*(j))
 
 
 // Free a model.
@@ -81,7 +82,7 @@ dump_array (int step_count, char* name, int N, float scale, float* d)
         float max = 0;
         for (j = 1; j < N+1; j++) {
                 for (i = 1; i < N+1; i++) {
-                        float d00       = d[IXN(N, i, j)] * 255;
+                        float d00       = d[IX(i, j)] * 255 * scale;
                         if (d00 >= max) max = d00;
                 }
         }
@@ -97,7 +98,7 @@ dump_array (int step_count, char* name, int N, float scale, float* d)
         // Write out image file.
         for (j = N; j >= 1; j--) {
                for (i = 1; i < N+1; i++) {
-                        float d00       = d[IXN(N, i, j)] * 255;
+                        float d00       = d[IX(i, j)] * 255 * scale;
                         fprintf (file, "% 4d ", (int)d00);
                 }
 
@@ -107,4 +108,55 @@ dump_array (int step_count, char* name, int N, float scale, float* d)
         fclose(file);
 }
 
+
+// -- Steps -------------------------------------------------------------------
+void dens_step 
+        ( int step
+        , int method
+        , int iters, int N
+        , float* x,  float* x0
+        , float* u,  float* v
+        , float diff, float dt)
+{
+        add_source (N, x, x0, dt );
+
+        SWAP (x0, x);
+        diffuse (method, iters, N, 0, x, x0, diff, dt);
+
+        SWAP    (x0, x);
+        advect  (N, 0, x, x0, u, v, dt);
+}
+
+
+void vel_step 
+        ( int step
+        , int method
+        , int iters,  int N
+        , float* u,   float* v
+        , float* u0,  float* v0
+        , float visc, float dt)
+{
+        add_source ( N, u, u0, dt );
+        add_source ( N, v, v0, dt );
+
+        SWAP    (u0, u);
+        diffuse (method, iters, N, 1, u, u0, visc, dt);
+
+        SWAP    (v0, v);
+        diffuse (method, iters, N, 2, v, v0, visc, dt);
+        dump_array (step, "veldffU", N, 10, u);
+        dump_array (step, "veldffV", N, 10, v);
+
+        project (method, iters, N, u, v, u0, v0);
+        dump_array (step, "velprj1U", N, 10, u);
+        dump_array (step, "velprj1V", N, 10, v);
+
+        SWAP    (u0, u);
+        SWAP    (v0, v);
+
+        advect  (N, 1, u, u0, u0, v0, dt);
+        advect  (N, 2, v, v0, u0, v0, dt);
+
+        project (method, iters, N, u, v, u0, v0);
+}
 

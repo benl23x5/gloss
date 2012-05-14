@@ -58,7 +58,7 @@ loadConfig args
                         "Size of simulation (100)",
 
                 Option [] ["scale"]             (ReqArg setScaleArg     "INT")
-                        "Width of cell in window (4)",
+                        "Width of cell in window (5)",
 
                 Option [] ["rate"]              (ReqArg setRate         "INT")
                         "Frame rate of simulator (25)",
