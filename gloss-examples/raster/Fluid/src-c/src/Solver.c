@@ -111,8 +111,6 @@ solve_jacobi (int iters, int N, int b, float* x, float* x0, float a, float c)
 
         set_bnd(N, b, x1);
         for (k = 0; k < iters; k++) {
-                print_array (N, x1);
-
                 FOR_EACH_CELL(
                         x2[IX(i, j)] 
                                 = ( x0[IX(i, j)]
@@ -220,14 +218,7 @@ void project (int method, int iters, int N, float * u, float * v, float * p, flo
 	set_bnd ( N, 0, div );
         set_bnd ( N, 0, p );
 
-        printf("divergence\n");
-        print_array (N, div);
-
-        printf("solving project\n");
 	lin_solve (method, iters, N, 0, p, div, 1, 4 );
-
-        printf("project\n");
-        print_array (N, p);
 
 	FOR_EACH_CELL(
 		u[IX(i,j)] -= 0.5f*N*(p[IX(i+1,j)]-p[IX(i-1,j)]);
