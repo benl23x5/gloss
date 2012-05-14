@@ -43,6 +43,8 @@ linearSolver origField curField !a !c !i
                          $ R.czipWith zipFunc origField
                          $ mapStencil2 (BoundConst 0) linearSolverStencil curField
 
+                -- TODO: this boundConst thing is costing a fair bit.
+
                 linearSolver origField newField a c (i - 1)
 
 {-# SPECIALIZE linearSolver 
@@ -83,23 +85,3 @@ linearSolverCoeffs (Z:.j:.i)
    | otherwise        = Nothing
 {-# INLINE linearSolverCoeffs #-}
 
-
-
-dumpArray :: (Repr U a, FieldElt a) => Array U DIM2 a -> IO ()
-dumpArray arr
- = do   let (Z :. h :. w) = extent arr
-        let vals          = R.toList arr
-
-        let getVal x y
-             =  arr R.! (Z :. y :. x)
-
-        let showVal x y
-             =  let  v   = getVal x y
-                in P.replicate (15 - P.length (show v)) ' ' P.++ show v
-
-        let out = unlines $ 
-                [ P.concat [ showVal x y P.++ " "
-                              | x <- [0..w - 1]]
-                     | y <- [h - 1, h - 2 .. 0]]
-
-        putStrLn out

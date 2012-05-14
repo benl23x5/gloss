@@ -23,7 +23,7 @@ advection !delta velField field
  = {-# SCC "advection" #-} 
    velField `deepSeqArray` field `deepSeqArray`
    do   traceEventIO "Fluid: advection"
-        return $ computeS $ traverse field id (advectElem delta velField)
+        computeP $ unsafeTraverse field id (advectElem delta velField)
 
 {-# SPECIALIZE advection 
         :: Delta
