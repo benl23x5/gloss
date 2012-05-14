@@ -42,6 +42,8 @@ velocitySteps config step vf vs
 
         traceEventIO "Fluid: velocitySteps advection"
         vf6     <- advection   (configDelta config) vf4 vf4
+        outputPPM step "veladvcU" 10 (R.computeS $ R.map fst vf6)
+        outputPPM step "veladvcV" 10 (R.computeS $ R.map snd vf6)
 --        vf7     <- setBoundary vf6
 
         traceEventIO "Fluid: velocitySteps second project"

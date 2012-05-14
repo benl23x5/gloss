@@ -156,6 +156,8 @@ void vel_step
 
         advect  (N, 1, u, u0, u0, v0, dt);
         advect  (N, 2, v, v0, u0, v0, dt);
+        dump_array (step, "veladvcU", N, 10, u);
+        dump_array (step, "veladvcV", N, 10, v);
 
         project (method, iters, N, u, v, u0, v0);
 }
