@@ -18,6 +18,7 @@ loadConfig args
         benchModeArg    <- newIORef False
         maxStepsArg     <- newIORef 0
         widthArg        <- newIORef 100
+        itersArg        <- newIORef 20
         scaleArg        <- newIORef 5
         rateArg         <- newIORef 25
         deltaArg        <- newIORef 0.1
@@ -31,6 +32,7 @@ loadConfig args
         
         let setWidthArg arg     = writeIORef widthArg         (read arg)
         let setScaleArg arg     = writeIORef scaleArg         (read arg)
+        let setItersArg arg     = writeIORef itersArg         (read arg)
         let setDeltaArg arg     = writeIORef deltaArg         (read arg)
         let setDiffArg  arg     = writeIORef diffArg          (read arg)
         let setViscArg  arg     = writeIORef viscArg          (read arg)
@@ -56,6 +58,9 @@ loadConfig args
 
                 Option [] ["width"]             (ReqArg setWidthArg     "INT")
                         "Size of simulation (100)",
+
+                Option [] ["iters"]             (ReqArg setItersArg     "INT")
+                        "Iterations for the linear solver (20)",
 
                 Option [] ["scale"]             (ReqArg setScaleArg     "INT")
                         "Width of cell in window (5)",
@@ -101,6 +106,7 @@ loadConfig args
         maxSteps        <- readIORef maxStepsArg
         width           <- readIORef widthArg
         let height      = width
+        iters           <- readIORef itersArg
         scale           <- readIORef scaleArg
         rate            <- readIORef rateArg
         delta           <- readIORef deltaArg
@@ -213,6 +219,7 @@ loadConfig args
                 , configMaxSteps        = maxSteps
                 , configBatchMode       = batchMode 
                 , configModelSize       = (width, width)
+                , configIters           = iters
                 , configDelta           = delta
                 , configDiffusion       = diff
                 , configViscosity       = visc

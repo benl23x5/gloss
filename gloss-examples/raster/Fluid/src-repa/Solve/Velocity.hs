@@ -24,23 +24,26 @@ velocitySteps
 
 velocitySteps config step vf vs 
  = {-# SCC "Solve.velocitySteps" #-}
-   do   traceEventIO "Fluid: velocitySteps addSources"
-        vf1     <- addSources  (configDelta config) (configVelocity config)  vs vf
+   do   
+        traceEventIO "Fluid: velocitySteps addSources"
+        vf1     <- addSources   (configDelta config) (configVelocity config)  
+                                vs vf
 
         traceEventIO "Fluid: velocitySteps diffusion"
-        vf2     <- diffusion   (configDelta config) (configViscosity config) vf1 
+        vf2     <- diffusion    (configIters config) (configDelta config) (configViscosity config) 
+                                vf1 
 --      vf3     <- setBoundary vf2
 
         traceEventIO "Fluid: velocitySteps first project"
-        vf4     <- project     vf2
---        vf5     <- setBoundary vf4
+        vf4     <- project      (configIters config) vf2
+--      vf5     <- setBoundary vf4
 
         traceEventIO "Fluid: velocitySteps advection"
-        vf6     <- advection   (configDelta config) vf4 vf4
---        vf7     <- setBoundary vf6
+        vf6     <- advection    (configDelta config) vf4 vf4
+--      vf7     <- setBoundary vf6
 
         traceEventIO "Fluid: velocitySteps second project"
-        vf8     <- project     vf6
---        vf'     <- setBoundary vf8
+        vf8     <- project      (configIters config) vf6
+--      vf'     <- setBoundary vf8
 
         return  vf8

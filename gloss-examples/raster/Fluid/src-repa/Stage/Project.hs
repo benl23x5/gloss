@@ -11,12 +11,11 @@ import Debug.Trace
 import Prelude                  as P
 
 
-project :: Field (Float, Float) -> IO (Field (Float, Float))
-project field
+project :: Int -> Field (Float, Float) -> IO (Field (Float, Float))
+project iters field
  = {-# SCC project #-}
    field `deepSeqArray` 
    do   let _ :. _ :. width = extent field
-        let !repeats        = 20
 
         traceEventIO "Fluid: project gradient"
         divergence <- {-# SCC "project.genDiv" #-}
@@ -25,7 +24,7 @@ project field
 
         traceEventIO "Fluid: project linear solver"
         p          <- {-# SCC "project.linearSolver" #-}
-                      linearSolver divergence divergence 1 4 repeats
+                      linearSolver divergence divergence 1 4 iters
 
         traceEventIO "Fluid: project apply"
         f'         <- {-# SCC "project.apply" #-}

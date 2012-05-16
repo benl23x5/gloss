@@ -23,6 +23,9 @@ data Config
           -- | Number of cells in model.
         , configModelSize       :: (Int, Int)
 
+          -- | Number of iterations to use in the linear solver
+        , configIters           :: !Int
+
           -- | Time delta per step.
         , configDelta           :: !Delta
 

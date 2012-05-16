@@ -22,12 +22,12 @@ linearSolver
         -> Int          -- ^ Number of iterations to apply.
         -> IO (Field a)
 
-linearSolver origField curField !a !c !i
+linearSolver origField curField !a !c !iters
         -- If nothing would change by running the solver, then skip it.
         | 0 <- a       = return origField
 
         -- The solver has finished its loop
-        | 0 <- i       = return curField
+        | 0 <- iters   = return curField
 
         -- Do one iteration
         | otherwise
@@ -45,7 +45,7 @@ linearSolver origField curField !a !c !i
 
                 -- TODO: this boundConst thing is costing a fair bit.
 
-                linearSolver origField newField a c (i - 1)
+                linearSolver origField newField a c (iters - 1)
 
 {-# SPECIALIZE linearSolver 
         :: Field Float

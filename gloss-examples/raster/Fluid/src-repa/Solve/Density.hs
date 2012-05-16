@@ -21,13 +21,15 @@ densitySteps
 densitySteps config step df ds vf 
  = {-# SCC "Solve.densitySteps" #-}
    do   traceEventIO "Fluid: densitySteps addSources"
-        df1     <- addSources (configDelta config) (configDensity   config) ds df
+        df1     <- addSources   (configDelta config) (configDensity   config) 
+                                ds df
 
         traceEventIO "Fluid: densitySteps diffusion"
-        df2     <- diffusion  (configDelta config) (configDiffusion config) df1
+        df2     <- diffusion    (configIters config) (configDelta config) (configDiffusion config) 
+                                df1
 
         traceEventIO "Fluid: densitySteps advection"
-        df'     <- advection  (configDelta config) vf df2
+        df'     <- advection    (configDelta config) vf df2
 
         traceEventIO "Fluid: densitySteps done"
         return  df'
