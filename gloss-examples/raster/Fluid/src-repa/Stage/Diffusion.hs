@@ -8,7 +8,6 @@ import Stage.Linear
 import Data.Array.Repa          as R
 import Data.Array.Repa.Eval     as R
 import Data.Vector.Unboxed
-import Debug.Trace
 
 
 -- | Diffuse a field at a certain rate.
@@ -27,7 +26,6 @@ diffusion !iters !delta !rate field
         !a               = delta * rate * width * width
         !c               = 1 + 4 * a
    in do
-        traceEventIO "Fluid: diffusion"
         linearSolver field field a c iters
 
 {-# SPECIALIZE diffusion 

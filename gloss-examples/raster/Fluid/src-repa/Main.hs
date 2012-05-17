@@ -36,12 +36,13 @@ main
                                 (configInitialDensity  config)
                                 (configInitialVelocity config)
 
+        performGC
         case configBatchMode config of
          False -> runInteractive config model
          True  
           -> do (_, elapsed)    <- time $ do   result <- runBatchMode   config model
                                                result `seq` return ()
-                putStrLn $ show $ wallTime milliseconds elapsed
+                putStrLn $ show $ wallTime microseconds elapsed
 
 
 -- | Run the simulation interactively.
@@ -83,13 +84,9 @@ stepFluid config m@(Model df ds vf vs cl step cb)
                 False -> error "Finished simulation"
 
    | otherwise 
-   = do performGC 
-        traceEventIO $ "stepFluid frame " P.++ show step P.++ " start"
-
+   = do performGC
         vf'     <- velocitySteps config step vf vs
         df'     <- densitySteps  config step df ds vf'
-
-        traceEventIO $ "stepFluid frame " P.++ show step P.++ " done"
         return  $ Model df' Nothing vf' Nothing cl (step + 1) cb
 
 

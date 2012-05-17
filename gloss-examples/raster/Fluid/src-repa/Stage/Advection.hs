@@ -7,7 +7,6 @@ import FieldElt
 import Data.Array.Repa          as R
 import Data.Array.Repa.Unsafe   as R
 import Data.Vector.Unboxed      (Unbox)
-import Debug.Trace
 import Text.Printf
 
 -- | Apply a velocity field to another field.
@@ -22,8 +21,7 @@ advection
 advection !delta velField field
  = {-# SCC "advection" #-} 
    velField `deepSeqArray` field `deepSeqArray`
-   do   traceEventIO "Fluid: advection"
-        computeP $ unsafeTraverse field id (advectElem delta velField)
+   do   computeP $ unsafeTraverse field id (advectElem delta velField)
 
 {-# SPECIALIZE advection 
         :: Delta

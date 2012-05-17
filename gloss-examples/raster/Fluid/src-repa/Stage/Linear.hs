@@ -37,7 +37,6 @@ linearSolver origField curField !a !c !iters
                     zipFunc !orig !new
                         = (orig ~+~ (new ~*~ a)) ~*~ c'
 
-                traceEventIO "Fluid: linear solver mapStencil"
                 newField <- {-# SCC "linearSolver.mapStencil" #-}
                            computeUnboxedP 
                          $ R.czipWith zipFunc origField

@@ -17,16 +17,13 @@ project iters field
    field `deepSeqArray` 
    do   let _ :. _ :. width = extent field
 
-        traceEventIO "Fluid: project gradient"
         divergence <- {-# SCC "project.genDiv" #-}
                       computeUnboxedP 
                    $  fromFunction (Z:. width :. width) (genDivergence width field)
 
-        traceEventIO "Fluid: project linear solver"
         p          <- {-# SCC "project.linearSolver" #-}
                       linearSolver divergence divergence 1 4 iters
 
-        traceEventIO "Fluid: project apply"
         f'         <- {-# SCC "project.apply" #-}
                       computeUnboxedP 
                 $     unsafeTraverse field id (projectElem width p)

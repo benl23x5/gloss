@@ -22,8 +22,7 @@ setBoundary config f
 rebuild :: Int -> VelocityField -> VelocityField -> IO VelocityField
 rebuild width field edges
  = field `deepSeqArray` edges `deepSeqArray` 
-   do   traceEventIO "Fluid: rebuild"
-        computeUnboxedP $ backpermuteDft field (rebuildPosMap width) edges
+   do   computeUnboxedP $ backpermuteDft field (rebuildPosMap width) edges
 {-# INLINE rebuild #-}
 
 
