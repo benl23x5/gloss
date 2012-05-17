@@ -18,9 +18,10 @@ import Graphics.Gloss
 import Graphics.Gloss.Interface.IO.Game
 import System.Mem
 import System.Environment       (getArgs)
-import Data.Array.Repa          as R
-import Data.Array.Repa.IO.BMP   as R
-import Prelude                  as P
+import Data.Array.Repa             as R
+import Data.Array.Repa.IO.BMP      as R
+import Data.Array.Repa.IO.Timing   as R
+import Prelude                     as P
 import Debug.Trace
 import Control.Monad
 
@@ -37,7 +38,10 @@ main
 
         case configBatchMode config of
          False -> runInteractive config model
-         True  -> runBatchMode   config model
+         True  
+          -> do (_, elapsed)    <- time $ do   result <- runBatchMode   config model
+                                               result `seq` return ()
+                putStrLn $ show $ wallTime milliseconds elapsed
 
 
 -- | Run the simulation interactively.
@@ -58,10 +62,10 @@ runInteractive config model0
 runBatchMode :: Config -> Model -> IO ()
 runBatchMode config model
         | stepsPassed model     >= configMaxSteps config
-        = do    outputBMP $ densityField model
-                outputPPM (stepsPassed model) "density" 1 (densityField model)
-                outputPPM (stepsPassed model) "velctyU" 10 (R.computeS $ R.map fst $ velocityField model)
-                outputPPM (stepsPassed model) "velctyV" 10 (R.computeS $ R.map snd $ velocityField model)
+        = do    -- outputBMP $ densityField model
+                -- outputPPM (stepsPassed model) "density" 1 (densityField model)
+                -- outputPPM (stepsPassed model) "velctyU" 10 (R.computeS $ R.map fst $ velocityField model)
+                -- outputPPM (stepsPassed model) "velctyV" 10 (R.computeS $ R.map snd $ velocityField model)
                 return ()
 
         | otherwise     
