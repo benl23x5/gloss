@@ -18,12 +18,9 @@ import Graphics.Gloss
 import Graphics.Gloss.Interface.IO.Game
 import System.Mem
 import System.Environment       (getArgs)
-import Data.Array.Repa             as R
-import Data.Array.Repa.IO.BMP      as R
 import Data.Array.Repa.IO.Timing   as R
 import Prelude                     as P
-import Debug.Trace
-import Control.Monad
+
 
 main :: IO ()
 main 

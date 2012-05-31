@@ -7,7 +7,6 @@ import FieldElt
 import Data.Array.Repa          as R
 import Data.Array.Repa.Unsafe   as R
 import Data.Vector.Unboxed      (Unbox)
-import Debug.Trace
 
 
 -- | Addition of forces stage for simulation
@@ -15,11 +14,11 @@ addSources
         :: (FieldElt a, FieldSource a, Unbox a)
         => Delta                -- ^ Time delta.
         -> a                    -- ^ Value to insert.
-        -> Maybe (Source a) 
+        -> Maybe (SourceDensity a) 
         -> Field a 
         -> IO (Field a)
 
-addSources !delta !value (Just (Source aim mul)) field
+addSources !delta !value (Just (SourceDensity aim mul)) field
  = {-# SCC addSources #-}
    field `deepSeqArray` 
    do   computeP $ unsafeTraverse field id (insertSource delta value aim mul)
@@ -46,14 +45,14 @@ insertSource !delta !value !aim !mul locate !pos
 {-# SPECIALIZE addSources 
         :: Delta 
         -> Float
-        -> Maybe (Source Float)
+        -> Maybe (SourceDensity Float)
         -> Field Float 
         -> IO (Field Float) #-}
 
 {-# SPECIALIZE addSources 
         :: Delta
         -> (Float, Float)
-        -> Maybe (Source (Float, Float))
+        -> Maybe (SourceDensity (Float, Float))
         -> Field (Float, Float) 
         -> IO (Field (Float, Float)) #-}
 

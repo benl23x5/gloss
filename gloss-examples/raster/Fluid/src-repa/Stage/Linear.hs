@@ -9,12 +9,11 @@ import Data.Array.Repa.Stencil          as R
 import Data.Array.Repa.Stencil.Dim2     as R
 import Data.Array.Repa.Eval             as R
 import Data.Vector.Unboxed
-import Debug.Trace
 import Prelude as P
 
 
 linearSolver 
-        :: (FieldElt a, Repr U a, Unbox a, Elt a, Num a, Show a)
+        :: (FieldElt a, Source U a, Unbox a, Elt a, Num a, Show a)
         => Field a      -- ^ Original field.
         -> Field a      -- ^ Current field.
         -> Float

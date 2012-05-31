@@ -13,7 +13,7 @@ densitySteps
         :: Config
         -> Int
         -> DensityField 
-        -> Maybe (Source Float) 
+        -> Maybe (SourceDensity Float) 
         -> VelocityField 
         -> IO DensityField
 

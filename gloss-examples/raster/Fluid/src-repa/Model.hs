@@ -5,7 +5,7 @@ module Model
         , Field
         , DensityField
         , VelocityField
-        , Source        (..)
+        , SourceDensity (..)
         , CurrentButton (..)
 
         , Model (..)
@@ -54,8 +54,8 @@ data CurrentButton
         | None
 
 -- | A density source added by the user.
-data Source a
-        = Source DIM2 a
+data SourceDensity a
+        = SourceDensity DIM2 a
 
 
 -- Model ----------------------------------------------------------------------
@@ -63,9 +63,9 @@ data Source a
 data Model
         = Model
         { densityField   :: DensityField
-        , densitySource  :: Maybe (Source Float)
+        , densitySource  :: Maybe (SourceDensity Float)
         , velocityField  :: VelocityField
-        , velocitySource :: Maybe (Source (Float, Float))
+        , velocitySource :: Maybe (SourceDensity (Float, Float))
         , clickLoc       :: Maybe (Int, Int)
         , stepsPassed    :: Int
         , currButton     :: CurrentButton

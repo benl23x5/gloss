@@ -8,7 +8,7 @@ import System.Console.GetOpt
 import Data.IORef
 import Prelude                          as P
 import Control.Monad
-import Debug.Trace
+
 
 -- | Command line options.
 loadConfig :: [String] -> IO Config
@@ -18,7 +18,7 @@ loadConfig args
         benchModeArg    <- newIORef False
         maxStepsArg     <- newIORef 0
         widthArg        <- newIORef 100
-        itersArg        <- newIORef 20
+        itersArg        <- newIORef 40
         scaleArg        <- newIORef 5
         rateArg         <- newIORef 25
         deltaArg        <- newIORef 0.1

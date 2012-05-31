@@ -47,7 +47,7 @@ userEvent config
         =  Model { densityField   = df
                  , densitySource  = ds
                  , velocityField  = vf
-                 , velocitySource = Just (Source (Z:.locY:.locX)
+                 , velocitySource = Just (SourceDensity (Z:.locY:.locX)
                                          (fromIntegral (locX-x'),fromIntegral (locY-y')))
                  , clickLoc       = Nothing
                  , stepsPassed    = sp
@@ -60,7 +60,7 @@ userEvent config
         , Down                          <- keyState
         , (x',y')                       <- windowToModel config (x, y) 
         = Model { densityField   = df
-                , densitySource  = Just (Source (Z:.y':.x') 1)
+                , densitySource  = Just (SourceDensity (Z:.y':.x') 1)
                 , velocityField  = vf
                 , velocitySource = vs
                 , clickLoc       = cl
@@ -96,7 +96,7 @@ userEvent config (EventMotion (x, y))
         (Model df _ds vf vs cl sp M.LeftButton)
         | (x',y')                       <- windowToModel config (x, y) 
         = Model { densityField   = df
-                , densitySource  = Just (Source (Z:.y':.x') 1)
+                , densitySource  = Just (SourceDensity (Z:.y':.x') 1)
                 , velocityField  = vf
                 , velocitySource = vs
                 , clickLoc       = cl
@@ -110,7 +110,7 @@ userEvent config (EventMotion (x, y))
         = Model { densityField   = df
                 , densitySource  = ds
                 , velocityField  = vf
-                , velocitySource = Just (Source (Z:.y':.x')
+                , velocitySource = Just (SourceDensity (Z:.y':.x')
                                         (fromIntegral (clx-x'), fromIntegral (cly-y')))
                 , clickLoc       = Just (x',y')
                 , stepsPassed    = sp

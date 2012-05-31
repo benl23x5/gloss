@@ -8,20 +8,18 @@ import Stage.Sources
 import Stage.Project
 import Model
 import Config
-import qualified Data.Array.Repa        as R
 
 -- The pass that sets boundary conditions is buggy and 
 -- currently disabled.
 -- import Stage.Boundary
-
 velocitySteps 
         :: Config
         -> Int
         -> VelocityField 
-        -> Maybe (Source (Float, Float)) 
+        -> Maybe (SourceDensity (Float, Float)) 
         -> IO VelocityField
 
-velocitySteps config step vf vs 
+velocitySteps config _step vf vs 
  = {-# SCC "Solve.velocitySteps" #-}
    do   
         vf1     <- addSources   (configDelta config) (configVelocity config)  

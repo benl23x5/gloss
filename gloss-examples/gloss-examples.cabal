@@ -263,7 +263,7 @@ Executable gloss-fluid
         Solve.Density   Solve.Velocity
         Stage.Advection Stage.Boundary Stage.Diffusion
         Stage.Linear    Stage.Project  Stage.Sources
-  hs-source-dirs: raster/Fluid
+  hs-source-dirs: raster/Fluid/src-repa
   ghc-options:
         -Wall -threaded -rtsopts -eventlog
         -Odph -fno-liberate-case
