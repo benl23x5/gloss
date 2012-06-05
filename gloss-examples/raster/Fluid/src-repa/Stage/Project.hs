@@ -7,7 +7,6 @@ import FieldElt
 import Stage.Linear
 import Data.Array.Repa          as R
 import Data.Array.Repa.Unsafe   as R
-import Debug.Trace
 import Prelude                  as P
 
 
@@ -65,22 +64,3 @@ genDivergence !width !f (Z :. j :. i)
 {-# INLINE genDivergence #-}
 
 
-dumpArray :: Array U DIM2 Float -> IO ()
-dumpArray arr
- = do   let (Z :. h :. w) = extent arr
-        let vals          = R.toList arr
-        let mx            = P.maximum vals
-
-        let getVal x y
-             =  arr R.! (Z :. y :. x)
-
-        let showVal x y
-             =  let  v   = getVal x y
-                in P.replicate (15 - P.length (show v)) ' ' P.++ show v
-
-        let out = unlines $ 
-                [ P.concat [ showVal x y P.++ " "
-                              | x <- [0..w - 1]]
-                     | y <- [h - 1, h - 2 .. 0]]
-
-        putStrLn out

@@ -38,10 +38,11 @@ linearSolver origField curField !a !c !iters
 
                 newField <- {-# SCC "linearSolver.mapStencil" #-}
                            computeUnboxedP 
-                         $ R.czipWith zipFunc origField
+                         $ R.szipWith zipFunc origField
                          $ mapStencil2 (BoundConst 0) linearSolverStencil curField
 
                 -- TODO: this boundConst thing is costing a fair bit.
+                -- Do something about the branches introduced into the core code.
 
                 linearSolver origField newField a c (iters - 1)
 

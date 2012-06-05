@@ -7,7 +7,7 @@ import FieldElt
 import Data.Array.Repa          as R
 import Data.Array.Repa.Unsafe   as R
 import Data.Vector.Unboxed      (Unbox)
-import Text.Printf
+
 
 -- | Apply a velocity field to another field.
 --   Both fields must have the same extent.

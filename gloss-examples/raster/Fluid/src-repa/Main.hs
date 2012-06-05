@@ -39,7 +39,7 @@ main
          True  
           -> do (_, elapsed)    <- time $ do   result <- runBatchMode   config model
                                                result `seq` return ()
-                putStrLn $ show $ wallTime microseconds elapsed
+                putStrLn $ show $ wallTime milliseconds elapsed
 
 
 -- | Run the simulation interactively.

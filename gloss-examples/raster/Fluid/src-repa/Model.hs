@@ -18,7 +18,6 @@ module Model
         , outputBMP
         , outputPPM)
 where
-import Graphics.Gloss                   
 import Data.Array.Repa                  as R
 import Data.Array.Repa.IO.BMP           as R
 import Data.Array.Repa.Repr.ForeignPtr  as R
@@ -26,6 +25,8 @@ import Data.Bits
 import Data.Word
 import Unsafe.Coerce
 import Prelude                          as P
+import qualified Graphics.Gloss         as G
+
 
 -- | Time delta (seconds)
 type Delta      = Float
@@ -96,7 +97,7 @@ initModel density velocity
 
 -- Picture --------------------------------------------------------------------
 -- | Function to convert the Model into a Bitmap for displaying in Gloss
-pictureOfModel :: Monad m => (Float, Float) -> Model -> m Picture
+pictureOfModel :: Monad m => (Float, Float) -> Model -> m G.Picture
 pictureOfModel (scaleX, scaleY) m 
  = let  (Z :. width' :. height') = R.extent $ densityField m
         width           = fromIntegral width'
@@ -106,8 +107,8 @@ pictureOfModel (scaleX, scaleY) m
         (arrDensity :: Array F DIM2 Word32)
          <- computeP $ R.map pixel32OfDensity $ densityField m
 
-        return  $ Scale scaleX scaleY
-                $ bitmapOfForeignPtr width height
+        return  $ G.Scale scaleX scaleY
+                $ G.bitmapOfForeignPtr width height
                         (R.toForeignPtr $ unsafeCoerce arrDensity)
                         False
 {-# NOINLINE pictureOfModel #-}
@@ -153,8 +154,6 @@ outputBMP df
 outputPPM :: Int -> String -> Float -> Array U DIM2 Float -> IO ()
 outputPPM step name scale df
  = do   let (Z :. h :. w) = extent df
-        let vals          = R.toList df
-        let mx            = maximum vals
         let step'         
              = replicate (4 - length (show step)) '0' P.++ show step
 

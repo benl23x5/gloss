@@ -17,7 +17,7 @@ densitySteps
         -> VelocityField 
         -> IO DensityField
 
-densitySteps config step df ds vf 
+densitySteps config _step df ds vf 
  = {-# SCC "Solve.densitySteps" #-}
    do   df1     <- addSources   (configDelta config) (configDensity   config) 
                                 ds df
