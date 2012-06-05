@@ -60,11 +60,7 @@ runInteractive config model0
 runBatchMode :: Config -> Model -> IO ()
 runBatchMode config model
         | stepsPassed model     >= configMaxSteps config
-        = do    -- outputBMP $ densityField model
-                -- outputPPM (stepsPassed model) "density" 1 (densityField model)
-                -- outputPPM (stepsPassed model) "velctyU" 10 (R.computeS $ R.map fst $ velocityField model)
-                -- outputPPM (stepsPassed model) "velctyV" 10 (R.computeS $ R.map snd $ velocityField model)
-                return ()
+        =       return ()
 
         | otherwise     
         = do    model'  <- stepFluid config model
@@ -76,9 +72,7 @@ stepFluid :: Config -> Model -> IO Model
 stepFluid config m@(Model df ds vf vs cl step cb)
    | step                  >= configMaxSteps config
    , configMaxSteps config >  0  
-   = case configBatchMode config of
-                True  -> return m
-                False -> error "Finished simulation"
+   = return m
 
    | otherwise 
    = do performGC
