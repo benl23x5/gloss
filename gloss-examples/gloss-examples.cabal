@@ -198,7 +198,10 @@ Executable gloss-crystal
         -funfolding-use-threshold1000
         -funfolding-keeness-factor1000
         -fllvm -optlo-O3
-
+  extensions:
+        PatternGuards
+        BangPatterns
+        
 
 Executable gloss-ray
   Build-depends:

@@ -4,9 +4,105 @@
 -- Based on code from:
 --   http://mainisusuallyafunction.blogspot.com/2011/10/quasicrystals-as-sums-of-waves-in-plane.html
 --
-{-# LANGUAGE BangPatterns #-}
 import Graphics.Gloss.Raster.Field
 import System.Environment
+import System.Exit
+import Data.Char
+
+-- Main -----------------------------------------------------------------------
+main :: IO ()
+main 
+ = do   args    <- getArgs
+        config  <- parseArgs args defaultConfig
+
+        let display
+             = case configFullScreen config of
+                True  -> FullScreen (configSizeX config, configSizeY config)
+                False -> InWindow "Crystal" 
+                                    (configSizeX config, configSizeY config)
+                                    (10, 10)
+
+        let scale =  fromIntegral $ configScale config
+        animateField display
+                (configZoom config, configZoom config)
+                (quasicrystal scale (configDegree config))
+
+
+-- Config ---------------------------------------------------------------------
+data Config
+        = Config
+        { configSizeX           :: Int
+        , configSizeY           :: Int
+        , configFullScreen      :: Bool
+        , configZoom            :: Int
+        , configScale           :: Int
+        , configDegree          :: Int }
+        deriving Show
+
+defaultConfig :: Config
+defaultConfig
+        = Config
+        { configSizeX           = 800 
+        , configSizeY           = 600
+        , configFullScreen      = False
+        , configZoom            = 2
+        , configScale           = 30
+        , configDegree          = 5 }
+
+
+parseArgs :: [String] -> Config -> IO Config
+parseArgs args config
+        | []    <- args
+        = return config
+
+        | "-fullscreen" : sizeX : sizeY : rest <- args
+        , all isDigit sizeX
+        , all isDigit sizeY
+        = parseArgs rest
+        $ config { configSizeX          = read sizeX
+                 , configSizeY          = read sizeY
+                 , configFullScreen     = True }
+
+        | "-window" : sizeX : sizeY : rest <- args
+        , all isDigit sizeX
+        , all isDigit sizeY
+        = parseArgs rest
+        $ config { configSizeX          = read sizeX
+                 , configSizeY          = read sizeY
+                 , configFullScreen     = False }
+
+        | "-zoom" : zoom : rest <- args
+        , all isDigit zoom
+        = parseArgs rest
+        $ config { configZoom           = read zoom }
+
+        | "-scale" : scale : rest <- args
+        , all isDigit scale
+        = parseArgs rest
+        $ config { configScale          = read scale }
+
+        | "-degree" : degree : rest <- args
+        , all isDigit degree
+        = parseArgs rest
+        $ config { configDegree         = read degree }
+
+        | otherwise
+        = do    printUsage
+                exitWith $ ExitFailure 1
+
+
+printUsage :: IO ()
+printUsage
+ = putStr $ unlines
+        [ "quazicrystal [flags]"
+        , "    -fullscreen sizeX sizeY  Run full screen"
+        , "    -window     sizeX sizeY  Run in a window                     (default 800, 600)"
+        , "    -zoom       <NAT>        Pixel replication factor            (default 5)"
+        , "    -scale      <NAT>        Feature size of visualisation       (default 30)"
+        , "    -degree     <NAT>        Number waves to sum for each point  (default 5)" 
+        , ""
+        , " You'll want to run this with +RTS -N to enable threads" ]
+
 
 -- Types ----------------------------------------------------------------------
 -- | Angle in radians.
@@ -78,30 +174,4 @@ rampColor :: Float -> Color
 rampColor v
  = rawColor v (0.4 + (v * 0.6)) 1 1
 
-
--- Main -----------------------------------------------------------------------
-main :: IO ()
-main 
- = do   args    <- getArgs
-        case args of
-         []     -> run 800 600 2 30 5
-
-         [sizeX, sizeY, zoom, scale, degree]
-                -> run (read sizeX) (read sizeY) (read zoom) (read scale) (read degree)
-
-         _ -> putStr $ unlines
-           [ "quazicrystal <sizeX::Int> <sizeY::Int> <zoom::Int> <scale::Float> <degree::Int>"
-           , "    sizeX, sizeY - visualisation size                  (default 800, 600)"
-           , "    zoom         - pixel replication factor            (default 5)"
-           , "    scale        - feature size of visualisation       (default 30)"
-           , "    degree       - number waves to sum for each point  (default 5)" 
-           , ""
-           , " You'll want to run this with +RTS -N to enable threads" ]
-   
-
-run :: Int -> Int -> Int -> Scale -> Degree -> IO ()                     
-run sizeX sizeY zoom scale degree
- = animateField (InWindow "Crystal" (sizeX, sizeY) (10, 10)) 
-        (zoom, zoom)
-        (quasicrystal scale degree)
 
