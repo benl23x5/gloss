@@ -20,6 +20,7 @@ import System.Mem
 import System.Environment       (getArgs)
 import Data.Array.Repa.IO.Timing   as R
 import Prelude                     as P
+import Control.Monad
 
 
 main :: IO ()
@@ -64,6 +65,10 @@ runBatchMode config model
 
         | otherwise     
         = do    model'  <- stepFluid config model
+
+                when (configFramesMode config)
+                 $ do   outputBMP (stepsPassed model) (densityField model)
+
                 runBatchMode config model'
 
 
@@ -79,9 +84,4 @@ stepFluid config m@(Model df ds vf vs cl step cb)
         vf'     <- velocitySteps config step vf vs
         df'     <- densitySteps  config step df ds vf'
         return  $ Model df' Nothing vf' Nothing cl (step + 1) cb
-
-
-
-
-
 

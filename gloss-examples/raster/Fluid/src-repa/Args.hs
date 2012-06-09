@@ -16,6 +16,7 @@ loadConfig args
  = do   
         batchModeArg    <- newIORef False
         benchModeArg    <- newIORef False
+        framesModeArg   <- newIORef False
         maxStepsArg     <- newIORef 0
         widthArg        <- newIORef 100
         itersArg        <- newIORef 40
@@ -30,6 +31,9 @@ loadConfig args
         densityBmpArg   <- newIORef Nothing
         velocityBmpArg  <- newIORef Nothing
         
+        let setBatchArg         = writeIORef batchModeArg     True
+        let setBenchArg         = writeIORef benchModeArg     True
+        let setFramesArg        = writeIORef framesModeArg    True
         let setWidthArg arg     = writeIORef widthArg         (read arg)
         let setScaleArg arg     = writeIORef scaleArg         (read arg)
         let setItersArg arg     = writeIORef itersArg         (read arg)
@@ -40,8 +44,6 @@ loadConfig args
         let setVelArg   arg     = let a = read arg in writeIORef velArg (a, a)
         let setRate     arg     = writeIORef rateArg          (read arg)
         let setMaxSteps arg     = writeIORef maxStepsArg      (read arg)
-        let setBatchArg         = writeIORef batchModeArg     True
-        let setBenchArg         = writeIORef benchModeArg     True
         let setDensityBMP  arg  = writeIORef densityBmpArg    (Just arg)
         let setVelocityBMP arg  = writeIORef velocityBmpArg   (Just arg)
 
@@ -52,6 +54,9 @@ loadConfig args
 
                 Option [] ["bench"]             (NoArg  setBenchArg            )
                         "Set standard initial conditions for benchmarking.",
+
+                Option [] ["frames"]             (NoArg setFramesArg           )
+                        "Dump all frames to .bmp files.",
 
                 Option [] ["max"]               (ReqArg setMaxSteps     "INT")
                         "Quit after this number of steps.",
@@ -103,6 +108,7 @@ loadConfig args
 
         batchMode       <- readIORef batchModeArg
         benchMode       <- readIORef benchModeArg
+        framesMode      <- readIORef framesModeArg
         maxSteps        <- readIORef maxStepsArg
         width           <- readIORef widthArg
         let height      = width
@@ -218,6 +224,7 @@ loadConfig args
                 , configWindowSize      = (scale * width, scale * width)
                 , configMaxSteps        = maxSteps
                 , configBatchMode       = batchMode 
+                , configFramesMode      = framesMode
                 , configModelSize       = (width, width)
                 , configIters           = iters
                 , configDelta           = delta

@@ -20,6 +20,9 @@ data Config
           -- | Whether to run in batch-mode, non-interactively.
         , configBatchMode       :: Bool
 
+          -- | Whether to dump all frames to .bmp files.
+        , configFramesMode      :: Bool
+
           -- | Number of cells in model.
         , configModelSize       :: (Int, Int)
 
