@@ -1,248 +1,267 @@
 
-module Args where
+module Args 
+        ( parseArgs
+        , configDefault)
+where
 import Config
+import Model
 import Data.Array.Repa                  as R
 import Data.Array.Repa.Algorithms.Pixel as R
 import Data.Array.Repa.IO.BMP           as R
-import System.Console.GetOpt
-import Data.IORef
+import qualified Data.Vector.Unboxed    as U
 import Prelude                          as P
+import System.Console.GetOpt
+import System.Exit
 import Control.Monad
+import Data.IORef
+import Data.Char
+
+parseArgs :: [String] -> Config -> IO Config
+parseArgs args config
+        | []    <- args
+        = return config
+
+        | "-batch" : rest       <- args
+        = parseArgs rest 
+        $ config { configBatchMode      = True }
+
+        | "-frames" : rest      <- args
+        = parseArgs rest
+        $ config { configFramesMode     = True 
+                 , configBatchMode      = True }
+
+        | "-max" : num : rest   <- args
+        , all isDigit num
+        = parseArgs rest
+        $ config { configMaxSteps       = read num }
+
+        | "-width" : num : rest <- args
+        , all isDigit num
+        = parseArgs rest
+        $ config { configModelSize      = (read num, read num) }
+
+        | "-iters" : num : rest <- args
+        , all isDigit num
+        = parseArgs rest
+        $ config { configIters          = read num }
+
+        | "-scale" : int : rest <- args
+        = parseArgs rest
+        $ config { configScale          = (read int, read int) }
+
+        | "-rate" : int : rest <- args
+        = parseArgs rest
+        $ config { configRate           = read int }
+
+        | "-delta" : float : rest <- args
+        = parseArgs rest
+        $ config { configDelta          = read float }
+
+        | "-diff" : float : rest <- args
+        = parseArgs rest
+        $ config { configDiff           = read float }
+
+        | "-diff-after" : int : rest <- args
+        , all isDigit int
+        = parseArgs rest
+        $ config { configDiffAfter      = read int }
+
+        | "-visc" : float : rest <- args
+        = parseArgs rest
+        $ config { configVisc           = read float }
+
+        | "-user-dens" : float : rest <- args
+        = parseArgs rest
+        $ config { configDensity        = read float }
+
+        | "-user-velo" : float : rest <- args
+        = parseArgs rest
+        $ config { configVisc           = read float }
 
 
--- | Command line options.
-loadConfig :: [String] -> IO Config
-loadConfig args
- = do   
-        batchModeArg    <- newIORef False
-        benchModeArg    <- newIORef False
-        framesModeArg   <- newIORef False
-        maxStepsArg     <- newIORef 0
-        widthArg        <- newIORef 100
-        itersArg        <- newIORef 40
-        scaleArg        <- newIORef 5
-        rateArg         <- newIORef 25
-        deltaArg        <- newIORef 0.1
-        diffArg         <- newIORef 0.00001
-        diffAfterArg    <- newIORef 0
-        viscArg         <- newIORef 0
-        densArg         <- newIORef 100
-        velArg          <- newIORef (20, 20)
+        -- Initial Confditions ----------------------------------------------------
+        | "-dens-bmp" : filePath : rest <- args
+        = do    dens    <- loadDensBMP  filePath
+                let Z :. height :. width = extent dens
+                parseArgs rest
+                 $ config { configInitialDensity  = dens
+                          , configModelSize       = (width, height) }
 
-        densityBmpArg   <- newIORef Nothing
-        velocityBmpArg  <- newIORef Nothing
-        
-        let setBatchArg         = writeIORef batchModeArg     True
-        let setBenchArg         = writeIORef benchModeArg     True
-        let setFramesArg        = writeIORef framesModeArg    True
-        let setWidthArg arg     = writeIORef widthArg         (read arg)
-        let setScaleArg arg     = writeIORef scaleArg         (read arg)
-        let setItersArg arg     = writeIORef itersArg         (read arg)
-        let setDeltaArg arg     = writeIORef deltaArg         (read arg)
-        let setDiffArg  arg     = writeIORef diffArg          (read arg)
-        let setDiffAfterArg arg = writeIORef diffAfterArg     (read arg)
-        let setViscArg  arg     = writeIORef viscArg          (read arg)
-        let setDensArg  arg     = writeIORef densArg          (read arg)
-        let setVelArg   arg     = let a = read arg in writeIORef velArg (a, a)
-        let setRate     arg     = writeIORef rateArg          (read arg)
-        let setMaxSteps arg     = writeIORef maxStepsArg      (read arg)
-        let setDensityBMP  arg  = writeIORef densityBmpArg    (Just arg)
-        let setVelocityBMP arg  = writeIORef velocityBmpArg   (Just arg)
+        | "-velo-bmp" : filePath : rest <- args
+        = do    velo    <- loadVeloBMP filePath
+                let Z :. height :. width = extent velo
+                parseArgs rest
+                 $ config { configInitialVelocity = velo
+                          , configModelSize       = (width, height) }
 
-        let options :: [OptDescr (IO ())]
-            options
-             = [Option [] ["batch"]             (NoArg  setBatchArg            )
-                        "Run a fixed number of steps instead of displaying in a window.",
+        | "-init-checks" : rest <- args
+        = do    let (width, height)     = configModelSize config
+                parseArgs rest
+                 $ config { configInitialDensity  = makeDensField_checks width height 
+                          , configInitialVelocity = makeVeloField_empty  width height }
 
-                Option [] ["bench"]             (NoArg  setBenchArg            )
-                        "Set standard initial conditions for benchmarking.",
+        | "-init-man" : rest <- args
+        = do    let (width, height)     = configModelSize config
+                parseArgs rest
+                 $ config { configInitialDensity   = makeDensField_checks width height
+                          , configInitialVelocity  = makeVeloField_man    width height }
 
-                Option [] ["frames"]             (NoArg setFramesArg           )
-                        "Dump all frames to .bmp files.",
+        | "-init-elk" : rest <- args
+        = do    let (width, height)     = configModelSize config
+                parseArgs rest
+                 $ config { configInitialDensity   = makeDensField_checks width height
+                          , configInitialVelocity  = makeVeloField_elk    width height }
 
-                Option [] ["max"]               (ReqArg setMaxSteps     "INT")
-                        "Quit after this number of steps.",
-
-                Option [] ["width"]             (ReqArg setWidthArg     "INT")
-                        "Size of simulation (100)",
-
-                Option [] ["iters"]             (ReqArg setItersArg     "INT")
-                        "Iterations for the linear solver (20)",
-
-                Option [] ["scale"]             (ReqArg setScaleArg     "INT")
-                        "Width of cell in window (5)",
-
-                Option [] ["rate"]              (ReqArg setRate         "INT")
-                        "Frame rate of simulator (25)",
-
-                Option [] ["delta"]             (ReqArg setDeltaArg     "FLOAT")
-                        "Length of time steps (0.1)",
-
-                Option [] ["diffusion"]         (ReqArg setDiffArg      "FLOAT")
-                        "Diffusion rate for the density (0)",
-
-                Option [] ["diffusion-after"]   (ReqArg setDiffAfterArg "INT")
-                        "Trigger diffusion after this step (0)",
-
-                Option [] ["viscosity"]         (ReqArg setViscArg      "FLOAT")
-                        "Viscosity rate for the velocity (0)",
-
-                Option [] ["user-density"]      (ReqArg setDensArg      "FLOAT")
-                        "Magnitude of a user inserted density (100)",
-
-                Option [] ["user-velocity"]     (ReqArg setVelArg       "FLOAT")
-                        "Magnitude of a user inserted velocity (20)",
-
-                Option [] ["bmp-density"]       (ReqArg setDensityBMP   "FILE.bmp")
-                        "File for initial fluid density",
-
-                Option [] ["bmp-velocity"]      (ReqArg setVelocityBMP  "FILE.bmp")
-                        "File for initial fluid velocity"
-                ]
-
-        case getOpt RequireOrder options args of
-         (actions,      [],   []) 
-          -> foldl (>>) (return ()) actions
-
-         (      _, nonOpts,   []) 
-          -> error $ "unrecognized arguments: " P.++ unwords nonOpts
-
-         (      _,       _, msgs) 
-          -> error $ concat msgs P.++ usageInfo "Usage: fluid [OPTION...]" options
+        | otherwise
+        = do    printUsage
+                exitWith ExitSuccess
 
 
-        batchMode       <- readIORef batchModeArg
-        benchMode       <- readIORef benchModeArg
-        framesMode      <- readIORef framesModeArg
-        maxSteps        <- readIORef maxStepsArg
-        width           <- readIORef widthArg
-        let height      = width
-        iters           <- readIORef itersArg
-        scale           <- readIORef scaleArg
-        rate            <- readIORef rateArg
-        delta           <- readIORef deltaArg
-        diff            <- readIORef diffArg
-        diffAfter       <- readIORef diffAfterArg
-        visc            <- readIORef viscArg
-        dens            <- readIORef densArg
-        vel             <- readIORef velArg
-        densityBmp      <- readIORef densityBmpArg
-        velocityBmp     <- readIORef velocityBmpArg
+printUsage :: IO ()
+printUsage
+ = putStr
+ $ unlines
+        [ "gloss-fluid [flags]"
+        , "  -batch                 Run a fixed number of steps instead of displaying in a window."
+        , "  -frames                Dump all frames to .bmp files (implies -batch)"
+        , "  -max        <INT>      Quit after this number of steps."
+        , "  -width      <INT>      Size of simulation.                  (100)"
+        , "  -iters      <INT>      Iterations for the linear solver.    (40)"
+        , "  -scale      <INT>      Width of a cell in the window.       (5)"
+        , "  -rate       <INT>      Frame rate.                          (30)"
+        , "  -delta      <FLOAT>    Length of time step.                 (0.1)"
+        , "  -diff       <FLOAT>    Diffusion rate for the density.      (0)"
+        , "  -diff-after <INT>      Trigger diffusion after this step.   (0)"
+        , "  -visc       <FLOAT>    Diffusion rate for the velocity.     (0)"
+        , "  -user-dens  <FLOAT>    Magnitude of user inserted density.  (100)"
+        , "  -user-velo  <FLOAT>    Magnitude of user inserted velocity. (20)"
+        , "  -bmp-dens   <FILE.bmp> File for initial fluid density."
+        , "  -bmp-velo   <FILE.bmp> File for initial fluid velocity." 
+        , "" ]
 
 
-        -- Load the initial desity bmp if we were given one.
-        let mkInitialDensity
-                -- Load density from a .bmp, using the luminance as
-                -- the scalar density value.
-                | Just filePath <- densityBmp
-                = do    result   <- readImageFromBMP filePath
-                        let arr  =  case result of
-                                        Right arr'      -> arr'
-                                        Left err        -> error $ show err
+configDefault :: Config
+configDefault
+ = let  modelW  = 100
+        modelH  = 100
+   in Config
+        { configRate            = 30
+        , configMaxSteps        = 0
+        , configBatchMode       = False
+        , configFramesMode      = False
+        , configModelSize       = (modelW, modelH)
+        , configScale           = (5, 5)
+        , configIters           = 40
+        , configDelta           = 0.1
+        , configDiff            = 0.00001
+        , configDiffAfter       = 0
+        , configVisc            = 0
+        , configDensity         = 100
+        , configVelocity        = (20, 20)
+        , configInitialDensity  = makeDensField_empty modelW modelH
+        , configInitialVelocity = makeVeloField_empty modelW modelH }
 
-                        let Z :. height' :. width' 
-                                 = extent arr
 
-                        when (height /= height' || width /= width')
-                         $ error "Fluid: bmp size does not match --width argument"
+-- | Load a density field from a BMP file.
+loadDensBMP :: FilePath -> IO DensityField
+loadDensBMP filePath
+ = do   result   <- readImageFromBMP filePath
+        let arr = case result of
+                        Right arr'      -> arr'
+                        Left  err       -> error $ show err
 
-                        density  <- computeUnboxedP 
-                                  $ R.map floatLuminanceOfRGB8 arr
-                        return density
+        let Z :. height' :. width' 
+                = extent arr
 
-                | benchMode
-                = let   width'  = fromIntegral width
-                        yc      = fromIntegral (width `div` 2)
-                        xc      = fromIntegral (width `div` 2)
+        density  <- computeUnboxedP 
+                 $ R.map floatLuminanceOfRGB8 arr
+
+        return density
+
+
+-- | Load velocity field from a BMP file.
+loadVeloBMP :: FilePath -> IO VelocityField
+loadVeloBMP filePath
+ = do   result  <- readImageFromBMP filePath
+        let arr  = case result of
+                        Right arr'      -> arr'
+                        Left err        -> error $ show err
+
+        let Z :. height' :. width' 
+                = extent arr
+
+        let {-# INLINE conv #-}
+            conv (r, g, _b) 
+             = let r'   = fromIntegral (-128 + fromIntegral r :: Int)
+                   g'   = fromIntegral (-128 + fromIntegral g :: Int)
+               in  (r' * 0.0001, g' * 0.0001)
+
+        velocity  <- computeUnboxedP $ R.map conv arr
+
+        return velocity
+
+
+-------------------------------------------------------------------------------
+makeDensField_empty :: Int -> Int -> Array U DIM2 Float
+makeDensField_empty width height
+        = R.fromUnboxed (Z :. height :. width)
+        $ U.replicate (width * height) 0
+
+
+makeDensField_checks :: Int -> Int -> DensityField
+makeDensField_checks width height
+ = let  width'  = fromIntegral width
+        yc      = fromIntegral (width `div` 2)
+        xc      = fromIntegral (width `div` 2)
                         
-                  in return
-                        $ R.fromListUnboxed (Z :. height :. width)
-                        $ [ let x'      = fromIntegral (x - 1)
-                                y'      = fromIntegral (y - 1)
-                                xk1     = cos (10 * (x' - xc) / width')
-                                yk1     = cos (10 * (y' - yc) / width')
-                                d1      = xk1 * yk1
-                            in  if (d1 < 0) then 0 else d1
-                                | y     <- [1..width]
-                                , x     <- [1..width] ]
-
-                -- No density file given, so just set the field to zero.
-                | otherwise
-                = return
-                        $ R.fromListUnboxed (Z :. height :. width)
-                        $ replicate (height * width) 0
+   in   R.fromListUnboxed (Z :. height :. width)
+         $ [ let x'      = fromIntegral (x - 1)
+                 y'      = fromIntegral (y - 1)
+                 xk1     = cos (10 * (x' - xc) / width')
+                 yk1     = cos (10 * (y' - yc) / width')
+                 d1      = xk1 * yk1
+             in  if (d1 < 0) then 0 else d1
+                        | y     <- [1..width]
+                        , x     <- [1..width] ]
 
 
-        initialDensity <- mkInitialDensity
+-------------------------------------------------------------------------------
+makeVeloField_empty :: Int -> Int -> Array U DIM2 (Float, Float)
+makeVeloField_empty width height
+        = R.fromUnboxed (Z :. height :. width)
+        $ U.replicate (width * height) (0, 0)
 
 
-        -- Load the initial velocity bmp if we were given one
-        let mkInitialVelocity
-                -- Load 
-                | Just filePath <- velocityBmp
-                = do    result  <- readImageFromBMP filePath
-                        let arr  =  case result of
-                                        Right arr'      -> arr'
-                                        Left err        -> error $ show err
-
-                        let Z :. height' :. width' 
-                                 = extent arr
-
-                        when (height /= height' || width /= width')
-                         $ error "Fluid: bmp size does not match --width argument"
-
-                        let {-# INLINE conv #-}
-                            conv (r, g, _b) 
-                             = let r'   = fromIntegral (-128 + fromIntegral r :: Int)
-                                   g'   = fromIntegral (-128 + fromIntegral g :: Int)
-                               in  (r' * 0.0001, g' * 0.0001)
-
-                        velocity  <- computeUnboxedP $ R.map conv arr
-                        return velocity
-
-                | benchMode
-                = let   width'  = fromIntegral width
-                        yc      = fromIntegral (width `div` 2)
-                        xc      = fromIntegral (width `div` 2)
+makeVeloField_man :: Int -> Int -> VelocityField
+makeVeloField_man width height
+ = let  width'  = fromIntegral width
+        yc      = fromIntegral (width `div` 2)
+        xc      = fromIntegral (width `div` 2)
                         
-                  in return
-                        $ R.fromListUnboxed (Z :. height :. width)
-                        $ [ let x'      = fromIntegral x
-                                y'      = fromIntegral y
--- Man
---                                xk2     = cos (19 * (x' - xc) / width')
---                                yk2     = cos (17 * (y' - yc) / width')
-
-                                xk2     =  cos (12 * (x' - xc) / width')
-                                yk2     = -cos (12 * (y' - yc) / width')
-                                d2      = xk2 * yk2 / 5
-                            in  (0, d2)
-                                | y     <- [0..width-1]
-                                , x     <- [0..width-1] ]
-
-                -- No velocity file given, so just set the field to zero.
-                | otherwise
-                = return
-                        $ R.fromListUnboxed (Z :. height :. width)
-                        $ replicate (height * width) (0, 0)
-
-        initialVelocity <- mkInitialVelocity
+   in   R.fromListUnboxed (Z :. height :. width)
+         $ [ let x'      = fromIntegral x
+                 y'      = fromIntegral y
+                 xk2     = cos (19 * (x' - xc) / width')
+                 yk2     = cos (17 * (y' - yc) / width')
+                 d2      = xk2 * yk2 / 5
+             in  (0, d2)
+                        | y     <- [0..width-1]
+                        , x     <- [0..width-1] ]
 
 
-        return  Config
-                { configRate            = rate
-                , configWindowSize      = (scale * width, scale * width)
-                , configMaxSteps        = maxSteps
-                , configBatchMode       = batchMode 
-                , configFramesMode      = framesMode
-                , configModelSize       = (width, width)
-                , configIters           = iters
-                , configDelta           = delta
-                , configDiffusion       = diff
-                , configDiffAfter       = diffAfter
-                , configViscosity       = visc
-                , configDensity         = dens
-                , configVelocity        = vel 
-                , configInitialDensity  = initialDensity
-                , configInitialVelocity = initialVelocity }
+makeVeloField_elk :: Int -> Int -> VelocityField
+makeVeloField_elk width height
+ = let  width'  = fromIntegral width
+        yc      = fromIntegral (width `div` 2)
+        xc      = fromIntegral (width `div` 2)
+                        
+   in   R.fromListUnboxed (Z :. height :. width)
+         $ [ let x'      = fromIntegral x
+                 y'      = fromIntegral y
+                 xk2     =  cos (12 * (x' - xc) / width')
+                 yk2     = -cos (12 * (y' - yc) / width')
+                 d2      = xk2 * yk2 / 5
+             in  (0, d2)
+                        | y     <- [0..width-1]
+                        , x     <- [0..width-1] ]
 

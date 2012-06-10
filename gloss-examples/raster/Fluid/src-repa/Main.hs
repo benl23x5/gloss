@@ -27,7 +27,7 @@ main :: IO ()
 main 
  = do   -- Parse the command-line arguments.
         args            <- getArgs
-        config          <- loadConfig args
+        config          <- parseArgs args configDefault
 
         -- Setup the initial fluid model.
         let model       = initModel 
@@ -46,13 +46,14 @@ main
 -- | Run the simulation interactively.
 runInteractive :: Config -> Model -> IO ()
 runInteractive config model0
- =      playIO  (InWindow "Stam's stable fluid. Use left-click right-drag to add density / velocity." 
+ = let (scaleX, scaleY)  = configScale config
+   in  playIO  (InWindow "Stam's stable fluid. Use left-click right-drag to add density / velocity." 
                         (configWindowSize config) 
                         (20, 20))
                 black
                 (configRate config)
                 model0
-                (pictureOfModel (configScale     config))
+                (pictureOfModel (fromIntegral scaleX, fromIntegral scaleY))
                 (\event model -> return $ userEvent config event model)
                 (\_           -> stepFluid config)
 

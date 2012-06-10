@@ -1,18 +1,16 @@
 
 module Config 
         ( Config (..)
-        , configScale)
+        , configWindowSize)
 where
 import Model
-import Data.Array.Repa
+import Data.Array.Repa                  as R
+import qualified Data.Vector.Unboxed    as U
 
 data Config
         = Config
-        { -- | Size of window in pixels
-          configWindowSize      :: (Int, Int)
-
-          -- | Simulation rate (frames per second)
-        , configRate            :: Int
+        { -- | Simulation rate (frames per second)
+          configRate            :: Int
 
           -- | Maximum number of steps in simulation
         , configMaxSteps        :: Int
@@ -26,6 +24,9 @@ data Config
           -- | Number of cells in model.
         , configModelSize       :: (Int, Int)
 
+          -- | Window scale.
+        , configScale           :: (Int, Int)
+
           -- | Number of iterations to use in the linear solver
         , configIters           :: !Int
 
@@ -33,13 +34,13 @@ data Config
         , configDelta           :: !Delta
 
           -- | Diffusion rate.
-        , configDiffusion       :: !Float
+        , configDiff            :: !Float
 
           -- | Apply diffusion after this step number.
         , configDiffAfter       :: !Int
 
           -- | Fluid viscosity.
-        , configViscosity       :: !Float
+        , configVisc            :: !Float
 
           -- | Magnitude of density to add with user interface.
         , configDensity         :: !Float
@@ -54,10 +55,9 @@ data Config
         , configInitialVelocity :: !(Array U DIM2 (Float, Float))
         } 
 
+configWindowSize :: Config -> (Int, Int)
+configWindowSize config
+ = let  (modelX, modelY)        = configModelSize config
+        (scaleX, scaleY)        = configScale     config
+   in   (modelX * scaleX, modelY * scaleY)
 
-configScale :: Config -> (Float, Float)
-configScale config
- = let  (windowWidth, windowHeight)     = configWindowSize config
-        (modelWidth,  modelHeight)      = configModelSize  config
-   in   ( fromIntegral windowWidth  / fromIntegral modelWidth
-        , fromIntegral windowHeight / fromIntegral modelHeight)

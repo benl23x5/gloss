@@ -25,7 +25,7 @@ densitySteps config step df ds vf
         let diff = if  configDiffAfter config /= 0
                     && step >= configDiffAfter config 
                      then 0.0005
-                     else configDiffusion config
+                     else configDiff config
 
         df2     <- diffusion    (configIters config) (configDelta config) diff
                                 df1

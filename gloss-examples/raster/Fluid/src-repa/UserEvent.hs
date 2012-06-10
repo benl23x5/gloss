@@ -126,8 +126,8 @@ windowToModel config (x, y) = (x', y')
  where  (scaleX, scaleY)                = configScale config
         (windowWidth, windowHeight)     = configWindowSize config
 
-        x' = round ((x + (fromIntegral windowWidth  / 2)) / scaleX)
-        y' = round ((y + (fromIntegral windowHeight / 2)) / scaleY)
+        x' = round ((x + (fromIntegral windowWidth  / 2)) / fromIntegral scaleX)
+        y' = round ((y + (fromIntegral windowHeight / 2)) / fromIntegral scaleY)
 
 
 
