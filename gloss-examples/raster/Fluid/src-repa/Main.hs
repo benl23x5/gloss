@@ -61,30 +61,30 @@ runInteractive config model0
 -- | Run in batch mode and dump a .bmp of the final state.
 runBatchMode :: Config -> Model -> IO ()
 runBatchMode config model
-        | stepsPassed model     >= configMaxSteps config
-        =       return ()
+  | stepsPassed model     >= configMaxSteps config
+  =     return ()
 
-        | otherwise     
-        = do    model'  <- stepFluid config model
+  | otherwise     
+  = do  model'  <- stepFluid config model
 
-                case configFramesMode config of
-                 Nothing -> return ()
-                 Just path
-                  -> do putStrLn $ "frame " ++ show (stepsPassed model) 
-                        outputBMP path (stepsPassed model) (densityField model)
+        case configFramesMode config of
+         Nothing -> return ()
+         Just path
+          -> do putStrLn $ "frame " ++ show (stepsPassed model) 
+                outputBMP path (stepsPassed model) (densityField model)
 
-                runBatchMode config model'
+        runBatchMode config model'
 
 
 -- Function to step simulator one step forward in time
 stepFluid :: Config -> Model -> IO Model
 stepFluid config m@(Model df ds vf vs cl step cb)
-   | step                  >= configMaxSteps config
-   , configMaxSteps config >  0  
-   = return m
+  | step                  >= configMaxSteps config
+  , configMaxSteps config >  0  
+  = return m
 
-   | otherwise 
-   = do performGC
+  | otherwise 
+  = do  performGC
         vf'     <- velocitySteps config step vf vs
         df'     <- densitySteps  config step df ds vf'
         return  $ Model df' Nothing vf' Nothing cl (step + 1) cb

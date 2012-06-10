@@ -154,7 +154,7 @@ configDefault
         , configScale           = (5, 5)
         , configIters           = 40
         , configDelta           = 0.1
-        , configDiff            = 0.00001
+        , configDiff            = 0
         , configDiffAfter       = 0
         , configVisc            = 0
         , configDensity         = 100
@@ -219,8 +219,10 @@ makeDensField_checks width height
    in   R.fromListUnboxed (Z :. height :. width)
          $ [ let x'      = fromIntegral (x - 1)
                  y'      = fromIntegral (y - 1)
-                 xk1     = cos (10 * (x' - xc) / width')
-                 yk1     = cos (10 * (y' - yc) / height')
+                 tx      = 10 * (x' - xc) / height'
+                 ty      = 10 * (y' - yc) / height'
+                 xk1     = if abs tx > 3*pi/2 then 0 else cos tx
+                 yk1     = if abs ty > 3*pi/2 then 0 else cos ty
                  d1      = xk1 * yk1
              in  if (d1 < 0) then 0 else d1
                         | y     <- [1 .. height]
@@ -244,7 +246,7 @@ makeVeloField_man width height
    in   R.fromListUnboxed (Z :. height :. width)
          $ [ let x'      = fromIntegral x
                  y'      = fromIntegral y
-                 xk2     = cos (19 * (x' - xc) / width')
+                 xk2     = cos (19 * (x' - xc) / height')
                  yk2     = cos (17 * (y' - yc) / height')
                  d2      = xk2 * yk2 / 5
              in  (0, d2)
@@ -262,8 +264,10 @@ makeVeloField_elk width height
    in   R.fromListUnboxed (Z :. height :. width)
          $ [ let x'      = fromIntegral x
                  y'      = fromIntegral y
-                 xk2     =  cos (12 * (x' - xc) / width')
-                 yk2     = -cos (12 * (y' - yc) / height')
+                 tx      = 12 * (x' - xc) / height'
+                 ty      = 12 * (y' - yc) / height'
+                 xk2     =  cos tx
+                 yk2     = -cos ty
                  d2      = xk2 * yk2 / 5
              in  (0, d2)
                         | y     <- [0 .. height - 1]
