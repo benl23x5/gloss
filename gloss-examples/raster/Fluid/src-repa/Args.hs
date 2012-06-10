@@ -21,13 +21,13 @@ parseArgs args config
         | []    <- args
         = return config
 
-        | "-batch" : rest       <- args
+        | "-batch" : rest        <- args
         = parseArgs rest 
         $ config { configBatchMode      = True }
 
-        | "-frames" : rest      <- args
+        | "-frames" : path : rest <- args
         = parseArgs rest
-        $ config { configFramesMode     = True 
+        $ config { configFramesMode     = Just path
                  , configBatchMode      = True }
 
         | "-max" : num : rest   <- args
@@ -35,10 +35,11 @@ parseArgs args config
         = parseArgs rest
         $ config { configMaxSteps       = read num }
 
-        | "-width" : num : rest <- args
-        , all isDigit num
+        | "-size" : width : height : rest <- args
+        , all isDigit width
+        , all isDigit height
         = parseArgs rest
-        $ config { configModelSize      = (read num, read num) }
+        $ config { configModelSize      = (read width, read height) }
 
         | "-iters" : num : rest <- args
         , all isDigit num
@@ -123,7 +124,7 @@ printUsage
  $ unlines
         [ "gloss-fluid [flags]"
         , "  -batch                 Run a fixed number of steps instead of displaying in a window."
-        , "  -frames                Dump all frames to .bmp files (implies -batch)"
+        , "  -frames     <PATH.bmp> Dump all frames to .bmp files (implies -batch)"
         , "  -max        <INT>      Quit after this number of steps."
         , "  -width      <INT>      Size of simulation.                  (100)"
         , "  -iters      <INT>      Iterations for the linear solver.    (40)"
@@ -148,7 +149,7 @@ configDefault
         { configRate            = 30
         , configMaxSteps        = 0
         , configBatchMode       = False
-        , configFramesMode      = False
+        , configFramesMode      = Nothing
         , configModelSize       = (modelW, modelH)
         , configScale           = (5, 5)
         , configIters           = 40
@@ -211,18 +212,19 @@ makeDensField_empty width height
 makeDensField_checks :: Int -> Int -> DensityField
 makeDensField_checks width height
  = let  width'  = fromIntegral width
-        yc      = fromIntegral (width `div` 2)
-        xc      = fromIntegral (width `div` 2)
+        height' = fromIntegral height
+        xc      = fromIntegral (width  `div` 2)
+        yc      = fromIntegral (height `div` 2)
                         
    in   R.fromListUnboxed (Z :. height :. width)
          $ [ let x'      = fromIntegral (x - 1)
                  y'      = fromIntegral (y - 1)
                  xk1     = cos (10 * (x' - xc) / width')
-                 yk1     = cos (10 * (y' - yc) / width')
+                 yk1     = cos (10 * (y' - yc) / height')
                  d1      = xk1 * yk1
              in  if (d1 < 0) then 0 else d1
-                        | y     <- [1..width]
-                        , x     <- [1..width] ]
+                        | y     <- [1 .. height]
+                        , x     <- [1 .. width] ]
 
 
 -------------------------------------------------------------------------------
@@ -235,33 +237,35 @@ makeVeloField_empty width height
 makeVeloField_man :: Int -> Int -> VelocityField
 makeVeloField_man width height
  = let  width'  = fromIntegral width
-        yc      = fromIntegral (width `div` 2)
-        xc      = fromIntegral (width `div` 2)
+        height' = fromIntegral height
+        xc      = fromIntegral (width  `div` 2)
+        yc      = fromIntegral (height `div` 2)
                         
    in   R.fromListUnboxed (Z :. height :. width)
          $ [ let x'      = fromIntegral x
                  y'      = fromIntegral y
                  xk2     = cos (19 * (x' - xc) / width')
-                 yk2     = cos (17 * (y' - yc) / width')
+                 yk2     = cos (17 * (y' - yc) / height')
                  d2      = xk2 * yk2 / 5
              in  (0, d2)
-                        | y     <- [0..width-1]
-                        , x     <- [0..width-1] ]
+                        | y     <- [0..height - 1]
+                        , x     <- [0..width  - 1] ]
 
 
 makeVeloField_elk :: Int -> Int -> VelocityField
 makeVeloField_elk width height
  = let  width'  = fromIntegral width
-        yc      = fromIntegral (width `div` 2)
-        xc      = fromIntegral (width `div` 2)
+        height' = fromIntegral height
+        xc      = fromIntegral (width  `div` 2)
+        yc      = fromIntegral (height `div` 2)
                         
    in   R.fromListUnboxed (Z :. height :. width)
          $ [ let x'      = fromIntegral x
                  y'      = fromIntegral y
                  xk2     =  cos (12 * (x' - xc) / width')
-                 yk2     = -cos (12 * (y' - yc) / width')
+                 yk2     = -cos (12 * (y' - yc) / height')
                  d2      = xk2 * yk2 / 5
              in  (0, d2)
-                        | y     <- [0..width-1]
-                        , x     <- [0..width-1] ]
+                        | y     <- [0 .. height - 1]
+                        , x     <- [0 .. width  - 1] ]
 

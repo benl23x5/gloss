@@ -19,7 +19,7 @@ data Config
         , configBatchMode       :: Bool
 
           -- | Whether to dump all frames to .bmp files.
-        , configFramesMode      :: Bool
+        , configFramesMode      :: Maybe FilePath
 
           -- | Number of cells in model.
         , configModelSize       :: (Int, Int)

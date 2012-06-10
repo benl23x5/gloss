@@ -48,8 +48,9 @@ advectElem !delta !velField !get !pos@(Z:. j :. i)
       (((d00 ~*~ t0) ~+~ (d01 ~*~ t1)) ~*~ s0) 
   ~+~ (((d10 ~*~ t0) ~+~ (d11 ~*~ t1)) ~*~ s1)
  where
-        _ :. _ :. width' = R.extent velField
-        !width           = fromIntegral width'
+        _ :. height' :. width' = R.extent velField
+        !width          = fromIntegral width'
+        !height         = fromIntegral height'
 
         -- helper values
         !dt0    = delta * width
@@ -65,7 +66,7 @@ advectElem !delta !velField !get !pos@(Z:. j :. i)
                 | otherwise             = x
 
         !y'     | y < -0.5              = -0.5
-                | y > width + 0.5       = width + 0.5
+                | y > height + 0.5      = height + 0.5
                 | otherwise             = y
 
         -- calculate discrete locations surrounding point
@@ -86,7 +87,7 @@ advectElem !delta !velField !get !pos@(Z:. j :. i)
          | ii < 0        = zero
          | ii >= width'  = zero
          | jj < 0        = zero
-         | jj >= width'  = zero
+         | jj >= height' = zero
          | otherwise     = get ix
 
         -- grab values from grid surrounding advected point

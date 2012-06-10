@@ -145,11 +145,11 @@ pixel8OfDensity f
 
 -- Dump -----------------------------------------------------------------------
 -- Writes bitmap data to test batch-mode ran correctly
-outputBMP :: Int -> DensityField -> IO ()
-outputBMP step df 
+outputBMP :: FilePath -> Int -> DensityField -> IO ()
+outputBMP path step df 
  = do   arr             <- computeUnboxedP $ R.map pixel8OfDensity df
         let step'       = replicate (6 - length (show step)) '0' P.++ show step
-        R.writeImageToBMP ("./frame" P.++ step' P.++ ".bmp") arr
+        R.writeImageToBMP (path P.++ step' P.++ ".bmp") arr
 
 
 outputPPM :: Int -> String -> Float -> Array U DIM2 Float -> IO ()
