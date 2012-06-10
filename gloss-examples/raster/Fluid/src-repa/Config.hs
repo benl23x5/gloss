@@ -35,6 +35,9 @@ data Config
           -- | Diffusion rate.
         , configDiffusion       :: !Float
 
+          -- | Apply diffusion after this step number.
+        , configDiffAfter       :: !Int
+
           -- | Fluid viscosity.
         , configViscosity       :: !Float
 

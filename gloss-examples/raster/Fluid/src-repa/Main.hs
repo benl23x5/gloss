@@ -67,7 +67,8 @@ runBatchMode config model
         = do    model'  <- stepFluid config model
 
                 when (configFramesMode config)
-                 $ do   outputBMP (stepsPassed model) (densityField model)
+                 $ do   putStrLn $ "frame " ++ show (stepsPassed model) 
+                        outputBMP (stepsPassed model) (densityField model)
 
                 runBatchMode config model'
 

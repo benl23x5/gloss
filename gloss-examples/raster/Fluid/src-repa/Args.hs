@@ -24,6 +24,7 @@ loadConfig args
         rateArg         <- newIORef 25
         deltaArg        <- newIORef 0.1
         diffArg         <- newIORef 0.00001
+        diffAfterArg    <- newIORef 0
         viscArg         <- newIORef 0
         densArg         <- newIORef 100
         velArg          <- newIORef (20, 20)
@@ -39,6 +40,7 @@ loadConfig args
         let setItersArg arg     = writeIORef itersArg         (read arg)
         let setDeltaArg arg     = writeIORef deltaArg         (read arg)
         let setDiffArg  arg     = writeIORef diffArg          (read arg)
+        let setDiffAfterArg arg = writeIORef diffAfterArg     (read arg)
         let setViscArg  arg     = writeIORef viscArg          (read arg)
         let setDensArg  arg     = writeIORef densArg          (read arg)
         let setVelArg   arg     = let a = read arg in writeIORef velArg (a, a)
@@ -79,6 +81,9 @@ loadConfig args
                 Option [] ["diffusion"]         (ReqArg setDiffArg      "FLOAT")
                         "Diffusion rate for the density (0)",
 
+                Option [] ["diffusion-after"]   (ReqArg setDiffAfterArg "INT")
+                        "Trigger diffusion after this step (0)",
+
                 Option [] ["viscosity"]         (ReqArg setViscArg      "FLOAT")
                         "Viscosity rate for the velocity (0)",
 
@@ -117,6 +122,7 @@ loadConfig args
         rate            <- readIORef rateArg
         delta           <- readIORef deltaArg
         diff            <- readIORef diffArg
+        diffAfter       <- readIORef diffAfterArg
         visc            <- readIORef viscArg
         dens            <- readIORef densArg
         vel             <- readIORef velArg
@@ -203,8 +209,12 @@ loadConfig args
                         $ R.fromListUnboxed (Z :. height :. width)
                         $ [ let x'      = fromIntegral x
                                 y'      = fromIntegral y
-                                xk2     = cos (15 * (x' - xc) / width')
-                                yk2     = cos (15 * (y' - yc) / width')
+-- Man
+--                                xk2     = cos (19 * (x' - xc) / width')
+--                                yk2     = cos (17 * (y' - yc) / width')
+
+                                xk2     =  cos (12 * (x' - xc) / width')
+                                yk2     = -cos (12 * (y' - yc) / width')
                                 d2      = xk2 * yk2 / 5
                             in  (0, d2)
                                 | y     <- [0..width-1]
@@ -229,6 +239,7 @@ loadConfig args
                 , configIters           = iters
                 , configDelta           = delta
                 , configDiffusion       = diff
+                , configDiffAfter       = diffAfter
                 , configViscosity       = visc
                 , configDensity         = dens
                 , configVelocity        = vel 

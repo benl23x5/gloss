@@ -149,7 +149,7 @@ outputBMP :: Int -> DensityField -> IO ()
 outputBMP step df 
  = do   arr             <- computeUnboxedP $ R.map pixel8OfDensity df
         let step'       = replicate (6 - length (show step)) '0' P.++ show step
-        R.writeImageToBMP ("./out/frame" P.++ step' P.++ ".bmp") arr
+        R.writeImageToBMP ("./frame" P.++ step' P.++ ".bmp") arr
 
 
 outputPPM :: Int -> String -> Float -> Array U DIM2 Float -> IO ()

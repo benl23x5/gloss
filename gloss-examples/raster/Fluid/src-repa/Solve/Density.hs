@@ -17,12 +17,17 @@ densitySteps
         -> VelocityField 
         -> IO DensityField
 
-densitySteps config _step df ds vf 
+densitySteps config step df ds vf 
  = {-# SCC "Solve.densitySteps" #-}
    do   df1     <- addSources   (configDelta config) (configDensity   config) 
                                 ds df
 
-        df2     <- diffusion    (configIters config) (configDelta config) (configDiffusion config) 
+        let diff = if  configDiffAfter config /= 0
+                    && step >= configDiffAfter config 
+                     then 0.0005
+                     else configDiffusion config
+
+        df2     <- diffusion    (configIters config) (configDelta config) diff
                                 df1
 
         df'     <- advection    (configDelta config) vf df2
