@@ -21,9 +21,23 @@ parseArgs args config
         | []    <- args
         = return config
 
-        | "-batch" : rest        <- args
-        = parseArgs rest 
-        $ config { configBatchMode      = True }
+-- | Command line options.
+loadConfig :: [String] -> IO Config
+loadConfig args
+ = do   
+        batchModeArg    <- newIORef False
+        benchModeArg    <- newIORef False
+        framesModeArg   <- newIORef False
+        maxStepsArg     <- newIORef 0
+        widthArg        <- newIORef 100
+        itersArg        <- newIORef 40
+        scaleArg        <- newIORef 5
+        rateArg         <- newIORef 25
+        deltaArg        <- newIORef 0.1
+        diffArg         <- newIORef 0.00001
+        viscArg         <- newIORef 0
+        densArg         <- newIORef 100
+        velArg          <- newIORef (20, 20)
 
         | "-frames" : path : rest <- args
         = parseArgs rest
@@ -54,9 +68,8 @@ parseArgs args config
         = parseArgs rest
         $ config { configRate           = read int }
 
-        | "-delta" : float : rest <- args
-        = parseArgs rest
-        $ config { configDelta          = read float }
+                Option [] ["iters"]             (ReqArg setItersArg     "INT")
+                        "Iterations for the linear solver (20)",
 
         | "-diff" : float : rest <- args
         = parseArgs rest
@@ -71,14 +84,15 @@ parseArgs args config
         = parseArgs rest
         $ config { configVisc           = read float }
 
-        | "-user-dens" : float : rest <- args
-        = parseArgs rest
-        $ config { configDensity        = read float }
+                Option [] ["diffusion"]         (ReqArg setDiffArg      "FLOAT")
+                        "Diffusion rate for the density (0)",
 
         | "-user-velo" : float : rest <- args
         = parseArgs rest
         $ config { configVisc           = read float }
 
+                Option [] ["viscosity"]         (ReqArg setViscArg      "FLOAT")
+                        "Viscosity rate for the velocity (0)",
 
         -- Initial Confditions ----------------------------------------------------
         | "-dens-bmp" : filePath : rest <- args
