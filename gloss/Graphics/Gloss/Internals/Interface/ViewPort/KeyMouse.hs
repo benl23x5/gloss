@@ -1,5 +1,5 @@
 {-# OPTIONS_HADDOCK hide #-}
-{-# LANGUAGE PatternGuards #-}
+{-# LANGUAGE PatternGuards, RankNTypes #-}
 
 module Graphics.Gloss.Internals.Interface.ViewPort.KeyMouse
 	(callback_viewPort_keyMouse)
