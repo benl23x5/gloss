@@ -25,7 +25,8 @@ velocitySteps config _step vf vs
         vf1     <- addSources   (configDelta config) (configVelocity config)  
                                 vs vf
 
-        vf2     <- diffusion    (configIters config) (configDelta config) (configVisc config) 
+        let diffSolver = DiffStable (configIters config)
+        vf2     <- diffusion    diffSolver (configDelta config) (configVisc config) 
                                 vf1 
 --      vf3     <- setBoundary vf2
 

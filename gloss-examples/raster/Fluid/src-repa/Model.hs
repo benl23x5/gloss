@@ -70,6 +70,7 @@ data Model
         , clickLoc       :: Maybe (Int, Int)
         , stepsPassed    :: Int
         , currButton     :: CurrentButton
+        , drawVelocity   :: Bool
         }
 
 
@@ -91,7 +92,8 @@ initModel density velocity
         , velocitySource = Nothing
         , clickLoc       = Nothing
         , stepsPassed    = 0
-        , currButton     = None }
+        , currButton     = None
+        , drawVelocity   = False }
 {-# INLINE initModel #-}
 
 
@@ -107,10 +109,32 @@ pictureOfModel (scaleX, scaleY) m
         (arrDensity :: Array F DIM2 Word32)
          <- computeP $ R.map pixel32OfDensity $ densityField m
 
-        return  $ G.Scale scaleX scaleY
-                $ G.bitmapOfForeignPtr width height
+        let picVel :: G.Picture
+            picVel  
+             | drawVelocity m
+             = G.Translate (- width / 2) (- height / 2)
+                    $ G.Color (G.light $ G.light G.red)
+                    $ G.Pictures
+                        [ G.Line [(xf, yf), (xf + vx', yf + vy')]
+                        | x <- [0, 5 .. width'  - 1]
+                        , y <- [0, 5 .. height' - 1]
+                        , let xf         = fromIntegral x
+                        , let yf         = fromIntegral y 
+                        , let (vx0, vy0) = velocityField m R.! (Z :. y :. x) 
+                        , let vx'        = vx0 * 100
+                        , let vy'        = vy0 * 100 ]
+
+             | otherwise
+             = G.blank
+
+        let picDens :: G.Picture
+            picDens = G.bitmapOfForeignPtr width' height'
                         (R.toForeignPtr $ unsafeCoerce arrDensity)
                         False
+
+        return  $ G.Scale scaleX scaleY
+                $ G.pictures    [picDens, picVel ]
+
 {-# NOINLINE pictureOfModel #-}
 
 

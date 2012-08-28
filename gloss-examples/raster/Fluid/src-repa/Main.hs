@@ -78,7 +78,7 @@ runBatchMode config model
 
 -- Function to step simulator one step forward in time
 stepFluid :: Config -> Model -> IO Model
-stepFluid config m@(Model df ds vf vs cl step cb)
+stepFluid config m@(Model df ds vf vs cl step dv cb)
   | step                  >= configMaxSteps config
   , configMaxSteps config >  0  
   = return m
@@ -87,5 +87,5 @@ stepFluid config m@(Model df ds vf vs cl step cb)
   = do  performGC
         vf'     <- velocitySteps config step vf vs
         df'     <- densitySteps  config step df ds vf'
-        return  $ Model df' Nothing vf' Nothing cl (step + 1) cb
+        return  $ Model df' Nothing vf' Nothing cl (step + 1) dv cb
 

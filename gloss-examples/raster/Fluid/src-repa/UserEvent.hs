@@ -11,109 +11,74 @@ import Graphics.Gloss.Interface.Pure.Game       as G
 userEvent :: Config -> Event -> Model -> Model
 userEvent config
         (EventKey key keyState mods (x, y)) 
-        (Model df ds vf vs cl sp _cb)
+        model
 
         -- Add velocity ---------------------------------------------
         | MouseButton G.RightButton     <- key
         , Down                          <- keyState
         , (x',y')                       <- windowToModel config (x,y)
-        = Model { densityField   = df
-                , densitySource  = ds
-                , velocityField  = vf
-                , velocitySource = vs
-                , clickLoc       = Just (x',y')
-                , stepsPassed    = sp
-                , currButton     = M.RightButton
-                }
+        = model { clickLoc       = Just (x',y')
+                , currButton     = M.RightButton }
 
         -- Accept shift-leftbutton for people with trackpads
         | MouseButton G.LeftButton      <- key
         , Down                          <- keyState
         , Down                          <- shift mods
         , (x',y')                       <- windowToModel config (x,y)
-        = Model { densityField   = df
-                , densitySource  = ds
-                , velocityField  = vf
-                , velocitySource = vs
-                , clickLoc       = Just (x',y')
-                , stepsPassed    = sp
-                , currButton     = M.RightButton
-                }
+        = model { clickLoc       = Just (x',y')
+                , currButton     = M.RightButton }
 
         | MouseButton G.RightButton     <- key
         , Up                            <- keyState
-        , Just (locX, locY)             <- cl
+        , Just (locX, locY)             <- clickLoc model
         , (x',y')                       <- windowToModel config (x,y)
-        =  Model { densityField   = df
-                 , densitySource  = ds
-                 , velocityField  = vf
-                 , velocitySource = Just (SourceDensity (Z:.locY:.locX)
+        = model { velocitySource = Just (SourceDensity (Z:.locY:.locX)
                                          (fromIntegral (locX-x'),fromIntegral (locY-y')))
                  , clickLoc       = Nothing
-                 , stepsPassed    = sp
-                 , currButton     = M.None
-                 }
-
+                 , currButton     = M.None }
 
         -- Add density ----------------------------------------------
         | MouseButton G.LeftButton <- key
         , Down                          <- keyState
         , (x',y')                       <- windowToModel config (x, y) 
-        = Model { densityField   = df
-                , densitySource  = Just (SourceDensity (Z:.y':.x') 1)
-                , velocityField  = vf
-                , velocitySource = vs
-                , clickLoc       = cl
-                , stepsPassed    = sp
-                , currButton     = M.LeftButton
-                }
+        = model { densitySource  = Just (SourceDensity (Z:.y':.x') 1)
+                , currButton     = M.LeftButton }
 
         | MouseButton G.LeftButton <- key
         , Up                       <- keyState
-        = Model { densityField   = df
-                , densitySource  = ds
-                , velocityField  = vf
-                , velocitySource = vs
-                , clickLoc       = cl
-                , stepsPassed    = sp
-                , currButton     = M.None
-                }
+        = model { currButton = M.None }
 
-
-        -- Reset model ----------------------------------------------
+        -- Reset model 
         | Char 'r' <- key
         , Down     <- keyState
         = initModel (configInitialDensity config)
                     (configInitialVelocity config)
 
-        -- Quit program ---------------------------------------------
+        -- Toggle velocity display
+        | Char 'v' <- key
+        , Down     <- keyState
+        = model { drawVelocity = not $ drawVelocity model }
+
+        -- Quit program 
         | Char 'q' <- key
         , Down     <- keyState
         = error "Quitting"
 
 
-userEvent config (EventMotion (x, y)) 
-        (Model df _ds vf vs cl sp M.LeftButton)
-        | (x',y')                       <- windowToModel config (x, y) 
-        = Model { densityField   = df
-                , densitySource  = Just (SourceDensity (Z:.y':.x') 1)
-                , velocityField  = vf
-                , velocitySource = vs
-                , clickLoc       = cl
-                , stepsPassed    = sp
+userEvent config (EventMotion (x, y)) model
+        | M.LeftButton  <- currButton model
+        , (x',y')       <- windowToModel config (x, y) 
+        = model { densitySource  = Just (SourceDensity (Z:.y':.x') 1)
                 , currButton     = M.LeftButton
                 }
 
-userEvent config (EventMotion (x, y)) 
-          (Model df ds vf _vs (Just (clx, cly)) sp M.RightButton)
-        | (x', y')                      <- windowToModel config (x,y)
-        = Model { densityField   = df
-                , densitySource  = ds
-                , velocityField  = vf
-                , velocitySource = Just (SourceDensity (Z:.y':.x')
+userEvent config (EventMotion (x, y)) model
+        | (x', y')              <- windowToModel config (x,y)
+        , Just (clx, cly)       <- clickLoc model
+        , M.RightButton         <- currButton model
+        = model { velocitySource = Just (SourceDensity (Z:.y':.x')
                                         (fromIntegral (clx-x'), fromIntegral (cly-y')))
                 , clickLoc       = Just (x',y')
-                , stepsPassed    = sp
                 , currButton     = M.RightButton
                 }
 

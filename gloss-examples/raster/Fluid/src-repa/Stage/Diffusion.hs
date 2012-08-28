@@ -1,6 +1,7 @@
 {-# LANGUAGE BangPatterns #-}
 module Stage.Diffusion
-        (diffusion)
+        ( DiffSolver    (..)
+        , diffusion)
 where
 import Model
 import FieldElt
@@ -10,30 +11,40 @@ import Data.Array.Repa.Eval     as R
 import Data.Vector.Unboxed
 
 
+data DiffSolver
+        = DiffStable Int
+        | DiffUnstable
+
+
 -- | Diffuse a field at a certain rate.
 diffusion 
         :: (FieldElt a, Num a, Elt a, Unbox a) 
-        => Int
+        => DiffSolver
         -> Delta 
         -> Rate
         -> Field a 
         -> IO (Field a)
-diffusion !iters !delta !rate field 
+diffusion !solver !delta !rate field 
  = {-# SCC diffusion #-}
    field `deepSeqArray`  
    let  _ :. _ :. width' = R.extent field
         !width           = fromIntegral width'
-        !a               = delta * rate * width * width
-        !c               = 1 + 4 * a
-   in do
-        linearSolver field field a c iters
+   in   case solver of
+         DiffUnstable
+          -> let !a     = delta * rate * width * width
+             in   unstableSolver field field a
+
+         DiffStable iters
+          -> let !a     = delta * rate * width * width
+                 !c     = 1 + 4 * a
+             in  linearSolver field field a c iters
 
 {-# SPECIALIZE diffusion 
-        :: Int -> Delta -> Rate
+        :: DiffSolver -> Delta -> Rate
         -> Field Float 
         -> IO (Field Float) #-}
 
 {-# SPECIALIZE diffusion 
-        :: Int -> Delta -> Rate
+        :: DiffSolver -> Delta -> Rate
         -> Field (Float, Float) 
         -> IO (Field (Float, Float)) #-}

@@ -27,7 +27,12 @@ densitySteps config step df ds vf
                      then 0.0005
                      else configDiff config
 
-        df2     <- diffusion    (configIters config) (configDelta config) diff
+        let diffSolver
+                = if configUnstable config
+                        then DiffUnstable
+                        else DiffStable (configIters config)
+
+        df2     <- diffusion    diffSolver (configDelta config) diff
                                 df1
 
         df'     <- advection    (configDelta config) vf df2

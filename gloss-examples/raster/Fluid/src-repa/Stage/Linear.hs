@@ -1,6 +1,7 @@
 {-# LANGUAGE FlexibleContexts, BangPatterns #-}
 module Stage.Linear
-        (linearSolver)
+        ( linearSolver
+        , unstableSolver)
 where
 import Model
 import FieldElt                         as E
@@ -12,6 +13,7 @@ import Data.Vector.Unboxed
 import Prelude as P
 
 
+-------------------------------------------------------------------------------
 linearSolver 
         :: (FieldElt a, Source U a, Unbox a, Elt a, Num a, Show a)
         => Field a      -- ^ Original field.
@@ -83,4 +85,64 @@ linearSolverCoeffs (Z:.j:.i)
    | i ==  0, j == -1 = Just 1
    | otherwise        = Nothing
 {-# INLINE linearSolverCoeffs #-}
+
+
+-- Unstable -------------------------------------------------------------------
+unstableSolver 
+        :: (FieldElt a, Source U a, Unbox a, Elt a, Num a, Show a)
+        => Field a      -- ^ Original field.
+        -> Field a      -- ^ Current field.
+        -> Float
+        -> IO (Field a)
+
+unstableSolver !origField !curField !a
+ = origField `deepSeqArray` curField `deepSeqArray` 
+   do   
+        let {-# INLINE zipFunc #-}
+            zipFunc !orig !new
+                = orig ~+~ (new ~*~ a)
+
+        newField        
+                <- computeUnboxedP
+                $  R.szipWith zipFunc origField
+                $  mapStencil2 (BoundConst 0) unstableSolverStencil curField
+
+        return newField
+
+
+{-# SPECIALIZE unstableSolver 
+        :: Field Float
+        -> Field Float 
+        -> Float
+        -> IO (Field Float) #-}
+
+{-# SPECIALIZE unstableSolver 
+        :: Field (Float, Float) 
+        -> Field (Float, Float) 
+        -> Float
+        -> IO (Field (Float, Float)) #-}
+
+
+unstableSolverStencil
+        :: FieldElt a
+        => Stencil DIM2 a
+
+unstableSolverStencil
+ = StencilStatic (Z:.3:.3) E.zero
+      (\ix val acc ->
+         case unstableSolverCoeffs ix of
+            Nothing    -> acc
+            Just coeff -> acc ~+~ (val ~*~ coeff))
+{-# INLINE unstableSolverStencil #-}
+
+
+unstableSolverCoeffs :: DIM2 -> Maybe Float
+unstableSolverCoeffs (Z:.j:.i)
+    | i == 1,  j == 0   = Just 1
+    | i == -1, j == 0   = Just 1
+    | i == 0,  j == 1   = Just 1
+    | i == 0,  j == -1  = Just 1
+    | i == 0,  j == 0   = Just (-4)
+    | otherwise         = Nothing
+{-# INLINE unstableSolverCoeffs #-}
 

@@ -27,6 +27,9 @@ data Config
           -- | Window scale.
         , configScale           :: (Int, Int)
 
+          -- | Use the unstable linear solver.
+        , configUnstable        :: !Bool
+
           -- | Number of iterations to use in the linear solver
         , configIters           :: !Int
 
