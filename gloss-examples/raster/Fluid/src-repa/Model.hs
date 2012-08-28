@@ -101,7 +101,7 @@ initModel density velocity
 -- | Function to convert the Model into a Bitmap for displaying in Gloss
 pictureOfModel :: Monad m => (Float, Float) -> Model -> m G.Picture
 pictureOfModel (scaleX, scaleY) m 
- = let  (Z :. width' :. height') = R.extent $ densityField m
+ = let  (Z :. height' :. width') = R.extent $ densityField m
         width           = fromIntegral width'
         height          = fromIntegral height'
 

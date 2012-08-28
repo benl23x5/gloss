@@ -26,11 +26,11 @@ import Control.Monad
 main :: IO ()
 main 
  = do   -- Parse the command-line arguments.
-        args            <- getArgs
-        config          <- parseArgs args configDefault
+        args                    <- getArgs
+        config                  <- parseArgs args configDefault
 
         -- Setup the initial fluid model.
-        let model       = initModel 
+        let model       = initModel
                                 (configInitialDensity  config)
                                 (configInitialVelocity config)
 

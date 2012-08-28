@@ -38,8 +38,12 @@ parseArgs args config
         | "-size" : width : height : rest <- args
         , all isDigit width
         , all isDigit height
+        , width'        <- read width
+        , height'       <- read height
         = parseArgs rest
-        $ config { configModelSize      = (read width, read height) }
+        $ config { configModelSize       = (width', height')
+                 , configInitialDensity  = makeDensField_empty width' height'
+                 , configInitialVelocity = makeVeloField_empty width' height' }
 
         | "-unstable" : rest    <- args
         = parseArgs rest
@@ -127,22 +131,22 @@ printUsage
  = putStr
  $ unlines
         [ "gloss-fluid [flags]"
-        , "  -batch                 Run a fixed number of steps instead of displaying in a window."
-        , "  -frames     <PATH.bmp> Dump all frames to .bmp files (implies -batch)"
-        , "  -max        <INT>      Quit after this number of steps."
-        , "  -width      <INT>      Size of simulation.                  (100)"
-        , "  -unstable              Use the unstable linear solver       (False)"
-        , "  -iters      <INT>      Iterations for the linear solver.    (40)"
-        , "  -scale      <INT>      Width of a cell in the window.       (5)"
-        , "  -rate       <INT>      Frame rate.                          (30)"
-        , "  -delta      <FLOAT>    Length of time step.                 (0.1)"
-        , "  -diff       <FLOAT>    Diffusion rate for the density.      (0)"
-        , "  -diff-after <INT>      Trigger diffusion after this step.   (0)"
-        , "  -visc       <FLOAT>    Diffusion rate for the velocity.     (0)"
-        , "  -user-dens  <FLOAT>    Magnitude of user inserted density.  (100)"
-        , "  -user-velo  <FLOAT>    Magnitude of user inserted velocity. (20)"
-        , "  -bmp-dens   <FILE.bmp> File for initial fluid density."
-        , "  -bmp-velo   <FILE.bmp> File for initial fluid velocity." 
+        , "  -batch                  Run a fixed number of steps instead of displaying in a window."
+        , "  -frames     <PATH.bmp>  Dump all frames to .bmp files (implies -batch)"
+        , "  -max        <INT>       Quit after this number of steps."
+        , "  -size       <INT> <INT> Size of simulation.                  (100)"
+        , "  -unstable               Use the unstable linear solver       (False)"
+        , "  -iters      <INT>       Iterations for the linear solver.    (40)"
+        , "  -scale      <INT>       Width of a cell in the window.       (5)"
+        , "  -rate       <INT>       Frame rate.                          (30)"
+        , "  -delta      <FLOAT>     Length of time step.                 (0.1)"
+        , "  -diff       <FLOAT>     Diffusion rate for the density.      (0)"
+        , "  -diff-after <INT>       Trigger diffusion after this step.   (0)"
+        , "  -visc       <FLOAT>     Diffusion rate for the velocity.     (0)"
+        , "  -user-dens  <FLOAT>     Magnitude of user inserted density.  (100)"
+        , "  -user-velo  <FLOAT>     Magnitude of user inserted velocity. (20)"
+        , "  -bmp-dens   <FILE.bmp>  File for initial fluid density."
+        , "  -bmp-velo   <FILE.bmp>  File for initial fluid velocity." 
         , "" ]
 
 
