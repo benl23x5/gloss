@@ -280,12 +280,15 @@ callbackKeyboard stateRef callbacks key keystate
                 <- setModifiers stateRef key keystate     
         let key'      = fromGLFW key
         let keystate' = if keystate then Down else Up
+        let isCharKey (Char _) = True
+            isCharKey _        = False
 
         -- Call the Gloss KeyMouse actions with the new state.
-        unless modsSet 
+        unless (modsSet || isCharKey key' && keystate)
          $ sequence_ 
          $ map  (\f -> f key' keystate' mods pos)
                 [f stateRef | KeyMouse f <- callbacks]
+
 
 setModifiers 
         :: IORef GLFWState
@@ -447,7 +450,8 @@ runMainLoopGLFW stateRef
  go :: IO ()
  go = do windowIsOpen <- GLFW.windowIsOpen
          when windowIsOpen 
-          $ do  dirty <- fmap dirtyScreen $ readIORef stateRef
+          $ do  GLFW.pollEvents
+                dirty <- fmap dirtyScreen $ readIORef stateRef
 
                 when dirty
                  $ do   s <- readIORef stateRef
