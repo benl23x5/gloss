@@ -255,9 +255,9 @@ Executable gloss-fluid
         base            == 4.*,
         gloss           == 1.7.*,
         vector          == 0.9.*,
-        repa            == 3.3.*,
-        repa-io         == 3.3.*,
-        repa-algorithms == 3.3.*,
+        repa            == 3.2.*,
+        repa-io         == 3.2.*,
+        repa-algorithms == 3.2.*,
         ghc-prim
   Main-is:        Main.hs
   other-modules:  
@@ -280,7 +280,7 @@ Executable gloss-snow
   Build-depends
         base            == 4.*,
         gloss           == 1.7.*,
-        repa            == 3.3.*,
+        repa            == 3.2.*,
   Main-is:      Main.hs
   hs-source-dirs: raster/Snow
   ghc-options:
@@ -295,7 +295,7 @@ Executable gloss-mandel
   Build-depends
         base            == 4.*,
         gloss           == 1.7.*,
-        repa            == 3.3.*
+        repa            == 3.2.*
   Main-is:        Main.hs
   other-modules:  Solver
   hs-source-dirs: raster/Mandel
