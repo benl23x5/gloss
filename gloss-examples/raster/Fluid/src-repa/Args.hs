@@ -10,11 +10,9 @@ import Data.Array.Repa.Algorithms.Pixel as R
 import Data.Array.Repa.IO.BMP           as R
 import qualified Data.Vector.Unboxed    as U
 import Prelude                          as P
-import System.Console.GetOpt
 import System.Exit
-import Control.Monad
-import Data.IORef
 import Data.Char
+
 
 parseArgs :: [String] -> Config -> IO Config
 parseArgs args config
@@ -147,6 +145,8 @@ printUsage
         , "  -user-velo  <FLOAT>     Magnitude of user inserted velocity. (20)"
         , "  -bmp-dens   <FILE.bmp>  File for initial fluid density."
         , "  -bmp-velo   <FILE.bmp>  File for initial fluid velocity." 
+        , ""
+        , "  Run this with   +RTS -N -qa -qg   to enable threads."
         , "" ]
 
 
@@ -181,9 +181,6 @@ loadDensBMP filePath
                         Right arr'      -> arr'
                         Left  err       -> error $ show err
 
-        let Z :. height' :. width' 
-                = extent arr
-
         density  <- computeUnboxedP 
                  $ R.map floatLuminanceOfRGB8 arr
 
@@ -197,9 +194,6 @@ loadVeloBMP filePath
         let arr  = case result of
                         Right arr'      -> arr'
                         Left err        -> error $ show err
-
-        let Z :. height' :. width' 
-                = extent arr
 
         let {-# INLINE conv #-}
             conv (r, g, _b) 
@@ -221,8 +215,7 @@ makeDensField_empty width height
 
 makeDensField_checks :: Int -> Int -> DensityField
 makeDensField_checks width height
- = let  width'  = fromIntegral width
-        height' = fromIntegral height
+ = let  height' = fromIntegral height
         xc      = fromIntegral (width  `div` 2)
         yc      = fromIntegral (height `div` 2)
                         
@@ -248,8 +241,7 @@ makeVeloField_empty width height
 
 makeVeloField_man :: Int -> Int -> VelocityField
 makeVeloField_man width height
- = let  width'  = fromIntegral width
-        height' = fromIntegral height
+ = let  height' = fromIntegral height
         xc      = fromIntegral (width  `div` 2)
         yc      = fromIntegral (height `div` 2)
                         
@@ -266,8 +258,7 @@ makeVeloField_man width height
 
 makeVeloField_elk :: Int -> Int -> VelocityField
 makeVeloField_elk width height
- = let  width'  = fromIntegral width
-        height' = fromIntegral height
+ = let  height' = fromIntegral height
         xc      = fromIntegral (width  `div` 2)
         yc      = fromIntegral (height `div` 2)
                         

@@ -5,7 +5,7 @@ module Config
 where
 import Model
 import Data.Array.Repa                  as R
-import qualified Data.Vector.Unboxed    as U
+
 
 data Config
         = Config

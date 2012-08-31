@@ -20,7 +20,6 @@ import System.Mem
 import System.Environment       (getArgs)
 import Data.Array.Repa.IO.Timing   as R
 import Prelude                     as P
-import Control.Monad
 
 
 main :: IO ()
