@@ -20,6 +20,9 @@ type Point	= (Float, Float)
 instance Num Point where
 	(+) (x1, y1) (x2, y2)	= (x1 + x2, y1 + y2)
  	(-) (x1, y1) (x2, y2)	= (x1 - x2, y1 - y2)
+        (*) (x1, y1) (x2, y2)   = (x1 * x2, y1 * y2)
+        signum (x, y)           = (signum x, signum y)
+        abs    (x, y)           = (abs x, abs y)
 	negate (x, y)		= (negate x, negate y)	
         fromInteger x           = (fromInteger x, fromInteger x)
 
