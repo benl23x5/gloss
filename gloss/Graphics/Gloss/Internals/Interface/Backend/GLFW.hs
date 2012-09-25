@@ -437,15 +437,7 @@ runMainLoopGLFW
         -> IO ()
 
 runMainLoopGLFW stateRef 
- = X.catch go recover
- where
- recover :: X.SomeException -> IO ()
- recover _ = do
-#ifdef linux_HOST_OS
--- See [Note: FreeGlut] for why we need this.
-        GLUT.exit
-#endif
-        return ()
+ = X.catch go (exitGLFW stateRef)
 
  go :: IO ()
  go = do windowIsOpen <- GLFW.windowIsOpen
