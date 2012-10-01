@@ -1,5 +1,5 @@
 Name:                gloss-raster
-Version:             1.7.6.1
+Version:             1.7.6.2
 License:             MIT
 License-file:        LICENSE
 Author:              Ben Lippmeier
@@ -21,8 +21,8 @@ Tested-with: GHC == 6.12.1, GHC == 7.0.1
 Library
   Build-Depends: 
         base       == 4.*,
-        ghc-prim   == 0.3.*,
-        containers >= 0.3.0 &&   < 0.6.0,
+        ghc-prim   >= 0.2 && < 0.4,
+        containers >= 0.3 && < 0.6,
         gloss      == 1.7.6.*,
         repa       == 3.2.*
 

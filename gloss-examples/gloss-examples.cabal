@@ -1,5 +1,5 @@
 Name:                gloss-examples
-Version:             1.7.6.1
+Version:             1.7.6.2
 License:             MIT
 License-file:        LICENSE
 Author:              Ben Lippmeier
@@ -148,8 +148,8 @@ Executable gloss-styrene
   Build-depends: 
         base            == 4.*,
         gloss           == 1.7.*,
-        containers      >= 0.3 && <= 0.6,
-        ghc-prim        == 0.3.*
+        containers      >= 0.3 && < 0.6,
+        ghc-prim        >= 0.2 && < 0.4
   Main-is:        Main.hs
   other-modules:  Actor Advance Collide Config Contact QuadTree World
   hs-source-dirs: picture/Styrene
@@ -240,7 +240,7 @@ Executable gloss-wave
         gloss          == 1.7.*,
         gloss-raster   == 1.7.6.*,
         vector         == 0.9.*,
-        ghc-prim       == 0.3.*
+        ghc-prim       >= 0.2 && < 0.4
   Main-is:        Main.hs
   hs-source-dirs: raster/Wave
   ghc-options:
@@ -258,7 +258,7 @@ Executable gloss-fluid
         repa            == 3.2.*,
         repa-io         == 3.2.*,
         repa-algorithms == 3.2.*,
-        ghc-prim        == 0.3.*
+        ghc-prim        >= 0.2 && < 0.4
   Main-is:        Main.hs
   other-modules:  
         Args Config FieldElt Model UserEvent
