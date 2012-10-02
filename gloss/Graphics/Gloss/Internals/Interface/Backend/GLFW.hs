@@ -437,23 +437,27 @@ runMainLoopGLFW
         -> IO ()
 
 runMainLoopGLFW stateRef 
- = X.catch go (exitGLFW stateRef)
+ = X.catch go exit
+ where
+  exit :: X.SomeException -> IO ()
+  exit _ = exitGLFW stateRef
 
- go :: IO ()
- go = do windowIsOpen <- GLFW.windowIsOpen
-         when windowIsOpen 
-          $ do  GLFW.pollEvents
-                dirty <- fmap dirtyScreen $ readIORef stateRef
+  go   :: IO ()
+  go 
+   = do windowIsOpen <- GLFW.windowIsOpen
+        when windowIsOpen 
+         $ do  GLFW.pollEvents
+               dirty <- fmap dirtyScreen $ readIORef stateRef
 
-                when dirty
-                 $ do   s <- readIORef stateRef
-                        display s
-                        GLFW.swapBuffers
+               when dirty
+                $ do   s <- readIORef stateRef
+                       display s
+                       GLFW.swapBuffers
 
-                modifyIORef stateRef $ \s -> s { dirtyScreen = False }
-                (readIORef stateRef) >>= (\s -> idle s)
-                GLFW.sleep 0.001
-                runMainLoopGLFW stateRef
+               modifyIORef stateRef $ \s -> s { dirtyScreen = False }
+               (readIORef stateRef) >>= (\s -> idle s)
+               GLFW.sleep 0.001
+               runMainLoopGLFW stateRef
 
 
 -- Redisplay ------------------------------------------------------------------
