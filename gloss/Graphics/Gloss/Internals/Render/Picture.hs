@@ -18,9 +18,10 @@ import Foreign.ForeignPtr
 import Data.IORef
 import Data.List
 import Control.Monad
-import Graphics.Rendering.OpenGL		(($=), get)
-import qualified Graphics.Rendering.OpenGL.GL	as GL
-import qualified Graphics.UI.GLUT		as GLUT
+import Graphics.Rendering.OpenGL	               	(($=), get)
+import qualified Graphics.Rendering.OpenGL.GL	        as GL
+import qualified Graphics.Rendering.OpenGL.GLU.Errors   as GLU
+import qualified Graphics.UI.GLUT		        as GLUT
 
 
 -- | Render a picture using the given render options and viewport.
@@ -58,6 +59,10 @@ renderPicture
 	setBlendAlpha	(stateBlendAlpha renderS)
 	
         drawPicture (viewPortScale viewS) picture
+
+        errors          <- get $ GLU.errors
+        when (not $ null errors)
+         $ error  $ concatMap explainError errors
 
 
 drawPicture
@@ -224,10 +229,37 @@ drawPicture circScale picture
 	Pictures ps
 	 -> mapM_ (drawPicture circScale) ps
 	
--- Textures ---------------------------------------------------------------------------------------
+-- Errors ---------------------------------------------------------------------
+explainError :: GLU.Error -> String
+explainError err
+ = case err of
+    GLU.Error GLU.StackOverflow _
+     -> unlines 
+      [ "Gloss / OpenGL Stack Overflow."
+      , "  This program uses the Gloss vector graphics library, which tried to"
+      , "  draw a picture using more nested transforms (Translate/Rotate/Scale)"
+      , "  than your OpenGL implementation supports. The OpenGL spec requires"
+      , "  all implementations to have a transform stack depth of at least 32,"
+      , "  and Gloss tries not to push the stack when it doesn't have to, but"
+      , "  that still wasn't enough."
+      , ""
+      , "  You should complain to your harware vendor that they don't provide"
+      , "  a better way to handle this situation at the OpenGL API level."
+      , ""
+      , "  To make this program work you'll need to reduce the number of nested"
+      , "  transforms used when defining the Picture given to Gloss. Sorry." ]
+
+    _ 
+     -> unlines 
+     [  "Gloss / OpenGL Internal Error. "
+     ,  "  Please report this on haskell-gloss@googlegroups.com."
+     ,  show err ]
+
+
+-- Textures -------------------------------------------------------------------
 -- | Load a texture.
---   If we've seen it before then use the pre-installed one from the texture cache,
---   otherwise load it into OpenGL.
+--   If we've seen it before then use the pre-installed one from the texture
+--   cache, otherwise load it into OpenGL.
 loadTexture
         :: IORef [Texture]
         -> Int -> Int -> BitmapData
@@ -308,7 +340,7 @@ freeTexture tex
 
 
 
--- Utils ------------------------------------------------------------------------------------------
+-- Utils ----------------------------------------------------------------------
 -- | Turn alpha blending on or off
 setBlendAlpha :: Bool -> IO ()
 setBlendAlpha state
