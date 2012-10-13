@@ -58,11 +58,9 @@ renderPicture
 	setLineSmooth	(stateLineSmooth renderS)
 	setBlendAlpha	(stateBlendAlpha renderS)
 	
+        checkErrors "before drawPicture."
         drawPicture (viewPortScale viewS) picture
-
-        errors          <- get $ GLU.errors
-        when (not $ null errors)
-         $ error  $ concatMap explainError errors
+        checkErrors "after drawPicture."
 
 
 drawPicture
@@ -230,12 +228,18 @@ drawPicture circScale picture
 	 -> mapM_ (drawPicture circScale) ps
 	
 -- Errors ---------------------------------------------------------------------
-explainError :: GLU.Error -> String
-explainError err
+checkErrors :: String -> IO ()
+checkErrors place
+ = do   errors          <- get $ GLU.errors
+        when (not $ null errors)
+         $ mapM_ (handleError place) errors
+
+handleError :: String -> GLU.Error -> IO ()
+handleError place err
  = case err of
     GLU.Error GLU.StackOverflow _
-     -> unlines 
-      [ "Gloss / OpenGL Stack Overflow."
+     -> error $ unlines 
+      [ "Gloss / OpenGL Stack Overflow " ++ show place
       , "  This program uses the Gloss vector graphics library, which tried to"
       , "  draw a picture using more nested transforms (Translate/Rotate/Scale)"
       , "  than your OpenGL implementation supports. The OpenGL spec requires"
@@ -249,9 +253,15 @@ explainError err
       , "  To make this program work you'll need to reduce the number of nested"
       , "  transforms used when defining the Picture given to Gloss. Sorry." ]
 
+    -- Issue #32: Spurious "Invalid Operation" errors under Windows 7 64-bit.
+    --   When using GLUT under Windows 7 it complains about InvalidOperation, 
+    --   but doesn't provide any other details. All the examples look ok, so 
+    --   we're just ignoring the error for now.
+    GLU.Error GLU.InvalidOperation _
+     -> return ()
     _ 
-     -> unlines 
-     [  "Gloss / OpenGL Internal Error. "
+     -> error $ unlines 
+     [  "Gloss / OpenGL Internal Error " ++ show place
      ,  "  Please report this on haskell-gloss@googlegroups.com."
      ,  show err ]
 
