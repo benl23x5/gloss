@@ -24,13 +24,16 @@ module Graphics.Gloss.Raster.Array
           -- * Display functions
         , Display       (..)
         , animateArray
-        , playArray)
+        , playArray
+        , animateArrayIO
+        , playArrayIO)
 where
 import Graphics.Gloss.Data.Color
 import Graphics.Gloss.Data.Picture
 import Graphics.Gloss.Data.Display
 import Graphics.Gloss.Interface.Pure.Game
 import Graphics.Gloss.Interface.IO.Animate
+import Graphics.Gloss.Interface.IO.Game
 import Data.Word
 import System.IO.Unsafe
 import Unsafe.Coerce
@@ -90,6 +93,35 @@ animateArray display scale@(scaleX, scaleY) makeArray
 --  INLINE so the repa functions fuse with the users client functions.
 
 
+-- AnimateIO --------------------------------------------------------------------
+-- | Animate a bitmap generated from a Repa array, via the IO monad.
+animateArrayIO
+        :: Display                      
+                -- ^ Display mode.
+        -> (Int, Int)
+                -- ^ Number of pixels to draw per element.
+        -> (Float -> IO (Array D DIM2 Color))
+                -- ^ A function to construct a delayed array for the given time.
+                --   The function should return an array of the same extent each 
+                --   time it is applied.
+                --
+                --   It is passed the time in seconds since the program started.
+        -> IO ()
+        
+animateArrayIO display scale@(scaleX, scaleY) makeArray
+ = scaleX `seq` scaleY `seq`
+ if scaleX < 1 || scaleY < 1
+   then error $ "Graphics.Gloss.Raster.Array: invalid pixel scale factor "
+                P.++ show (scaleX, scaleY)
+   else let {-# INLINE frame #-}
+            frame !time          = fmap (makeFrame scale) (makeArray time)
+        in  animateFixedIO display black frame
+{-# INLINE animateArrayIO #-}
+--  INLINE so the repa functions fuse with the users client functions.
+
+
+
+
 -- Play -----------------------------------------------------------------------
 -- | Play with a bitmap generated from a Repa array.
 playArray
@@ -124,6 +156,43 @@ playArray !display scale@(scaleX, scaleY) !stepRate !initWorld !makeArray !handl
                         handleEvent
                         stepWorld
 {-# INLINE playArray #-}
+
+
+
+-- PlayIO -----------------------------------------------------------------------
+-- | Play with a bitmap generated from a Repa array, via the IO monad.
+playArrayIO
+        :: Display                      
+                -- ^ Display mode.
+        -> (Int, Int)   
+                -- ^ Number of pixels to draw per element.
+        -> Int  -- ^ Number of simulation steps to take
+                --   for each second of real time
+        -> world 
+                -- ^ The initial world.
+        -> (world -> IO (Array D DIM2 Color))
+                -- ^ Function to convert the world to an array.
+        -> (Event -> world -> IO world)    
+                -- ^ Function to handle input events.
+        -> (Float -> world -> IO world)    
+                -- ^ Function to step the world one iteration.
+                --   It is passed the time in seconds since the program started.
+        -> IO ()
+playArrayIO !display scale@(scaleX, scaleY) !stepRate !initWorld !makeArray !handleEvent !stepWorld
+ = scaleX `seq` scaleY `seq`
+   if scaleX < 1 || scaleY < 1
+     then  error $ "Graphics.Gloss.Raster.Array: invalid pixel scale factor " 
+                 P.++ show scale
+     else  let  {-# INLINE frame #-}
+                frame !world    = fmap (makeFrame scale) (makeArray world)
+
+           in  playIO display black
+                        stepRate 
+                        initWorld
+                        frame
+                        handleEvent
+                        stepWorld
+{-# INLINE playArrayIO #-}
 
 
 -- Frame ----------------------------------------------------------------------
