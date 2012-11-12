@@ -1,6 +1,4 @@
-
 {-# LANGUAGE BangPatterns, MagicHash, PatternGuards, ScopedTypeVariables #-}
-
 -- | Rendering of Repa arrays as raster images.
 --
 --  Gloss programs should be compiled with @-threaded@, otherwise the GHC runtime
@@ -42,6 +40,7 @@ import Data.Bits
 import Data.Array.Repa                          as R
 import Data.Array.Repa.Repr.ForeignPtr          as R
 import Prelude                                  as P
+
 
 -- Color ----------------------------------------------------------------------
 -- | Construct a color from red, green, blue components.
@@ -120,8 +119,6 @@ animateArrayIO display scale@(scaleX, scaleY) makeArray
 --  INLINE so the repa functions fuse with the users client functions.
 
 
-
-
 -- Play -----------------------------------------------------------------------
 -- | Play with a bitmap generated from a Repa array.
 playArray
@@ -141,7 +138,8 @@ playArray
                 -- ^ Function to step the world one iteration.
                 --   It is passed the time in seconds since the program started.
         -> IO ()
-playArray !display scale@(scaleX, scaleY) !stepRate !initWorld !makeArray !handleEvent !stepWorld
+playArray !display scale@(scaleX, scaleY) !stepRate
+          !initWorld !makeArray !handleEvent !stepWorld
  = scaleX `seq` scaleY `seq`
    if scaleX < 1 || scaleY < 1
      then  error $ "Graphics.Gloss.Raster.Array: invalid pixel scale factor " 
@@ -156,7 +154,6 @@ playArray !display scale@(scaleX, scaleY) !stepRate !initWorld !makeArray !handl
                         handleEvent
                         stepWorld
 {-# INLINE playArray #-}
-
 
 
 -- PlayIO -----------------------------------------------------------------------
@@ -178,7 +175,8 @@ playArrayIO
                 -- ^ Function to step the world one iteration.
                 --   It is passed the time in seconds since the program started.
         -> IO ()
-playArrayIO !display scale@(scaleX, scaleY) !stepRate !initWorld !makeArray !handleEvent !stepWorld
+playArrayIO !display scale@(scaleX, scaleY) !stepRate
+            !initWorld !makeArray !handleEvent !stepWorld
  = scaleX `seq` scaleY `seq`
    if scaleX < 1 || scaleY < 1
      then  error $ "Graphics.Gloss.Raster.Array: invalid pixel scale factor " 
@@ -196,14 +194,12 @@ playArrayIO !display scale@(scaleX, scaleY) !stepRate !initWorld !makeArray !han
 
 
 -- Frame ----------------------------------------------------------------------
-{-# INLINE makeFrame #-}
 makeFrame :: (Int, Int) -> Array D DIM2 Color -> Picture
 makeFrame (scaleX, scaleY) !array
  = let  -- Size of the array
         _ :. sizeY :. sizeX 
                          = R.extent array
 
-        {-# INLINE convColor #-} 
         convColor :: Color -> Word32
         convColor color
          = let  (r, g, b) = unpackColor color
@@ -217,6 +213,7 @@ makeFrame (scaleX, scaleY) !array
                          .|. unsafeShiftL b' 8
                          .|. a
            in   w
+        {-# INLINE convColor #-} 
 
    in unsafePerformIO $ do
 
@@ -237,28 +234,30 @@ makeFrame (scaleX, scaleY) !array
                         False           -- don't cache this in texture memory.
 
         return picture
+{-# INLINE makeFrame #-}
 
 
 -- | Float to Word8 conversion because the one in the GHC libraries
 --   doesn't have enout specialisations and goes via Integer.
-{-# INLINE word8OfFloat #-}
 word8OfFloat :: Float -> Word8
 word8OfFloat f
         = fromIntegral (truncate f :: Int) 
+{-# INLINE word8OfFloat #-}
 
 
-{-# INLINE unpackColor #-}
 unpackColor :: Color -> (Word8, Word8, Word8)
 unpackColor c
         | (r, g, b, _) <- rgbaOfColor c
         = ( word8OfFloat (r * 255)
           , word8OfFloat (g * 255)
           , word8OfFloat (b * 255))
+{-# INLINE unpackColor #-}
 
-{-# INLINE sizeOfDisplay #-}
+
 sizeOfDisplay :: Display -> (Int, Int)
 sizeOfDisplay display
  = case display of
         InWindow _ s _  -> s
         FullScreen s    -> s
+{-# INLINE sizeOfDisplay #-}
 

@@ -118,7 +118,8 @@ playField
                 -- ^ Function to step the world one iteration.
                 --   It is passed the time in seconds since the program started.
         -> IO ()
-playField !display (zoomX, zoomY) !stepRate !initWorld !makePixel !handleEvent !stepWorld
+playField !display (zoomX, zoomY) !stepRate
+          !initWorld !makePixel !handleEvent !stepWorld
  = zoomX `seq` zoomY `seq`
    if zoomX < 1 || zoomY < 1
      then  error $ "Graphics.Gloss.Raster.Field: invalid pixel scale factor " 
@@ -231,15 +232,16 @@ makeFrame !sizeX !sizeY !makePixel
 
 -- | Float to Word8 conversion because the one in the GHC libraries
 --   doesn't have enout specialisations and goes via Integer.
-{-# INLINE word8OfFloat #-}
 word8OfFloat :: Float -> Word8
 word8OfFloat f
         = fromIntegral (truncate f :: Int) 
+{-# INLINE word8OfFloat #-}
 
-{-# INLINE unpackColor #-}
+
 unpackColor :: Color -> (Word8, Word8, Word8)
 unpackColor c
         | (r, g, b, _) <- rgbaOfColor c
         = ( word8OfFloat (r * 255)
           , word8OfFloat (g * 255)
           , word8OfFloat (b * 255))
+{-# INLINE unpackColor #-}
