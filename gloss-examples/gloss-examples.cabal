@@ -1,5 +1,5 @@
 Name:                gloss-examples
-Version:             1.7.7.1
+Version:             1.7.7.2
 License:             MIT
 License-file:        LICENSE
 Author:              Ben Lippmeier
@@ -20,8 +20,8 @@ Synopsis:
 Executable gloss-bitmap
   Build-depends:
         base           == 4.*,
+        bytestring     == 0.10.*,
         gloss          == 1.7.*,
-        bytestring     >= 0.9 && < 0.11,
         bmp            == 1.2.*
   Main-is: Main.hs
   hs-source-dirs: picture/Bitmap
@@ -51,7 +51,7 @@ Executable gloss-conway
   Build-depends: 
         base            == 4.*,
         gloss           == 1.7.*,
-        vector          >= 0.7 && < 1.0
+        vector          == 0.10.*
   Main-is:        Main.hs
   other-modules:  Cell World
   hs-source-dirs: picture/Conway
@@ -147,9 +147,9 @@ Executable gloss-occlusion
 Executable gloss-styrene
   Build-depends: 
         base            == 4.*,
+        ghc-prim        >= 0.2 && < 0.4,
         gloss           == 1.7.*,
-        containers      >= 0.3 && < 0.6,
-        ghc-prim        >= 0.2 && < 0.4
+        containers      == 0.5.*
   Main-is:        Main.hs
   other-modules:  Actor Advance Collide Config Contact QuadTree World
   hs-source-dirs: picture/Styrene
@@ -168,8 +168,8 @@ Executable gloss-tree
 Executable gloss-visibility
   Build-depends: 
         base            == 4.*, 
-        gloss           == 1.7.*,
-        vector          >= 0.7 && < 1.0
+        vector          == 0.10.*,
+        gloss           == 1.7.*
   Main-is:        Main.hs
   other-modules:  Draw Interface State World Geometry.Randomish Geometry.Segment
   hs-source-dirs: picture/Visibility 
@@ -237,10 +237,10 @@ Executable gloss-pulse
 Executable gloss-wave
   Build-depends:
         base           == 4.*,
+        ghc-prim       >= 0.2 && < 0.4,
+        vector         == 0.10.*,
         gloss          == 1.7.*,
-        gloss-raster   == 1.7.7.*,
-        vector         == 0.9.*,
-        ghc-prim       >= 0.2 && < 0.4
+        gloss-raster   == 1.7.7.*
   Main-is:        Main.hs
   hs-source-dirs: raster/Wave
   ghc-options:
@@ -253,12 +253,12 @@ Executable gloss-wave
 Executable gloss-fluid
   Build-depends:
         base            == 4.*,
+        ghc-prim        >= 0.2 && < 0.4,
+        vector          == 0.10.*,
         gloss           == 1.7.*,
-        vector          == 0.9.*,
         repa            == 3.2.*,
         repa-io         == 3.2.*,
-        repa-algorithms == 3.2.*,
-        ghc-prim        >= 0.2 && < 0.4
+        repa-algorithms == 3.2.*
   Main-is:        Main.hs
   other-modules:  
         Args Config FieldElt Model UserEvent
