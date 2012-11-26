@@ -9,25 +9,25 @@ where
 data State	
  = 	State
 	{ -- | The iteration number we're up to.
-	  stateIteration	:: Integer
+	  stateIteration	:: !Integer
 
 	-- | Whether the animation is free-running (or single step)
-	, stateRun		:: Bool
+	, stateRun		:: !Bool
 
 	-- | Signals to callbackIdle to take a single step of the automation.
-	, stateStep		:: Bool
+	, stateStep		:: !Bool
 
 	-- | Signals to callbackIdle to roll-back to the initial world.
-	, stateReset		:: Bool
+	, stateReset		:: !Bool
 		
 	-- | How many simulation setps to take for each second of real time
-	, stateResolution	:: Int 
+	, stateResolution	:: !Int 
 	
 	-- | How many seconds worth of simulation we've done so far
-	, stateSimTime		:: Float
+	, stateSimTime		:: !Float
 	
 	-- | Record how many steps we've been taking per frame
-	, stateStepsPerFrame 	:: Int  }
+	, stateStepsPerFrame 	:: !Int  }
 	
 
 -- | Initial control state

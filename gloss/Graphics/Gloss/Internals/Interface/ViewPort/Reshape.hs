@@ -23,5 +23,6 @@ viewPort_reshape stateRef (width,height)
 	--	This controls what part of the window openGL renders to.
 	--	We'll use the whole window.
 	--
- 	GL.viewport 	$= (GL.Position 0 0, GL.Size (fromIntegral width) (fromIntegral height))
+ 	GL.viewport 	$= ( GL.Position 0 0
+                           , GL.Size (fromIntegral width) (fromIntegral height))
 	postRedisplay stateRef

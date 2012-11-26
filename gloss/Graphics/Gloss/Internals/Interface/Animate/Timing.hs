@@ -34,13 +34,12 @@ animateBegin stateRef backendRef
 		, stateDisplayTimeLast	= displayTimeLast }
 
 	-- increment the animation time
-	animate		<- stateRef `getsIORef` stateAnimate
+	animate         <- stateRef `getsIORef` stateAnimate
         animateCount    <- stateRef `getsIORef` stateAnimateCount
 	animateTime	<- stateRef `getsIORef` stateAnimateTime
 	animateStart	<- stateRef `getsIORef` stateAnimateStart
 
-{-
-        when (animateCount `mod` 5 == 0)
+{-      when (animateCount `mod` 5 == 0)
          $  putStr  $  "  displayTime        = " ++ show displayTime                ++ "\n"
                     ++ "  displayTimeLast    = " ++ show displayTimeLast            ++ "\n"
                     ++ "  displayTimeElapsed = " ++ show displayTimeElapsed         ++ "\n"

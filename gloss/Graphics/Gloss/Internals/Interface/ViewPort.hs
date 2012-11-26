@@ -9,13 +9,13 @@ where
 data ViewPort
 	= ViewPort { 
 	-- | Global translation.
-	  viewPortTranslate	:: (Float, Float)
+	  viewPortTranslate	:: !(Float, Float)
 
 	-- | Global rotation (in degrees).
-	, viewPortRotate	:: Float		
+	, viewPortRotate	:: !Float		
 
 	-- | Global scaling (of both x and y coordinates).
-	, viewPortScale		:: Float		
+	, viewPortScale		:: !Float		
 	}
 	
 	

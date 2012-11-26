@@ -10,33 +10,33 @@ data State
 	= State
 	{
 	-- | Whether the animation is running.
-	  stateAnimate			:: Bool
+	  stateAnimate			:: !Bool
 
         -- | How many times we've entered the animation loop.
-        , stateAnimateCount             :: Integer
+        , stateAnimateCount             :: !Integer
 
 	-- | Whether this is the first frame of the animation.
-	, stateAnimateStart		:: Bool
+	, stateAnimateStart		:: !Bool
 
 	-- | Number of msec the animation has been running for
-	, stateAnimateTime		:: Double
+	, stateAnimateTime		:: !Double
 
 	-- | The time when we entered the display callback for the current frame.
-	, stateDisplayTime		:: Double
-	, stateDisplayTimeLast		:: Double
+	, stateDisplayTime		:: !Double
+	, stateDisplayTimeLast		:: !Double
 
 	-- | Clamp the minimum time between frames to this value (in seconds)
         --      Setting this to < 10ms probably isn't worthwhile.
-	, stateDisplayTimeClamp		:: Double
+	, stateDisplayTimeClamp		:: !Double
 							
 	-- | The time when the last call to the users render function finished.
-	, stateGateTimeStart		:: Double
+	, stateGateTimeStart		:: !Double
 
 	-- | The time when displayInWindow last finished (after sleeping to clamp fps).
-	, stateGateTimeEnd		:: Double
+	, stateGateTimeEnd		:: !Double
 	
 	-- | How long it took to draw this frame
-	, stateGateTimeElapsed		:: Double }
+	, stateGateTimeElapsed		:: !Double }
 
 
 stateInit :: State

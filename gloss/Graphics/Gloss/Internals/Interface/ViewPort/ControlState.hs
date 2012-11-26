@@ -17,21 +17,21 @@ data State
 	-- | The command list for the viewport controller.
 	--	These can be safely overwridden at any time by deleting / adding entries to the list.
 	--	Entries at the front of the list take precedence.
-	  stateCommands		:: Map Command [(Key, Maybe Modifiers)]
+	  stateCommands		:: !(Map Command [(Key, Maybe Modifiers)])
 
 	-- | How much to scale the world by for each step of the mouse wheel.
-	, stateScaleStep	:: Float	
+	, stateScaleStep	:: !Float	
 							
 	-- | How many degrees to rotate the world by for each pixel of x motion.
-	, stateRotateFactor	:: Float
+	, stateRotateFactor	:: !Float
 
 	-- | During viewport translation,
 	--	where the mouse was clicked on the window.
-	, stateTranslateMark	:: Maybe (Int, Int)	
+	, stateTranslateMark	:: !(Maybe (Int, Int))
 
 	-- | During viewport rotation,	
 	--	where the mouse was clicked on the window
-	, stateRotateMark	:: Maybe (Int, Int)
+	, stateRotateMark	:: !(Maybe (Int, Int))
 	}
 
 

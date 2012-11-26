@@ -17,19 +17,19 @@ import Graphics.Gloss.Data.Picture
 data State
 	= State
 	{ -- | Whether to use color
-	  stateColor		:: Bool
+	  stateColor		:: !Bool
 
 	-- | Whether to force wireframe mode only
-	, stateWireframe	:: Bool
+	, stateWireframe	:: !Bool
 
 	-- | Whether to use alpha blending
-	, stateBlendAlpha	:: Bool
+	, stateBlendAlpha	:: !Bool
 
 	-- | Whether to use line smoothing
-	, stateLineSmooth	:: Bool
+	, stateLineSmooth	:: !Bool
 	
 	-- | Cache of Textures that we've sent to OpenGL.
-	, stateTextures         :: IORef [Texture]
+	, stateTextures         :: !(IORef [Texture])
 	}
 	
 

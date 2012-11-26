@@ -1,5 +1,5 @@
 Name:                gloss-raster
-Version:             1.7.7.2
+Version:             1.7.7.3
 License:             MIT
 License-file:        LICENSE
 Author:              Ben Lippmeier
@@ -24,7 +24,7 @@ Library
         ghc-prim   >= 0.2 && < 0.4,
         containers == 0.5.*,
         repa       == 3.2.*,
-        gloss      == 1.7.6.*
+        gloss      == 1.7.7.*
 
   ghc-options:
         -Odph -fno-liberate-case -fllvm -optlo-O3
