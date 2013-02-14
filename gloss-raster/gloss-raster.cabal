@@ -1,5 +1,5 @@
 Name:                gloss-raster
-Version:             1.7.7.3
+Version:             1.7.8.1
 License:             MIT
 License-file:        LICENSE
 Author:              Ben Lippmeier
@@ -20,14 +20,15 @@ Tested-with: GHC == 6.12.1, GHC == 7.0.1
 
 Library
   Build-Depends: 
-        base       == 4.*,
-        ghc-prim   >= 0.2 && < 0.4,
+        base       == 4.6.*,
+        ghc-prim   == 0.3.*,
         containers == 0.5.*,
         repa       == 3.2.*,
-        gloss      == 1.7.7.*
+        gloss      == 1.7.8.*
 
   ghc-options:
-        -Odph -fno-liberate-case -fllvm -optlo-O3
+        -Odph -fno-liberate-case
+        -fllvm -optlo-O3
 
   Exposed-modules:
         Graphics.Gloss.Raster.Field

@@ -1,5 +1,5 @@
 Name:                gloss
-Version:             1.7.7.1
+Version:             1.7.8.2
 License:             MIT
 License-file:        LICENSE
 Author:              Ben Lippmeier
@@ -18,8 +18,6 @@ Description:
 Synopsis:
         Painless 2D vector graphics, animations and simulations.
 
-Tested-with: GHC == 7.2.1
-
 Flag GLUT
   Description: Enable the GLUT backend
   Default:     True
@@ -35,15 +33,16 @@ Flag ExplicitBackend
 
 Library
   Build-Depends: 
-        base       == 4.*,
-        ghc-prim   >= 0.2 && < 0.4,
+        base       == 4.6.*,
+        ghc-prim   == 0.3.*,
         containers == 0.5.*,
         bytestring == 0.10.*,
         OpenGL     == 2.6.*,
         GLUT       == 2.3.*,
         bmp        == 1.2.*
 
-  ghc-options:      -O2 -Wall
+  ghc-options:
+        -O2 -Wall
 
   Exposed-modules:
         Graphics.Gloss
