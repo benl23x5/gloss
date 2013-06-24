@@ -51,6 +51,7 @@ import Foreign.Ptr
 import Data.Word
 import Data.Monoid
 import Data.ByteString
+import Data.Data
 import System.IO.Unsafe
 import qualified Data.ByteString.Unsafe as BSU
 import Prelude hiding (map)
@@ -117,7 +118,7 @@ data Picture
 	-- More Pictures ----------------------------------
 	-- | A picture consisting of several others.
 	| Pictures	[Picture]
-	deriving (Show, Eq)
+	deriving (Show, Eq, Data, Typeable)
 
 
 -- Instances ------------------------------------------------------------------

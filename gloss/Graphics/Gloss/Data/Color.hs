@@ -27,6 +27,8 @@ module Graphics.Gloss.Data.Color
 	, rose,   violet, azure, aquamarine, chartreuse, orange
 	)
 where
+import Data.Data
+
 
 -- | An abstract color value.
 --	We keep the type abstract so we can be sure that the components
@@ -34,7 +36,7 @@ where
 data Color
 	-- | Holds the color components. All components lie in the range [0..1.
 	= RGBA  !Float !Float !Float !Float
-	deriving (Show, Eq)
+	deriving (Show, Eq, Data, Typeable)
 
 
 instance Num Color where

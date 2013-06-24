@@ -8,6 +8,7 @@ module Graphics.Gloss.Internals.Render.Bitmap
 	, freeBitmapData
 	)
 where
+import Data.Data
 import Foreign
 
 
@@ -16,7 +17,7 @@ data BitmapData
         = BitmapData 
                 Int                     -- length (in bytes)
                 (ForeignPtr Word8)      -- pointer to data
-        deriving (Eq)
+        deriving (Eq, Data, Typeable)
 
 
 instance Show BitmapData where
