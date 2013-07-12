@@ -3,9 +3,11 @@
 --	When the user pans, zooms, or rotates the display then this changes the 'ViewPort'.
 module Graphics.Gloss.Internals.Interface.ViewPort
 	( ViewPort(..)
-	, viewPortInit )
+	, viewPortInit 
+	, applyViewPortToPicture )
 where
-	
+import Graphics.Gloss.Data.Picture (Picture(..))
+
 data ViewPort
 	= ViewPort { 
 	-- | Global translation.
@@ -27,3 +29,11 @@ viewPortInit
 	, viewPortRotate	= 0
 	, viewPortScale		= 1 
 	}
+
+applyViewPortToPicture :: ViewPort  -> Picture -> Picture
+applyViewPortToPicture port
+	= Rotate rotate . Translate transX transY . Scale scale scale
+	where	rotate	= realToFrac $ viewPortRotate port
+        	transX	= realToFrac $ fst $ viewPortTranslate port
+        	transY	= realToFrac $ snd $ viewPortTranslate port
+        	scale	= realToFrac $ viewPortScale port

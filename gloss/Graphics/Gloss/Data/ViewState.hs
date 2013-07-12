@@ -7,7 +7,6 @@ module Graphics.Gloss.Data.ViewState
 where
 import Graphics.Gloss.Data.Vector
 import Graphics.Gloss.Geometry.Angle
-import Graphics.Gloss.Data.Picture (Picture(..))
 import Graphics.Gloss.Internals.Interface.Backend
 import Graphics.Gloss.Internals.Interface.Game
 import Graphics.Gloss.Internals.Interface.ViewPort
@@ -221,11 +220,3 @@ motionBump
 	= port { viewPortTranslate = (transX - oX, transY + oY) }
 	where	offset		= (bumpX / scale, bumpY / scale)
 		(oX, oY)	= rotateV (degToRad r) offset
-
-applyViewPortToPicture :: ViewPort  -> Picture -> Picture
-applyViewPortToPicture port
-	= Rotate rotate . Translate transX transY . Scale scale scale
-	where	rotate	= realToFrac $ viewPortRotate port
-        	transX	= realToFrac $ fst $ viewPortTranslate port
-        	transY	= realToFrac $ snd $ viewPortTranslate port
-        	scale	= realToFrac $ viewPortScale port
