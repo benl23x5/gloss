@@ -40,30 +40,30 @@ data Command
 -- | The default commands
 defaultCommandConfig :: [(Command, [(Key, Maybe Modifiers)])]
 defaultCommandConfig
- =	[ (CRestore, 	
+ =	[ (CRestore,
 		[ (Char 'r', 			Nothing) ])
 
 	, (CTranslate,
 		[ ( MouseButton LeftButton
 		  , Just (Modifiers { shift = Up, ctrl = Up, alt = Up }))
 		])
-	
+
 	, (CRotate,
 		[ ( MouseButton RightButton
 		  , Nothing)
 		, ( MouseButton LeftButton
 		  , Just (Modifiers { shift = Up, ctrl = Down, alt = Up }))
 	 	])
-	
+
 	-- bump zoom
-	, (CBumpZoomOut,	
+	, (CBumpZoomOut,
 		[ (MouseButton WheelDown,	Nothing)
 		, (SpecialKey  KeyPageDown,	Nothing) ])
 
 	, (CBumpZoomIn,
 		[ (MouseButton WheelUp, 	Nothing)
 		, (SpecialKey  KeyPageUp,	Nothing)] )
-	
+
 	-- bump translate
 	, (CBumpLeft,
 		[ (SpecialKey  KeyLeft,	        Nothing) ])
@@ -80,7 +80,7 @@ defaultCommandConfig
 	-- bump rotate
 	, (CBumpClockwise,
 		[ (SpecialKey  KeyHome,	        Nothing) ])
-	
+
 	, (CBumpCClockwise,
 		[ (SpecialKey  KeyEnd,	        Nothing) ])
 
@@ -89,7 +89,7 @@ defaultCommandConfig
 
 isCommand commands c key keyMods
 	| Just csMatch		<- Map.lookup c commands
-	= or $ map (isCommand2 c key keyMods) csMatch 
+	= or $ map (isCommand2 c key keyMods) csMatch
 
 	| otherwise
 	= False
@@ -101,7 +101,7 @@ isCommand2 _ key keyMods cMatch
 		Nothing		-> True
 		Just modsC 	-> modsC == keyMods
 	= True
-	
+
 	| otherwise
 	= False
 
@@ -116,8 +116,8 @@ data ViewState
 	  viewStateCommands		:: !(Map Command [(Key, Maybe Modifiers)])
 
 	-- | How much to scale the world by for each step of the mouse wheel.
-	, viewStateScaleStep		:: !Float	
-							
+	, viewStateScaleStep		:: !Float
+
 	-- | How many degrees to rotate the world by for each pixel of x motion.
 	, viewStateRotateFactor		:: !Float
 
@@ -134,15 +134,15 @@ data ViewState
 
 
 -- | The initial view state.
-viewStateInit :: ViewPort -> ViewState
-viewStateInit viewPort
+viewStateInit :: ViewState
+viewStateInit
 	= ViewState
 	{ viewStateCommands		= Map.fromList defaultCommandConfig
 	, viewStateScaleStep		= 0.85
 	, viewStateRotateFactor		= 0.6
 	, viewStateTranslateMark	= Nothing
 	, viewStateRotateMark		= Nothing
-        , viewStateViewPort 		= viewPort }
+        , viewStateViewPort 		= viewPortInit }
 
 -- TODO use record syntax instead of projections
 updateViewStateWithEvent :: Event -> ViewState -> ViewState
@@ -200,8 +200,10 @@ updateViewStateWithEvent (EventKey key keyState keyMods pos) viewState
 		port			= viewStateViewPort viewState
 		currentlyTranslating	= isJust $ viewStateTranslateMark viewState
                 currentlyRotating	= isJust $ viewStateRotateMark viewState
-updateViewStateWithEvent (EventMotion mov) viewState
-	= undefined
+updateViewStateWithEvent (EventMotion pos) viewState
+	= motionTranslate (viewStateTranslateMark viewState) pos $
+	  motionRotate (viewStateRotateMark viewState) pos $
+	  viewState
 
 controlZoomIn :: ViewState -> ViewState
 controlZoomIn viewState@ViewState { viewStateViewPort = port, viewStateScaleStep = scaleStep }
@@ -220,3 +222,32 @@ motionBump
 	= port { viewPortTranslate = (transX - oX, transY + oY) }
 	where	offset		= (bumpX / scale, bumpY / scale)
 		(oX, oY)	= rotateV (degToRad r) offset
+
+motionTranslate :: Maybe (Float, Float) -> (Float, Float) -> ViewState -> ViewState
+motionTranslate Nothing _ viewState = viewState
+motionTranslate (Just (markX, markY)) (posX, posY) viewState
+	= viewState
+		{ viewStateViewPort
+		  = port { viewPortTranslate = (transX - oX, transY + oY) }
+		, viewStateTranslateMark
+		  = Just (posX, posY) }
+	where	port			= viewStateViewPort viewState
+		(transX, transY)	= viewPortTranslate port
+		scale			= viewPortScale port
+		r			= viewPortRotate port
+		dX			= markX - posX
+		dY			= markY - posY
+		offset			= (dX / scale, dY / scale)
+		(oX, oY)		= rotateV (degToRad r) offset
+
+motionRotate :: Maybe (Float, Float) -> (Float, Float) -> ViewState -> ViewState
+motionRotate Nothing _ viewState = viewState
+motionRotate (Just (markX, _markY)) (posX, posY) viewState
+	= viewState
+		{ viewStateViewPort
+		  = port { viewPortRotate = rotate + rotateFactor * (posX - markX) }
+		, viewStateRotateMark
+		  = Just (posX, posY) }
+	where	port		= viewStateViewPort viewState
+		rotate		= viewPortRotate port
+		rotateFactor	= viewStateRotateFactor viewState
