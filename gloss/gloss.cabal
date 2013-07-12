@@ -57,6 +57,7 @@ Library
         Graphics.Gloss.Data.QuadTree
         Graphics.Gloss.Data.Color
         Graphics.Gloss.Data.Picture
+        Graphics.Gloss.Data.ViewState
         Graphics.Gloss.Algorithms.RayCast
         Graphics.Gloss.Interface.Pure.Display
         Graphics.Gloss.Interface.Pure.Animate
