@@ -32,7 +32,7 @@ viewPortInit
 
 applyViewPortToPicture :: ViewPort  -> Picture -> Picture
 applyViewPortToPicture port
-	= Rotate rotate . Translate transX transY . Scale scale scale
+	= Translate transX transY . Rotate rotate . Scale scale scale
 	where	rotate	= realToFrac $ viewPortRotate port
         	transX	= realToFrac $ fst $ viewPortTranslate port
         	transY	= realToFrac $ snd $ viewPortTranslate port
