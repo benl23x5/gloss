@@ -19,6 +19,7 @@ import Graphics.Gloss.Internals.Interface.Backend
 import qualified Data.Map			as Map
 import Data.Map					(Map)
 import Data.Maybe
+import Control.Monad (mplus)
 
 -- | The commands suported by the view controller
 data Command
@@ -186,10 +187,10 @@ updateViewStateWithEvent' (EventKey key keyState keyMods pos) viewState
 	= Just $ viewState { viewStateViewPort = motionBump port (-20, 0) }
 	| isCommand commands CBumpUp key keyMods
 	, keyState	== Down
-	= Just $ viewState { viewStateViewPort = motionBump port (0, 20) }
+	= Just $ viewState { viewStateViewPort = motionBump port (0, -20) }
 	| isCommand commands CBumpDown key keyMods
 	, keyState	== Down
-	= Just $ viewState { viewStateViewPort = motionBump port (0, -20) }
+	= Just $ viewState { viewStateViewPort = motionBump port (0, 20) }
 	| isCommand commands CBumpClockwise key keyMods
 	, keyState	== Down
 	= Just $ viewState { viewStateViewPort = port { viewPortRotate = viewPortRotate port + 5 } }
@@ -223,8 +224,10 @@ updateViewStateWithEvent' (EventKey key keyState keyMods pos) viewState
 		currentlyTranslating	= isJust $ viewStateTranslateMark viewState
                 currentlyRotating	= isJust $ viewStateRotateMark viewState
 updateViewStateWithEvent' (EventMotion pos) viewState
-	= motionRotate (viewStateRotateMark viewState') pos viewState'
-	where	viewState' = fromMaybe viewState $ motionTranslate (viewStateTranslateMark viewState) pos viewState
+	-- note that we do not consider the case in which we both rotate
+	-- and translate, which reflects the previous semantics.
+	= motionTranslate (viewStateTranslateMark viewState) pos viewState `mplus`
+	  motionRotate (viewStateRotateMark viewState) pos viewState
 
 controlZoomIn :: ViewState -> ViewState
 controlZoomIn viewState@ViewState { viewStateViewPort = port, viewStateScaleStep = scaleStep }
@@ -236,30 +239,30 @@ controlZoomOut viewState@ViewState { viewStateViewPort = port, viewStateScaleSte
 
 motionBump :: ViewPort -> (Float, Float) -> ViewPort
 motionBump
-	port@ViewPort	{ viewPortTranslate	= (transX, transY)
+	port@ViewPort	{ viewPortTranslate	= trans
                         , viewPortScale		= scale
 			, viewPortRotate	= r }
 	(bumpX, bumpY)
-	= port { viewPortTranslate = (transX - oX, transY + oY) }
-	where	offset		= (bumpX / scale, bumpY / scale)
-		(oX, oY)	= rotateV (degToRad r) offset
+	= port { viewPortTranslate = trans - o }
+	where	offset	= (bumpX / scale, bumpY / scale)
+		o	= rotateV (degToRad r) offset
 
 motionTranslate :: Maybe (Float, Float) -> (Float, Float) -> ViewState -> Maybe ViewState
 motionTranslate Nothing _ _ = Nothing
 motionTranslate (Just (markX, markY)) (posX, posY) viewState
 	= Just $ viewState
 		{ viewStateViewPort
-		  = port { viewPortTranslate = (transX - oX, transY + oY) }
+		  = port { viewPortTranslate = trans - o }
 		, viewStateTranslateMark
 		  = Just (posX, posY) }
-	where	port			= viewStateViewPort viewState
-		(transX, transY)	= viewPortTranslate port
-		scale			= viewPortScale port
-		r			= viewPortRotate port
-		dX			= markX - posX
-		dY			= markY - posY
-		offset			= (dX / scale, dY / scale)
-		(oX, oY)		= rotateV (degToRad r) offset
+	where	port	= viewStateViewPort viewState
+		trans	= viewPortTranslate port
+		scale	= viewPortScale port
+		r	= viewPortRotate port
+		dX	= markX - posX
+		dY	= markY - posY
+		offset	= (dX / scale, dY / scale)
+		o	= rotateV (degToRad r) offset
 
 motionRotate :: Maybe (Float, Float) -> (Float, Float) -> ViewState -> Maybe ViewState
 motionRotate Nothing _ _ = Nothing
