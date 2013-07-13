@@ -89,6 +89,7 @@ defaultCommandConfig
 	]
 
 
+isCommand :: Map Command [(Key, Maybe Modifiers)] -> Command -> Key -> Modifiers -> Bool
 isCommand commands c key keyMods
 	| Just csMatch		<- Map.lookup c commands
 	= or $ map (isCommand2 c key keyMods) csMatch
@@ -96,6 +97,7 @@ isCommand commands c key keyMods
 	| otherwise
 	= False
 
+isCommand2 :: Command -> Key -> Modifiers -> (Key, Maybe Modifiers) -> Bool
 isCommand2 _ key keyMods cMatch
 	| (keyC, mModsC)	<- cMatch
 	, keyC == key
