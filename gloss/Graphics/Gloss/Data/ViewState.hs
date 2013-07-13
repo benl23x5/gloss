@@ -1,8 +1,12 @@
 {-# LANGUAGE PatternGuards #-}
 module Graphics.Gloss.Data.ViewState
-	( ViewState (..)
+	( Command (..)
+	, CommandConfig
+	, defaultCommandConfig
+        , ViewState (..)
         , ViewPort (..)
 	, viewStateInit
+	, viewStateInit'
         , updateViewStateWithEvent
         , updateViewStateWithEvent'
         , applyViewPortToPicture
@@ -39,8 +43,11 @@ data Command
 	deriving (Show, Eq, Ord)
 
 
--- | The default commands
-defaultCommandConfig :: [(Command, [(Key, Maybe Modifiers)])]
+type CommandConfig = [(Command, [(Key, Maybe Modifiers)])]
+
+-- | The default commands.  Left click pans, wheel zooms, right click
+--   rotates, "r" key resets.
+defaultCommandConfig :: CommandConfig
 defaultCommandConfig
  =	[ (CRestore,
 		[ (Char 'r', 			Nothing) ])
@@ -140,13 +147,19 @@ data ViewState
 -- | The initial view state.
 viewStateInit :: ViewState
 viewStateInit
+	= viewStateInit' defaultCommandConfig
+
+-- | Initial view state, with user defined config.
+viewStateInit' :: CommandConfig -> ViewState
+viewStateInit' commandConfig
 	= ViewState
-	{ viewStateCommands		= Map.fromList defaultCommandConfig
+	{ viewStateCommands		= Map.fromList commandConfig
 	, viewStateScaleStep		= 0.85
 	, viewStateRotateFactor		= 0.6
 	, viewStateTranslateMark	= Nothing
 	, viewStateRotateMark		= Nothing
         , viewStateViewPort 		= viewPortInit }
+
 
 updateViewStateWithEvent :: Event -> ViewState -> ViewState
 updateViewStateWithEvent ev viewState
