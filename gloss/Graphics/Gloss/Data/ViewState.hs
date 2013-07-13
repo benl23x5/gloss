@@ -4,6 +4,7 @@ module Graphics.Gloss.Data.ViewState
         , ViewPort (..)
 	, viewStateInit
         , updateViewStateWithEvent
+        , updateViewStateWithEvent'
         , applyViewPortToPicture
 	, invertViewPort )
 where
@@ -145,66 +146,70 @@ viewStateInit
 	, viewStateRotateMark		= Nothing
         , viewStateViewPort 		= viewPortInit }
 
--- TODO use record syntax instead of projections
 updateViewStateWithEvent :: Event -> ViewState -> ViewState
-updateViewStateWithEvent (EventKey key keyState keyMods pos) viewState
+updateViewStateWithEvent ev viewState
+	= fromMaybe viewState $ updateViewStateWithEvent' ev viewState
+
+-- | Like 'updateViewStateWithEvent', but returns 'Nothing' if no update
+--   was needed.
+updateViewStateWithEvent' :: Event -> ViewState -> Maybe ViewState
+updateViewStateWithEvent' (EventKey key keyState keyMods pos) viewState
 	| isCommand commands CRestore key keyMods
 	, keyState	== Down
-	= viewState { viewStateViewPort = viewPortInit }
+	= Just $ viewState { viewStateViewPort = viewPortInit }
 	| isCommand commands CBumpZoomOut key keyMods
 	, keyState	== Down
-	= controlZoomIn viewState
+	= Just $ controlZoomIn viewState
 	| isCommand commands CBumpZoomIn key keyMods
 	, keyState	== Down
-	= controlZoomOut viewState
+	= Just $ controlZoomOut viewState
 	| isCommand commands CBumpLeft key keyMods
 	, keyState	== Down
-	= viewState { viewStateViewPort = motionBump port (20, 0) }
+	= Just $ viewState { viewStateViewPort = motionBump port (20, 0) }
 	| isCommand commands CBumpRight key keyMods
 	, keyState	== Down
-	= viewState { viewStateViewPort = motionBump port (-20, 0) }
+	= Just $ viewState { viewStateViewPort = motionBump port (-20, 0) }
 	| isCommand commands CBumpUp key keyMods
 	, keyState	== Down
-	= viewState { viewStateViewPort = motionBump port (0, 20) }
+	= Just $ viewState { viewStateViewPort = motionBump port (0, 20) }
 	| isCommand commands CBumpDown key keyMods
 	, keyState	== Down
-	= viewState { viewStateViewPort = motionBump port (0, -20) }
+	= Just $ viewState { viewStateViewPort = motionBump port (0, -20) }
 	| isCommand commands CBumpClockwise key keyMods
 	, keyState	== Down
-	= viewState { viewStateViewPort = port { viewPortRotate = viewPortRotate port + 5 } }
+	= Just $ viewState { viewStateViewPort = port { viewPortRotate = viewPortRotate port + 5 } }
 	| isCommand commands CBumpCClockwise key keyMods
 	, keyState	== Down
-	= viewState { viewStateViewPort = port { viewPortRotate = viewPortRotate port - 5 } }
+	= Just $ viewState { viewStateViewPort = port { viewPortRotate = viewPortRotate port - 5 } }
 	| isCommand commands CTranslate key keyMods
 	, keyState	== Down
 	, not currentlyRotating
-	= viewState { viewStateTranslateMark = Just pos }
+	= Just $ viewState { viewStateTranslateMark = Just pos }
 	-- We don't want to use 'isCommand' here because the user may have
 	-- released the translation modifier key before the mouse button.
 	-- and we still want to cancel the translation.
 	| currentlyTranslating
 	, keyState	== Up
-	= viewState { viewStateTranslateMark = Nothing }
+	= Just $ viewState { viewStateTranslateMark = Nothing }
 	| isCommand commands CRotate key keyMods
 	, keyState	== Down
 	, not currentlyTranslating
-	= viewState { viewStateRotateMark = Just pos }
+	= Just $ viewState { viewStateRotateMark = Just pos }
 	-- We don't want to use 'isCommand' here because the user may have
 	-- released the rotation modifier key before the mouse button, 
 	-- and we still want to cancel the rotation.
 	| currentlyRotating
 	, keyState	== Up
-	= viewState { viewStateRotateMark = Nothing }
+	= Just $ viewState { viewStateRotateMark = Nothing }
 	| otherwise
-	= viewState
+	= Nothing
 	where	commands		= viewStateCommands viewState
 		port			= viewStateViewPort viewState
 		currentlyTranslating	= isJust $ viewStateTranslateMark viewState
                 currentlyRotating	= isJust $ viewStateRotateMark viewState
-updateViewStateWithEvent (EventMotion pos) viewState
-	= motionTranslate (viewStateTranslateMark viewState) pos $
-	  motionRotate (viewStateRotateMark viewState) pos $
-	  viewState
+updateViewStateWithEvent' (EventMotion pos) viewState
+	= motionRotate (viewStateRotateMark viewState') pos viewState'
+	where	viewState' = fromMaybe viewState $ motionTranslate (viewStateTranslateMark viewState) pos viewState
 
 controlZoomIn :: ViewState -> ViewState
 controlZoomIn viewState@ViewState { viewStateViewPort = port, viewStateScaleStep = scaleStep }
@@ -224,10 +229,10 @@ motionBump
 	where	offset		= (bumpX / scale, bumpY / scale)
 		(oX, oY)	= rotateV (degToRad r) offset
 
-motionTranslate :: Maybe (Float, Float) -> (Float, Float) -> ViewState -> ViewState
-motionTranslate Nothing _ viewState = viewState
+motionTranslate :: Maybe (Float, Float) -> (Float, Float) -> ViewState -> Maybe ViewState
+motionTranslate Nothing _ _ = Nothing
 motionTranslate (Just (markX, markY)) (posX, posY) viewState
-	= viewState
+	= Just $ viewState
 		{ viewStateViewPort
 		  = port { viewPortTranslate = (transX - oX, transY + oY) }
 		, viewStateTranslateMark
@@ -241,10 +246,10 @@ motionTranslate (Just (markX, markY)) (posX, posY) viewState
 		offset			= (dX / scale, dY / scale)
 		(oX, oY)		= rotateV (degToRad r) offset
 
-motionRotate :: Maybe (Float, Float) -> (Float, Float) -> ViewState -> ViewState
-motionRotate Nothing _ viewState = viewState
+motionRotate :: Maybe (Float, Float) -> (Float, Float) -> ViewState -> Maybe ViewState
+motionRotate Nothing _ _ = Nothing
 motionRotate (Just (markX, _markY)) (posX, posY) viewState
-	= viewState
+	= Just $ viewState
 		{ viewStateViewPort
 		  = port { viewPortRotate = rotate + rotateFactor * (posX - markX) }
 		, viewStateRotateMark

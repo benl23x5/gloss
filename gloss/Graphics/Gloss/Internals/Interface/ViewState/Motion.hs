@@ -19,11 +19,17 @@ callback_viewState_motion
 callback_viewState_motion portRef
  	= Motion (viewState_motion portRef)
 
--- TODO maybe avoid redisplaying if not needed
 viewState_motion
 	:: IORef ViewState
 	-> MotionCallback
 
 viewState_motion viewStateRef stateRef (posX, posY)
- = do	viewStateRef `modifyIORef` updateViewStateWithEvent (EventMotion (fromIntegral posX, fromIntegral posY))
-	postRedisplay stateRef
+ = do	viewState <- readIORef viewStateRef
+	let	ev = EventMotion (fromIntegral posX, fromIntegral posY)
+        case updateViewStateWithEvent' ev viewState of
+		Nothing -> return ()
+		Just viewState' ->
+		  do	viewStateRef `writeIORef` viewState'
+			postRedisplay stateRef
+
+

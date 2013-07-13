@@ -19,11 +19,15 @@ callback_viewState_keyMouse viewStateRef
  	= KeyMouse (viewState_keyMouse viewStateRef)
 
 
--- TODO maybe avoid redisplaying if not needed
 viewState_keyMouse
 	:: IORef ViewState
 	-> KeyboardMouseCallback
 viewState_keyMouse viewStateRef stateRef key keyState keyMods (posX, posY)
- = do	viewStateRef `modifyIORef`
-		updateViewStateWithEvent (EventKey key keyState keyMods (fromIntegral posX, fromIntegral posY))
-	postRedisplay stateRef
+ = do	viewState <- readIORef viewStateRef
+	let	ev = EventKey key keyState keyMods (fromIntegral posX, fromIntegral posY)
+        case updateViewStateWithEvent' ev viewState of
+		Nothing -> return ()
+		Just viewState' ->
+		  do	viewStateRef `writeIORef` viewState'
+			postRedisplay stateRef
+
