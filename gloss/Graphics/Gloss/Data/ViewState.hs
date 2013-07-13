@@ -8,10 +8,9 @@ module Graphics.Gloss.Data.ViewState
 	, invertViewPort )
 where
 import Graphics.Gloss.Data.Vector
+import Graphics.Gloss.Data.ViewPort
 import Graphics.Gloss.Geometry.Angle
 import Graphics.Gloss.Internals.Interface.Backend
-import Graphics.Gloss.Internals.Interface.Game
-import Graphics.Gloss.Internals.Interface.ViewPort
 import qualified Data.Map			as Map
 import Data.Map					(Map)
 import Data.Maybe

@@ -2,17 +2,17 @@
 
 module Graphics.Gloss.Internals.Interface.Game
 	( playWithBackendIO
-	, Event(..))
+	, Event(..) )
 where
 import Graphics.Gloss.Data.Color
 import Graphics.Gloss.Data.Picture
+import Graphics.Gloss.Data.ViewPort
 import Graphics.Gloss.Internals.Render.Picture
 import Graphics.Gloss.Internals.Render.ViewPort
 import Graphics.Gloss.Internals.Interface.Backend
 import Graphics.Gloss.Internals.Interface.Window
 import Graphics.Gloss.Internals.Interface.Common.Exit
-import Graphics.Gloss.Internals.Interface.ViewPort
-import Graphics.Gloss.Internals.Interface.ViewPort.Reshape
+import Graphics.Gloss.Internals.Interface.ViewState.Reshape
 import Graphics.Gloss.Internals.Interface.Animate.Timing
 import Graphics.Gloss.Internals.Interface.Simulate.Idle
 import qualified Graphics.Gloss.Internals.Interface.Callback		as Callback
@@ -21,13 +21,6 @@ import qualified Graphics.Gloss.Internals.Interface.Animate.State	as AN
 import qualified Graphics.Gloss.Internals.Render.State	        	as RS
 import Data.IORef
 import System.Mem
-
--- | Possible input events.
-data Event
-	= EventKey    Key KeyState Modifiers (Float, Float)
-	| EventMotion (Float, Float)
-	deriving (Eq, Show)
-
 
 playWithBackendIO
 	:: forall world a
@@ -91,13 +84,13 @@ playWithBackendIO
 		, Callback.Display 	displayFun
 		, Callback.Display	(animateEnd   animateSR)
 		, Callback.Idle		(callback_simulate_idle 
-						stateSR animateSR viewSR 
+						stateSR animateSR (readIORef viewSR)
 						worldSR worldStart (\_ -> worldAdvance)
 						singleStepTime)
 		, callback_exit () 
 		, callback_keyMouse worldSR viewSR worldHandleEvent
 		, callback_motion   worldSR worldHandleEvent
-		, callback_viewPort_reshape ]
+		, callback_viewState_reshape ]
 
 	createWindow backend display backgroundColor callbacks
 

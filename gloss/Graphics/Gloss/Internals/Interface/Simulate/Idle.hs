@@ -4,7 +4,7 @@
 module Graphics.Gloss.Internals.Interface.Simulate.Idle
 	( callback_simulate_idle )
 where
-import Graphics.Gloss.Internals.Interface.ViewPort
+import Graphics.Gloss.Data.ViewPort
 import Graphics.Gloss.Internals.Interface.Callback
 import qualified Graphics.Gloss.Internals.Interface.Backend		as Backend
 import qualified Graphics.Gloss.Internals.Interface.Animate.State	as AN
@@ -19,7 +19,10 @@ import GHC.Float (double2Float)
 callback_simulate_idle
 	:: IORef SM.State				-- ^ the simulation state
 	-> IORef AN.State				-- ^ the animation statea
-	-> IORef ViewPort				-- ^ the viewport state
+	-> IO ViewPort
+        -- ^ action to get the 'ViewPort'.  We don't use an 'IORef'
+        -- directly because sometimes we hold a ref to a 'ViewPort' (in
+        -- Game) and sometimes a ref to a 'ViewState'.
 	-> IORef world					-- ^ the current world
 	-> world					-- ^ the initial world
 	-> (ViewPort -> Float -> world -> IO world) 	-- ^ fn to advance the world
@@ -27,7 +30,7 @@ callback_simulate_idle
 							--	in single step mode
 	-> IdleCallback
 	
-callback_simulate_idle simSR animateSR viewSR worldSR worldStart worldAdvance singleStepTime backendRef
+callback_simulate_idle simSR animateSR viewSA worldSR worldStart worldAdvance singleStepTime backendRef
  = {-# SCC "callbackIdle" #-}
    do	simS		<- readIORef simSR
 	let result
@@ -35,10 +38,10 @@ callback_simulate_idle simSR animateSR viewSR worldSR worldStart worldAdvance si
 		= simulate_reset simSR worldSR worldStart
 
 		| SM.stateRun   simS
-		= simulate_run   simSR animateSR viewSR worldSR worldAdvance
+		= simulate_run   simSR animateSR viewSA worldSR worldAdvance
 		
 		| SM.stateStep  simS
-		= simulate_step  simSR viewSR worldSR worldAdvance singleStepTime
+		= simulate_step  simSR viewSA worldSR worldAdvance singleStepTime
 		
 		| otherwise
 		= \_ -> return ()
@@ -63,15 +66,14 @@ simulate_reset simSR worldSR worldStart backendRef
 simulate_run 
 	:: IORef SM.State
 	-> IORef AN.State
-	-> IORef ViewPort
+	-> IO ViewPort
 	-> IORef world
 	-> (ViewPort -> Float -> world -> IO world)
 	-> IdleCallback
 	
-simulate_run simSR _ viewSR worldSR worldAdvance backendRef
- = do	
+simulate_run simSR _ viewSA worldSR worldAdvance backendRef
+ = do	viewS		<- viewSA
 	simS		<- readIORef simSR
-	viewS		<- readIORef viewSR
 	worldS		<- readIORef worldSR
 
 	-- get the elapsed time since the start simulation (wall clock)
@@ -125,15 +127,14 @@ simulate_run simSR _ viewSR worldSR worldAdvance backendRef
 -- take a single step
 simulate_step 
 	:: IORef SM.State
-	-> IORef ViewPort
+	-> IO ViewPort
 	-> IORef world
 	-> (ViewPort -> Float -> world -> IO world) 
 	-> Float
 	-> IdleCallback
 
-simulate_step simSR viewSR worldSR worldAdvance singleStepTime backendRef
- = do
-	viewS		<- readIORef viewSR
+simulate_step simSR viewSA worldSR worldAdvance singleStepTime backendRef
+ = do	viewS		<- viewSA
  	world		<- readIORef worldSR
 	world'		<- worldAdvance viewS singleStepTime world
 	

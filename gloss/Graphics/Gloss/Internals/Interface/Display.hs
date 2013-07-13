@@ -4,20 +4,20 @@ module Graphics.Gloss.Internals.Interface.Display
 where	
 import Graphics.Gloss.Data.Color
 import Graphics.Gloss.Data.Picture
+import Graphics.Gloss.Data.ViewState
 import Graphics.Gloss.Internals.Render.Picture
 import Graphics.Gloss.Internals.Render.ViewPort
 import Graphics.Gloss.Internals.Interface.Backend
 import Graphics.Gloss.Internals.Interface.Window
 import Graphics.Gloss.Internals.Interface.Common.Exit
-import Graphics.Gloss.Internals.Interface.ViewPort
-import Graphics.Gloss.Internals.Interface.ViewPort.KeyMouse
-import Graphics.Gloss.Internals.Interface.ViewPort.Motion
-import Graphics.Gloss.Internals.Interface.ViewPort.Reshape
+import Graphics.Gloss.Internals.Interface.ViewState.KeyMouse
+import Graphics.Gloss.Internals.Interface.ViewState.Motion
+import Graphics.Gloss.Internals.Interface.ViewState.Reshape
 import qualified Graphics.Gloss.Internals.Render.State	        		as RS
-import qualified Graphics.Gloss.Internals.Interface.ViewPort.ControlState	as VPC
 import qualified Graphics.Gloss.Internals.Interface.Callback			as Callback
 
 import Data.IORef
+import Data.Functor
 
 
 displayWithBackend
@@ -29,19 +29,18 @@ displayWithBackend
 	-> IO ()
 
 displayWithBackend backend displayMode background picture
- =  do	viewSR		<- newIORef viewPortInit
-	viewControlSR	<- newIORef VPC.stateInit
+ =  do	viewSR		<- newIORef viewStateInit
 
         renderS         <- RS.stateInit
 	renderSR	<- newIORef renderS
 	
 	let renderFun backendRef = do
-		view	<- readIORef viewSR
+		port    <- viewStateViewPort <$> readIORef viewSR
 		options	<- readIORef renderSR
 	 	withViewPort
 			backendRef
-	 		view
-			(renderPicture backendRef options view picture)
+	 		port
+			(renderPicture backendRef options port picture)
 
 	let callbacks
 	     =	[ Callback.Display renderFun 
@@ -50,8 +49,8 @@ displayWithBackend backend displayMode background picture
 		, callback_exit () 
 		
 		-- Viewport control with mouse
-		, callback_viewPort_keyMouse viewSR viewControlSR 
-		, callback_viewPort_motion   viewSR viewControlSR 
-		, callback_viewPort_reshape ]
+		, callback_viewState_keyMouse viewSR
+		, callback_viewState_motion   viewSR
+		, callback_viewState_reshape ]
 
 	createWindow backend displayMode background callbacks

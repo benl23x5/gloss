@@ -1,7 +1,6 @@
-
 -- | The 'ViewPort' represents the global transformation applied to the displayed picture.
 --	When the user pans, zooms, or rotates the display then this changes the 'ViewPort'.
-module Graphics.Gloss.Internals.Interface.ViewPort
+module Graphics.Gloss.Data.ViewPort
 	( ViewPort(..)
 	, viewPortInit
 	, applyViewPortToPicture

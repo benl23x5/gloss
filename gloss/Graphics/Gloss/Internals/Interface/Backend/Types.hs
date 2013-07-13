@@ -194,3 +194,9 @@ data Modifiers
         , alt   :: KeyState
         }
         deriving (Show, Eq, Ord)
+
+-- | Possible input events.
+data Event
+	= EventKey    Key KeyState Modifiers (Float, Float)
+	| EventMotion (Float, Float)
+	deriving (Eq, Show)

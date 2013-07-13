@@ -4,21 +4,21 @@ module Graphics.Gloss.Internals.Interface.Animate
 where	
 import Graphics.Gloss.Data.Color
 import Graphics.Gloss.Data.Picture
+import Graphics.Gloss.Data.ViewState
 import Graphics.Gloss.Internals.Render.Picture
 import Graphics.Gloss.Internals.Render.ViewPort
 import Graphics.Gloss.Internals.Interface.Backend
 import Graphics.Gloss.Internals.Interface.Window
 import Graphics.Gloss.Internals.Interface.Common.Exit
-import Graphics.Gloss.Internals.Interface.ViewPort
-import Graphics.Gloss.Internals.Interface.ViewPort.KeyMouse
-import Graphics.Gloss.Internals.Interface.ViewPort.Motion
-import Graphics.Gloss.Internals.Interface.ViewPort.Reshape
+import Graphics.Gloss.Internals.Interface.ViewState.KeyMouse
+import Graphics.Gloss.Internals.Interface.ViewState.Motion
+import Graphics.Gloss.Internals.Interface.ViewState.Reshape
 import Graphics.Gloss.Internals.Interface.Animate.Timing
 import qualified Graphics.Gloss.Internals.Render.State	        		as RS
-import qualified Graphics.Gloss.Internals.Interface.ViewPort.ControlState	as VPC
 import qualified Graphics.Gloss.Internals.Interface.Animate.State		as AN
 import qualified Graphics.Gloss.Internals.Interface.Callback			as Callback
 import Data.IORef
+import Data.Functor ((<$>))
 import Control.Monad
 import System.Mem
 import GHC.Float (double2Float)
@@ -36,8 +36,7 @@ animateWithBackendIO
 animateWithBackendIO backend pannable display backColor frameOp
  = do	
         -- 
-	viewSR		<- newIORef viewPortInit
-	viewControlSR	<- newIORef VPC.stateInit
+	viewSR		<- newIORef viewStateInit
 	animateSR	<- newIORef AN.stateInit
         renderS_        <- RS.stateInit
 	renderSR	<- newIORef renderS_
@@ -50,13 +49,13 @@ animateWithBackendIO backend pannable display backColor frameOp
 		picture		<- frameOp (double2Float timeS)
 
 		renderS		<- readIORef renderSR
-		viewS		<- readIORef viewSR
+		portS		<- viewStateViewPort <$> readIORef viewSR
 
 		-- render the frame
 		withViewPort
 			backendRef
-			viewS
-			(renderPicture backendRef renderS viewS picture)
+			portS
+			(renderPicture backendRef renderS portS picture)
 
 		-- perform GC every frame to try and avoid long pauses
 		performGC
@@ -67,11 +66,11 @@ animateWithBackendIO backend pannable display backColor frameOp
 		, Callback.Display	(animateEnd   animateSR)
 		, Callback.Idle		(\s -> postRedisplay s)
 		, callback_exit () 
-		, callback_viewPort_motion   viewSR viewControlSR 
-		, callback_viewPort_reshape ]
+		, callback_viewState_motion   viewSR
+		, callback_viewState_reshape ]
  
              ++ (if pannable 
-                  then [callback_viewPort_keyMouse viewSR viewControlSR]
+                  then [callback_viewState_keyMouse viewSR]
                   else [])
 
         createWindow backend display backColor callbacks
