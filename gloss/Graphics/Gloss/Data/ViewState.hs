@@ -1,9 +1,11 @@
 {-# LANGUAGE PatternGuards #-}
 module Graphics.Gloss.Data.ViewState
 	( ViewState (..)
+        , ViewPort (..)
 	, viewStateInit
         , updateViewStateWithEvent
-        , applyViewPortToPicture )
+        , applyViewPortToPicture
+	, invertViewPort )
 where
 import Graphics.Gloss.Data.Vector
 import Graphics.Gloss.Geometry.Angle
