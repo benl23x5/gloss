@@ -5,8 +5,8 @@ where
 import Graphics.Gloss.Data.Color
 import Graphics.Gloss.Data.Picture
 import Graphics.Gloss.Data.ViewState
+import Graphics.Gloss.Internals.Render.Common
 import Graphics.Gloss.Internals.Render.Picture
-import Graphics.Gloss.Internals.Render.ViewPort
 import Graphics.Gloss.Internals.Interface.Backend
 import Graphics.Gloss.Internals.Interface.Window
 import Graphics.Gloss.Internals.Interface.Common.Exit
@@ -37,9 +37,8 @@ displayWithBackend backend displayMode background picture
 	let renderFun backendRef = do
 		port    <- viewStateViewPort <$> readIORef viewSR
 		options	<- readIORef renderSR
-	 	withViewPort
+	 	renderAction
 			backendRef
-	 		port
 			(renderPicture backendRef options port picture)
 
 	let callbacks

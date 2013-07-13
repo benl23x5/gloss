@@ -76,6 +76,7 @@ Library
         Graphics.Gloss.Internals.Interface.Callback
         Graphics.Gloss.Internals.Interface.Common.Exit
         Graphics.Gloss.Internals.Interface.Debug
+        Graphics.Gloss.Internals.Interface.Event
         Graphics.Gloss.Internals.Interface.Simulate.Idle
         Graphics.Gloss.Internals.Interface.Simulate.State
         Graphics.Gloss.Internals.Interface.ViewState.KeyMouse
@@ -87,7 +88,6 @@ Library
         Graphics.Gloss.Internals.Render.Common
         Graphics.Gloss.Internals.Render.State
         Graphics.Gloss.Internals.Render.Picture
-        Graphics.Gloss.Internals.Render.ViewPort
 
         Graphics.Gloss.Internals.Interface.Display
         Graphics.Gloss.Internals.Interface.Animate

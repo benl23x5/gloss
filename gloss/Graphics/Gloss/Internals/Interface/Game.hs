@@ -7,8 +7,9 @@ where
 import Graphics.Gloss.Data.Color
 import Graphics.Gloss.Data.Picture
 import Graphics.Gloss.Data.ViewPort
+import Graphics.Gloss.Internals.Render.Common
 import Graphics.Gloss.Internals.Render.Picture
-import Graphics.Gloss.Internals.Render.ViewPort
+import Graphics.Gloss.Internals.Interface.Event
 import Graphics.Gloss.Internals.Interface.Backend
 import Graphics.Gloss.Internals.Interface.Window
 import Graphics.Gloss.Internals.Interface.Common.Exit
@@ -71,9 +72,8 @@ playWithBackendIO
 		viewS		<- readIORef viewSR
 
 		-- render the frame
-		withViewPort
+		renderAction
 			backendRef
-			viewS
 	 	 	(renderPicture backendRef renderS viewS picture)
  
 		-- perform garbage collection
@@ -113,9 +113,9 @@ handle_keyMouse
 	-> KeyboardMouseCallback
 
 handle_keyMouse worldRef _ eventFn backendRef key keyState keyMods pos
- = do	pos'       <- convertPoint backendRef pos
+ = do	ev         <- keyMouseEvent backendRef key keyState keyMods pos
         world      <- readIORef worldRef
-        world'     <- eventFn (EventKey key keyState keyMods pos') world
+        world'     <- eventFn ev world
         writeIORef worldRef world'
 
 
@@ -135,27 +135,7 @@ handle_motion
 	-> MotionCallback
 
 handle_motion worldRef eventFn backendRef pos
- = do   pos'     <- convertPoint backendRef pos
+ = do   ev       <- motionEvent backendRef pos
         world    <- readIORef worldRef
-        world'   <- eventFn (EventMotion pos') world
+        world'   <- eventFn ev world
         writeIORef worldRef world'
-
-
-convertPoint ::
-	forall a . Backend a
-	=> IORef a
-	-> (Int, Int)
-	-> IO (Float,Float)
-convertPoint backendRef pos
- = do	(sizeX_, sizeY_) 		<- getWindowDimensions backendRef
-	let (sizeX, sizeY)		= (fromIntegral sizeX_, fromIntegral sizeY_)
-
-	let (px_, py_)	= pos
-	let px		= fromIntegral px_
-	let py		= sizeY - fromIntegral py_
-	
-	let px'		= px - sizeX / 2
-	let py' 	= py - sizeY / 2
-	let pos'	= (px', py')
-	return pos'
-

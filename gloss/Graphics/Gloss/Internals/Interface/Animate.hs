@@ -5,8 +5,8 @@ where
 import Graphics.Gloss.Data.Color
 import Graphics.Gloss.Data.Picture
 import Graphics.Gloss.Data.ViewState
+import Graphics.Gloss.Internals.Render.Common
 import Graphics.Gloss.Internals.Render.Picture
-import Graphics.Gloss.Internals.Render.ViewPort
 import Graphics.Gloss.Internals.Interface.Backend
 import Graphics.Gloss.Internals.Interface.Window
 import Graphics.Gloss.Internals.Interface.Common.Exit
@@ -52,9 +52,8 @@ animateWithBackendIO backend pannable display backColor frameOp
 		portS		<- viewStateViewPort <$> readIORef viewSR
 
 		-- render the frame
-		withViewPort
+		renderAction
 			backendRef
-			portS
 			(renderPicture backendRef renderS portS picture)
 
 		-- perform GC every frame to try and avoid long pauses
@@ -66,7 +65,7 @@ animateWithBackendIO backend pannable display backColor frameOp
 		, Callback.Display	(animateEnd   animateSR)
 		, Callback.Idle		(\s -> postRedisplay s)
 		, callback_exit () 
-		, callback_viewState_motion   viewSR
+		, callback_viewState_motion viewSR
 		, callback_viewState_reshape ]
  
              ++ (if pannable 

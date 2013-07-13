@@ -7,6 +7,7 @@ where
 import Graphics.Gloss.Data.ViewState
 import Graphics.Gloss.Internals.Interface.Callback
 import Graphics.Gloss.Internals.Interface.Backend
+import Graphics.Gloss.Internals.Interface.Event
 import Data.IORef
 
 
@@ -23,9 +24,9 @@ viewState_motion
 	:: IORef ViewState
 	-> MotionCallback
 
-viewState_motion viewStateRef stateRef (posX, posY)
- = do	viewState <- readIORef viewStateRef
-	let	ev = EventMotion (fromIntegral posX, fromIntegral posY)
+viewState_motion viewStateRef stateRef pos
+ = do	viewState	<- readIORef viewStateRef
+	ev		<- motionEvent stateRef pos
         case updateViewStateWithEvent' ev viewState of
 		Nothing -> return ()
 		Just viewState' ->

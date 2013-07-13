@@ -1,11 +1,12 @@
 {-# OPTIONS_HADDOCK hide #-}
-{-# LANGUAGE PatternGuards, RankNTypes #-}
+{-# LANGUAGE RankNTypes #-}
 
 module Graphics.Gloss.Internals.Interface.ViewState.KeyMouse
 	(callback_viewState_keyMouse)
 where
 import Graphics.Gloss.Data.ViewState
 import Graphics.Gloss.Internals.Interface.Backend
+import Graphics.Gloss.Internals.Interface.Event
 import Data.IORef
 
 
@@ -22,9 +23,9 @@ callback_viewState_keyMouse viewStateRef
 viewState_keyMouse
 	:: IORef ViewState
 	-> KeyboardMouseCallback
-viewState_keyMouse viewStateRef stateRef key keyState keyMods (posX, posY)
- = do	viewState <- readIORef viewStateRef
-	let	ev = EventKey key keyState keyMods (fromIntegral posX, fromIntegral posY)
+viewState_keyMouse viewStateRef stateRef key keyState keyMods pos
+ = do	viewState	<- readIORef viewStateRef
+	ev		<- keyMouseEvent stateRef key keyState keyMods pos
         case updateViewStateWithEvent' ev viewState of
 		Nothing -> return ()
 		Just viewState' ->

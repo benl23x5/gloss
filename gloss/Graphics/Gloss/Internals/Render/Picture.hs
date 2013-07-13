@@ -58,8 +58,10 @@ renderPicture
 	setLineSmooth	(stateLineSmooth renderS)
 	setBlendAlpha	(stateBlendAlpha renderS)
 	
+	-- Adjust the picture
+	let picture'		= applyViewPortToPicture viewS picture
         checkErrors "before drawPicture."
-        drawPicture (viewPortScale viewS) picture
+        drawPicture (viewPortScale viewS) picture'
         checkErrors "after drawPicture."
 
 
