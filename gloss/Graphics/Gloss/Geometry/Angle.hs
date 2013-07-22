@@ -21,12 +21,4 @@ radToDeg r	= r * 180 / pi
 -- | Normalise an angle to be between 0 and 2*pi radians
 {-# INLINE normaliseAngle #-}
 normaliseAngle :: Float -> Float
-normaliseAngle f
-	| f < 0	
-	= normaliseAngle (f + 2 * pi)
-	
-	| f > 2 * pi
-	= normaliseAngle (f - 2 * pi)
-
-	| otherwise
-	= f
+normaliseAngle f = f - 2 * pi * (fromIntegral . floor) (f / (2 * pi))
