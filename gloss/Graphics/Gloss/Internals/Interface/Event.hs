@@ -23,8 +23,7 @@ keyMouseEvent ::
 	-> (Int, Int)
 	-> IO Event
 keyMouseEvent backendRef key keyState modifiers pos
- = do	pos' <- convertPoint backendRef pos
-	return $ EventKey key keyState modifiers pos'
+	= EventKey key keyState modifiers <$> convertPoint backendRef pos
 
 motionEvent ::
 	forall a . Backend a
@@ -40,14 +39,14 @@ convertPoint ::
 	-> (Int, Int)
 	-> IO (Float,Float)
 convertPoint backendRef pos
- = do	(sizeX_, sizeY_) 		<- getWindowDimensions backendRef
-	let (sizeX, sizeY)		= (fromIntegral sizeX_, fromIntegral sizeY_)
+ = do	(sizeX_, sizeY_) 	<- getWindowDimensions backendRef
+	let (sizeX, sizeY)	= (fromIntegral sizeX_, fromIntegral sizeY_)
 
-	let (px_, py_)	= pos
-	let px		= fromIntegral px_
-	let py		= sizeY - fromIntegral py_
+	let (px_, py_)		= pos
+	let px			= fromIntegral px_
+	let py			= sizeY - fromIntegral py_
 	
-	let px'		= px - sizeX / 2
-	let py' 	= py - sizeY / 2
-	let pos'	= (px', py')
+	let px'			= px - sizeX / 2
+	let py' 		= py - sizeY / 2
+	let pos'		= (px', py')
 	return pos'
