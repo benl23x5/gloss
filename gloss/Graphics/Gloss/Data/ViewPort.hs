@@ -35,12 +35,11 @@ viewPortInit
 
 -- | Translates, rotates, and scales an image according to the 'ViewPort'.
 applyViewPortToPicture :: ViewPort  -> Picture -> Picture
-applyViewPortToPicture port
+applyViewPortToPicture
+	ViewPort	{ viewPortScale		= scale
+                        , viewPortTranslate	= (transX, transY)
+			, viewPortRotate	= rotate }
 	= Scale scale scale . Rotate rotate . Translate transX transY
-	where	rotate	= realToFrac $ viewPortRotate port
-        	transX	= realToFrac $ fst $ viewPortTranslate port
-        	transY	= realToFrac $ snd $ viewPortTranslate port
-        	scale	= realToFrac $ viewPortScale port
 
 -- | Takes a point referencing a position according to the 'ViewPort'
 --   (e.g. user input) and reverts the scaling, rotation, and
@@ -49,6 +48,7 @@ invertViewPort :: ViewPort -> Point -> Point
 invertViewPort
 	ViewPort	{ viewPortScale		= scale
 			, viewPortTranslate	= trans
-			, viewPortRotate	= r }
+			, viewPortRotate	= rotate }
         pos
-	= rotateV (degToRad (r + 360)) (mulSV (1 / scale) pos) - trans
+	= rotateV (degToRad rotate) (mulSV (1 / scale) pos) - trans
+
