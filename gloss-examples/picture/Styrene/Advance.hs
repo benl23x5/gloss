@@ -33,7 +33,7 @@ advanceWorld
 advanceWorld viewport time (World actors tree)
  = let	
  	rot		= viewPortRotate viewport
-	force		= rotateV (degToRad $ negate rot) (0, negate gravityCoeff)
+	force		= rotateV (degToRad rot) (0, negate gravityCoeff)
 
 	-- move all the actors 
 	actors_moved	= Map.map (moveActor_free time force) actors
