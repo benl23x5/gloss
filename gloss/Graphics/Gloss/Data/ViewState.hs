@@ -270,7 +270,7 @@ motionRotate Nothing _ _ = Nothing
 motionRotate (Just (markX, _markY)) (posX, posY) viewState
 	= Just $ viewState
 		{ viewStateViewPort
-		  = port { viewPortRotate = rotate + rotateFactor * (posX - markX) }
+		  = port { viewPortRotate = rotate - rotateFactor * (posX - markX) }
 		, viewStateRotateMark
 		  = Just (posX, posY) }
 	where	port		= viewStateViewPort viewState
