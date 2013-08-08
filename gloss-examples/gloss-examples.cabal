@@ -1,5 +1,5 @@
 Name:                gloss-examples
-Version:             1.7.8.2
+Version:             1.8.0.0
 License:             MIT
 License-file:        LICENSE
 Author:              Ben Lippmeier
@@ -21,7 +21,7 @@ Executable gloss-bitmap
   Build-depends:
         base           == 4.6.*,
         bytestring     == 0.10.*,
-        gloss          == 1.7.*,
+        gloss          == 1.8.*,
         bmp            == 1.2.*
   Main-is: Main.hs
   hs-source-dirs: picture/Bitmap
@@ -31,7 +31,7 @@ Executable gloss-bitmap
 Executable gloss-boids
   Build-depends:
         base           == 4.6.*,
-        gloss          == 1.7.*
+        gloss          == 1.8.*
   Main-is:        Main.hs
   other-modules:  KDTree2d Vec2
   hs-source-dirs: picture/Boids
@@ -41,7 +41,7 @@ Executable gloss-boids
 Executable gloss-clock
   Build-depends: 
         base            == 4.6.*,
-        gloss           == 1.7.*
+        gloss           == 1.8.*
   Main-is:        Main.hs
   hs-source-dirs: picture/Clock
   ghc-options:    -threaded -O2
@@ -50,7 +50,7 @@ Executable gloss-clock
 Executable gloss-conway
   Build-depends: 
         base            == 4.6.*,
-        gloss           == 1.7.*,
+        gloss           == 1.8.*,
         vector          == 0.10.*
   Main-is:        Main.hs
   other-modules:  Cell World
@@ -61,7 +61,7 @@ Executable gloss-conway
 Executable gloss-draw
   Build-depends:
         base           == 4.6.*,
-        gloss          == 1.7.*
+        gloss          == 1.8.*
   Main-is:        Main.hs
   hs-source-dirs: picture/Draw
   ghc-options:    -threaded -O2
@@ -70,7 +70,7 @@ Executable gloss-draw
 Executable gloss-easy
   Build-depends:
         base            == 4.6.*,
-        gloss           == 1.7.*
+        gloss           == 1.8.*
   Main-is:        Main.hs
   hs-source-dirs: picture/Easy
   ghc-options:    -threaded -O2
@@ -79,7 +79,7 @@ Executable gloss-easy
 Executable gloss-eden
   Build-depends: 
         base            == 4.6.*,
-        gloss           == 1.7.*,
+        gloss           == 1.8.*,
         random          == 1.0.*
   Main-is:        Main.hs
   other-modules:  Cell Community World
@@ -90,7 +90,7 @@ Executable gloss-eden
 Executable gloss-flake
   Build-depends:
         base            == 4.6.*,
-        gloss           == 1.7.*
+        gloss           == 1.8.*
   Main-is:        Main.hs
   hs-source-dirs: picture/Flake
   ghc-options:    -threaded -O2
@@ -99,7 +99,7 @@ Executable gloss-flake
 Executable gloss-gameevent
   Build-depends: 
         base            == 4.6.*,
-        gloss           == 1.7.*
+        gloss           == 1.8.*
   Main-is:        Main.hs
   hs-source-dirs: picture/GameEvent
   ghc-options:    -threaded -O2
@@ -108,7 +108,7 @@ Executable gloss-gameevent
 Executable gloss-hello
   Build-depends: 
         base            == 4.6.*, 
-        gloss           == 1.7.*
+        gloss           == 1.8.*
   Main-is:        Main.hs
   hs-source-dirs: picture/Hello
   ghc-options:    -threaded -O2
@@ -117,7 +117,7 @@ Executable gloss-hello
 Executable gloss-lifespan
   Build-depends: 
         base            == 4.6.*, 
-        gloss           == 1.7.*, 
+        gloss           == 1.8.*, 
         random          == 1.0.*
   Main-is:        Main.hs
   other-modules:  Cell Community World
@@ -128,7 +128,7 @@ Executable gloss-lifespan
 Executable gloss-machina
   Build-depends: 
         base            == 4.6.*, 
-        gloss           == 1.7.*
+        gloss           == 1.8.*
   Main-is:        Main.hs
   hs-source-dirs: picture/Machina
   ghc-options:    -threaded -O2
@@ -137,7 +137,7 @@ Executable gloss-machina
 Executable gloss-occlusion
   Build-depends: 
         base            == 4.6.*, 
-        gloss           == 1.7.*
+        gloss           == 1.8.*
   Main-is: Main.hs
   other-modules:  Cell World State Data
   hs-source-dirs: picture/Occlusion
@@ -148,7 +148,7 @@ Executable gloss-styrene
   Build-depends: 
         base            == 4.6.*,
         ghc-prim        == 0.3.*,
-        gloss           == 1.7.*,
+        gloss           == 1.8.*,
         containers      == 0.5.*
   Main-is:        Main.hs
   other-modules:  Actor Advance Collide Config Contact QuadTree World
@@ -159,7 +159,7 @@ Executable gloss-styrene
 Executable gloss-tree
   Build-depends: 
         base            == 4.6.*, 
-        gloss           == 1.7.*
+        gloss           == 1.8.*
   Main-is:        Main.hs
   hs-source-dirs: picture/Tree
   ghc-options:    -threaded -O2
@@ -169,7 +169,7 @@ Executable gloss-visibility
   Build-depends: 
         base            == 4.6.*, 
         vector          == 0.10.*,
-        gloss           == 1.7.*
+        gloss           == 1.8.*
   Main-is:        Main.hs
   other-modules:  Draw Interface State World Geometry.Randomish Geometry.Segment
   hs-source-dirs: picture/Visibility 
@@ -179,7 +179,7 @@ Executable gloss-visibility
 Executable gloss-zen
   Build-depends: 
         base            == 4.6.*, 
-        gloss           == 1.7.*
+        gloss           == 1.8.*
   Main-is:        Main.hs
   hs-source-dirs: picture/Zen
   ghc-options:    -threaded -O2
@@ -188,8 +188,8 @@ Executable gloss-zen
 Executable gloss-crystal
   Build-depends:
         base           == 4.6.*,
-        gloss          == 1.7.*,
-        gloss-raster   == 1.7.8.*
+        gloss          == 1.8.*,
+        gloss-raster   == 1.8.*
   Main-is:        Main.hs
   hs-source-dirs: raster/Crystal
   ghc-options:    
@@ -206,8 +206,8 @@ Executable gloss-crystal
 Executable gloss-ray
   Build-depends:
         base           == 4.6.*,
-        gloss          == 1.7.*,
-        gloss-raster   == 1.7.8.*
+        gloss          == 1.8.*,
+        gloss-raster   == 1.8.*
   Main-is:        Main.hs
   other-modules:  Light Object Trace Vec3 World
   hs-source-dirs: raster/Ray
@@ -222,8 +222,8 @@ Executable gloss-ray
 Executable gloss-pulse
   Build-depends:
         base           == 4.6.*,
-        gloss          == 1.7.*,
-        gloss-raster   == 1.7.8.*
+        gloss          == 1.8.*,
+        gloss-raster   == 1.8.*
   Main-is:        Main.hs
   hs-source-dirs: raster/Pulse
   ghc-options:
@@ -239,8 +239,8 @@ Executable gloss-wave
         base           == 4.6.*,
         ghc-prim       == 0.3.*,
         vector         == 0.10.*,
-        gloss          == 1.7.*,
-        gloss-raster   == 1.7.8.*
+        gloss          == 1.8.*,
+        gloss-raster   == 1.8.*
   Main-is:        Main.hs
   hs-source-dirs: raster/Wave
   ghc-options:
@@ -255,7 +255,7 @@ Executable gloss-fluid
         base            == 4.6.*,
         ghc-prim        == 0.3.*,
         vector          == 0.10.*,
-        gloss           == 1.7.*,
+        gloss           == 1.8.*,
         repa            == 3.2.*,
         repa-io         == 3.2.*,
         repa-algorithms == 3.2.*
@@ -279,7 +279,7 @@ Executable gloss-fluid
 Executable gloss-snow
   Build-depends
         base            == 4.6.*,
-        gloss           == 1.7.*,
+        gloss           == 1.8.*,
         repa            == 3.2.*,
   Main-is:      Main.hs
   hs-source-dirs: raster/Snow
@@ -294,7 +294,7 @@ Executable gloss-snow
 Executable gloss-mandel
   Build-depends
         base            == 4.6.*,
-        gloss           == 1.7.*,
+        gloss           == 1.8.*,
         repa            == 3.2.*
   Main-is:        Main.hs
   other-modules:  Solver
@@ -312,7 +312,7 @@ Executable gloss-mandel
 Executable gloss-graph
   Build-depends
         base            == 4.6.*,
-        gloss           == 1.7.*,
+        gloss           == 1.8.*,
         containers      == 0.5.*
   Main-is:        Main.hs
   hs-source-dirs: picture/Graph
