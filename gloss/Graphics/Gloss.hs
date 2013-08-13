@@ -31,8 +31,14 @@
 --   Gloss programs should be compiled with @-threaded@, otherwise the GHC runtime
 --   will limit the frame-rate to around 20Hz.
 --
+--   To build gloss using the GLFW window manager instead of GLUT use
+--        @cabal install gloss --flags=\"GLFW -GLUT\"@
 --
 -- @Release Notes:
+--
+-- For 1.8.0
+--  Thanks to Francesco Mazzoli
+--   * Factored out ViewPort and ViewState handling into user visible modules.
 --
 -- For 1.7.0:
 --   * Tweaked circle level-of-detail reduction code.
@@ -50,13 +56,6 @@
 --   * O(1) Conversion of ForeignPtrs to bitmaps.
 --   * An extra flag on the Bitmap constructor allows bitmaps to be cached
 --     in texture memory between frames.
---
--- For 1.4.0:
---   Thanks to Christiaan Baaij: 
---   * Refactoring of Gloss internals to support multiple window manager backends.
---   * Support for using GLFW as the window library instead of GLUT.
---     GLUT is still the default, but to use GLFW install gloss with:
---        cabal install gloss --flags=\"GLFW -GLUT\"
 -- @
 --
 -- For more information, check out <http://gloss.ouroborus.net>.

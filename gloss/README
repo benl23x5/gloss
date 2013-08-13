@@ -29,6 +29,10 @@ OTHER THINGS
 -------------------------------------------------------------------------------
 Release Notes:
 
+ For 1.8.0
+   Thanks to Francesco Mazzoli
+   * Factored out ViewPort and ViewState handling into user visible modules.
+
  For 1.7.0:
    * Tweaked circle level-of-detail reduction code.
    * Increased frame rate cap to 100hz.
