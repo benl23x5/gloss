@@ -20,17 +20,15 @@ callback_viewState_motion
 callback_viewState_motion portRef
  	= Motion (viewState_motion portRef)
 
-viewState_motion
-	:: IORef ViewState
-	-> MotionCallback
 
+viewState_motion :: IORef ViewState -> MotionCallback
 viewState_motion viewStateRef stateRef pos
- = do	viewState	<- readIORef viewStateRef
-	ev		<- motionEvent stateRef pos
-        case updateViewStateWithEvent' ev viewState of
+ = do	viewState <- readIORef viewStateRef
+	ev        <- motionEvent stateRef pos
+        case updateViewStateWithEventMaybe ev viewState of
 		Nothing -> return ()
-		Just viewState' ->
-		  do	viewStateRef `writeIORef` viewState'
+		Just viewState' 
+                 -> do	viewStateRef `writeIORef` viewState'
 			postRedisplay stateRef
 
 

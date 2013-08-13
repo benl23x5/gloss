@@ -20,15 +20,13 @@ callback_viewState_keyMouse viewStateRef
  	= KeyMouse (viewState_keyMouse viewStateRef)
 
 
-viewState_keyMouse
-	:: IORef ViewState
-	-> KeyboardMouseCallback
+viewState_keyMouse :: IORef ViewState -> KeyboardMouseCallback
 viewState_keyMouse viewStateRef stateRef key keyState keyMods pos
- = do	viewState	<- readIORef viewStateRef
-	ev		<- keyMouseEvent stateRef key keyState keyMods pos
-        case updateViewStateWithEvent' ev viewState of
+ = do	viewState <- readIORef viewStateRef
+	ev	  <- keyMouseEvent stateRef key keyState keyMods pos
+        case updateViewStateWithEventMaybe ev viewState of
 		Nothing -> return ()
-		Just viewState' ->
-		  do	viewStateRef `writeIORef` viewState'
+		Just viewState' 
+                 -> do	viewStateRef `writeIORef` viewState'
 			postRedisplay stateRef
 

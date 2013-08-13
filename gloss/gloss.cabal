@@ -97,6 +97,7 @@ Library
 
   Extensions:
         DeriveDataTypeable
+        PatternGuards
 
   If flag(GLUT)
     CPP-Options: -DWITHGLUT

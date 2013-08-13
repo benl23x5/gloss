@@ -1,5 +1,3 @@
--- | The 'ViewPort' represents the global transformation applied to the displayed picture.
---	When the user pans, zooms, or rotates the display then this changes the 'ViewPort'.
 module Graphics.Gloss.Data.ViewPort
 	( ViewPort(..)
 	, viewPortInit
@@ -11,6 +9,9 @@ import Graphics.Gloss.Geometry.Angle
 import Graphics.Gloss.Data.Picture (Picture(..))
 import Graphics.Gloss.Data.Point
 
+
+-- | The 'ViewPort' represents the global transformation applied to the displayed picture.
+--      When the user pans, zooms, or rotates the display then this changes the 'ViewPort'.
 data ViewPort
 	= ViewPort { 
 	-- | Global translation.
@@ -33,6 +34,7 @@ viewPortInit
 	, viewPortScale		= 1 
 	}
 
+
 -- | Translates, rotates, and scales an image according to the 'ViewPort'.
 applyViewPortToPicture :: ViewPort  -> Picture -> Picture
 applyViewPortToPicture
@@ -41,9 +43,10 @@ applyViewPortToPicture
 			, viewPortRotate	= rotate }
 	= Scale scale scale . Rotate rotate . Translate transX transY
 
--- | Takes a point referencing a position according to the 'ViewPort'
---   (e.g. user input) and reverts the scaling, rotation, and
---   translation.
+
+-- | Takes a point using screen coordinates, and uses the `ViewPort` to convert
+--   it to Picture coordinates. This is the inverse of `applyViewPortToPicture` 
+--   for points.
 invertViewPort :: ViewPort -> Point -> Point
 invertViewPort
 	ViewPort	{ viewPortScale		= scale
