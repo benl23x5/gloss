@@ -314,7 +314,7 @@ Executable gloss-graph
         base            == 4.6.*,
         gloss           == 1.8.*,
         containers      == 0.5.*
-  Main-is:        Main.hs
+  Main-is:        Main.lhs
   hs-source-dirs: picture/Graph
   ghc-options:
         -Wall -O2
