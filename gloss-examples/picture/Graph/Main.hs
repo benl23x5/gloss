@@ -92,7 +92,7 @@ drawEdge (v1, v2) sc = Line [vertexPos v1 sc, vertexPos v2 sc]
 drawScene :: Scene -> Picture
 drawScene sc@Scene{scGraph = gr, scViewState = ViewState{viewStateViewPort = port}} =
     applyViewPortToPicture port $
-    Pictures [Color vertexColor vertices, Color edgeColor edges]
+    Pictures [Color edgeColor edges, Color vertexColor vertices]
   where
     vertices = Pictures [drawVertex n sc | n <- Map.keys (grNeighs gr)    ]
     edges    = Pictures [drawEdge e sc   | e <- Set.toList (graphEdges gr)]
