@@ -227,7 +227,7 @@ findVertex p1 sca Scene{scPoints = pts} = Map.foldrWithKey' f Nothing pts
 
 -- Events ---------------------------------------------------------------------
 handleEvent :: Event -> Scene -> Scene
-handleEvent (EventKey (MouseButton LeftButton) Down Modifiers{ctrl = Down} pos) sc 
+handleEvent (EventKey (MouseButton LeftButton) Down Modifiers{shift = Down} pos) sc 
  = case findVertex (invertViewPort port pos) (viewPortScale port) sc of
         Nothing -> sc
         Just v  -> sc{scSelected = Just v}
@@ -272,7 +272,7 @@ sampleGraph =
 
 -- Main -----------------------------------------------------------------------
 windowSize :: (Int, Int)
-windowSize = (640, 480)
+windowSize = (800, 600)
 
 
 sceneWindow :: Scene -> IO ()
