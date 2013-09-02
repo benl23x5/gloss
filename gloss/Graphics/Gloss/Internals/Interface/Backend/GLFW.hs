@@ -440,7 +440,7 @@ runMainLoopGLFW stateRef
  = X.catch go exit
  where
   exit :: X.SomeException -> IO ()
-  exit _ = exitGLFW stateRef
+  exit e = print e >> exitGLFW stateRef
 
   go   :: IO ()
   go 
