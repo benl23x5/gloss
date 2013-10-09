@@ -12,6 +12,7 @@ import Graphics.Gloss.Internals.Interface.Backend
 data Event
 	= EventKey    Key KeyState Modifiers (Float, Float)
 	| EventMotion (Float, Float)
+    | EventResize   (Int, Int)
 	deriving (Eq, Show)
 
 keyMouseEvent ::

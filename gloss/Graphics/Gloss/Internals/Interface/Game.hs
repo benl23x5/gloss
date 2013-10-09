@@ -90,7 +90,7 @@ playWithBackendIO
 		, callback_exit () 
 		, callback_keyMouse worldSR viewSR worldHandleEvent
 		, callback_motion   worldSR worldHandleEvent
-		, callback_viewState_reshape ]
+		, callback_reshape  worldSR worldHandleEvent]
 
 	createWindow backend display backgroundColor callbacks
 
@@ -139,3 +139,23 @@ handle_motion worldRef eventFn backendRef pos
         world    <- readIORef worldRef
         world'   <- eventFn ev world
         writeIORef worldRef world'
+
+
+-- | Callback for Handle reshape event.
+callback_reshape
+  :: IORef world
+  -> (Event -> world -> IO world)
+  -> Callback
+callback_reshape worldRef eventFN
+ 	= Reshape (handle_reshape worldRef eventFN)
+
+
+handle_reshape
+  :: IORef world
+  -> (Event -> world -> IO world)
+  -> ReshapeCallback
+handle_reshape worldRef eventFn stateRef (width,height)
+ = do   world  <- readIORef worldRef
+        world' <- eventFn (EventResize (width, height)) world
+        writeIORef worldRef world'
+        viewState_reshape stateRef (width, height)

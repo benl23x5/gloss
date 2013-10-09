@@ -1,7 +1,7 @@
 {-# OPTIONS_HADDOCK hide #-}
 
 module Graphics.Gloss.Internals.Interface.ViewState.Reshape
-	(callback_viewState_reshape)
+	(callback_viewState_reshape, viewState_reshape)
 where
 import Graphics.Gloss.Internals.Interface.Callback
 import Graphics.Gloss.Internals.Interface.Backend

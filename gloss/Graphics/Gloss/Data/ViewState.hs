@@ -257,6 +257,9 @@ updateViewStateWithEventMaybe (EventMotion pos) viewState
  = motionTranslate (viewStateTranslateMark viewState) pos viewState `mplus`
    motionRotate    (viewStateRotateMark    viewState) pos viewState
 
+-- Not sure what is needed here.
+updateViewStateWithEventMaybe (EventResize _) _ = Nothing
+
 
 -- | Zoom in a `ViewState` by the scale step.
 controlZoomIn :: ViewState -> ViewState
