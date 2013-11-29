@@ -16,6 +16,10 @@ Description:
 Synopsis:
         Parallel rendering of raster images.
 
+source-repository head
+        type:           git
+        location:       https://github.com/benl23x5/gloss
+
 Tested-with: GHC == 6.12.1, GHC == 7.0.1
 
 Library
