@@ -1,5 +1,5 @@
 gloss
------
+=====
 
 Gloss hides the pain of drawing simple vector graphics behind a nice
 data type and a few display functions. 
