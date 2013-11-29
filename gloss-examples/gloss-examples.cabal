@@ -17,6 +17,10 @@ Description:
 Synopsis:
         Examples using the gloss library
 
+source-repository head
+        type:           git
+        location:       https://github.com/benl23x5/gloss
+
 Executable gloss-bitmap
   Build-depends:
         base           == 4.6.*,
