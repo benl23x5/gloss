@@ -6,11 +6,11 @@
 -- | This game mode lets you manage your own input. Pressing ESC will still abort the program,
 --   but you don't get automatic pan and zoom controls like with `displayInWindow`.
 module Graphics.Gloss.Interface.Pure.Game
- 	( module Graphics.Gloss.Data.Display
+        ( module Graphics.Gloss.Data.Display
         , module Graphics.Gloss.Data.Picture
-	, module Graphics.Gloss.Data.Color
-	, play
-	, Event(..), Key(..), SpecialKey(..), MouseButton(..), KeyState(..), Modifiers(..))
+        , module Graphics.Gloss.Data.Color
+        , play
+        , Event(..), Key(..), SpecialKey(..), MouseButton(..), KeyState(..), Modifiers(..))
 where
 import Graphics.Gloss.Data.Display
 import Graphics.Gloss.Data.Picture

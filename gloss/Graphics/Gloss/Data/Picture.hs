@@ -1,33 +1,33 @@
 
 -- | Data types for representing pictures.
 module Graphics.Gloss.Data.Picture
-	( Point
-	, Vector
-	, Path
-	, Picture(..)
-	, BitmapData
+        ( Point
+        , Vector
+        , Path
+        , Picture(..)
+        , BitmapData
 
-	-- * Aliases for Picture constructors
-	, blank
+        -- * Aliases for Picture constructors
+        , blank
         , polygon
         , line
         , circle, thickCircle
         , arc,    thickArc
         , text
         , bitmap
-	, color
+        , color
         , translate, rotate, scale
-	, pictures
+        , pictures
 
-	-- * Compound shapes
- 	, lineLoop
- 	, circleSolid
+        -- * Compound shapes
+        , lineLoop
+        , circleSolid
         , arcSolid
         , sectorWire
-	, rectanglePath
+        , rectanglePath
         , rectangleWire
         , rectangleSolid
-	, rectangleUpperPath
+        , rectangleUpperPath
         , rectangleUpperWire
         , rectangleUpperSolid
 
@@ -57,75 +57,75 @@ import qualified Data.ByteString.Unsafe as BSU
 import Prelude hiding (map)
 
 -- | A path through the x-y plane.
-type Path	= [Point]				
+type Path       = [Point]                               
 
 
 -- | A 2D picture
 data Picture
-	-- Primitives -------------------------------------
+        -- Primitives -------------------------------------
 
-	-- | A blank picture, with nothing in it.
-	= Blank
+        -- | A blank picture, with nothing in it.
+        = Blank
 
-	-- | A convex polygon filled with a solid color.
-	| Polygon 	Path
-	
-	-- | A line along an arbitrary path.
-	| Line		Path
+        -- | A convex polygon filled with a solid color.
+        | Polygon       Path
+        
+        -- | A line along an arbitrary path.
+        | Line          Path
 
-	-- | A circle with the given radius.
-	| Circle	Float
+        -- | A circle with the given radius.
+        | Circle        Float
 
-	-- | A circle with the given thickness and radius.
-	--   If the thickness is 0 then this is equivalent to `Circle`.
-	| ThickCircle	Float Float
+        -- | A circle with the given thickness and radius.
+        --   If the thickness is 0 then this is equivalent to `Circle`.
+        | ThickCircle   Float Float
 
-	-- | A circular arc drawn counter-clockwise between two angles 
+        -- | A circular arc drawn counter-clockwise between two angles 
         --  (in degrees) at the given radius.
         | Arc           Float Float Float
 
-	-- | A circular arc drawn counter-clockwise between two angles 
+        -- | A circular arc drawn counter-clockwise between two angles 
         --  (in degrees), with the given radius  and thickness.
-	--   If the thickness is 0 then this is equivalent to `Arc`.
-        | ThickArc	Float Float Float Float
+        --   If the thickness is 0 then this is equivalent to `Arc`.
+        | ThickArc      Float Float Float Float
 
-	-- | Some text to draw with a vector font.
-	| Text		String
+        -- | Some text to draw with a vector font.
+        | Text          String
 
-	-- | A bitmap image with a width, height and some 32-bit RGBA
+        -- | A bitmap image with a width, height and some 32-bit RGBA
         --   bitmap data.
-	-- 
-	--  The boolean flag controls whether Gloss should cache the data
+        -- 
+        --  The boolean flag controls whether Gloss should cache the data
         --  between frames for speed. If you are programatically generating
         --  the image for each frame then use `False`. If you have loaded it
         --  from a file then use `True`.
-	| Bitmap	Int	Int 	BitmapData Bool
+        | Bitmap        Int     Int     BitmapData Bool
 
-	-- Color ------------------------------------------
-	-- | A picture drawn with this color.
-	| Color		Color  		Picture
+        -- Color ------------------------------------------
+        -- | A picture drawn with this color.
+        | Color         Color           Picture
 
-	-- Transforms -------------------------------------
-	-- | A picture translated by the given x and y coordinates.
-	| Translate	Float Float	Picture
+        -- Transforms -------------------------------------
+        -- | A picture translated by the given x and y coordinates.
+        | Translate     Float Float     Picture
 
-	-- | A picture rotated clockwise by the given angle (in degrees).
-	| Rotate	Float		Picture
+        -- | A picture rotated clockwise by the given angle (in degrees).
+        | Rotate        Float           Picture
 
-	-- | A picture scaled by the given x and y factors.
-	| Scale		Float	Float	Picture
+        -- | A picture scaled by the given x and y factors.
+        | Scale         Float   Float   Picture
 
-	-- More Pictures ----------------------------------
-	-- | A picture consisting of several others.
-	| Pictures	[Picture]
-	deriving (Show, Eq, Data, Typeable)
+        -- More Pictures ----------------------------------
+        -- | A picture consisting of several others.
+        | Pictures      [Picture]
+        deriving (Show, Eq, Data, Typeable)
 
 
 -- Instances ------------------------------------------------------------------
 instance Monoid Picture where
-	mempty		= blank
-	mappend a b	= Pictures [a, b]
-	mconcat		= Pictures
+        mempty          = blank
+        mappend a b     = Pictures [a, b]
+        mconcat         = Pictures
 
 
 -- Constructors ----------------------------------------------------------------
@@ -133,7 +133,7 @@ instance Monoid Picture where
 
 -- | A blank picture, with nothing in it.
 blank :: Picture
-blank	= Blank
+blank   = Blank
 
 -- | A convex polygon filled with a solid color.
 polygon :: Path -> Picture
@@ -141,11 +141,11 @@ polygon = Polygon
 
 -- | A line along an arbitrary path.
 line :: Path -> Picture
-line 	= Line
+line    = Line
 
 -- | A circle with the given radius.
 circle  :: Float  -> Picture
-circle 	= Circle
+circle  = Circle
 
 -- | A circle with the given thickness and radius.
 --   If the thickness is 0 then this is equivalent to `Circle`.
@@ -269,8 +269,8 @@ loadBMP filePath
 -- Other Shapes ---------------------------------------------------------------
 -- | A closed loop along a path.
 lineLoop :: Path -> Picture
-lineLoop []	= Line []
-lineLoop (x:xs)	= Line ((x:xs) ++ [x])
+lineLoop []     = Line []
+lineLoop (x:xs) = Line ((x:xs) ++ [x])
 
 
 -- Circles and Arcs -----------------------------------------------------------
@@ -313,39 +313,39 @@ rectanglePath
         :: Float        -- ^ width of rectangle
         -> Float        -- ^ height of rectangle
         -> Path
-rectanglePath sizeX sizeY			
- = let	sx	= sizeX / 2
-	sy	= sizeY / 2
-   in	[(-sx, -sy), (-sx, sy), (sx, sy), (sx, -sy)]
+rectanglePath sizeX sizeY                       
+ = let  sx      = sizeX / 2
+        sy      = sizeY / 2
+   in   [(-sx, -sy), (-sx, sy), (sx, sy), (sx, -sy)]
 
 
 -- | A wireframe rectangle centered about the origin.
 rectangleWire :: Float -> Float -> Picture
 rectangleWire sizeX sizeY
-	= lineLoop $ rectanglePath sizeX sizeY
+        = lineLoop $ rectanglePath sizeX sizeY
 
 
 -- | A wireframe rectangle in the y > 0 half of the x-y plane.
 rectangleUpperWire :: Float -> Float -> Picture
 rectangleUpperWire sizeX sizeY
-	= lineLoop $ rectangleUpperPath sizeX sizeY
+        = lineLoop $ rectangleUpperPath sizeX sizeY
 
 
 -- | A path representing a rectangle in the y > 0 half of the x-y plane.
 rectangleUpperPath :: Float -> Float -> Path
 rectangleUpperPath sizeX sy
- = let 	sx	= sizeX / 2
-   in  	[(-sx, 0), (-sx, sy), (sx, sy), (sx, 0)]
+ = let  sx      = sizeX / 2
+   in   [(-sx, 0), (-sx, sy), (sx, sy), (sx, 0)]
 
 
 -- | A solid rectangle centered about the origin.
 rectangleSolid :: Float -> Float -> Picture
 rectangleSolid sizeX sizeY
-	= Polygon $ rectanglePath sizeX sizeY
+        = Polygon $ rectanglePath sizeX sizeY
 
 
 -- | A solid rectangle in the y > 0 half of the x-y plane.
 rectangleUpperSolid :: Float -> Float -> Picture
 rectangleUpperSolid sizeX sizeY
-	= Polygon  $ rectangleUpperPath sizeX sizeY
+        = Polygon  $ rectangleUpperPath sizeX sizeY
 
