@@ -24,10 +24,14 @@ source-repository head
 
 Flag GLUT
   Description: Enable the GLUT backend
-  Default:     True
+  Default:     False
 
 Flag GLFW
   Description: Enable the GLFW backend
+  Default:     False
+
+Flag GLIOS
+  Description: Enable the GLiOS backend
   Default:     False
 
 Flag ExplicitBackend
@@ -36,14 +40,17 @@ Flag ExplicitBackend
   Default:     False
 
 Library
-  Build-Depends: 
-        base       == 4.6.*,
+  Build-Depends:
+        base       >= 4.6,
         ghc-prim   == 0.3.*,
         containers == 0.5.*,
         bytestring == 0.10.*,
-        OpenGL     == 2.8.*,
-        GLUT       == 2.4.*,
-        bmp        == 1.2.*
+        OpenGL     == 2.9.*,
+        OpenGLRaw  == 1.4.*,
+        bmp        == 1.2.*,
+        array      == 0.4.*
+
+
 
   ghc-options:
         -O2 -Wall
@@ -103,7 +110,14 @@ Library
         DeriveDataTypeable
         PatternGuards
 
+  If flag(GLIOS)
+    CPP-Options: -DWITHGLIOS
+    Other-modules:
+        Graphics.Gloss.Internals.Interface.Backend.GLiOS
+
   If flag(GLUT)
+    Build-Depends:
+      GLUT == 2.5.*
     CPP-Options: -DWITHGLUT
     Other-modules:
         Graphics.Gloss.Internals.Interface.Backend.GLUT

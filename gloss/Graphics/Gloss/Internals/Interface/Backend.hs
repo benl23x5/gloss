@@ -22,11 +22,16 @@ import Graphics.Gloss.Internals.Interface.Backend.GLFW
 #ifdef WITHGLUT
 import Graphics.Gloss.Internals.Interface.Backend.GLUT
 #endif
+#ifdef WITHGLIOS
+import Graphics.Gloss.Internals.Interface.Backend.GLiOS
+#endif
 
 #ifdef WITHGLUT
 defaultBackendState :: GLUTState
 #elif  WITHGLFW
 defaultBackendState :: GLFWState
+#elif WITHGLIOS
+defaultBackendState :: GLiOSState
 #else
 #error No default backend defined
 #endif

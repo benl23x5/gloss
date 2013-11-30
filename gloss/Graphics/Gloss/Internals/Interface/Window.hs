@@ -58,7 +58,7 @@ createWindow
         -- we don't need the depth buffer for 2d.
         GL.depthFunc    $= Just GL.Always
 
-        -- always clear the buffer to white
+        -- always clear the buffer to clearColor
         GL.clearColor   $= glColor4OfColor clearColor
 
         -- Dump some debugging info

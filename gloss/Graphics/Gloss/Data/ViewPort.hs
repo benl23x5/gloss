@@ -22,7 +22,7 @@ data ViewPort
 
         -- | Global scaling (of both x and y coordinates).
         , viewPortScale         :: !Float
-        }
+        } deriving (Show)
 
 
 -- | The initial state of the viewport.

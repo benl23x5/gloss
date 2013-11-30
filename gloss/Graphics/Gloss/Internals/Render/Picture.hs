@@ -21,7 +21,6 @@ import Control.Monad
 import Graphics.Rendering.OpenGL                        (($=), get)
 import qualified Graphics.Rendering.OpenGL.GL           as GL
 import qualified Graphics.Rendering.OpenGL.GLU.Errors   as GLU
-import qualified Graphics.UI.GLUT                       as GLUT
 
 
 -- | Render a picture using the given render options and viewport.
@@ -81,19 +80,15 @@ drawPicture circScale picture
 
         -- line
         Line path
-         -> GL.renderPrimitive GL.LineStrip
-                $ vertexPFs path
-
+         -> renderVertices GL.LineStrip path
 
         -- polygon (where?)
         Polygon path
          | ?modeWireframe
-         -> GL.renderPrimitive GL.LineLoop
-                $ vertexPFs path
+         -> renderVertices GL.LineLoop path
 
          | otherwise
-         -> GL.renderPrimitive GL.Polygon
-                $ vertexPFs path
+         -> renderVertices GL.TriangleFan path
 
         -- circle
         Circle radius
@@ -115,7 +110,7 @@ drawPicture circScale picture
         Text str
          -> do
                 GL.blend        $= GL.Disabled
-                GL.preservingMatrix $ GLUT.renderString GLUT.Roman str
+--                GL.preservingMatrix $ GLUT.renderString GLUT.Roman str
                 GL.blend        $= GL.Enabled
 
         -- colors with float components.
@@ -319,7 +314,7 @@ installTexture width height bitmapData@(BitmapData _ fptr) cacheMe
         withForeignPtr fptr
          $ \ptr ->
            GL.texImage2D
-                Nothing
+                GL.Texture2D
                 GL.NoProxy
                 0
                 GL.RGBA8

@@ -9,8 +9,6 @@ where
 import  Graphics.Gloss.Internals.Render.Common
 import  Graphics.Gloss.Geometry.Angle
 import  qualified Graphics.Rendering.OpenGL.GL          as GL
-import  GHC.Exts
-
 
 -- | Decide how many line segments to use to render the circle.
 --   The number of segments we should use to get a nice picture depends on
@@ -37,8 +35,7 @@ renderCircle posX posY scaleFactor radius_ thickness_
         | thickness     == 0
         , radScreen     <- scaleFactor * (radius + thickness / 2)
         , radScreen     <= 1
-        = GL.renderPrimitive GL.Points
-            $ GL.vertex $ GL.Vertex2 (gf posX) (gf posY)
+        = renderVertices GL.Points $ [(posX, posY)]
 
         -- Render zero thickness circles with lines.
         | thickness == 0
@@ -54,28 +51,20 @@ renderCircle posX posY scaleFactor radius_ thickness_
 
 -- | Render a circle as a line.
 renderCircleLine :: Float -> Float -> Int -> Float -> IO ()
-renderCircleLine (F# posX) (F# posY) steps (F# rad)
- = let  n               = fromIntegral steps
-        !(F# tStep)     = (2 * pi) / n
-        !(F# tStop)     = (2 * pi)
-
-   in   GL.renderPrimitive GL.LineLoop
-         $ renderCircleLine_step posX posY tStep tStop rad 0.0#
+renderCircleLine posX posY steps rad
+  = let tStep            = (2 * pi) / (fromIntegral steps)
+    in  renderVertices GL.LineLoop $ circleLineVertices posX posY rad 0 tStep (2*pi)
 {-# INLINE renderCircleLine #-}
 
 
 -- | Render a circle with a given thickness as a triangle strip
 renderCircleStrip :: Float -> Float -> Int -> Float -> Float -> IO ()
-renderCircleStrip (F# posX) (F# posY) steps r width
- = let  n               = fromIntegral steps
-        !(F# tStep)     = (2 * pi) / n
-        !(F# tStop)     = (2 * pi) + (F# tStep) / 2
-        !(F# r1)        = r - width / 2
-        !(F# r2)        = r + width / 2
-
-   in   GL.renderPrimitive GL.TriangleStrip
-         $ renderCircleStrip_step posX posY tStep tStop r1 0.0# r2
-                (tStep `divideFloat#` 2.0#)
+renderCircleStrip posX posY steps r width
+ = let tStep           = (2 * pi) / (fromIntegral steps)
+       r1              = r - width / 2
+       r2              = r + width / 2
+   in  renderVertices GL.TriangleStrip
+         $ circleStripVertices posX posY r1 r2 0 tStep (2*pi)
 {-# INLINE renderCircleStrip #-}
 
 
@@ -100,69 +89,51 @@ renderArc posX posY scaleFactor radius_ a1 a2 thickness_
 
 -- | Render an arc as a line.
 renderArcLine :: Float -> Float -> Int -> Float -> Float -> Float -> IO ()
-renderArcLine (F# posX) (F# posY) steps (F# rad) a1 a2
+renderArcLine posX posY steps rad a1 a2
  = let  n               = fromIntegral steps
-        !(F# tStep)     = (2 * pi) / n
-        !(F# tStart)    = degToRad a1
-        !(F# tStop)     = degToRad a2 + if a1 >= a2 then 2 * pi else 0
-
+        tStep           = (2 * pi) / n
+        tStart          = degToRad a1
+        tStop           = degToRad a2 + if a1 >= a2 then 2 * pi else 0
         -- force the line to end at the desired angle
-        endVertex       = addPointOnCircle posX posY rad tStop
+        endVertex       = pointOnCircle posX posY rad tStop
 
-   in   GL.renderPrimitive GL.LineStrip
-         $ do   renderCircleLine_step posX posY tStep tStop rad tStart
-                endVertex
+    in renderVertices GL.LineStrip $
+         circleLineVertices posX posY rad tStart tStep tStop ++ [endVertex]
 {-# INLINE renderArcLine #-}
 
 
 -- | Render an arc with a given thickness as a triangle strip
 renderArcStrip :: Float -> Float -> Int -> Float -> Float -> Float -> Float -> IO ()
-renderArcStrip (F# posX) (F# posY) steps r a1 a2 width
+renderArcStrip posX posY steps r a1 a2 width
  = let  n               = fromIntegral steps
         tStep           = (2 * pi) / n
-
         t1              = normaliseAngle $ degToRad a1
         t2              = normaliseAngle $ degToRad a2
         (tStart, tStop) = if t1 <= t2 then (t1, t2) else (t2, t1)
         tDiff           = tStop - tStart
         tMid            = tStart + tDiff / 2
-
-        !(F# tStep')    = tStep
-        !(F# tStep2')   = tStep / 2
-        !(F# tStart')   = tStart
-        !(F# tStop')    = tStop
-        !(F# tCut')     = tStop - tStep
-        !(F# tMid')     = tMid
-        !(F# r1')       = r - width / 2
-        !(F# r2')       = r + width / 2
-
-   in   GL.renderPrimitive GL.TriangleStrip
-         $ do
-                 -- start vector
-                 addPointOnCircle posX posY r1' tStart'
-                 addPointOnCircle posX posY r2' tStart'
-
-                 -- If we don't have a complete step then just drop a point
-                 -- between the two ending lines.
-                 if tDiff < tStep
-                   then do
-                        addPointOnCircle posX posY r1' tMid'
-
-                        -- end vectors
-                        addPointOnCircle posX posY r2' tStop'
-                        addPointOnCircle posX posY r1' tStop'
-
-
-                   else do
-                        renderCircleStrip_step posX posY tStep' tCut' r1' tStart' r2'
-                                (tStart' `plusFloat#` tStep2')
-
-                        -- end vectors
-                        addPointOnCircle posX posY r1' tStop'
-                        addPointOnCircle posX posY r2' tStop'
+        tCut            = tStop - tStep
+        r1              = r - width / 2
+        r2              = r + width / 2
+    in renderVertices GL.TriangleStrip $
+          [ pointOnCircle posX posY r1 tStart,
+            pointOnCircle posX posY r2 tStart] ++
+                  -- If we don't have a complete step then just drop a point
+                  -- between the two ending lines.
+                  if tDiff < tStep
+                    then
+                         [ pointOnCircle posX posY r1 tMid,
+                         -- end vectors
+                           pointOnCircle posX posY r2 tStop,
+                           pointOnCircle posX posY r1 tStop ]
+                    else
+                         circleStripVertices posX posY r1 r2 tStart tStep tCut ++
+                         -- end vectors
+                         [ pointOnCircle posX posY r1 tStop,
+                           pointOnCircle posX posY r2 tStop ]
 {-# INLINE renderArcStrip #-}
 
-
+{- FIXME: sseefried: Remove at some point. Was used with GL.renderPrimitive
 -- Step functions -------------------------------------------------------------
 renderCircleLine_step
         :: Float# -> Float#
@@ -178,9 +149,15 @@ renderCircleLine_step posX posY tStep tStop rad tt
         = do    addPointOnCircle posX posY rad tt
                 renderCircleLine_step posX posY tStep tStop rad
                         (tt `plusFloat#` tStep)
-{-# INLINE renderCircleLine_step #-}
+  # INLINE renderCircleLine_step
+-}
 
+circleLineVertices :: Float -> Float -> Float -> Float -> Float -> Float -> [(Float,Float)]
+circleLineVertices posX posY rad tStart tStep tStop =
+     map (pointOnCircle posX posY rad) [tStart, tStep .. tStop]
+{-# INLINE circleLineVertices #-}
 
+{- FIXME: sseefried: Remove at some point. Was used with GL.renderPrimitive
 renderCircleStrip_step
         :: Float# -> Float#
         -> Float# -> Float#
@@ -196,21 +173,35 @@ renderCircleStrip_step posX posY tStep tStop r1 t1 r2 t2
                 addPointOnCircle posX posY r2 t2
                 renderCircleStrip_step posX posY tStep tStop r1
                         (t1 `plusFloat#` tStep) r2 (t2 `plusFloat#` tStep)
-{-# INLINE renderCircleStrip_step #-}
+ INLINE renderCircleStrip_step
+-}
 
+circleStripVertices :: Float -> Float -> Float -> Float -> Float -> Float -> Float -> [(Float,Float)]
+circleStripVertices posX posY r1 r2 tStart tStep tStop =
+  let v1s = map (pointOnCircle posX posY r1) [ tStart, tStart + tStep .. tStop]
+      v2s = map (pointOnCircle posX posY r2) [ tStart + tStep/2,
+                                               tStart + 3*tStep/2 .. tStop + tStep/2 ]
+  in concat $ zipWith (\x y -> [x,y]) v1s v2s
 
+{- FIXME: sseefried: Remove at some point. Was used with GL.renderPrimitive
 addPoint :: Float# -> Float# -> IO ()
 addPoint x y =
   GL.vertex $ GL.Vertex2 (gf (F# x)) (gf (F# y))
-{-# INLINE addPoint #-}
+  INLINE addPoint
+-}
 
+pointOnCircle :: Float -> Float -> Float -> Float -> (Float, Float)
+pointOnCircle posX posY rad tt = (posX + rad * cos tt, posY + rad * sin tt)
+
+{- FIXME: sseefried: Remove at some point. Was used with GL.renderPrimitive
 
 addPointOnCircle :: Float# -> Float# -> Float# -> Float# -> IO ()
 addPointOnCircle posX posY rad tt =
   addPoint
     (posX `plusFloat#` (rad `timesFloat#` (cosFloat# tt)))
     (posY `plusFloat#` (rad `timesFloat#` (sinFloat# tt)))
-{-# INLINE addPointOnCircle #-}
+  INLINE addPointOnCircle
+-}
 
 
 
