@@ -40,18 +40,10 @@ renderPicture
  = do
         -- This GL state doesn't change during rendering,
         --      so we can just read it once here
-        (matProj_  :: GL.GLmatrix GL.GLdouble)
-                        <- get $ GL.matrix (Just GL.Projection)
-        viewport_       <- get $ GL.viewport
-        windowSize_     <- getWindowDimensions backendRef
-
         --
         let ?modeWireframe      = stateWireframe renderS
             ?modeColor          = stateColor     renderS
             ?refTextures        = stateTextures  renderS
-            ?matProj            = matProj_
-            ?viewport           = viewport_
-            ?windowSize         = windowSize_
 
         -- setup render state for world
         setLineSmooth   (stateLineSmooth renderS)
@@ -365,13 +357,12 @@ setLineSmooth state
         | state         = GL.lineSmooth $= GL.Enabled
         | otherwise     = GL.lineSmooth $= GL.Disabled
 
-
+{- FIXME: sseefried: Remove now that we're using OpenGL ES
 vertexPFs ::    [(Float, Float)] -> IO ()
-{-# INLINE vertexPFs #-}
+INLINE vertexPFs
 vertexPFs []    = return ()
 vertexPFs ((x, y) : rest)
  = do   GL.vertex $ GL.Vertex2 (gf x) (gf y)
         vertexPFs rest
-
-
+-}
 

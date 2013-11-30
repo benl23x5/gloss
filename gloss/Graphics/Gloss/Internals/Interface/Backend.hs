@@ -11,6 +11,9 @@ module Graphics.Gloss.Internals.Interface.Backend
 #ifdef WITHGLUT
         , module Graphics.Gloss.Internals.Interface.Backend.GLUT
 #endif
+#ifdef WITHGLIOS
+        , module Graphics.Gloss.Internals.Interface.Backend.GLiOS
+#endif
         , defaultBackendState)
 where
 
