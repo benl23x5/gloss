@@ -13,8 +13,8 @@ import Foreign
 
 
 -- | Abstract 32-bit RGBA bitmap data.
-data BitmapData 
-        = BitmapData 
+data BitmapData
+        = BitmapData
                 Int                     -- length (in bytes)
                 (ForeignPtr Word8)      -- pointer to data
         deriving (Eq, Data, Typeable)
@@ -26,7 +26,7 @@ instance Show BitmapData where
 
 -- | Generates the point path to display the bitmap centred
 bitmapPath :: Float -> Float -> [(Float, Float)]
-bitmapPath width height 
+bitmapPath width height
  = [(-width', -height'), (width', -height'), (width', height'), (-width', height')]
  where  width'  = width  / 2
         height' = height / 2
@@ -46,7 +46,7 @@ reverseRGBA_ptr length8 ptr8
  where
         go :: Int -> Ptr Word32 -> Int -> IO ()
         go len ptr count
-         | count < len 
+         | count < len
          = do   curr <- peekElemOff ptr count
                 let byte0 = shift (isolateByte0 curr) 24
                 let byte1 = shift (isolateByte1 curr) 8
@@ -55,7 +55,7 @@ reverseRGBA_ptr length8 ptr8
                 pokeElemOff ptr count (byte0 .|. byte1 .|. byte2 .|. byte3)
                 go len ptr (count + 1)
 
-         | otherwise 
+         | otherwise
          = return ()
 
 -- | Frees the allocated memory given to OpenGL to avoid a memory leak

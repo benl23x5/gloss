@@ -100,8 +100,8 @@ defaultCommandConfig
 
 
 -- | Check if the provided key combination is some gloss viewport command.
-isCommand 
-        :: Map Command [(Key, Maybe Modifiers)] 
+isCommand
+        :: Map Command [(Key, Maybe Modifiers)]
         -> Command -> Key -> Modifiers -> Bool
 
 isCommand commands c key keyMods
@@ -147,7 +147,7 @@ data ViewState
         --      where the mouse was clicked on the window.
         , viewStateTranslateMark        :: !(Maybe (Float, Float))
 
-        -- | During viewport rotation,  
+        -- | During viewport rotation,
         --      where the mouse was clicked on the window
         , viewStateRotateMark           :: !(Maybe (Float, Float))
 
@@ -212,12 +212,12 @@ updateViewStateWithEventMaybe (EventKey key keyState keyMods pos) viewState
 
         | isCommand commands CBumpClockwise key keyMods
         , keyState      == Down
-        = Just $ viewState { viewStateViewPort 
+        = Just $ viewState { viewStateViewPort
                                 = port { viewPortRotate = viewPortRotate port + 5 } }
 
         | isCommand commands CBumpCClockwise key keyMods
         , keyState      == Down
-        = Just $ viewState { viewStateViewPort 
+        = Just $ viewState { viewStateViewPort
                                 = port { viewPortRotate = viewPortRotate port - 5 } }
 
         | isCommand commands CTranslate key keyMods
@@ -238,7 +238,7 @@ updateViewStateWithEventMaybe (EventKey key keyState keyMods pos) viewState
         = Just $ viewState { viewStateRotateMark = Just pos }
 
         -- We don't want to use 'isCommand' here because the user may have
-        -- released the rotation modifier key before the mouse button, 
+        -- released the rotation modifier key before the mouse button,
         -- and we still want to cancel the rotation.
         | currentlyRotating
         , keyState      == Up
@@ -257,36 +257,36 @@ updateViewStateWithEventMaybe (EventMotion pos) viewState
  = motionTranslate (viewStateTranslateMark viewState) pos viewState `mplus`
    motionRotate    (viewStateRotateMark    viewState) pos viewState
 
-updateViewStateWithEventMaybe (EventResize _) _ 
+updateViewStateWithEventMaybe (EventResize _) _
  = Nothing
 
 
 -- | Zoom in a `ViewState` by the scale step.
 controlZoomIn :: ViewState -> ViewState
-controlZoomIn 
- viewState@ViewState 
+controlZoomIn
+ viewState@ViewState
         { viewStateViewPort     = port
         , viewStateScaleStep    = scaleStep }
- = viewState 
-        { viewStateViewPort     
+ = viewState
+        { viewStateViewPort
                 = port { viewPortScale = viewPortScale port * scaleStep } }
 
 
 -- | Zoom out a `ViewState` by the scale step.
 controlZoomOut :: ViewState -> ViewState
-controlZoomOut 
- viewState@ViewState 
+controlZoomOut
+ viewState@ViewState
         { viewStateViewPort     = port
         , viewStateScaleStep    = scaleStep }
  = viewState
-        { viewStateViewPort     
+        { viewStateViewPort
                 = port { viewPortScale = viewPortScale port / scaleStep } }
 
 
 -- | Offset a viewport.
 motionBump :: ViewPort -> (Float, Float) -> ViewPort
 motionBump
-        port@ViewPort   
+        port@ViewPort
         { viewPortTranslate     = trans
         , viewPortScale         = scale
         , viewPortRotate        = r }
@@ -297,9 +297,9 @@ motionBump
 
 
 -- | Apply a translation to the `ViewState`.
-motionTranslate 
-        :: Maybe (Float, Float) 
-        -> (Float, Float) 
+motionTranslate
+        :: Maybe (Float, Float)
+        -> (Float, Float)
         -> ViewState -> Maybe ViewState
 
 motionTranslate Nothing _ _ = Nothing
@@ -319,15 +319,15 @@ motionTranslate (Just (markX, markY)) (posX, posY) viewState
 
 
 -- | Apply a rotation to the `ViewState`.
-motionRotate 
-        :: Maybe (Float, Float) 
-        -> (Float, Float) 
+motionRotate
+        :: Maybe (Float, Float)
+        -> (Float, Float)
         -> ViewState -> Maybe ViewState
 
 motionRotate Nothing _ _ = Nothing
 motionRotate (Just (markX, _markY)) (posX, posY) viewState
  = Just $ viewState
-        { viewStateViewPort     
+        { viewStateViewPort
                 = port { viewPortRotate = rotate - rotateFactor * (posX - markX) }
 
         , viewStateRotateMark   = Just (posX, posY) }

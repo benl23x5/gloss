@@ -57,7 +57,7 @@ import qualified Data.ByteString.Unsafe as BSU
 import Prelude hiding (map)
 
 -- | A path through the x-y plane.
-type Path       = [Point]                               
+type Path       = [Point]
 
 
 -- | A 2D picture
@@ -69,7 +69,7 @@ data Picture
 
         -- | A convex polygon filled with a solid color.
         | Polygon       Path
-        
+
         -- | A line along an arbitrary path.
         | Line          Path
 
@@ -80,11 +80,11 @@ data Picture
         --   If the thickness is 0 then this is equivalent to `Circle`.
         | ThickCircle   Float Float
 
-        -- | A circular arc drawn counter-clockwise between two angles 
+        -- | A circular arc drawn counter-clockwise between two angles
         --  (in degrees) at the given radius.
         | Arc           Float Float Float
 
-        -- | A circular arc drawn counter-clockwise between two angles 
+        -- | A circular arc drawn counter-clockwise between two angles
         --  (in degrees), with the given radius  and thickness.
         --   If the thickness is 0 then this is equivalent to `Arc`.
         | ThickArc      Float Float Float Float
@@ -94,7 +94,7 @@ data Picture
 
         -- | A bitmap image with a width, height and some 32-bit RGBA
         --   bitmap data.
-        -- 
+        --
         --  The boolean flag controls whether Gloss should cache the data
         --  between frames for speed. If you are programatically generating
         --  the image for each frame then use `False`. If you have loaded it
@@ -152,7 +152,7 @@ circle  = Circle
 thickCircle  :: Float -> Float -> Picture
 thickCircle = ThickCircle
 
--- | A circular arc drawn counter-clockwise between two angles (in degrees) 
+-- | A circular arc drawn counter-clockwise between two angles (in degrees)
 --   at the given radius.
 arc     :: Float -> Float -> Float -> Picture
 arc = Arc
@@ -167,13 +167,13 @@ thickArc = ThickArc
 text :: String -> Picture
 text = Text
 
--- | A bitmap image with a width, height and a Vector holding the 
+-- | A bitmap image with a width, height and a Vector holding the
 --   32-bit RGBA bitmap data.
--- 
+--
 --  The boolean flag controls whether Gloss should cache the data
 --  between frames for speed.
 --  If you are programatically generating the image for
---  each frame then use `False`.  
+--  each frame then use `False`.
 --  If you have loaded it from a file then use `True`.
 bitmap  :: Int -> Int -> BitmapData -> Bool -> Picture
 bitmap = Bitmap
@@ -211,7 +211,7 @@ bitmapOfForeignPtr :: Int -> Int -> ForeignPtr Word8 -> Bool -> Picture
 bitmapOfForeignPtr width height fptr cacheMe
  = let  len     = width * height * 4
         bdata   = BitmapData len fptr
-   in   Bitmap width height bdata cacheMe 
+   in   Bitmap width height bdata cacheMe
 
 
 -- | O(size). Copy a `ByteString` of RGBA data into a bitmap with the given
@@ -242,7 +242,7 @@ bitmapOfBMP :: BMP -> Picture
 bitmapOfBMP bmp
  = unsafePerformIO
  $ do   let (width, height)     = bmpDimensions bmp
-        let bs                  = unpackBMPToRGBA32 bmp 
+        let bs                  = unpackBMPToRGBA32 bmp
         let len                 = width * height * 4
 
         ptr     <- mallocBytes len
@@ -276,29 +276,29 @@ lineLoop (x:xs) = Line ((x:xs) ++ [x])
 -- Circles and Arcs -----------------------------------------------------------
 -- | A solid circle with the given radius.
 circleSolid :: Float -> Picture
-circleSolid r 
+circleSolid r
         = thickCircle (r/2) r
 
 
 -- | A solid arc, drawn counter-clockwise between two angles at the given radius.
 arcSolid  :: Float -> Float -> Float -> Picture
-arcSolid a1 a2 r 
-        = thickArc a1 a2 (r/2) r 
+arcSolid a1 a2 r
+        = thickArc a1 a2 (r/2) r
 
 
--- | A wireframe sector of a circle. 
+-- | A wireframe sector of a circle.
 --   An arc is draw counter-clockwise from the first to the second angle at
 --   the given radius. Lines are drawn from the origin to the ends of the arc.
 ---
 --   NOTE: We take the absolute value of the radius incase it's negative.
---   It would also make sense to draw the sector flipped around the 
+--   It would also make sense to draw the sector flipped around the
 --   origin, but I think taking the absolute value will be less surprising
 --   for the user.
--- 
+--
 sectorWire :: Float -> Float -> Float -> Picture
 sectorWire a1 a2 r_
  = let r        = abs r_
-   in  Pictures 
+   in  Pictures
         [ Arc a1 a2 r
         , Line [(0, 0), (r * cos (degToRad a1), r * sin (degToRad a1))]
         , Line [(0, 0), (r * cos (degToRad a2), r * sin (degToRad a2))] ]
@@ -309,11 +309,11 @@ sectorWire a1 a2 r_
 --       arguments to reduce the amount of noise in the extracted docs.
 
 -- | A path representing a rectangle centered about the origin
-rectanglePath 
+rectanglePath
         :: Float        -- ^ width of rectangle
         -> Float        -- ^ height of rectangle
         -> Path
-rectanglePath sizeX sizeY                       
+rectanglePath sizeX sizeY
  = let  sx      = sizeX / 2
         sy      = sizeY / 2
    in   [(-sx, -sy), (-sx, sy), (sx, sy), (sx, -sy)]

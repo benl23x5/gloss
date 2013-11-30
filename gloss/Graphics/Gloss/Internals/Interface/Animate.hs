@@ -1,7 +1,7 @@
 
 module Graphics.Gloss.Internals.Interface.Animate
         (animateWithBackendIO)
-where   
+where
 import Graphics.Gloss.Data.Color
 import Graphics.Gloss.Data.Picture
 import Graphics.Gloss.Data.ViewState
@@ -34,8 +34,8 @@ animateWithBackendIO
         -> IO ()
 
 animateWithBackendIO backend pannable display backColor frameOp
- = do   
-        -- 
+ = do
+        --
         viewSR          <- newIORef viewStateInit
         animateSR       <- newIORef AN.stateInit
         renderS_        <- RS.stateInit
@@ -64,11 +64,11 @@ animateWithBackendIO backend pannable display backColor frameOp
                 , Callback.Display      displayFun
                 , Callback.Display      (animateEnd   animateSR)
                 , Callback.Idle         (\s -> postRedisplay s)
-                , callback_exit () 
+                , callback_exit ()
                 , callback_viewState_motion viewSR
                 , callback_viewState_reshape ]
- 
-             ++ (if pannable 
+
+             ++ (if pannable
                   then [callback_viewState_keyMouse viewSR]
                   else [])
 

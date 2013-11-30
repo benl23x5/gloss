@@ -21,7 +21,7 @@ import qualified Control.Exception         as X
 --   initialize GLUT before we can use any of it's functions.
 --
 ---  We also need to deinitialize (exit) GLUT when we close the GLFW
---   window, otherwise opening a gloss window again from GHCi will crash. 
+--   window, otherwise opening a gloss window again from GHCi will crash.
 --   For the OS X and Windows version of GLUT there are no such restrictions.
 --
 --   We assume also assume that only linux installations use freeglut.
@@ -118,7 +118,7 @@ exitGLFW _
 
 -- Open Window ----------------------------------------------------------------
 -- | Open a new window.
-openWindowGLFW 
+openWindowGLFW
         :: IORef GLFWState
         -> Display
         -> IO ()
@@ -129,11 +129,11 @@ openWindowGLFW _ (InWindow title (sizeX, sizeY) pos)
                  { GLFW.displayOptions_width        = sizeX
                  , GLFW.displayOptions_height       = sizeY
                  , GLFW.displayOptions_displayMode  = GLFW.Window }
-        
+
         uncurry GLFW.setWindowPosition pos
         GLFW.setWindowTitle title
 
-        -- Try to enable sync-to-vertical-refresh by setting the number 
+        -- Try to enable sync-to-vertical-refresh by setting the number
         -- of buffer swaps per vertical refresh to 1.
         GLFW.setWindowBufferSwapInterval 1
 
@@ -143,8 +143,8 @@ openWindowGLFW _ (FullScreen (sizeX, sizeY))
                  { GLFW.displayOptions_width        = sizeX
                  , GLFW.displayOptions_height       = sizeY
                  , GLFW.displayOptions_displayMode  = GLFW.Fullscreen }
-        
-        -- Try to enable sync-to-vertical-refresh by setting the number 
+
+        -- Try to enable sync-to-vertical-refresh by setting the number
         -- of buffer swaps per vertical refresh to 1.
         GLFW.setWindowBufferSwapInterval 1
         GLFW.enableMouseCursor
@@ -216,11 +216,11 @@ callbackDisplay stateRef callbacks
 -- Close Callback -------------------------------------------------------------
 -- | Callback for when the user closes the window.
 --   We can do some cleanup here.
-installWindowCloseCallbackGLFW 
+installWindowCloseCallbackGLFW
         :: IORef GLFWState -> IO ()
 
 installWindowCloseCallbackGLFW _
- = GLFW.setWindowCloseCallback 
+ = GLFW.setWindowCloseCallback
  $ do
 #ifdef linux_HOST_OS
 -- See [Note: FreeGlut] for why we need this.
@@ -238,7 +238,7 @@ installReshapeCallbackGLFW
 installReshapeCallbackGLFW stateRef callbacks
         = GLFW.setWindowSizeCallback (callbackReshape stateRef callbacks)
 
-callbackReshape 
+callbackReshape
         :: Backend a
         => IORef a -> [Callback]
         -> Int -> Int
@@ -255,7 +255,7 @@ callbackReshape glfwState callbacks sizeX sizeY
 --   This is a bit verbose because we have to do impedence matching between
 --   GLFW's event system, and the one use by Gloss which was originally
 --   based on GLUT. The main problem is that GLUT only provides a single callback
---   slot for character keys, arrow keys, mouse buttons and mouse wheel movement, 
+--   slot for character keys, arrow keys, mouse buttons and mouse wheel movement,
 --   while GLFW provides a single slot for each.
 --
 installKeyMouseCallbackGLFW
@@ -270,14 +270,14 @@ installKeyMouseCallbackGLFW stateRef callbacks
 
 
 -- GLFW calls this on a non-character keyboard action.
-callbackKeyboard 
+callbackKeyboard
         :: IORef GLFWState -> [Callback]
         -> GLFW.Key -> Bool
         -> IO ()
 
 callbackKeyboard stateRef callbacks key keystate
  = do   (modsSet, GLFWState mods pos _ _ _ _)
-                <- setModifiers stateRef key keystate     
+                <- setModifiers stateRef key keystate
         let key'      = fromGLFW key
         let keystate' = if keystate then Down else Up
         let isCharKey (Char _) = True
@@ -285,12 +285,12 @@ callbackKeyboard stateRef callbacks key keystate
 
         -- Call the Gloss KeyMouse actions with the new state.
         unless (modsSet || isCharKey key' && keystate)
-         $ sequence_ 
+         $ sequence_
          $ map  (\f -> f key' keystate' mods pos)
                 [f stateRef | KeyMouse f <- callbacks]
 
 
-setModifiers 
+setModifiers
         :: IORef GLFWState
         -> GLFW.Key -> Bool
         -> IO (Bool, GLFWState)
@@ -313,7 +313,7 @@ setModifiers stateRef key pressed
 
 
 -- GLFW calls this on a when the user presses or releases a character key.
-callbackChar 
+callbackChar
         :: IORef GLFWState -> [Callback]
         -> Char -> Bool -> IO ()
 
@@ -329,13 +329,13 @@ callbackChar stateRef callbacks char keystate
         let keystate' = if keystate then Down else Up
 
         -- Call all the Gloss KeyMouse actions with the new state.
-        sequence_ 
-         $ map  (\f -> f key' keystate' mods pos) 
+        sequence_
+         $ map  (\f -> f key' keystate' mods pos)
                 [f stateRef | KeyMouse f <- callbacks]
 
 
 -- GLFW calls on this when the user clicks or releases a mouse button.
-callbackMouseButton 
+callbackMouseButton
         :: IORef GLFWState -> [Callback]
         -> GLFW.MouseButton
         -> Bool
@@ -347,7 +347,7 @@ callbackMouseButton stateRef callbacks key keystate
         let keystate' = if keystate then Down else Up
 
         -- Call all the Gloss KeyMouse actions with the new state.
-        sequence_ 
+        sequence_
          $ map  (\f -> f key' keystate' mods pos)
                 [f stateRef | KeyMouse f <- callbacks]
 
@@ -363,7 +363,7 @@ callbackMouseWheel stateRef callbacks w
         (GLFWState mods pos _ _ _ _) <- readIORef stateRef
 
         -- Call all the Gloss KeyMouse actions with the new state.
-        sequence_ 
+        sequence_
          $ map  (\f -> f key keystate mods pos)
                 [f stateRef | KeyMouse f <- callbacks]
 
@@ -383,14 +383,14 @@ setMouseWheel stateRef w
 
 -- Motion Callback ------------------------------------------------------------
 -- | Callback for when the user moves the mouse.
-installMotionCallbackGLFW 
+installMotionCallbackGLFW
         :: IORef GLFWState -> [Callback]
         -> IO ()
 
 installMotionCallbackGLFW stateRef callbacks
         = GLFW.setMousePositionCallback $ (callbackMotion stateRef callbacks)
 
-callbackMotion 
+callbackMotion
         :: IORef GLFWState -> [Callback]
         -> Int -> Int
         -> IO ()
@@ -398,7 +398,7 @@ callbackMotion stateRef callbacks x y
  = do   pos <- setMousePos stateRef x y
 
         -- Call all the Gloss Motion actions with the new state.
-        sequence_ 
+        sequence_
          $ map  (\f -> f pos)
                 [f stateRef | Motion f <- callbacks]
 
@@ -419,10 +419,10 @@ installIdleCallbackGLFW
         :: IORef GLFWState -> [Callback]
         -> IO ()
 
-installIdleCallbackGLFW stateRef callbacks 
+installIdleCallbackGLFW stateRef callbacks
         = modifyIORef stateRef (\s -> s {idle = callbackIdle stateRef callbacks})
 
-callbackIdle 
+callbackIdle
         :: IORef GLFWState -> [Callback]
         -> IO ()
 
@@ -436,16 +436,16 @@ runMainLoopGLFW
         :: IORef GLFWState
         -> IO ()
 
-runMainLoopGLFW stateRef 
+runMainLoopGLFW stateRef
  = X.catch go exit
  where
   exit :: X.SomeException -> IO ()
   exit e = print e >> exitGLFW stateRef
 
   go   :: IO ()
-  go 
+  go
    = do windowIsOpen <- GLFW.windowIsOpen
-        when windowIsOpen 
+        when windowIsOpen
          $ do  GLFW.pollEvents
                dirty <- fmap dirtyScreen $ readIORef stateRef
 
@@ -461,7 +461,7 @@ runMainLoopGLFW stateRef
 
 
 -- Redisplay ------------------------------------------------------------------
-postRedisplayGLFW 
+postRedisplayGLFW
         :: IORef GLFWState
         -> IO ()
 
@@ -475,7 +475,7 @@ class GLFWKey a where
   fromGLFW :: a -> Key
 
 instance GLFWKey GLFW.Key where
-  fromGLFW key 
+  fromGLFW key
    = case key of
         GLFW.CharKey c      -> charToSpecial (toLower c)
         GLFW.KeySpace       -> SpecialKey KeySpace
@@ -538,7 +538,7 @@ instance GLFWKey GLFW.Key where
         _                   -> SpecialKey KeyUnknown
 
 
--- | Convert char keys to special keys to work around a bug in 
+-- | Convert char keys to special keys to work around a bug in
 --   GLFW 2.7. On OS X, GLFW sometimes registers special keys as char keys,
 --   so we convert them back here.
 --   GLFW 2.7 is current as of Nov 2011, and is shipped with the Hackage

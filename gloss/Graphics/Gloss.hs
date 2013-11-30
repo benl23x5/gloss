@@ -1,6 +1,6 @@
 
 -- | Gloss hides the pain of drawing simple vector graphics behind a nice data type and
---      a few display functions. 
+--      a few display functions.
 --
 --   Getting something on the screen is as easy as:
 --
@@ -25,7 +25,7 @@
 --   `simulate`.
 --
 --   If you want to manage your own key\/mouse events then use `play`.
--- 
+--
 --   Gloss uses OpenGL under the hood, but you don't have to worry about any of that.
 --
 --   Gloss programs should be compiled with @-threaded@, otherwise the GHC runtime
@@ -51,7 +51,7 @@
 -- For 1.6.0:
 --   Thanks to Anthony Cowley
 --   * Full screen display mode.
--- 
+--
 -- For 1.5.0:
 --   * O(1) Conversion of ForeignPtrs to bitmaps.
 --   * An extra flag on the Bitmap constructor allows bitmaps to be cached
@@ -60,7 +60,7 @@
 --
 -- For more information, check out <http://gloss.ouroborus.net>.
 --
-module Graphics.Gloss 
+module Graphics.Gloss
         ( module Graphics.Gloss.Data.Picture
         , module Graphics.Gloss.Data.Color
         , Display(..)

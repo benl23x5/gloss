@@ -5,4 +5,4 @@ module Graphics.Gloss.Geometry
 where
 import Graphics.Gloss.Geometry.Angle
 import Graphics.Gloss.Geometry.Line
-        
+

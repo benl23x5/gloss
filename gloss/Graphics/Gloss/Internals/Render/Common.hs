@@ -9,7 +9,7 @@ import Data.IORef
 
 -- | The OpenGL library doesn't seem to provide a nice way convert
 --      a Float to a GLfloat, even though they're the same thing
---      under the covers.  
+--      under the covers.
 --
 --  Using realToFrac is too slow, as it doesn't get fused in at
 --      least GHC 6.12.1
@@ -41,11 +41,11 @@ renderAction backendRef action
                 let (sx, sy)    = (fromIntegral sizeX / 2, fromIntegral sizeY / 2)
 
                 GL.ortho (-sx) sx (-sy) sy 0 (-100)
-        
+
                 -- draw the world
                 GL.matrixMode   $= GL.Modelview 0
                 action
 
                 GL.matrixMode   $= GL.Projection
-        
+
         GL.matrixMode   $= GL.Modelview 0

@@ -4,11 +4,11 @@
 -- | Handles timing of animation.
 --      The main point is that we want to restrict the framerate to something
 --      sensible, instead of just displaying at the machines maximum possible
---      rate and soaking up 100% cpu. 
+--      rate and soaking up 100% cpu.
 --
 --      We also keep track of the elapsed time since the start of the program,
 --      so we can pass this to the user's animation function.
--- 
+--
 module Graphics.Gloss.Internals.Interface.Animate.Timing
         ( animateBegin
         , animateEnd )
@@ -29,8 +29,8 @@ animateBegin stateRef backendRef
         displayTimeLast         <- stateRef `getsIORef` stateDisplayTime
         let displayTimeElapsed  = displayTime - displayTimeLast
 
-        stateRef `modifyIORef` \s -> s 
-                { stateDisplayTime      = displayTime 
+        stateRef `modifyIORef` \s -> s
+                { stateDisplayTime      = displayTime
                 , stateDisplayTimeLast  = displayTimeLast }
 
         -- increment the animation time
@@ -44,11 +44,11 @@ animateBegin stateRef backendRef
                     ++ "  displayTimeLast    = " ++ show displayTimeLast            ++ "\n"
                     ++ "  displayTimeElapsed = " ++ show displayTimeElapsed         ++ "\n"
                     ++ "  fps                = " ++ show (truncate $ 1 / displayTimeElapsed)   ++ "\n"
--}      
+-}
         when (animate && not animateStart)
          $ stateRef `modifyIORef` \s -> s
                { stateAnimateTime       = animateTime + displayTimeElapsed }
-                        
+
         when animate
          $ stateRef `modifyIORef` \s -> s
                { stateAnimateCount      = animateCount + 1
@@ -73,8 +73,8 @@ animateEnd stateRef backendRef
 
         gateTimeFinal   <- elapsedTime backendRef
 
-        stateRef `modifyIORef` \s -> s 
-                { stateGateTimeEnd      = gateTimeFinal 
+        stateRef `modifyIORef` \s -> s
+                { stateGateTimeEnd      = gateTimeFinal
                 , stateGateTimeElapsed  = gateTimeElapsed }
 
 

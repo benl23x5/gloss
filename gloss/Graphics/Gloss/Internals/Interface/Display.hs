@@ -1,7 +1,7 @@
 
 module Graphics.Gloss.Internals.Interface.Display
         (displayWithBackend)
-where   
+where
 import Graphics.Gloss.Data.Color
 import Graphics.Gloss.Data.Picture
 import Graphics.Gloss.Data.ViewState
@@ -33,7 +33,7 @@ displayWithBackend backend displayMode background picture
 
         renderS         <- RS.stateInit
         renderSR        <- newIORef renderS
-        
+
         let renderFun backendRef = do
                 port    <- viewStateViewPort <$> readIORef viewSR
                 options <- readIORef renderSR
@@ -42,11 +42,11 @@ displayWithBackend backend displayMode background picture
                         (renderPicture backendRef options port picture)
 
         let callbacks
-             =  [ Callback.Display renderFun 
+             =  [ Callback.Display renderFun
 
                 -- Escape exits the program
-                , callback_exit () 
-                
+                , callback_exit ()
+
                 -- Viewport control with mouse
                 , callback_viewState_keyMouse viewSR
                 , callback_viewState_motion   viewSR

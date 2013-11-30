@@ -46,7 +46,7 @@ convertPoint backendRef pos
         let (px_, py_)          = pos
         let px                  = fromIntegral px_
         let py                  = sizeY - fromIntegral py_
-        
+
         let px'                 = px - sizeX / 2
         let py'                 = py - sizeY / 2
         let pos'                = (px', py')

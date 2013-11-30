@@ -20,6 +20,6 @@ keyMouse_exit
         | key           == SpecialKey KeyEsc
         , keyState      == Down
         = exitBackend backend
-                
+
         | otherwise
         = return ()

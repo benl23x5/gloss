@@ -27,11 +27,11 @@ data State
 
         -- | Whether to use line smoothing
         , stateLineSmooth       :: !Bool
-        
+
         -- | Cache of Textures that we've sent to OpenGL.
         , stateTextures         :: !(IORef [Texture])
         }
-        
+
 
 -- | A texture that we've sent to OpenGL.
 data Texture
@@ -47,7 +47,7 @@ data Texture
 
         -- | Pointer to the Raw texture data.
         , texData       :: ForeignPtr Word8
-        
+
         -- | The OpenGL texture object.
         , texObject     :: GL.TextureObject
 
@@ -63,7 +63,7 @@ stateInit
                 { stateColor            = True
                 , stateWireframe        = False
                 , stateBlendAlpha       = True
-                , stateLineSmooth       = False 
+                , stateLineSmooth       = False
                 , stateTextures         = textures }
-        
+
 

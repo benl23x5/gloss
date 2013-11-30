@@ -1,7 +1,7 @@
 {-# LANGUAGE RankNTypes #-}
 
 -- | A QuadTree can be used to recursively divide up 2D space into quadrants.
---   The smallest division corresponds to an unit `Extent`, so the total depth 
+--   The smallest division corresponds to an unit `Extent`, so the total depth
 --   of the tree will depend on what sized `Extent` you start with.
 module Graphics.Gloss.Data.QuadTree
         ( QuadTree (..)
@@ -27,7 +27,7 @@ data QuadTree a
 
         -- | A leaf containint some value.
         | TLeaf a
-        
+
         -- | A node with four children.
         | TNode (QuadTree a) (QuadTree a)       -- NW NE
                 (QuadTree a) (QuadTree a)       -- SW SE
@@ -67,7 +67,7 @@ takeQuadOfTree quad tree
 --   If the tree does not have an outer node then return the original tree.
 liftToQuad
         :: Quad
-        -> (QuadTree a -> QuadTree a) 
+        -> (QuadTree a -> QuadTree a)
         -> QuadTree a  -> QuadTree a
 
 liftToQuad quad f tree
@@ -80,15 +80,15 @@ liftToQuad quad f tree
                 NE      -> TNode nw (f ne) sw se
                 SW      -> TNode nw ne (f sw) se
                 SE      -> TNode nw ne sw (f se)
-                 
-                
+
+
 -- | Insert a value into the tree at the position given by a path.
 --   If the path intersects an existing `TLeaf` then return the original tree.
 insertByPath :: [Quad] -> a -> QuadTree a -> QuadTree a
-        
+
 insertByPath [] x _
         = TLeaf x
-        
+
 insertByPath (q:qs) x tree
  = case tree of
         TNil    -> liftToQuad q (insertByPath qs x) emptyNode
@@ -112,7 +112,7 @@ lookupNodeByPath
 
 lookupNodeByPath [] tree
         = Just tree
-        
+
 lookupNodeByPath (q:qs) tree
  = case tree of
         TNil    -> Nothing
@@ -131,35 +131,35 @@ lookupByPath path tree
 
 
 -- | Lookup a node if a tree given a coordinate which it contains.
-lookupByCoord 
+lookupByCoord
         :: forall a
         .  Extent       -- ^ Extent that covers the whole tree.
         -> Coord        -- ^ Coordinate of the value of interest.
-        -> QuadTree a 
+        -> QuadTree a
         -> Maybe a
 lookupByCoord extent coord tree
  = do   path    <- pathToCoord extent coord
         lookupByPath path tree
-        
-        
+
+
 -- | Flatten a QuadTree into a list of its contained values, with coordinates.
-flattenQuadTree 
+flattenQuadTree
         :: forall a
         .  Extent       -- ^ Extent that covers the whole tree.
-        -> QuadTree a 
+        -> QuadTree a
         -> [(Coord, a)]
-        
+
 flattenQuadTree extentInit treeInit
  = flatten' extentInit treeInit
  where  flatten' extent tree
          = case tree of
                 TNil    -> []
-                TLeaf x 
+                TLeaf x
                  -> let (_, s, _, w) = takeExtent extent
                     in  [((w, s), x)]
 
                 TNode{} -> concat $ map (flattenQuad extent tree) allQuads
-                        
+
         flattenQuad extent tree quad
          = let  extent'         = cutQuadOfExtent quad extent
                 Just tree'      = takeQuadOfTree quad tree
@@ -170,19 +170,19 @@ flattenQuadTree extentInit treeInit
 flattenQuadTreeWithExtents
         :: forall a
         .  Extent       -- ^ Extent that covers the whole tree.
-        -> QuadTree a 
+        -> QuadTree a
         -> [(Extent, a)]
-        
+
 flattenQuadTreeWithExtents extentInit treeInit
  = flatten' extentInit treeInit
  where  flatten' extent tree
          = case tree of
                 TNil    -> []
-                TLeaf x 
+                TLeaf x
                  -> [(extent, x)]
 
                 TNode{} -> concat $ map (flattenQuad extent tree) allQuads
-                        
+
         flattenQuad extent tree quad
          = let  extent'         = cutQuadOfExtent quad extent
                 Just tree'      = takeQuadOfTree quad tree

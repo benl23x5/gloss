@@ -66,7 +66,7 @@ playWithBackendIO
                 -- convert the world to a picture
                 world           <- readIORef worldSR
                 picture         <- worldToPicture world
-        
+
                 -- display the picture in the current view
                 renderS         <- readIORef renderSR
                 viewS           <- readIORef viewSR
@@ -75,7 +75,7 @@ playWithBackendIO
                 renderAction
                         backendRef
                         (renderPicture backendRef renderS viewS picture)
- 
+
                 -- perform garbage collection
                 performGC
 
@@ -83,11 +83,11 @@ playWithBackendIO
              =  [ Callback.Display      (animateBegin animateSR)
                 , Callback.Display      displayFun
                 , Callback.Display      (animateEnd   animateSR)
-                , Callback.Idle         (callback_simulate_idle 
+                , Callback.Idle         (callback_simulate_idle
                                                 stateSR animateSR (readIORef viewSR)
                                                 worldSR worldStart (\_ -> worldAdvance)
                                                 singleStepTime)
-                , callback_exit () 
+                , callback_exit ()
                 , callback_keyMouse worldSR viewSR worldHandleEvent
                 , callback_motion   worldSR worldHandleEvent
                 , callback_reshape  worldSR worldHandleEvent]
@@ -96,7 +96,7 @@ playWithBackendIO
 
 
 -- | Callback for KeyMouse events.
-callback_keyMouse 
+callback_keyMouse
         :: IORef world                  -- ^ ref to world state
         -> IORef ViewPort
         -> (Event -> world -> IO world) -- ^ fn to handle input events
@@ -106,7 +106,7 @@ callback_keyMouse worldRef viewRef eventFn
         = KeyMouse (handle_keyMouse worldRef viewRef eventFn)
 
 
-handle_keyMouse 
+handle_keyMouse
         :: IORef a
         -> t
         -> (Event -> a -> IO a)
@@ -129,7 +129,7 @@ callback_motion worldRef eventFn
         = Motion (handle_motion worldRef eventFn)
 
 
-handle_motion 
+handle_motion
         :: IORef a
         -> (Event -> a -> IO a)
         -> MotionCallback

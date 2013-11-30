@@ -103,7 +103,7 @@ data Callback
 -- This is Glosses view of mouse and keyboard events.
 -- The actual events provided by the backends are converted to this form
 -- by the backend module.
- 
+
 data Key
         = Char        Char
         | SpecialKey  SpecialKey

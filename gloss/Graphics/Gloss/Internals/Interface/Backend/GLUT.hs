@@ -13,9 +13,9 @@ import qualified System.Exit                    as System
 import Graphics.Gloss.Internals.Interface.Backend.Types
 
 
--- | We don't maintain any state information for the GLUT backend, 
+-- | We don't maintain any state information for the GLUT backend,
 --   so this data type is empty.
-data GLUTState 
+data GLUTState
         = GLUTState
 
 glutStateInit :: GLUTState
@@ -68,7 +68,7 @@ initializeGLUT
         -> Bool
         -> IO ()
 
-initializeGLUT _ debug 
+initializeGLUT _ debug
  = do   (_progName, _args)  <- GLUT.getArgsAndInitialize
 
         glutVersion         <- get GLUT.glutVersion
@@ -101,7 +101,7 @@ openWindowGLUT _ display
        -- createWindow. If we don't do this we get wierd half-created
        -- windows some of the time.
         case display of
-          InWindow windowName (sizeX, sizeY) (posX, posY) -> 
+          InWindow windowName (sizeX, sizeY) (posX, posY) ->
             do GLUT.initialWindowSize
                      $= GL.Size
                           (fromIntegral sizeX)
@@ -119,8 +119,8 @@ openWindowGLUT _ display
                           (fromIntegral sizeX)
                           (fromIntegral sizeY)
 
-          FullScreen (sizeX, sizeY) -> 
-            do GLUT.gameModeCapabilities $= 
+          FullScreen (sizeX, sizeY) ->
+            do GLUT.gameModeCapabilities $=
                  [ GLUT.Where' GLUT.GameModeWidth GLUT.IsEqualTo sizeX
                  , GLUT.Where' GLUT.GameModeHeight GLUT.IsEqualTo sizeY ]
                void $ GLUT.enterGameMode
@@ -132,11 +132,11 @@ openWindowGLUT _ display
 
 
 -- Dump State -----------------------------------------------------------------
-dumpStateGLUT 
+dumpStateGLUT
         :: IORef GLUTState
         -> IO ()
 
-dumpStateGLUT _ 
+dumpStateGLUT _
  = do
         wbw             <- get GLUT.windowBorderWidth
         whh             <- get GLUT.windowHeaderHeight
@@ -168,17 +168,17 @@ dumpStateGLUT _
                 ++ "\n"
 
 -- Display Callback -----------------------------------------------------------
-installDisplayCallbackGLUT 
+installDisplayCallbackGLUT
         :: IORef GLUTState -> [Callback]
         -> IO ()
 installDisplayCallbackGLUT ref callbacks
         = GLUT.displayCallback $= callbackDisplay ref callbacks
 
-callbackDisplay 
+callbackDisplay
         :: IORef GLUTState -> [Callback]
         -> IO ()
 
-callbackDisplay ref callbacks 
+callbackDisplay ref callbacks
  = do   -- clear the display
         GL.clear [GL.ColorBuffer, GL.DepthBuffer]
         GL.color $ GL.Color4 0 0 0 (1 :: GL.GLfloat)
@@ -191,7 +191,7 @@ callbackDisplay ref callbacks
         GLUT.swapBuffers
 
     -- Don't report errors by default.
-    -- The windows OpenGL implementation seems to complain for no reason. 
+    -- The windows OpenGL implementation seems to complain for no reason.
     --  GLUT.reportErrors
 
         return ()
@@ -216,7 +216,7 @@ callbackReshape ref callbacks (GLUT.Size sizeX sizeY)
 
 
 -- KeyMouse Callback ----------------------------------------------------------
-installKeyMouseCallbackGLUT 
+installKeyMouseCallbackGLUT
         :: IORef GLUTState -> [Callback]
         -> IO ()
 
@@ -243,7 +243,7 @@ callbackKeyMouse ref callbacks key keystate modifiers (GLUT.Position posX posY)
 
 
 -- Motion Callback ------------------------------------------------------------
-installMotionCallbackGLUT 
+installMotionCallbackGLUT
         :: IORef GLUTState -> [Callback]
         -> IO ()
 
@@ -271,7 +271,7 @@ installIdleCallbackGLUT
 installIdleCallbackGLUT ref callbacks
         = GLUT.idleCallback $= Just (callbackIdle ref callbacks)
 
-callbackIdle 
+callbackIdle
         :: IORef GLUTState -> [Callback]
         -> IO ()
 
@@ -283,7 +283,7 @@ callbackIdle ref callbacks
 -------------------------------------------------------------------------------
 -- | Convert GLUTs key codes to our internal ones.
 glutKeyToKey :: GLUT.Key -> Key
-glutKeyToKey key 
+glutKeyToKey key
  = case key of
         GLUT.Char '\32'                            -> SpecialKey KeySpace
         GLUT.Char '\13'                            -> SpecialKey KeyEnter
@@ -332,11 +332,11 @@ glutKeyStateToKeyState state
 
 
 -- | Convert GLUTs key states to our internal ones.
-glutModifiersToModifiers 
+glutModifiersToModifiers
         :: GLUT.Modifiers
         -> Modifiers
-        
-glutModifiersToModifiers (GLUT.Modifiers a b c) 
+
+glutModifiersToModifiers (GLUT.Modifiers a b c)
         = Modifiers     (glutKeyStateToKeyState a)
                         (glutKeyStateToKeyState b)
                         (glutKeyStateToKeyState c)

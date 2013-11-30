@@ -8,7 +8,7 @@ where
 -- | A point on the x-y plane.
 --   Points can also be treated as `Vector`s, so "Graphics.Gloss.Data.Vector"
 --   may also be useful.
-type Point      = (Float, Float)                        
+type Point      = (Float, Float)
 
 
 -- | Pretend a point is a number.
@@ -23,7 +23,7 @@ instance Num Point where
         (*) (x1, y1) (x2, y2)   = (x1 * x2, y1 * y2)
         signum (x, y)           = (signum x, signum y)
         abs    (x, y)           = (abs x, abs y)
-        negate (x, y)           = (negate x, negate y)  
+        negate (x, y)           = (negate x, negate y)
         fromInteger x           = (fromInteger x, fromInteger x)
 
 
@@ -39,11 +39,11 @@ instance Num Point where
 --       +-------+ P1
 -- @
 --
-pointInBox 
-        :: Point 
-        -> Point 
+pointInBox
+        :: Point
+        -> Point
         -> Point -> Bool
-        
+
 pointInBox (x0, y0) (x1, y1) (x2, y2)
         =  x0 >= min x1 x2
         && x0 <= max x1 x2

@@ -77,7 +77,7 @@ simulateWithBackendIO
                 renderAction
                         backendRef
                         (renderPicture backendRef renderS port picture)
- 
+
                 -- perform garbage collection
                 performGC
 
@@ -85,12 +85,12 @@ simulateWithBackendIO
              =  [ Callback.Display      (animateBegin animateSR)
                 , Callback.Display      displayFun
                 , Callback.Display      (animateEnd   animateSR)
-                , Callback.Idle         (callback_simulate_idle 
+                , Callback.Idle         (callback_simulate_idle
                                                 stateSR animateSR
                                                 (viewStateViewPort <$> readIORef viewSR)
                                                 worldSR worldStart worldAdvance
                                                 singleStepTime)
-                , callback_exit () 
+                , callback_exit ()
                 , callback_viewState_keyMouse viewSR
                 , callback_viewState_motion   viewSR
                 , callback_viewState_reshape ]

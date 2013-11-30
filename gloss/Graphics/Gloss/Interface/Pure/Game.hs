@@ -1,6 +1,6 @@
 {-# LANGUAGE ExplicitForAll #-}
 
--- We export this stuff separately so we don't clutter up the 
+-- We export this stuff separately so we don't clutter up the
 -- API of the Graphics.Gloss module.
 
 -- | This game mode lets you manage your own input. Pressing ESC will still abort the program,
@@ -19,7 +19,7 @@ import Graphics.Gloss.Internals.Interface.Game
 import Graphics.Gloss.Internals.Interface.Backend
 
 
--- | Play a game in a window. 
+-- | Play a game in a window.
 play    :: forall world
         .  Display                      -- ^ Display mode.
         -> Color                        -- ^ Background color.
@@ -34,9 +34,9 @@ play    :: forall world
 play    display backColor simResolution
         worldStart worldToPicture worldHandleEvent worldAdvance
 
- = playWithBackendIO defaultBackendState 
+ = playWithBackendIO defaultBackendState
         display backColor simResolution
-        worldStart 
+        worldStart
         (return . worldToPicture)
         (\event world -> return $ worldHandleEvent event world)
         (\time  world -> return $ worldAdvance     time  world)

@@ -9,5 +9,5 @@ data Display
         = InWindow   String (Int, Int) (Int, Int)
 
         -- | Display full screen with a drawing area of the given size.
-        | FullScreen (Int, Int) 
+        | FullScreen (Int, Int)
         deriving (Eq, Read, Show)

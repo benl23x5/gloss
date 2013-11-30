@@ -3,14 +3,14 @@
 -- | Geometric functions concerning lines and segments.
 --
 --   A @Line@ is taken to be infinite in length, while a @Seg@ is finite length
---   line segment represented by its two endpoints. 
+--   line segment represented by its two endpoints.
 module Graphics.Gloss.Geometry.Line
         ( segClearsBox
 
-        
+
         -- * Closest points
         , closestPointOnLine
-        , closestPointOnLineParam 
+        , closestPointOnLineParam
 
         -- * Line-Line intersection
         , intersectLineLine
@@ -24,15 +24,15 @@ module Graphics.Gloss.Geometry.Line
         , intersectSegSeg
         , intersectSegHorzSeg
         , intersectSegVertSeg)
-        
+
 where
 import Graphics.Gloss.Data.Point
 import Graphics.Gloss.Data.Vector
 
 
 -- | Check if line segment (P1-P2) clears a box (P3-P4) by being well outside it.
-segClearsBox 
-        :: Point        -- ^ P1 First point of segment. 
+segClearsBox
+        :: Point        -- ^ P1 First point of segment.
         -> Point        -- ^ P2 Second point of segment.
         -> Point        -- ^ P3 Lower left point of box.
         -> Point        -- ^ P4 Upper right point of box.
@@ -75,8 +75,8 @@ closestPointOnLine p1 p2 p3
 -- @
 --        |
 --       P1
---        | 
---     P4 +---- P3      
+--        |
+--     P4 +---- P3
 --        |
 --       P2
 --        |
@@ -90,7 +90,7 @@ closestPointOnLineParam
         -> Float
 
 closestPointOnLineParam p1 p2 p3
-        = (p3 - p1) `dotV` (p2 - p1) 
+        = (p3 - p1) `dotV` (p2 - p1)
         / (p2 - p1) `dotV` (p2 - p1)
 
 
@@ -111,7 +111,7 @@ closestPointOnLineParam p1 p2 p3
 --     /     \\
 -- @
 --
-intersectLineLine 
+intersectLineLine
         :: Point        -- ^ `P1`
         -> Point        -- ^ `P2`
         -> Point        -- ^ `P3`
@@ -124,14 +124,14 @@ intersectLineLine (x1, y1) (x2, y2) (x3, y3) (x4, y4)
 
         dy12    = y1 - y2
         dy34    = y3 - y4
-        
+
         den     = dx12 * dy34  - dy12 * dx34
 
    in if den == 0
         then Nothing
         else let
                 det12   = x1*y2 - y1*x2
-                det34   = x3*y4 - y3*x4 
+                det34   = x3*y4 - y3*x4
 
                 numx    = det12 * dx34 - dx12 * det34
                 numy    = det12 * dy34 - dy12 * det34
@@ -155,14 +155,14 @@ intersectSegLine p1 p2 p3 p4
         , t12           <- closestPointOnLineParam p1 p2 p0
         , t12 >= 0 && t12 <= 1
         = Just p0
-        
+
         | otherwise
         = Nothing
-        
+
 
 -- | Get the point where a segment crosses a horizontal line, if any.
 --
--- @ 
+-- @
 --                + P1
 --               /
 --       -------+---------
@@ -170,29 +170,29 @@ intersectSegLine p1 p2 p3 p4
 --         P2 +
 -- @
 --
-intersectSegHorzLine 
+intersectSegHorzLine
         :: Point        -- ^ P1 First point of segment.
         -> Point        -- ^ P2 Second point of segment.
         -> Float        -- ^ y value of line.
         -> Maybe Point
 intersectSegHorzLine (x1, y1) (x2, y2) y0
-        
+
         -- seg is on line
         | y1 == y0, y2 == y0    = Nothing
-        
+
         -- seg is above line
         | y1 > y0,  y2 > y0     = Nothing
-        
+
         -- seg is below line
         | y1 < y0,  y2 < y0     = Nothing
-        
+
         -- seg is a single point on the line.
-        -- this should be caught by the first case, 
+        -- this should be caught by the first case,
         -- but we'll test for it anyway.
-        | y2 - y1 == 0          
+        | y2 - y1 == 0
         = Just (x1, y1)
-        
-        | otherwise             
+
+        | otherwise
         = Just ( (y0 - y1) * (x2 - x1) / (y2 - y1) + x1
                , y0)
 
@@ -210,30 +210,30 @@ intersectSegHorzLine (x1, y1) (x2, y2) y0
 --              | x0
 -- @
 --
-intersectSegVertLine 
+intersectSegVertLine
         :: Point        -- ^ P1 First point of segment.
         -> Point        -- ^ P2 Second point of segment.
         -> Float        -- ^ x value of line.
         -> Maybe Point
 
 intersectSegVertLine (x1, y1) (x2, y2) x0
-        
+
         -- seg is on line
         | x1 == x0, x2 == x0    = Nothing
-        
+
         -- seg is to right of line
         | x1 > x0,  x2 > x0     = Nothing
-        
+
         -- seg is to left of line
         | x1 < x0,  x2 < x0     = Nothing
-        
+
         -- seg is a single point on the line.
-        -- this should be caught by the first case, 
+        -- this should be caught by the first case,
         -- but we'll test for it anyway.
-        | x2 - x1 == 0          
+        | x2 - x1 == 0
         = Just (x1, y1)
-        
-        | otherwise             
+
+        | otherwise
         = Just (  x0
                , (x0 - x1) * (y2 - y1) / (x2 - x1) + y1)
 
@@ -257,7 +257,7 @@ intersectSegSeg p1 p2 p3 p4
         , t12 >= 0 && t12 <= 1
         , t23 >= 0 && t23 <= 1
         = Just p0
-        
+
         | otherwise
         = Nothing
 
@@ -270,7 +270,7 @@ intersectSegSeg p1 p2 p3 p4
 -- (xa, y3)  +---+----+ (xb, y3)
 --              /
 --          P1 +
--- @ 
+-- @
 
 intersectSegHorzSeg
         :: Point        -- ^ P1 First point of segment.
@@ -279,7 +279,7 @@ intersectSegHorzSeg
         -> Float        -- ^ (xa) Leftmost x value of horizontal segment.
         -> Float        -- ^ (xb) Rightmost x value of horizontal segment.
         -> Maybe Point  -- ^ (x3, y3) Intersection point, if any.
-        
+
 intersectSegHorzSeg p1@(x1, y1) p2@(x2, y2) y0 xa xb
         | segClearsBox p1 p2 (xa, y0) (xb, y0)
         = Nothing
@@ -287,7 +287,7 @@ intersectSegHorzSeg p1@(x1, y1) p2@(x2, y2) y0 xa xb
         | x0 < xa       = Nothing
         | x0 > xb       = Nothing
         | otherwise     = Just (x0, y0)
-                
+
         where x0 | (y2 - y1) == 0 = x1
                  | otherwise      = (y0 - y1) * (x2 - x1) / (y2 - y1) + x1
 
@@ -302,7 +302,7 @@ intersectSegHorzSeg p1@(x1, y1) p2@(x2, y2) y0 xa xb
 --             / |
 --        P2 +   |
 --               + (x3, ya)
--- @ 
+-- @
 
 intersectSegVertSeg
         :: Point        -- ^ P1 First point of segment.
@@ -315,11 +315,11 @@ intersectSegVertSeg
 intersectSegVertSeg p1@(x1, y1) p2@(x2, y2) x0 ya yb
         | segClearsBox p1 p2 (x0, ya) (x0, yb)
         = Nothing
-        
+
         | y0 < ya       = Nothing
         | y0 > yb       = Nothing
         | otherwise     = Just (x0, y0)
-        
+
         where y0 | (x2 - x1) == 0 = y1
                  | otherwise      = (x0 - x1) * (y2 - y1) / (x2 - x1) + y1
 

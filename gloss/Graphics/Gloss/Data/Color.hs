@@ -1,7 +1,7 @@
 
 -- | Predefined and custom colors.
 module Graphics.Gloss.Data.Color
-        ( 
+        (
         -- ** Color data type
           Color
         , makeColor
@@ -22,7 +22,7 @@ module Graphics.Gloss.Data.Color
         , red,    green,  blue
         -- *** Secondary
         , yellow,     cyan,       magenta
-        
+
         -- *** Tertiary
         , rose,   violet, azure, aquamarine, chartreuse, orange
         )
@@ -59,7 +59,7 @@ instance Num Color where
  {-# INLINE signum #-}
  signum (RGBA r1 g1 b1 _)
         = RGBA (signum r1) (signum g1) (signum b1) 1
-        
+
  {-# INLINE fromInteger #-}
  fromInteger i
   = let f = fromInteger i
@@ -67,7 +67,7 @@ instance Num Color where
 
 
 -- | Make a custom color. All components are clamped to the range  [0..1].
-makeColor 
+makeColor
         :: Float        -- ^ Red component.
         -> Float        -- ^ Green component.
         -> Float        -- ^ Blue component.
@@ -75,12 +75,12 @@ makeColor
         -> Color
 
 makeColor r g b a
-        = clampColor 
+        = clampColor
         $ RGBA r g b a
 {-# INLINE makeColor #-}
 
 
--- | Make a custom color. 
+-- | Make a custom color.
 --   You promise that all components are clamped to the range [0..1]
 makeColor' :: Float -> Float -> Float -> Float -> Color
 makeColor' r g b a
@@ -89,7 +89,7 @@ makeColor' r g b a
 
 
 -- | Make a custom color. All components are clamped to the range [0..255].
-makeColor8 
+makeColor8
         :: Int          -- ^ Red component.
         -> Int          -- ^ Green component.
         -> Int          -- ^ Blue component.
@@ -97,19 +97,19 @@ makeColor8
         -> Color
 
 makeColor8 r g b a
-        = clampColor 
-        $ RGBA  (fromIntegral r / 255) 
+        = clampColor
+        $ RGBA  (fromIntegral r / 255)
                 (fromIntegral g / 255)
                 (fromIntegral b / 255)
                 (fromIntegral a / 255)
 {-# INLINE makeColor8 #-}
 
-        
+
 -- | Take the RGBA components of a color.
 rgbaOfColor :: Color -> (Float, Float, Float, Float)
 rgbaOfColor (RGBA r g b a)      = (r, g, b, a)
 {-# INLINE rgbaOfColor #-}
-                
+
 
 -- | Make a custom color.
 --   Components should be in the range [0..1] but this is not checked.
@@ -124,7 +124,7 @@ rawColor = RGBA
 {-# INLINE rawColor #-}
 
 
--- Internal 
+-- Internal
 
 -- | Clamp components of a color into the required range.
 clampColor :: Color -> Color
@@ -143,7 +143,7 @@ normaliseColor cc
 -- Color functions ------------------------------------------------------------
 
 -- | Mix two colors with the given ratios.
-mixColors 
+mixColors
         :: Float        -- ^ Ratio of first color.
         -> Float        -- ^ Ratio of second color.
         -> Color        -- ^ First color.
@@ -171,7 +171,7 @@ addColors c1 c2
  = let  RGBA r1 g1 b1 a1        = c1
         RGBA r2 g2 b2 a2        = c2
 
-   in   normaliseColor 
+   in   normaliseColor
          $ RGBA (r1 + r2)
                 (g1 + g2)
                 (b1 + b2)
@@ -183,7 +183,7 @@ dim :: Color -> Color
 dim (RGBA r g b a)
         = RGBA (r / 1.2) (g / 1.2) (b / 1.2) a
 
-        
+
 -- | Make a brighter version of a color, scaling towards white.
 bright :: Color -> Color
 bright (RGBA r g b a)
@@ -196,8 +196,8 @@ light :: Color -> Color
 light (RGBA r g b a)
         = clampColor
         $ RGBA (r + 0.2) (g + 0.2) (b + 0.2) a
-        
-        
+
+
 -- | Darken a color, adding black.
 dark :: Color -> Color
 dark (RGBA r g b a)
