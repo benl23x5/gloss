@@ -1,7 +1,7 @@
 {-# LANGUAGE ExplicitForAll #-}
 
--- | This game mode lets you manage your own input. Pressing ESC will still abort the program,
---   but you don't get automatic pan and zoom controls like with `displayInWindow`.
+-- | This game mode lets you manage your own input. Pressing ESC will not abort the program.
+--   You also don't get automatic pan and zoom controls like with `displayInWindow`.
 module Graphics.Gloss.Interface.IO.Game
         ( module Graphics.Gloss.Data.Display
         , module Graphics.Gloss.Data.Picture
@@ -28,4 +28,9 @@ playIO  :: forall world
                                         --   It is passed the period of time (in seconds) needing to be advanced.
         -> IO ()
 
-playIO = playWithBackendIO defaultBackendState
+playIO  display backColor simResolution
+        worldStart worldToPicture worldHandleEvent worldAdvance
+ = playWithBackendIO defaultBackendState
+        display backColor simResolution
+        worldStart worldToPicture worldHandleEvent worldAdvance
+        False
