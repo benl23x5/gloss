@@ -1,5 +1,5 @@
 Name:                gloss-raster
-Version:             1.8.1.1
+Version:             1.8.1.2
 License:             MIT
 License-file:        LICENSE
 Author:              Ben Lippmeier
@@ -19,8 +19,6 @@ Synopsis:
 source-repository head
         type:           git
         location:       https://github.com/benl23x5/gloss
-
-Tested-with: GHC == 6.12.1, GHC == 7.0.1
 
 Library
   Build-Depends: 
