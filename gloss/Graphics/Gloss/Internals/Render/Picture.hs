@@ -1,6 +1,7 @@
 {-# OPTIONS -fwarn-incomplete-patterns #-}
 {-# OPTIONS_HADDOCK hide #-}
 {-# LANGUAGE ImplicitParams, ScopedTypeVariables #-}
+{-# LANGUAGE CPP #-}
 
 module Graphics.Gloss.Internals.Render.Picture
 	(renderPicture)
@@ -319,7 +320,11 @@ installTexture width height bitmapData@(BitmapData _ fptr) cacheMe
         withForeignPtr fptr
          $ \ptr ->
    	   GL.texImage2D
+#if MIN_VERSION_OpenGL(2,9,0)
+		GLUT.Texture2D
+#else
 		Nothing
+#endif
 		GL.NoProxy
 		0
 		GL.RGBA8
