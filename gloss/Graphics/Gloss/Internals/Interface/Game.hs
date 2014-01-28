@@ -35,6 +35,7 @@ playWithBackendIO
 	-> (Event -> world -> IO world)	-- ^ A function to handle input events.
 	-> (Float -> world -> IO world)	-- ^ A function to step the world one iteration.
 					--   It is passed the period of time (in seconds) needing to be advanced.
+	-> Bool				-- ^ Whether to use the callback_exit or not.
 	-> IO ()
 
 playWithBackendIO
@@ -46,6 +47,7 @@ playWithBackendIO
 	worldToPicture
 	worldHandleEvent
 	worldAdvance
+	withCallbackExit
  = do
 	let singleStepTime	= 1
 
@@ -87,12 +89,14 @@ playWithBackendIO
 						stateSR animateSR (readIORef viewSR)
 						worldSR worldStart (\_ -> worldAdvance)
 						singleStepTime)
-		, callback_exit () 
 		, callback_keyMouse worldSR viewSR worldHandleEvent
 		, callback_motion   worldSR worldHandleEvent
 		, callback_reshape  worldSR worldHandleEvent]
 
-	createWindow backend display backgroundColor callbacks
+	let exitCallback
+		 = if withCallbackExit then [callback_exit ()] else []
+
+	createWindow backend display backgroundColor $ callbacks ++ exitCallback
 
 
 -- | Callback for KeyMouse events.

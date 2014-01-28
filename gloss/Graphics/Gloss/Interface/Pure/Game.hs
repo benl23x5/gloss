@@ -40,3 +40,4 @@ play    display backColor simResolution
         (return . worldToPicture)
         (\event world -> return $ worldHandleEvent event world)
         (\time  world -> return $ worldAdvance     time  world)
+        True
