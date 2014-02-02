@@ -42,7 +42,7 @@ Library
         containers == 0.5.*,
         bytestring == 0.10.*,
         OpenGL     == 2.8.*,
-        GLUT       == 2.4.*,
+        GLUT       >= 2.4 && < 2.6,
         bmp        == 1.2.*
 
   ghc-options:
