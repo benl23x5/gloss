@@ -76,7 +76,8 @@ initializeGLUT _ debug
          $ putStr  $ "  glutVersion        = " ++ show glutVersion   ++ "\n"
 
         GLUT.initialDisplayMode
-          $= [ GLUT.RGBMode
+          $= [ GLUT.RGBAMode
+             , GLUT.WithAlphaComponent
              , GLUT.DoubleBuffered]
 
         -- See if our requested display mode is possible
