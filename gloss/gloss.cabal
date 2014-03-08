@@ -37,7 +37,7 @@ Flag ExplicitBackend
 
 Library
   Build-Depends: 
-        base       >= 4.7 && <4.8,
+        base       >= 4.7.*,
         ghc-prim   == 0.3.*,
         containers == 0.5.*,
         bytestring == 0.10.*,

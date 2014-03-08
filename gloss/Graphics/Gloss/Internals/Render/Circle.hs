@@ -164,18 +164,17 @@ renderArcStrip (F# posX) (F# posY) steps r a1 a2 width
 
 
 -- Step functions -------------------------------------------------------------
-
 renderCircleLine_step
         :: Float# -> Float#
         -> Float# -> Float#
         -> Float# -> Float# 
         -> IO ()
 
-
 renderCircleLine_step posX posY tStep tStop rad tt
-  | tagToEnum# (tt `geFloat#` tStop) = return ()
-        
-  | otherwise
+        | tagToEnum# (tt `geFloat#` tStop)
+        = return ()
+
+        | otherwise
         = do    addPointOnCircle posX posY rad tt
                 renderCircleLine_step posX posY tStep tStop rad 
                         (tt `plusFloat#` tStep)
