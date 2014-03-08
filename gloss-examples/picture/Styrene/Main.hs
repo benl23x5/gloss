@@ -4,7 +4,7 @@ import Advance
 import QuadTree
 import Contact
 import Collide
-import World
+import StyrineWorld
 import Config
 
 import Graphics.Gloss

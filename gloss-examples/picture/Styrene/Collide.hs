@@ -1,6 +1,6 @@
 -- | Physics for bead bouncing.
 module Collide where
-import World
+import StyrineWorld
 import Actor
 import Graphics.Gloss.Data.Point
 import Graphics.Gloss.Data.Vector

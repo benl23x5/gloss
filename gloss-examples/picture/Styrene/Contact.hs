@@ -2,7 +2,8 @@
 
 -- | Find actors in the world that are in contact with each other.
 module Contact where
-import World
+
+import StyrineWorld
 import QuadTree
 import Actor
 import Graphics.Gloss.Data.Point
@@ -15,7 +16,6 @@ import Data.Map				(Map)
 import Data.Set				(Set)
 import qualified Data.Set		as Set
 import qualified Data.Map		as Map
-
 
 -- Find all pairs of actors in the world that are in contact with each other.
 findContacts 
@@ -107,7 +107,7 @@ inContact_beadWall
 	-- pClosest needs to lie on the line segment between pWal1 and pWall2
 	inSegment	= uParam >= 0 && uParam <= 1
 
-   in	closeEnough && inSegment
+   in	tagToEnum# closeEnough && inSegment
 
 
 -- | Check whether a bead is in concat with another bead.
@@ -117,7 +117,8 @@ inContact_beadBead
 	bead2@(Bead ix2 _ radius2 pBead2 _)
  =let 	!dist#	  = distancePP_contact pBead1 pBead2
 	!(F# rad) = radius1 + radius2
-   in	(dist# `ltFloat#` rad ) && (dist# `gtFloat#` 0.1#)
+   in	(tagToEnum# (dist# `ltFloat#` rad)) &&
+        (tagToEnum# (dist# `gtFloat#` 0.1#))
 
 
 -- | Return the distance between these two points.
