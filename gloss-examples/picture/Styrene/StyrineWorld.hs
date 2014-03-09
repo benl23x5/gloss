@@ -87,6 +87,3 @@ insertActor actor tree
  		p1	= (max x0 x1, max y0 y1)
    	
 	  in	treeInsert treeMaxDepth 0 p0 p1 wall tree
-	
-myTest :: Int
-myTest = 4

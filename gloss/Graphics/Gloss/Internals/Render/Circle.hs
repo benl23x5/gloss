@@ -171,7 +171,7 @@ renderCircleLine_step
         -> IO ()
 
 renderCircleLine_step posX posY tStep tStop rad tt
-        | tagToEnum# (tt `geFloat#` tStop)
+        | 1# <- tt `geFloat#` tStop
         = return ()
 
         | otherwise
@@ -188,7 +188,7 @@ renderCircleStrip_step
         -> Float# -> Float# -> IO ()
 
 renderCircleStrip_step posX posY tStep tStop r1 t1 r2 t2
-	| tagToEnum# (t1 `geFloat#` tStop)
+	| 1# <- t1 `geFloat#` tStop
 	= return ()
 	
 	| otherwise
