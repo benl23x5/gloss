@@ -2,7 +2,7 @@
 
 -- The world contains a map of all the actors, along with the current
 --	quadtree so we can also draw it on the screen.
-module World where
+module StyrineWorld where
 
 import QuadTree
 import Actor
@@ -87,4 +87,3 @@ insertActor actor tree
  		p1	= (max x0 x1, max y0 y1)
    	
 	  in	treeInsert treeMaxDepth 0 p0 p1 wall tree
-	

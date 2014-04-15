@@ -2,7 +2,7 @@
 
 -- | Advance the world to the next time step.
 module Advance where
-import World
+import StyrineWorld
 import Contact
 import QuadTree
 import Collide
