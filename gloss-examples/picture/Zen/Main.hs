@@ -44,8 +44,8 @@ treeColor	= makeColor 0.0 1.0 0.0 0.5
 
 
 -- The tree fractal.
---	The position of the branches changes depending on the animation time
---	as well as the iteration number of the fractal.
+--  The position of the branches changes depending on the animation time
+--  as well as the iteration number of the fractal.
 treeFrac :: Int -> Float -> Picture
 treeFrac 0 timeS = Blank
 treeFrac n timeS

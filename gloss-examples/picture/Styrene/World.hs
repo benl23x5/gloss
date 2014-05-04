@@ -11,7 +11,7 @@ import Config
 import qualified Data.Map	as Map
 import Data.Map			(Map)
 
--- The world ---------------------------------------------------------------------------------------
+-- The world ------------------------------------------------------------------
 data World	
 	= World (Map Index Actor)	-- actors
 		(QuadTree Actor)	-- tree
@@ -65,7 +65,7 @@ beadPos ix iy
 	, (iy * beadBoxSize)  )
 
 
--- QuadTree ----------------------------------------------------------------------------------------
+-- QuadTree -------------------------------------------------------------------
 
 -- | insert an actor into the tree
 insertActor :: Actor -> QuadTree Actor -> QuadTree Actor

@@ -113,9 +113,9 @@ collideBeadBead_static
 
 -- | Move a bead which has collided with something.
 collideBeadPoint_static
-	:: Actor	-- ^ the bead which collided with something
-	-> Point	-- ^ the point of collision (should be near the bead's surface)
-	-> Float	-- ^ velocity scaling factor (how much to slow the bead down after the collision)
+	:: Actor -- ^ the bead which collided with something
+	-> Point -- ^ the point of collision (should be near the bead's surface)
+	-> Float -- ^ velocity scaling factor (how much to slow the bead down after the collision)
 	-> Actor
 
 collideBeadPoint_static

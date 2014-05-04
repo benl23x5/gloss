@@ -20,8 +20,11 @@ import qualified Data.Map		as Map
 -- Find all pairs of actors in the world that are in contact with each other.
 findContacts 
 	:: World 
-	-> ( Set (Index, Index)		-- ^ a set of all pairs of actors that are in contact.
-	   , QuadTree Actor)		-- ^ also return the quadtree so we can draw it in the window.
+	-> ( -- a set of all pairs of actors that are in contact.
+             Set (Index, Index)	 
+
+             -- also return the quadtree so we can draw it in the window.
+ 	   , QuadTree Actor)     
 	   
 findContacts (World actors _)
  = let	
@@ -107,7 +110,7 @@ inContact_beadWall
 	-- pClosest needs to lie on the line segment between pWal1 and pWall2
 	inSegment	= uParam >= 0 && uParam <= 1
 
-   in	closeEnough && inSegment
+   in	tagToEnum# closeEnough && inSegment
 
 
 -- | Check whether a bead is in concat with another bead.
@@ -117,7 +120,7 @@ inContact_beadBead
 	bead2@(Bead ix2 _ radius2 pBead2 _)
  =let 	!dist#	  = distancePP_contact pBead1 pBead2
 	!(F# rad) = radius1 + radius2
-   in	(dist# `ltFloat#` rad ) && (dist# `gtFloat#` 0.1#)
+   in	tagToEnum# (dist# `ltFloat#` rad ) && tagToEnum# (dist# `gtFloat#` 0.1#)
 
 
 -- | Return the distance between these two points.

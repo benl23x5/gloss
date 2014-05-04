@@ -28,7 +28,7 @@ main
 	advanceWorld	        -- a function to advance the world to
 			        --    the next simulation step.
 
--- Draw --------------------------------------------------------------------------------------------
+-- Draw -------------------------------------------------------------------------------------------
 
 -- | Draw this world as a picture.
 drawWorld :: World -> Picture

@@ -21,7 +21,7 @@ import Data.Set			(Set)
 import Data.Map			(Map)
 
 
--- Advance -------------------------------------------------------------------------------------------
+-- Advance ----------------------------------------------------------------------------------------
 
 -- | Advance all the actors in this world by a certain time.
 advanceWorld 
@@ -78,9 +78,9 @@ applyContact time force (ix1, ix2) actors
 		= let	
 			(a1', a2')
 				-- if one of the beads is stuck then do a safer, static collision.
-				--	with this method the beads don't transfer energy into each other
-				--	so there is less of a chance of lots of beads being crushed together
-				--	if there are many in the same place.
+				-- with this method the beads don't transfer energy into each other
+				-- so there is less of a chance of lots of beads being crushed
+                                -- together if there are many in the same place.
 				| m1 >= beadStuckCount || m2 >= beadStuckCount
 				= let 	a1'	= collideBeadBead_static a1 a2
 			  		a2'	= collideBeadBead_static a2 a1
