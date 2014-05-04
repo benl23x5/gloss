@@ -168,6 +168,12 @@ data SpecialKey
         | KeyPageDown
         | KeyHome
         | KeyEnd
+        | KeyShiftL
+        | KeyShiftR
+        | KeyCtrlL
+        | KeyCtrlR
+        | KeyAltL
+        | KeyAltR
         | KeyPad0
         | KeyPad1
         | KeyPad2

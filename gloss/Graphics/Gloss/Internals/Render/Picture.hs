@@ -319,7 +319,7 @@ installTexture width height bitmapData@(BitmapData _ fptr) cacheMe
         withForeignPtr fptr
          $ \ptr ->
    	   GL.texImage2D
-		Nothing
+		GL.Texture2D
 		GL.NoProxy
 		0
 		GL.RGBA8

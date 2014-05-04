@@ -1,5 +1,5 @@
 Name:                gloss
-Version:             1.8.1.2
+Version:             1.8.2.1
 License:             MIT
 License-file:        LICENSE
 Author:              Ben Lippmeier
@@ -37,12 +37,12 @@ Flag ExplicitBackend
 
 Library
   Build-Depends: 
-        base       == 4.6.*,
+        base       == 4.7.*,
         ghc-prim   == 0.3.*,
         containers == 0.5.*,
         bytestring == 0.10.*,
-        OpenGL     == 2.8.*,
-        GLUT       == 2.4.*,
+        OpenGL     == 2.9.*,
+        GLUT       == 2.5.*,
         bmp        == 1.2.*
 
   ghc-options:
@@ -110,7 +110,7 @@ Library
 
   If flag(GLFW)
     Build-Depends:
-        GLFW-b >= 0.1.0.1 && < 0.2
+        GLFW-b >= 0.1.4.1 && < 0.2
     CPP-Options: -DWITHGLFW
     Other-modules:
         Graphics.Gloss.Internals.Interface.Backend.GLFW

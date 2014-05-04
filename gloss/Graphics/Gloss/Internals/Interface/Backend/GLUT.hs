@@ -316,6 +316,12 @@ glutKeyToKey key
         GLUT.SpecialKey GLUT.KeyBegin              -> SpecialKey KeyBegin
         GLUT.SpecialKey GLUT.KeyDelete             -> SpecialKey KeyDelete
         GLUT.SpecialKey (GLUT.KeyUnknown _)        -> SpecialKey KeyUnknown
+        GLUT.SpecialKey GLUT.KeyShiftL             -> SpecialKey KeyShiftL
+        GLUT.SpecialKey GLUT.KeyShiftR             -> SpecialKey KeyShiftR
+        GLUT.SpecialKey GLUT.KeyCtrlL              -> SpecialKey KeyCtrlL
+        GLUT.SpecialKey GLUT.KeyCtrlR              -> SpecialKey KeyCtrlR
+        GLUT.SpecialKey GLUT.KeyAltL               -> SpecialKey KeyAltL
+        GLUT.SpecialKey GLUT.KeyAltR               -> SpecialKey KeyAltR
         GLUT.MouseButton GLUT.LeftButton           -> MouseButton LeftButton
         GLUT.MouseButton GLUT.MiddleButton         -> MouseButton MiddleButton
         GLUT.MouseButton GLUT.RightButton          -> MouseButton RightButton
