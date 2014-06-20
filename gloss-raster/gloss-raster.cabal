@@ -21,8 +21,8 @@ source-repository head
         location:       https://github.com/benl23x5/gloss
 
 Library
-  Build-Depends: 
-        base       == 4.7.*,
+  Build-Depends:
+        base       >= 4.6 && < 4.8,
         ghc-prim   == 0.3.*,
         containers == 0.5.*,
         repa       == 3.2.*,
@@ -35,4 +35,3 @@ Library
   Exposed-modules:
         Graphics.Gloss.Raster.Field
         Graphics.Gloss.Raster.Array
-
