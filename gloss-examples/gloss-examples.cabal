@@ -281,7 +281,7 @@ Executable gloss-fluid
         
 
 Executable gloss-snow
-  Build-depends
+  Build-depends:
         base            == 4.7.*,
         repa            == 3.2.*,
         gloss           == 1.8.2.*
@@ -296,7 +296,7 @@ Executable gloss-snow
 
 
 Executable gloss-mandel
-  Build-depends
+  Build-depends:
         base            == 4.7.*,
         repa            == 3.2.*,
         gloss           == 1.8.2.*
@@ -314,7 +314,7 @@ Executable gloss-mandel
 
 
 Executable gloss-graph
-  Build-depends
+  Build-depends:
         base            == 4.7.*,
         containers      == 0.5.*,
         gloss           == 1.8.2.*
