@@ -11,9 +11,6 @@ data State
 	{ -- | The iteration number we're up to.
 	  stateIteration	:: !Integer
 
-	-- | Whether the animation is free-running (or single step)
-	, stateRun		:: !Bool
-
 	-- | How many simulation setps to take for each second of real time
 	, stateResolution	:: !Int 
 	
@@ -29,7 +26,6 @@ stateInit :: Int -> State
 stateInit resolution
  	= State
  	{ stateIteration		= 0
-	, stateRun			= True
 	, stateResolution		= resolution 
 	, stateSimTime			= 0 
 	, stateStepsPerFrame		= 0 }

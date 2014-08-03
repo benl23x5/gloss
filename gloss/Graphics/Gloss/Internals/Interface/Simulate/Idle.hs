@@ -31,15 +31,7 @@ callback_simulate_idle
 	
 callback_simulate_idle simSR animateSR viewSA worldSR worldAdvance singleStepTime backendRef
  = {-# SCC "callbackIdle" #-}
-   do	simS		<- readIORef simSR
-	let result
-		| SM.stateRun   simS
-		= simulate_run   simSR animateSR viewSA worldSR worldAdvance
-		
-		| otherwise
-		= \_ -> return ()
-		
-	result backendRef
+   do	simulate_run simSR animateSR viewSA worldSR worldAdvance backendRef
  
 
 -- take the number of steps specified by controlWarp
