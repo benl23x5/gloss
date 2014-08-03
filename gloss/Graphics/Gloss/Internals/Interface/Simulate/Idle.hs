@@ -89,8 +89,7 @@ simulate_run simSR _ viewSA worldSR worldAdvance backendRef
 	-- update the control state
 	simSR `modifyIORef` \c -> c
 		{ SM.stateIteration	= nFinal
-		, SM.stateSimTime	= newSimTime 
-		, SM.stateStepsPerFrame	= fromIntegral thisSteps }
+		, SM.stateSimTime	= newSimTime }
 	
 	-- tell glut we want to draw the window after returning
 	Backend.postRedisplay backendRef

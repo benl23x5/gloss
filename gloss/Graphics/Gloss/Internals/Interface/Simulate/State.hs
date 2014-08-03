@@ -15,10 +15,7 @@ data State
 	, stateResolution	:: !Int 
 	
 	-- | How many seconds worth of simulation we've done so far
-	, stateSimTime		:: !Float
-	
-	-- | Record how many steps we've been taking per frame
-	, stateStepsPerFrame 	:: !Int  }
+	, stateSimTime		:: !Float  }
 	
 
 -- | Initial control state
@@ -27,7 +24,6 @@ stateInit resolution
  	= State
  	{ stateIteration		= 0
 	, stateResolution		= resolution 
-	, stateSimTime			= 0 
-	, stateStepsPerFrame		= 0 }
+	, stateSimTime			= 0 }
 	
 	
