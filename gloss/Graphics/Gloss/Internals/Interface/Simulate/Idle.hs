@@ -36,9 +36,6 @@ callback_simulate_idle simSR animateSR viewSA worldSR worldAdvance singleStepTim
 		| SM.stateRun   simS
 		= simulate_run   simSR animateSR viewSA worldSR worldAdvance
 		
-		| SM.stateStep  simS
-		= simulate_step  simSR viewSA worldSR worldAdvance singleStepTime
-		
 		| otherwise
 		= \_ -> return ()
 		
@@ -104,28 +101,6 @@ simulate_run simSR _ viewSA worldSR worldAdvance backendRef
 		, SM.stateStepsPerFrame	= fromIntegral thisSteps }
 	
 	-- tell glut we want to draw the window after returning
-	Backend.postRedisplay backendRef
-
-
--- take a single step
-simulate_step 
-	:: IORef SM.State
-	-> IO ViewPort
-	-> IORef world
-	-> (ViewPort -> Float -> world -> IO world) 
-	-> Float
-	-> IdleCallback
-
-simulate_step simSR viewSA worldSR worldAdvance singleStepTime backendRef
- = do	viewS		<- viewSA
- 	world		<- readIORef worldSR
-	world'		<- worldAdvance viewS singleStepTime world
-	
-	writeIORef worldSR world'
-	simSR `modifyIORef` \c -> c 	
-		{ SM.stateIteration 	= SM.stateIteration c + 1 
-	 	, SM.stateStep		= False }
-	 
 	Backend.postRedisplay backendRef
 
 

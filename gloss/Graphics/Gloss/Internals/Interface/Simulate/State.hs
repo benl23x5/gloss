@@ -14,9 +14,6 @@ data State
 	-- | Whether the animation is free-running (or single step)
 	, stateRun		:: !Bool
 
-	-- | Signals to callbackIdle to take a single step of the automation.
-	, stateStep		:: !Bool
-
 	-- | How many simulation setps to take for each second of real time
 	, stateResolution	:: !Int 
 	
@@ -33,7 +30,6 @@ stateInit resolution
  	= State
  	{ stateIteration		= 0
 	, stateRun			= True
-	, stateStep			= False
 	, stateResolution		= resolution 
 	, stateSimTime			= 0 
 	, stateStepsPerFrame		= 0 }
