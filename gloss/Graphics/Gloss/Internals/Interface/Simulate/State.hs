@@ -17,9 +17,6 @@ data State
 	-- | Signals to callbackIdle to take a single step of the automation.
 	, stateStep		:: !Bool
 
-	-- | Signals to callbackIdle to roll-back to the initial world.
-	, stateReset		:: !Bool
-		
 	-- | How many simulation setps to take for each second of real time
 	, stateResolution	:: !Int 
 	
@@ -37,7 +34,6 @@ stateInit resolution
  	{ stateIteration		= 0
 	, stateRun			= True
 	, stateStep			= False
-	, stateReset			= False
 	, stateResolution		= resolution 
 	, stateSimTime			= 0 
 	, stateStepsPerFrame		= 0 }

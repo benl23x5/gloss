@@ -24,19 +24,15 @@ callback_simulate_idle
         -- directly because sometimes we hold a ref to a 'ViewPort' (in
         -- Game) and sometimes a ref to a 'ViewState'.
 	-> IORef world					-- ^ the current world
-	-> world					-- ^ the initial world
 	-> (ViewPort -> Float -> world -> IO world) 	-- ^ fn to advance the world
 	-> Float					-- ^ how much time to advance world by 
 							--	in single step mode
 	-> IdleCallback
 	
-callback_simulate_idle simSR animateSR viewSA worldSR worldStart worldAdvance singleStepTime backendRef
+callback_simulate_idle simSR animateSR viewSA worldSR worldAdvance singleStepTime backendRef
  = {-# SCC "callbackIdle" #-}
    do	simS		<- readIORef simSR
 	let result
-		| SM.stateReset simS
-		= simulate_reset simSR worldSR worldStart
-
 		| SM.stateRun   simS
 		= simulate_run   simSR animateSR viewSA worldSR worldAdvance
 		
@@ -49,19 +45,6 @@ callback_simulate_idle simSR animateSR viewSA worldSR worldStart worldAdvance si
 	result backendRef
  
 
--- reset the world to 
-simulate_reset :: IORef SM.State -> IORef a -> a -> IdleCallback
-simulate_reset simSR worldSR worldStart backendRef
- = do	writeIORef worldSR worldStart
-
- 	simSR `modifyIORef` \c -> c 	
-		{ SM.stateReset		= False 
-	 	, SM.stateIteration	= 0 
-		, SM.stateSimTime	= 0 }
-	 
-	Backend.postRedisplay backendRef
-	 
- 
 -- take the number of steps specified by controlWarp
 simulate_run 
 	:: IORef SM.State
