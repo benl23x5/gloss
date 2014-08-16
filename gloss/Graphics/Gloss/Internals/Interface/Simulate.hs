@@ -88,7 +88,7 @@ simulateWithBackendIO
 		, Callback.Idle		(callback_simulate_idle 
 						stateSR animateSR
 						(viewStateViewPort <$> readIORef viewSR)
-						worldSR worldStart worldAdvance
+						worldSR worldAdvance
 						singleStepTime)
 		, callback_exit () 
 		, callback_viewState_keyMouse viewSR

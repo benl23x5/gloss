@@ -87,7 +87,7 @@ playWithBackendIO
 		, Callback.Display	(animateEnd   animateSR)
 		, Callback.Idle		(callback_simulate_idle 
 						stateSR animateSR (readIORef viewSR)
-						worldSR worldStart (\_ -> worldAdvance)
+						worldSR (\_ -> worldAdvance)
 						singleStepTime)
 		, callback_keyMouse worldSR viewSR worldHandleEvent
 		, callback_motion   worldSR worldHandleEvent

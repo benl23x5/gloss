@@ -24,44 +24,16 @@ callback_simulate_idle
         -- directly because sometimes we hold a ref to a 'ViewPort' (in
         -- Game) and sometimes a ref to a 'ViewState'.
 	-> IORef world					-- ^ the current world
-	-> world					-- ^ the initial world
 	-> (ViewPort -> Float -> world -> IO world) 	-- ^ fn to advance the world
 	-> Float					-- ^ how much time to advance world by 
 							--	in single step mode
 	-> IdleCallback
 	
-callback_simulate_idle simSR animateSR viewSA worldSR worldStart worldAdvance singleStepTime backendRef
+callback_simulate_idle simSR animateSR viewSA worldSR worldAdvance singleStepTime backendRef
  = {-# SCC "callbackIdle" #-}
-   do	simS		<- readIORef simSR
-	let result
-		| SM.stateReset simS
-		= simulate_reset simSR worldSR worldStart
-
-		| SM.stateRun   simS
-		= simulate_run   simSR animateSR viewSA worldSR worldAdvance
-		
-		| SM.stateStep  simS
-		= simulate_step  simSR viewSA worldSR worldAdvance singleStepTime
-		
-		| otherwise
-		= \_ -> return ()
-		
-	result backendRef
+   do	simulate_run simSR animateSR viewSA worldSR worldAdvance backendRef
  
 
--- reset the world to 
-simulate_reset :: IORef SM.State -> IORef a -> a -> IdleCallback
-simulate_reset simSR worldSR worldStart backendRef
- = do	writeIORef worldSR worldStart
-
- 	simSR `modifyIORef` \c -> c 	
-		{ SM.stateReset		= False 
-	 	, SM.stateIteration	= 0 
-		, SM.stateSimTime	= 0 }
-	 
-	Backend.postRedisplay backendRef
-	 
- 
 -- take the number of steps specified by controlWarp
 simulate_run 
 	:: IORef SM.State
@@ -117,32 +89,9 @@ simulate_run simSR _ viewSA worldSR worldAdvance backendRef
 	-- update the control state
 	simSR `modifyIORef` \c -> c
 		{ SM.stateIteration	= nFinal
-		, SM.stateSimTime	= newSimTime 
-		, SM.stateStepsPerFrame	= fromIntegral thisSteps }
+		, SM.stateSimTime	= newSimTime }
 	
 	-- tell glut we want to draw the window after returning
-	Backend.postRedisplay backendRef
-
-
--- take a single step
-simulate_step 
-	:: IORef SM.State
-	-> IO ViewPort
-	-> IORef world
-	-> (ViewPort -> Float -> world -> IO world) 
-	-> Float
-	-> IdleCallback
-
-simulate_step simSR viewSA worldSR worldAdvance singleStepTime backendRef
- = do	viewS		<- viewSA
- 	world		<- readIORef worldSR
-	world'		<- worldAdvance viewS singleStepTime world
-	
-	writeIORef worldSR world'
-	simSR `modifyIORef` \c -> c 	
-		{ SM.stateIteration 	= SM.stateIteration c + 1 
-	 	, SM.stateStep		= False }
-	 
 	Backend.postRedisplay backendRef
 
 
