@@ -1,7 +1,6 @@
 {-# OPTIONS_HADDOCK hide #-}
 module Graphics.Gloss.Internals.Render.Common where
 
-import Graphics.Gloss.Internals.Interface.Backend
 import	Graphics.Rendering.OpenGL					(($=))
 import qualified Graphics.Rendering.OpenGL.GL	as GL
 import Unsafe.Coerce
@@ -25,19 +24,18 @@ gsizei x = unsafeCoerce x
 
 -- | Perform a rendering action setting up the coords first
 renderAction
-	:: Backend a
-	=> IORef a
+	::
+	(Int, Int)
 	-> IO ()
 	-> IO ()
 
-renderAction backendRef action
+renderAction (sizeX, sizeY) action
  = do
  	GL.matrixMode	$= GL.Projection
 	GL.preservingMatrix
 	 $ do
 		-- setup the co-ordinate system
 	 	GL.loadIdentity
-		(sizeX, sizeY) 	<- getWindowDimensions backendRef
 		let (sx, sy)	= (fromIntegral sizeX / 2, fromIntegral sizeY / 2)
 
 		GL.ortho (-sx) sx (-sy) sy 0 (-100)

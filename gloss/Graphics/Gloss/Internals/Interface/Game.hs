@@ -7,8 +7,7 @@ where
 import Graphics.Gloss.Data.Color
 import Graphics.Gloss.Data.Picture
 import Graphics.Gloss.Data.ViewPort
-import Graphics.Gloss.Internals.Render.Common
-import Graphics.Gloss.Internals.Render.Picture
+import Graphics.Gloss.Render
 import Graphics.Gloss.Internals.Interface.Event
 import Graphics.Gloss.Internals.Interface.Backend
 import Graphics.Gloss.Internals.Interface.Window
@@ -71,12 +70,14 @@ playWithBackendIO
 	
 		-- display the picture in the current view
 		renderS		<- readIORef renderSR
-		viewS		<- readIORef viewSR
+		viewPort        <- readIORef viewSR
+
+                windowSize <- getWindowDimensions backendRef
 
 		-- render the frame
 		renderAction
-			backendRef
-	 	 	(renderPicture backendRef renderS viewS picture)
+			windowSize
+	 	 	(renderPicture renderS viewPort picture)
  
 		-- perform garbage collection
 		performGC

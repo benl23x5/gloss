@@ -141,7 +141,8 @@ Executable gloss-machina
 Executable gloss-occlusion
   Build-depends: 
         base            == 4.7.*, 
-        gloss           == 1.8.2.*
+        gloss           == 1.8.2.*,
+        gloss-rendering
   Main-is: Main.hs
   other-modules:  Cell World State Data
   hs-source-dirs: picture/Occlusion
@@ -320,5 +321,16 @@ Executable gloss-graph
         gloss           == 1.8.2.*
   Main-is:        Main.hs
   hs-source-dirs: picture/Graph
+  ghc-options:
+        -Wall -O2
+
+Executable gloss-render
+  Build-depends:
+        base            == 4.7.*,
+        containers      == 0.5.*,
+        GLFW-b,
+        gloss
+  Main-is:        Main.hs
+  hs-source-dirs: picture/Render
   ghc-options:
         -Wall -O2

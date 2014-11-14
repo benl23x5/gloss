@@ -5,8 +5,7 @@ where
 import Graphics.Gloss.Data.Color
 import Graphics.Gloss.Data.Picture
 import Graphics.Gloss.Data.ViewState
-import Graphics.Gloss.Internals.Render.Common
-import Graphics.Gloss.Internals.Render.Picture
+import Graphics.Gloss.Render
 import Graphics.Gloss.Internals.Interface.Backend
 import Graphics.Gloss.Internals.Interface.Window
 import Graphics.Gloss.Internals.Interface.Common.Exit
@@ -51,10 +50,12 @@ animateWithBackendIO backend pannable display backColor frameOp
 		renderS		<- readIORef renderSR
 		portS		<- viewStateViewPort <$> readIORef viewSR
 
+                windowSize      <- getWindowDimensions backendRef
+
 		-- render the frame
 		renderAction
-			backendRef
-			(renderPicture backendRef renderS portS picture)
+			windowSize
+			(renderPicture renderS portS picture)
 
 		-- perform GC every frame to try and avoid long pauses
 		performGC
