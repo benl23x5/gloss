@@ -12,6 +12,7 @@ import Graphics.Gloss.Data.Color
 import Graphics.Gloss.Data.Picture
 import Graphics.Gloss.Data.ViewPort
 import qualified Graphics.Gloss.Internals.Render.State as RS
+import System.Mem (performGC)
 
 render :: (Int, Int) -> Color -> Picture -> IO ()
 render windowSize
@@ -33,3 +34,4 @@ render windowSize
        renderAction
               windowSize
               (renderPicture renderS viewPort picture) 
+       performGC
