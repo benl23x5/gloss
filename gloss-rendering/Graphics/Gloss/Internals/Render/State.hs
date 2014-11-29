@@ -55,7 +55,8 @@ data Texture
         , texCacheMe    :: Bool }
 
 
--- | Default render options
+-- | The render state holds references to the textures currently cached
+--   in the OpenGL context.
 stateInit :: IO State
 stateInit
  = do   textures        <- newIORef []

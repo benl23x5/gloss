@@ -1,7 +1,7 @@
 {-# OPTIONS_HADDOCK hide #-}
 module Graphics.Gloss.Internals.Render.Common where
 
-import	Graphics.Rendering.OpenGL					(($=))
+import	Graphics.Rendering.OpenGL	       (($=))
 import qualified Graphics.Rendering.OpenGL.GL	as GL
 import Unsafe.Coerce
 import Data.IORef
@@ -17,16 +17,17 @@ gf :: Float -> GL.GLfloat
 {-# INLINE gf #-}
 gf x = unsafeCoerce x
 
+
 -- | Used for similar reasons to above
 gsizei :: Int -> GL.GLsizei
 {-# INLINE gsizei #-}
 gsizei x = unsafeCoerce x
 
--- | Perform a rendering action setting up the coords first
+
+-- | Perform an OpenGL rendering action in the appropriate @ModelView@ context.
 renderAction
-	::
-	(Int, Int)
-	-> IO ()
+	:: (Int, Int)  -- ^ Width and height of window.
+	-> IO ()       -- ^ Action to perform.
 	-> IO ()
 
 renderAction (sizeX, sizeY) action

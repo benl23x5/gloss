@@ -25,9 +25,9 @@ import qualified Graphics.UI.GLUT		        as GLUT
 
 -- | Render a picture using the given render options and viewport.
 renderPicture
-	:: State		-- ^ The render state
-	-> ViewPort		-- ^ The current viewport.
-	-> Picture 		-- ^ The picture to render.
+	:: State		-- ^ Current rendering state.
+	-> ViewPort		-- ^ Current viewport.
+	-> Picture 		-- ^ Picture to render.
 	-> IO ()
 
 renderPicture
