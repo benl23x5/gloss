@@ -43,25 +43,14 @@ Library
         bytestring == 0.10.*,
         OpenGL     == 2.9.*,
         GLUT       == 2.5.*,
-        bmp        == 1.2.*
+        bmp        == 1.2.*,
+        gloss-rendering
 
   ghc-options:
         -O2 -Wall
 
   Exposed-modules:
         Graphics.Gloss
-        Graphics.Gloss.Geometry
-        Graphics.Gloss.Geometry.Angle
-        Graphics.Gloss.Geometry.Line
-        Graphics.Gloss.Data.Display
-        Graphics.Gloss.Data.Point
-        Graphics.Gloss.Data.Vector
-        Graphics.Gloss.Data.Quad
-        Graphics.Gloss.Data.Extent
-        Graphics.Gloss.Data.QuadTree
-        Graphics.Gloss.Data.Color
-        Graphics.Gloss.Data.Picture
-        Graphics.Gloss.Data.ViewPort
         Graphics.Gloss.Data.ViewState
         Graphics.Gloss.Algorithms.RayCast
         Graphics.Gloss.Interface.Pure.Display
@@ -87,12 +76,6 @@ Library
         Graphics.Gloss.Internals.Interface.ViewState.Motion
         Graphics.Gloss.Internals.Interface.ViewState.Reshape
         Graphics.Gloss.Internals.Interface.Window
-        Graphics.Gloss.Internals.Render.Bitmap
-        Graphics.Gloss.Internals.Render.Circle
-        Graphics.Gloss.Internals.Render.Common
-        Graphics.Gloss.Internals.Render.State
-        Graphics.Gloss.Internals.Render.Picture
-
         Graphics.Gloss.Internals.Interface.Display
         Graphics.Gloss.Internals.Interface.Animate
         Graphics.Gloss.Internals.Interface.Simulate

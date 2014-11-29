@@ -8,7 +8,6 @@ where
 import Graphics.Gloss.Data.Picture
 import Graphics.Gloss.Data.Color
 import Graphics.Gloss.Data.ViewPort
-import Graphics.Gloss.Internals.Interface.Backend
 import Graphics.Gloss.Internals.Render.State
 import Graphics.Gloss.Internals.Render.Common
 import Graphics.Gloss.Internals.Render.Circle
@@ -26,17 +25,14 @@ import qualified Graphics.UI.GLUT		        as GLUT
 
 -- | Render a picture using the given render options and viewport.
 renderPicture
-	:: forall a . Backend a
-	=> IORef a
-	-> State		-- ^ The render state
+	:: State		-- ^ The render state
 	-> ViewPort		-- ^ The current viewport.
 	-> Picture 		-- ^ The picture to render.
 	-> IO ()
 
 renderPicture
-	backendRef
 	renderS
-	viewS
+	viewPort
 	picture
  = do
 	-- This GL state doesn't change during rendering, 
@@ -44,7 +40,6 @@ renderPicture
 	(matProj_  :: GL.GLmatrix GL.GLdouble)	
 			<- get $ GL.matrix (Just GL.Projection)
 	viewport_  	<- get $ GL.viewport
-	windowSize_	<- getWindowDimensions backendRef
 
 	-- 
 	let ?modeWireframe	= stateWireframe renderS
@@ -52,16 +47,15 @@ renderPicture
 	    ?refTextures        = stateTextures  renderS
 	    ?matProj		= matProj_
 	    ?viewport		= viewport_
-	    ?windowSize		= windowSize_
 	
 	-- setup render state for world
 	setLineSmooth	(stateLineSmooth renderS)
 	setBlendAlpha	(stateBlendAlpha renderS)
 	
 	-- Adjust the picture
-	let picture'		= applyViewPortToPicture viewS picture
+	let picture'		= applyViewPortToPicture viewPort picture
         checkErrors "before drawPicture."
-        drawPicture (viewPortScale viewS) picture'
+        drawPicture (viewPortScale viewPort) picture'
         checkErrors "after drawPicture."
 
 

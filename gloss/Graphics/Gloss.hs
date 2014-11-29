@@ -67,11 +67,13 @@ module Graphics.Gloss
 	, display
 	, animate
         , simulate
-	, play)
+	, play
+        , render)
 where
 import Graphics.Gloss.Data.Display
 import Graphics.Gloss.Data.Picture
 import Graphics.Gloss.Data.Color
+import Graphics.Gloss.Render
 import Graphics.Gloss.Interface.Pure.Display
 import Graphics.Gloss.Interface.Pure.Animate
 import Graphics.Gloss.Interface.Pure.Simulate

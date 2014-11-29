@@ -26,7 +26,8 @@ Library
         ghc-prim   == 0.3.*,
         containers == 0.5.*,
         repa       == 3.2.*,
-        gloss      == 1.8.2.*
+        gloss      == 1.8.2.*,
+        gloss-rendering
 
   ghc-options:
         -Odph -fno-liberate-case
