@@ -4,7 +4,7 @@ module Graphics.Gloss.Internals.Render.Common where
 import	Graphics.Rendering.OpenGL	       (($=))
 import qualified Graphics.Rendering.OpenGL.GL	as GL
 import Unsafe.Coerce
-import Data.IORef
+
 
 -- | The OpenGL library doesn't seem to provide a nice way convert
 --	a Float to a GLfloat, even though they're the same thing

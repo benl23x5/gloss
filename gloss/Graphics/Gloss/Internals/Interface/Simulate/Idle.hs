@@ -29,7 +29,7 @@ callback_simulate_idle
 							--	in single step mode
 	-> IdleCallback
 	
-callback_simulate_idle simSR animateSR viewSA worldSR worldAdvance singleStepTime backendRef
+callback_simulate_idle simSR animateSR viewSA worldSR worldAdvance _singleStepTime backendRef
  = {-# SCC "callbackIdle" #-}
    do	simulate_run simSR animateSR viewSA worldSR worldAdvance backendRef
  

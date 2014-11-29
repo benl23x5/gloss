@@ -1,5 +1,5 @@
 Name:                gloss
-Version:             1.8.2.1
+Version:             1.9.1.1
 License:             MIT
 License-file:        LICENSE
 Author:              Ben Lippmeier
@@ -44,7 +44,7 @@ Library
         OpenGL     == 2.9.*,
         GLUT       == 2.5.*,
         bmp        == 1.2.*,
-        gloss-rendering
+        gloss-rendering == 1.9.1.*
 
   ghc-options:
         -O2 -Wall

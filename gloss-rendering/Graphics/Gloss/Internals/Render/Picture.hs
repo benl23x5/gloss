@@ -23,7 +23,7 @@ import qualified Graphics.Rendering.OpenGL.GLU.Errors   as GLU
 import qualified Graphics.UI.GLUT		        as GLUT
 
 
--- | Render a picture using the given render options and viewport.
+-- | Render a picture using the given render state and viewport.
 renderPicture
 	:: State		-- ^ Current rendering state.
 	-> ViewPort		-- ^ Current viewport.

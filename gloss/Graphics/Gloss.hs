@@ -34,13 +34,18 @@
 --   To build gloss using the GLFW window manager instead of GLUT use
 --        @cabal install gloss --flags=\"GLFW -GLUT\"@
 --
--- @Release Notes:
+-- @
+-- Release Notes:
 --
--- For 1.8.0
+-- For 1.9:
+--  Thanks to Elise Huard
+--   * Split rendering code into gloss-rendering package.
+--
+-- For 1.8
 --  Thanks to Francesco Mazzoli
 --   * Factored out ViewPort and ViewState handling into user visible modules.
 --
--- For 1.7.0:
+-- For 1.7:
 --   * Tweaked circle level-of-detail reduction code.
 --   * Increased frame rate cap to 100hz.
 --   Thanks to Doug Burke
@@ -48,11 +53,11 @@
 --   Thanks to Thomas DuBuisson
 --   * IO versions of animate, simplate and play.
 --
--- For 1.6.0:
+-- For 1.6:
 --   Thanks to Anthony Cowley
 --   * Full screen display mode.
 -- 
--- For 1.5.0:
+-- For 1.5:
 --   * O(1) Conversion of ForeignPtrs to bitmaps.
 --   * An extra flag on the Bitmap constructor allows bitmaps to be cached
 --     in texture memory between frames.

@@ -15,10 +15,9 @@ import qualified Graphics.Gloss.Internals.Render.State as RS
 import System.Mem (performGC)
 
 
--- | Clear the current OpenGL context with the clear colour and draw the given
---   picture into it. The mutable state holds references to the textures currently 
---   loaded into the context, and may have new ones added to it when drawing
---   the picture.
+-- | Clear the current OpenGL context and draw the given picture into it. The
+--   mutable state holds references to the textures currently loaded into the
+--   context, and may have new ones added to it when drawing the picture.
 render  :: RS.State     -- ^ Current rendering state.
         -> (Int, Int)   -- ^ Window width and height.
         -> Color        -- ^ Color to clear the window with.
