@@ -68,6 +68,7 @@
 module Graphics.Gloss 
 	( module Graphics.Gloss.Data.Picture
 	, module Graphics.Gloss.Data.Color
+        , module Graphics.Gloss.Data.Bitmap
         , Display(..)
 	, display
 	, animate
@@ -77,6 +78,7 @@ where
 import Graphics.Gloss.Data.Display
 import Graphics.Gloss.Data.Picture
 import Graphics.Gloss.Data.Color
+import Graphics.Gloss.Data.Bitmap
 import Graphics.Gloss.Interface.Pure.Display
 import Graphics.Gloss.Interface.Pure.Animate
 import Graphics.Gloss.Interface.Pure.Simulate

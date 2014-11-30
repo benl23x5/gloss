@@ -5,7 +5,8 @@ module Solver
         , f2d
         , d2f)
 where
-import Graphics.Gloss.Data.Color
+import Graphics.Gloss.Raster.Array
+import Graphics.Gloss.Data.Bitmap
 import Graphics.Gloss.Data.Picture
 import Data.Word
 import System.IO.Unsafe
@@ -38,7 +39,6 @@ mandelPicture winX winY pixelsX pixelsY offX offY zoom radius iters
                 pixelsX pixelsY
                 (mandelPixel scaleX scaleY offX offY zoom iters radius)
 {-# NOINLINE mandelPicture #-}
-
 
 
 mandelArray
@@ -171,9 +171,9 @@ mandelPixel scaleX scaleY x0 y0 zoom cMax rMax x y
         !v      = fromIntegral count / fromIntegral cMax
 
         color'
-         | v > 0.99     = rgb 0 0 0
+         | v > 0.99     = rgb' 0 0 0
          | (r, g, b)    <- rampColorHotToCold 0 1 v
-         = rgb r g b
+         = rgb' r g b
    in   color'
 {-# INLINE mandelPixel #-}
 
@@ -205,12 +205,6 @@ f2d = float2Double
 d2f :: Double -> Float
 d2f = double2Float
 {-# INLINE d2f #-}
-
-
--- | Construct a color from red, green, blue components.
-rgb  :: Float -> Float -> Float -> Color
-rgb r g b   = makeColor' r g b 1.0
-{-# INLINE rgb #-}
 
 
 -- | Float to Word8 conversion because the one in the GHC libraries

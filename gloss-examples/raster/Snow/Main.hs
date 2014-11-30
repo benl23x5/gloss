@@ -38,7 +38,7 @@ run windowX windowY scaleX scaleY
                    makePixel i j
                     = let  x       = i + j
                            x'      = x .&. 0x0ff
-                      in   rgb8 x' x' x'
+                      in   rgbI' x' x' x'
 
                in   R.zipWith makePixel arr1 arr2
 

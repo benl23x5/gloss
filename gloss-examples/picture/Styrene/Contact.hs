@@ -7,6 +7,7 @@ import QuadTree
 import Actor
 import Graphics.Gloss.Data.Point
 import Graphics.Gloss.Geometry.Line
+import Graphics.Gloss.Geometry.Angle
 import Data.Maybe
 import Data.List
 import GHC.Exts

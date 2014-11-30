@@ -8,7 +8,8 @@ import World
 import Config
 
 import Graphics.Gloss
-import Graphics.Gloss.Geometry
+import Graphics.Gloss.Geometry.Line
+import Graphics.Gloss.Geometry.Angle
 import Graphics.Gloss.Interface.Pure.Simulate
 import Graphics.Gloss.Data.Vector
 

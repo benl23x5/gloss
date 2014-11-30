@@ -9,6 +9,7 @@ import System.Random
 
 import Graphics.Gloss
 import Graphics.Gloss.Data.Vector
+import Graphics.Gloss.Data.ViewPort
 import Graphics.Gloss.Data.ViewState
 import Graphics.Gloss.Interface.Pure.Game
 
@@ -160,7 +161,7 @@ pushForce
 
 pushForce v1 v2 
  = -- If we are analysing the same vertex, l = 0
-  if l > 0      then (charge / l) `mulSV` normaliseV d 
+  if l > 0      then (charge / l) `mulSV` normalizeV d 
                 else 0
  where  d = v1 - v2
         l = magV d ** 2

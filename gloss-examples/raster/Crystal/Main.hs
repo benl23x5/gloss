@@ -166,12 +166,13 @@ wave !th = f where
 
 -- | Convert an image point to a point on our wave plane.
 point :: Scale -> Point -> Point
-point !scale (x, y) = (x * scale, y * scale)
+point !scale (x, y) 
+        = (x * scale, y * scale)
 
 
 -- | Color ramp from blue to white.
 rampColor :: Float -> Color
-rampColor v
- = rawColor v (0.4 + (v * 0.6)) 1 1
+rampColor v 
+        = rgb' v (0.4 + (v * 0.6)) 1
 
 

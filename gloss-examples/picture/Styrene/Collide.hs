@@ -4,7 +4,8 @@ import World
 import Actor
 import Graphics.Gloss.Data.Point
 import Graphics.Gloss.Data.Vector
-import Graphics.Gloss.Geometry
+import Graphics.Gloss.Geometry.Line
+import Graphics.Gloss.Geometry.Angle
 
 -- Config -----------------------------------------------------------------------------------------
 -- How bouncy the beads are
@@ -50,7 +51,7 @@ collideBeadBead_elastic
 	mass2	= 1
 
 	-- the axis of collision (towards p2)
-	vCollision@(cX, cY)	= normaliseV (p2 - p1)
+	vCollision@(cX, cY)	= normalizeV (p2 - p1)
 	vCollisionR		= (cY, -cX)
 	
 	-- the velocity component of each bead along the axis of collision
@@ -125,7 +126,7 @@ collideBeadPoint_static
  = let
 	-- take a normal vector from the wall to the bead.
 	--	this vector is at a right angle to the wall.
-	vNormal		= normaliseV (pBead - pCollision)
+	vNormal		= normalizeV (pBead - pCollision)
 	
 	-- the bead at pBead is overlapping with what it collided with, but we don't want that.
 	-- 	place the bead so it's surface is just next to the point of collision.

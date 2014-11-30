@@ -9,8 +9,9 @@ import Collide
 import Actor
 import Config
 
-import Graphics.Gloss.Geometry
 import Graphics.Gloss.Interface.Pure.Simulate
+import Graphics.Gloss.Geometry.Line
+import Graphics.Gloss.Geometry.Angle
 import Graphics.Gloss.Data.Point
 import Graphics.Gloss.Data.Vector
 

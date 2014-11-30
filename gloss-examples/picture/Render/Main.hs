@@ -2,7 +2,7 @@
 import "GLFW-b" Graphics.UI.GLFW as GLFW
 import Control.Concurrent (threadDelay)
 import Control.Monad (when, unless)
-import Graphics.Gloss.Render
+import Graphics.Gloss.Rendering
 import Graphics.Gloss
 
 
@@ -11,16 +11,15 @@ main = do
     let width  = 200
         height = 200
 
-    state  <- stateInit
+    state  <- initState
 
     withWindow width height "Render" $ \win -> do
         loop state win (width, height)
 
-
     where loop state window (w, h) = do
             threadDelay 20000
             pollEvents
-            render state (w, h) white (Circle 80)
+            displayPicture (w, h) white state 1.0 (Circle 80)
             swapBuffers window
             k <- keyIsPressed window Key'Escape
             unless k $ loop state window (w, h)

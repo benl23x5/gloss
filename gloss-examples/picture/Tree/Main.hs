@@ -45,7 +45,7 @@ tree n time color
 
 -- A starting colour for the stump
 brown :: Color
-brown =  makeColor8 139 100 35  255
+brown =  makeColorI 139 100 35  255
 
 
 -- Make this color a little greener

@@ -25,7 +25,7 @@ main
                 !y' = abs $ y + 1
                 !r1 = abs $ 0.5 * (usin (x' + 0.2 * (usin t)) + ucos y')
                 !r2 = abs $ 0.5 * (usin y' + usin (0.3 * t))
-           in  makeColor' r1 0 r2  1.0
+           in  rgb' r1 0 r2
         {-# INLINE get #-}
 
    in   animateField 

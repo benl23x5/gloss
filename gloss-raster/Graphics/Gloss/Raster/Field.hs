@@ -18,7 +18,8 @@
 module Graphics.Gloss.Raster.Field
         ( -- * Color
           module Graphics.Gloss.Data.Color
-        , rgb, rgb8, rgb8w
+        , rgb,  rgbI, rgb8w
+        , rgb', rgbI'
 
           -- * Display functions
         , Display       (..)
@@ -36,6 +37,7 @@ import Graphics.Gloss.Data.Display
 import Graphics.Gloss.Data.Bitmap
 import Graphics.Gloss.Interface.Pure.Game
 import Graphics.Gloss.Interface.IO.Animate
+import Graphics.Gloss.Rendering
 import Data.Word
 import System.IO.Unsafe
 import Unsafe.Coerce
@@ -49,7 +51,7 @@ import Prelude                                  as P
 -- Color ----------------------------------------------------------------------
 -- | Construct a color from red, green, blue components.
 --  
---   Each component is clipped to the range [0..1]
+--   Each component is clamped to the range [0..1]
 rgb  :: Float -> Float -> Float -> Color
 rgb r g b   = makeColor r g b 1.0
 {-# INLINE rgb #-}
@@ -57,16 +59,36 @@ rgb r g b   = makeColor r g b 1.0
 
 -- | Construct a color from red, green, blue components.
 --
---   Each component is clipped to the range [0..255]
-rgb8 :: Int -> Int -> Int -> Color
-rgb8 r g b  = makeColor8 r g b 255
-{-# INLINE rgb8 #-}
+--   Each component is clamped to the range [0..255]
+rgbI :: Int -> Int -> Int -> Color
+rgbI r g b  = makeColorI r g b 255
+{-# INLINE rgbI #-}
 
 
 -- | Construct a color from red, green, blue components.
 rgb8w :: Word8 -> Word8 -> Word8 -> Color
-rgb8w r g b = makeColor8 (fromIntegral r) (fromIntegral g) (fromIntegral b) 255
+rgb8w r g b = makeRawColorI (fromIntegral r) (fromIntegral g) (fromIntegral b) 255
 {-# INLINE rgb8w #-}
+
+
+-- | Like `rgb`, but take pre-clamped components for speed.
+--
+--   If you're building a new color for every pixel then use this version, 
+--   however if your components are out of range then the picture you get will
+--   be implementation dependent.
+rgb' :: Float -> Float -> Float -> Color
+rgb' r g b  = makeRawColor r g b 1.0
+{-# INLINE rgb' #-}
+
+
+-- | Like `rgbI`, but take pre-clamped components for speed.
+--
+--   If you're building a new color for every pixel then use this version, 
+--   however if your components are out of range then the picture you get will
+--   be implementation dependent.
+rgbI' :: Int -> Int -> Int -> Color
+rgbI' r g b  = makeRawColorI r g b 255
+{-# INLINE rgbI' #-}
 
 
 -- Animate --------------------------------------------------------------------

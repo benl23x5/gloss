@@ -4,7 +4,7 @@ module Graphics.Gloss.Data.Color
 	( -- ** Color data type
 	  Color
         , makeColor
-        , makeColor8
+        , makeColorI
         , rgbaOfColor
 
   	  -- ** Color functions

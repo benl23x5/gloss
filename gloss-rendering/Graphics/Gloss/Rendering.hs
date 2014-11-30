@@ -7,9 +7,11 @@ module Graphics.Gloss.Rendering
           -- * Colors
         , Color
         , makeColor
-        , makeColor8
-        , rgbaOfColor
+        , makeColorI
         , makeRawColor
+        , makeRawColorI
+        , rgbaOfColor
+        , clampColor
 
           -- * Bitmaps
         , BitmapData

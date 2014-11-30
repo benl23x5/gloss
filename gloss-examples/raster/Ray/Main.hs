@@ -204,7 +204,7 @@ tracePixel !sizeX !sizeY !fov !bounces !state (x, y)
                         eyePos eyeDir
                         bounces
 
-   in   G.rawColor r g b 1.0
+   in   G.rgb' r g b
 {-# INLINE tracePixel #-}
 
 
