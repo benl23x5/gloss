@@ -3,13 +3,10 @@ module Graphics.Gloss.Data.ViewState
         , CommandConfig
         , defaultCommandConfig
         , ViewState     (..)
-        , ViewPort      (..)
         , viewStateInit
         , viewStateInitWithConfig
         , updateViewStateWithEvent
-        , updateViewStateWithEventMaybe
-        , applyViewPortToPicture
-        , invertViewPort )
+        , updateViewStateWithEventMaybe)
 where
 import Graphics.Gloss.Data.Vector
 import Graphics.Gloss.Data.ViewPort

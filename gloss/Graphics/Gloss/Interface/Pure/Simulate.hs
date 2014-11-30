@@ -25,17 +25,19 @@ import Graphics.Gloss.Internals.Interface.Backend
 --      how to convert the model to a picture, and how to advance the model for each unit of time. 
 --      This function does the rest.
 --
---   Once the window is open you can use the same commands as with @display@.
+--   Once the window is open you can use the same commands as with `display`.
 --
-simulate :: forall model
-        .  Display                      -- ^ Display mode.
-        -> Color                        -- ^ Background color.
-        -> Int                          -- ^ Number of simulation steps to take for each second of real time.
-        -> model                        -- ^ The initial model.
-        -> (model -> Picture)           -- ^ A function to convert the model to a picture.
-        -> (ViewPort -> Float -> model -> model) -- ^ A function to step the model one iteration. It is passed the 
-                                                 --     current viewport and the amount of time for this simulation
-                                                 --     step (in seconds).
+simulate 
+        :: Display      -- ^ Display mode.
+        -> Color        -- ^ Background color.
+        -> Int          -- ^ Number of simulation steps to take for each second of real time.
+        -> model        -- ^ The initial model.
+        -> (model -> Picture)           
+                -- ^ A function to convert the model to a picture.
+        -> (ViewPort -> Float -> model -> model) 
+                -- ^ A function to step the model one iteration. It is passed the 
+                --     current viewport and the amount of time for this simulation
+                --     step (in seconds).
         -> IO ()
 
 simulate display backColor simResolution 

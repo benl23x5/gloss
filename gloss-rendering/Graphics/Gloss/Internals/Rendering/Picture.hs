@@ -1,17 +1,14 @@
-{-# OPTIONS -fwarn-incomplete-patterns #-}
 {-# OPTIONS_HADDOCK hide #-}
-{-# LANGUAGE ImplicitParams, ScopedTypeVariables #-}
 
-module Graphics.Gloss.Internals.Render.Picture
+module Graphics.Gloss.Internals.Rendering.Picture
 	(renderPicture)
 where
-import Graphics.Gloss.Data.Picture
-import Graphics.Gloss.Data.Color
-import Graphics.Gloss.Data.ViewPort
-import Graphics.Gloss.Internals.Render.State
-import Graphics.Gloss.Internals.Render.Common
-import Graphics.Gloss.Internals.Render.Circle
-import Graphics.Gloss.Internals.Render.Bitmap
+import Graphics.Gloss.Internals.Rendering.State
+import Graphics.Gloss.Internals.Rendering.Common
+import Graphics.Gloss.Internals.Rendering.Circle
+import Graphics.Gloss.Internals.Rendering.Bitmap
+import Graphics.Gloss.Internals.Data.Picture
+import Graphics.Gloss.Internals.Data.Color
 import System.Mem.StableName
 import Foreign.ForeignPtr
 import Data.IORef
@@ -23,49 +20,31 @@ import qualified Graphics.Rendering.OpenGL.GLU.Errors   as GLU
 import qualified Graphics.UI.GLUT		        as GLUT
 
 
--- | Render a picture using the given render state and viewport.
+-- | Render a picture into the current OpenGL context.
+--
+--   Assumes that the OpenGL matrix mode is set to @Modelview@
+--
 renderPicture
-	:: State		-- ^ Current rendering state.
-	-> ViewPort		-- ^ Current viewport.
-	-> Picture 		-- ^ Picture to render.
+	:: State        -- ^ Current rendering state.
+	-> Float        -- ^ View port scale, which controls the level of detail.
+                        --   Use 1.0 to start with.
+	-> Picture      -- ^ Picture to render.
 	-> IO ()
 
-renderPicture
-	renderS
-	viewPort
-	picture
- = do
-	-- This GL state doesn't change during rendering, 
-	--	so we can just read it once here
-	(matProj_  :: GL.GLmatrix GL.GLdouble)	
-			<- get $ GL.matrix (Just GL.Projection)
-	viewport_  	<- get $ GL.viewport
-
-	-- 
-	let ?modeWireframe	= stateWireframe renderS
-	    ?modeColor		= stateColor     renderS
-	    ?refTextures        = stateTextures  renderS
-	    ?matProj		= matProj_
-	    ?viewport		= viewport_
+renderPicture state circScale picture
+ = do   
+        -- Setup render state for world
+	setLineSmooth	(stateLineSmooth state)
+	setBlendAlpha	(stateBlendAlpha state)
 	
-	-- setup render state for world
-	setLineSmooth	(stateLineSmooth renderS)
-	setBlendAlpha	(stateBlendAlpha renderS)
-	
-	-- Adjust the picture
-	let picture'		= applyViewPortToPicture viewPort picture
+	-- Draw the picture
         checkErrors "before drawPicture."
-        drawPicture (viewPortScale viewPort) picture'
+        drawPicture state circScale picture
         checkErrors "after drawPicture."
 
 
-drawPicture
-	:: ( ?modeWireframe     :: Bool
-	   , ?modeColor         :: Bool
-	   , ?refTextures       :: IORef [Texture])
-	=> Float -> Picture -> IO ()	  
-
-drawPicture circScale picture
+drawPicture :: State -> Float -> Picture -> IO ()	  
+drawPicture state circScale picture
  = {-# SCC "drawComponent" #-}
    case picture of
 
@@ -81,7 +60,7 @@ drawPicture circScale picture
 
 	-- polygon (where?)
 	Polygon path
-	 | ?modeWireframe
+	 | stateWireframe state
 	 -> GL.renderPrimitive GL.LineLoop
 	 	$ vertexPFs path
 		
@@ -114,17 +93,17 @@ drawPicture circScale picture
 
 	-- colors with float components.
 	Color col p
-	 |  ?modeColor
+	 |  stateColor state
 	 ->  do	oldColor 	 <- get GL.currentColor
 
-		let (r, g, b, a) = rgbaOfColor col
+		let RGBA r g b a  = col
 
 		GL.currentColor	 $= GL.Color4 (gf r) (gf g) (gf b) (gf a)
-		drawPicture circScale p
-		GL.currentColor	$= oldColor		
+		drawPicture state circScale p
+		GL.currentColor	 $= oldColor		
 
 	 |  otherwise
-	 -> 	drawPicture circScale p
+	 -> 	drawPicture state circScale p
 
 
         -- Translation --------------------------
@@ -145,12 +124,12 @@ drawPicture circScale picture
 	 -> GL.preservingMatrix
 	  $ do	GL.translate (GL.Vector3 (gf tx) (gf ty) 0)
 		GL.rotate    (gf deg) (GL.Vector3 0 0 (-1))
-		drawPicture circScale p
+		drawPicture state circScale p
 
 	Translate tx ty	p
 	 -> GL.preservingMatrix
 	  $ do	GL.translate (GL.Vector3 (gf tx) (gf ty) 0)
-		drawPicture circScale p
+		drawPicture state circScale p
 
 
         -- Rotation -----------------------------
@@ -171,7 +150,7 @@ drawPicture circScale picture
 	Rotate deg p
 	 -> GL.preservingMatrix
 	  $ do	GL.rotate (gf deg) (GL.Vector3 0 0 (-1))
-		drawPicture circScale p
+		drawPicture state circScale p
 
 
         -- Scale --------------------------------
@@ -179,14 +158,14 @@ drawPicture circScale picture
 	 -> GL.preservingMatrix
 	  $ do	GL.scale (gf sx) (gf sy) 1
 		let mscale	= max sx sy
-		drawPicture (circScale * mscale) p
+		drawPicture state (circScale * mscale) p
 			
 	-- Bitmap -------------------------------
 	Bitmap width height imgData cacheMe
 	 -> do	
                 -- Load the image data into a texture,
                 -- or grab it from the cache if we've already done that before.
-	        tex     <- loadTexture ?refTextures width height imgData cacheMe
+	        tex     <- loadTexture (stateTextures state) width height imgData cacheMe
 	 
 		-- Set up wrap and filtering mode
 		GL.textureWrapMode GL.Texture2D GL.S $= (GL.Repeated, GL.Repeat)
@@ -221,7 +200,7 @@ drawPicture circScale picture
                 
 
 	Pictures ps
-	 -> mapM_ (drawPicture circScale) ps
+	 -> mapM_ (drawPicture state circScale) ps
 	
 -- Errors ---------------------------------------------------------------------
 checkErrors :: String -> IO ()

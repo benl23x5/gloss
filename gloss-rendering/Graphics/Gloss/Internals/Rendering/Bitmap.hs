@@ -1,7 +1,7 @@
-{-# OPTIONS -fwarn-incomplete-patterns #-}
+{-# OPTIONS_HADDOCK hide #-}
 
 -- | Helper functions for rendering bitmaps
-module Graphics.Gloss.Internals.Render.Bitmap
+module Graphics.Gloss.Internals.Rendering.Bitmap
 	( BitmapData(..)
 	, reverseRGBA
 	, bitmapPath

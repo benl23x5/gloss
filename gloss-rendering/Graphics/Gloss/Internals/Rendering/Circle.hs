@@ -1,15 +1,13 @@
-{-# LANGUAGE BangPatterns, MagicHash, PatternGuards #-}
 {-# OPTIONS_HADDOCK hide #-}
 
 -- | Fast(ish) rendering of circles.
-module Graphics.Gloss.Internals.Render.Circle
+module Graphics.Gloss.Internals.Rendering.Circle
         ( renderCircle
         , renderArc)
 where
-import 	Graphics.Gloss.Internals.Render.Common
-import  Graphics.Gloss.Geometry.Angle
-import	qualified Graphics.Rendering.OpenGL.GL		as GL
+import 	Graphics.Gloss.Internals.Rendering.Common
 import	GHC.Exts
+import  qualified Graphics.Rendering.OpenGL.GL          as GL
 
 
 -- | Decide how many line segments to use to render the circle.
@@ -121,8 +119,8 @@ renderArcStrip (F# posX) (F# posY) steps r a1 a2 width
  = let	n		= fromIntegral steps
         tStep           = (2 * pi) / n
 
-        t1              = normaliseAngle $ degToRad a1
-        t2              = normaliseAngle $ degToRad a2
+        t1              = normalizeAngle $ degToRad a1
+        t2              = normalizeAngle $ degToRad a2
         (tStart, tStop) = if t1 <= t2 then (t1, t2) else (t2, t1)
         tDiff           = tStop - tStart
         tMid            = tStart + tDiff / 2
@@ -212,6 +210,19 @@ addPointOnCircle posX posY rad tt =
     (posY `plusFloat#` (rad `timesFloat#` (sinFloat# tt)))
 {-# INLINE addPointOnCircle #-}
 
+
+-- | Convert degrees to radians
+{-# INLINE degToRad #-}
+degToRad :: Float -> Float
+degToRad d      = d * pi / 180
+
+
+-- | Normalise an angle to be between 0 and 2*pi radians
+{-# INLINE normalizeAngle #-}
+normalizeAngle :: Float -> Float
+normalizeAngle f = f - 2 * pi * floor' (f / (2 * pi))
+ where  floor' :: Float -> Float
+        floor' x = fromIntegral (floor x :: Int)
 
 
 {- Unused sector drawing code.

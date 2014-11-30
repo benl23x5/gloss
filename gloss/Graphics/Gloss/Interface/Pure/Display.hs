@@ -18,11 +18,8 @@ import Graphics.Gloss.Internals.Interface.Backend
 --   Use the following commands once the window is open:
 --
 --      * Quit - esc-key.
---
 --      * Move Viewport - left-click drag, arrow keys.
---
 --      * Rotate Viewport - right-click drag, control-left-click drag, or home\/end-keys.
---
 --      * Zoom Viewport - mouse wheel, or page up\/down-keys.
 --
 display :: Display          -- ^ Display mode.

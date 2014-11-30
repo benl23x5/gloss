@@ -1,5 +1,5 @@
 Name:                gloss
-Version:             1.9.1.1
+Version:             1.9.2.1
 License:             MIT
 License-file:        LICENSE
 Author:              Ben Lippmeier
@@ -44,15 +44,23 @@ Library
         OpenGL     == 2.9.*,
         GLUT       == 2.5.*,
         bmp        == 1.2.*,
-        gloss-rendering == 1.9.1.*
+        gloss-rendering == 1.9.2.*
 
   ghc-options:
         -O2 -Wall
 
   Exposed-modules:
         Graphics.Gloss
+        Graphics.Gloss.Data.Bitmap
+        Graphics.Gloss.Data.Color
+        Graphics.Gloss.Data.Display
+        Graphics.Gloss.Data.Picture
+        Graphics.Gloss.Data.Point
+        Graphics.Gloss.Data.Vector
+        Graphics.Gloss.Data.ViewPort
         Graphics.Gloss.Data.ViewState
-        Graphics.Gloss.Algorithms.RayCast
+        Graphics.Gloss.Geometry.Angle
+        Graphics.Gloss.Geometry.Line
         Graphics.Gloss.Interface.Pure.Display
         Graphics.Gloss.Interface.Pure.Animate
         Graphics.Gloss.Interface.Pure.Simulate

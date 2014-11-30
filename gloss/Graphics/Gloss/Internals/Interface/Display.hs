@@ -4,19 +4,19 @@ module Graphics.Gloss.Internals.Interface.Display
 where	
 import Graphics.Gloss.Data.Color
 import Graphics.Gloss.Data.Picture
+import Graphics.Gloss.Data.ViewPort
 import Graphics.Gloss.Data.ViewState
-import Graphics.Gloss.Render
+import Graphics.Gloss.Rendering
 import Graphics.Gloss.Internals.Interface.Backend
 import Graphics.Gloss.Internals.Interface.Window
 import Graphics.Gloss.Internals.Interface.Common.Exit
 import Graphics.Gloss.Internals.Interface.ViewState.KeyMouse
 import Graphics.Gloss.Internals.Interface.ViewState.Motion
 import Graphics.Gloss.Internals.Interface.ViewState.Reshape
-import qualified Graphics.Gloss.Internals.Render.State	        		as RS
-import qualified Graphics.Gloss.Internals.Interface.Callback			as Callback
-
+import qualified Graphics.Gloss.Internals.Interface.Callback as Callback
 import Data.IORef
 import Data.Functor
+import System.Mem
 
 
 displayWithBackend
@@ -30,16 +30,23 @@ displayWithBackend
 displayWithBackend backend displayMode background picture
  =  do	viewSR		<- newIORef viewStateInit
 
-        renderS         <- RS.stateInit
+        renderS         <- initState
 	renderSR	<- newIORef renderS
 	
 	let renderFun backendRef = do
-		port    <- viewStateViewPort <$> readIORef viewSR
-		options	<- readIORef renderSR
+		port      <- viewStateViewPort <$> readIORef viewSR
+		options	  <- readIORef renderSR
                 windowSize <- getWindowDimensions backendRef
-	 	renderAction
-			windowSize
-			(renderPicture options port picture)
+
+                displayPicture 
+                        windowSize
+                        background
+                        options
+                        (viewPortScale port)
+                        (applyViewPortToPicture port picture)
+
+                -- perform GC every frame to try and avoid long pauses
+                performGC
 
 	let callbacks
 	     =	[ Callback.Display renderFun 

@@ -2,24 +2,24 @@
 module Graphics.Gloss.Geometry.Angle
 	( degToRad
 	, radToDeg
-	, normaliseAngle )
+	, normalizeAngle )
 where
 
 -- | Convert degrees to radians
-{-# INLINE degToRad #-}
 degToRad :: Float -> Float
 degToRad d	= d * pi / 180
+{-# INLINE degToRad #-}
 
 
 -- | Convert radians to degrees
-{-# INLINE radToDeg #-}
 radToDeg :: Float -> Float
 radToDeg r	= r * 180 / pi
+{-# INLINE radToDeg #-}
 
 
--- | Normalise an angle to be between 0 and 2*pi radians
-{-# INLINE normaliseAngle #-}
-normaliseAngle :: Float -> Float
-normaliseAngle f = f - 2 * pi * floor' (f / (2 * pi))
+-- | Normalize an angle to be between 0 and 2*pi radians
+normalizeAngle :: Float -> Float
+normalizeAngle f = f - 2 * pi * floor' (f / (2 * pi))
  where  floor' :: Float -> Float
         floor' x = fromIntegral (floor x :: Int)
+{-# INLINE normalizeAngle #-}

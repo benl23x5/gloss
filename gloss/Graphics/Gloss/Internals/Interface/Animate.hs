@@ -4,8 +4,9 @@ module Graphics.Gloss.Internals.Interface.Animate
 where	
 import Graphics.Gloss.Data.Color
 import Graphics.Gloss.Data.Picture
+import Graphics.Gloss.Data.ViewPort
 import Graphics.Gloss.Data.ViewState
-import Graphics.Gloss.Render
+import Graphics.Gloss.Rendering
 import Graphics.Gloss.Internals.Interface.Backend
 import Graphics.Gloss.Internals.Interface.Window
 import Graphics.Gloss.Internals.Interface.Common.Exit
@@ -13,9 +14,8 @@ import Graphics.Gloss.Internals.Interface.ViewState.KeyMouse
 import Graphics.Gloss.Internals.Interface.ViewState.Motion
 import Graphics.Gloss.Internals.Interface.ViewState.Reshape
 import Graphics.Gloss.Internals.Interface.Animate.Timing
-import qualified Graphics.Gloss.Internals.Render.State	        		as RS
-import qualified Graphics.Gloss.Internals.Interface.Animate.State		as AN
-import qualified Graphics.Gloss.Internals.Interface.Callback			as Callback
+import qualified Graphics.Gloss.Internals.Interface.Animate.State	as AN
+import qualified Graphics.Gloss.Internals.Interface.Callback		as Callback
 import Data.IORef
 import Data.Functor ((<$>))
 import Control.Monad
@@ -37,7 +37,7 @@ animateWithBackendIO backend pannable display backColor frameOp
         -- 
 	viewSR		<- newIORef viewStateInit
 	animateSR	<- newIORef AN.stateInit
-        renderS_        <- RS.stateInit
+        renderS_        <- initState
 	renderSR	<- newIORef renderS_
 
  	let displayFun backendRef = do
@@ -53,9 +53,12 @@ animateWithBackendIO backend pannable display backColor frameOp
                 windowSize      <- getWindowDimensions backendRef
 
 		-- render the frame
-		renderAction
+		displayPicture
 			windowSize
-			(renderPicture renderS portS picture)
+                        backColor
+                        renderS
+                        (viewPortScale portS)
+                        (applyViewPortToPicture portS picture)
 
 		-- perform GC every frame to try and avoid long pauses
 		performGC

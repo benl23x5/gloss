@@ -51,7 +51,7 @@
 --   Thanks to Doug Burke
 --   * Primitives for drawing arcs and sectors.
 --   Thanks to Thomas DuBuisson
---   * IO versions of animate, simplate and play.
+--   * IO versions of animate, simulate and play.
 --
 -- For 1.6:
 --   Thanks to Anthony Cowley

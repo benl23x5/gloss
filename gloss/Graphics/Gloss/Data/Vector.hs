@@ -11,14 +11,11 @@ module Graphics.Gloss.Data.Vector
 	, mulSV
 	, rotateV
 	, angleVV
-	, normaliseV
+	, normalizeV
 	, unitVectorAtAngle )
 where
-import Graphics.Gloss.Data.Point
+import Graphics.Gloss.Data.Picture
 import Graphics.Gloss.Geometry.Angle
-
--- | A vector can be treated as a point, and vis-versa.
-type Vector	= Point
 
 
 -- | The magnitude of a vector.
@@ -31,7 +28,7 @@ magV (x, y)
 -- | The angle of this vector, relative to the +ve x-axis.
 argV :: Vector -> Float
 argV (x, y)
-	= normaliseAngle $ atan2 y x
+	= normalizeAngle $ atan2 y x
 {-# INLINE argV #-}
 
 
@@ -77,9 +74,9 @@ angleVV p1 p2
 
 
 -- | Normalise a vector, so it has a magnitude of 1.
-normaliseV :: Vector -> Vector
-normaliseV v	= mulSV (1 / magV v) v
-{-# INLINE normaliseV #-}
+normalizeV :: Vector -> Vector
+normalizeV v	= mulSV (1 / magV v) v
+{-# INLINE normalizeV #-}
 
 
 -- | Produce a unit vector at a given angle relative to the +ve x-axis.

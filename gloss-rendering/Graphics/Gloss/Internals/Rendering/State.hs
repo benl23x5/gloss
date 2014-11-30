@@ -1,17 +1,18 @@
 {-# OPTIONS_HADDOCK hide #-}
 
 -- | Rendering options
-module Graphics.Gloss.Internals.Render.State
+module Graphics.Gloss.Internals.Rendering.State
 	( State (..)
-	, stateInit
+	, initState
 	, Texture (..))
 where
-import qualified Graphics.Rendering.OpenGL.GL	as GL
+import Graphics.Gloss.Internals.Data.Picture
 import Foreign.ForeignPtr
 import System.Mem.StableName
 import Data.Word
 import Data.IORef
-import Graphics.Gloss.Data.Picture
+import qualified Graphics.Rendering.OpenGL.GL   as GL
+
 
 -- | Render options settings
 data State
@@ -55,10 +56,11 @@ data Texture
         , texCacheMe    :: Bool }
 
 
--- | The render state holds references to the textures currently cached
---   in the OpenGL context.
-stateInit :: IO State
-stateInit
+-- | A mutable render state holds references to the textures currently loaded
+--   into the OpenGL context. To ensure that textures are cached in GPU memory,
+--   pass the same `State` each time you call `displayPicture` or `renderPicture`.
+initState :: IO State
+initState
  = do   textures        <- newIORef []
 	return  State
 	        { stateColor		= True

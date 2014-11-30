@@ -7,7 +7,6 @@
 module Graphics.Gloss.Geometry.Line
 	( segClearsBox
 
-	
 	-- * Closest points
 	, closestPointOnLine
 	, closestPointOnLineParam 
