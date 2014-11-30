@@ -1,5 +1,5 @@
 Name:                gloss-raster
-Version:             1.9.1.1
+Version:             1.9.2.1
 License:             MIT
 License-file:        LICENSE
 Author:              Ben Lippmeier
@@ -26,8 +26,8 @@ Library
         ghc-prim   == 0.3.*,
         containers == 0.5.*,
         repa       == 3.3.*,
-        gloss      == 1.9.1.*,
-        gloss-rendering == 1.9.1.*
+        gloss      == 1.9.2.*,
+        gloss-rendering == 1.9.2.*
 
   ghc-options:
         -Odph -fno-liberate-case
