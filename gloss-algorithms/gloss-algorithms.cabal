@@ -1,0 +1,41 @@
+Name:                gloss-algorithms
+Version:             1.9.2.1
+License:             MIT
+License-file:        LICENSE
+Author:              Ben Lippmeier
+Maintainer:          benl@ouroborus.net
+Build-Type:          Simple
+Cabal-Version:       >=1.6
+Stability:           stable
+Category:            Graphics
+Homepage:            http://gloss.ouroborus.net
+Bug-reports:         gloss@ouroborus.net
+Description:
+        Data structures and algorithms for working with 2D graphics.
+
+Synopsis:
+        Data structures and algorithms for working with 2D graphics.
+
+source-repository head
+        type:           git
+        location:       https://github.com/benl23x5/gloss
+
+Library
+  Build-Depends: 
+        base       == 4.7.*,
+        ghc-prim   == 0.3.*,
+        containers == 0.5.*,
+        gloss      == 1.9.2.*
+
+  ghc-options:
+        -O2 -Wall
+
+  Exposed-modules:
+        Graphics.Gloss.Algorithms.RayCast
+        Graphics.Gloss.Data.Extent
+        Graphics.Gloss.Data.Quad
+        Graphics.Gloss.Data.QuadTree
+
+  Extensions:
+        DeriveDataTypeable
+        PatternGuards
