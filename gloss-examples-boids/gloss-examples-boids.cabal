@@ -1,0 +1,35 @@
+Name:                gloss-examples-boids
+Version:             1.9.2.1
+License:             MIT
+License-file:        LICENSE
+Author:              Ben Lippmeier
+Maintainer:          benl@ouroborus.net
+Build-Type:          Simple
+Cabal-Version:       >=1.6
+Stability:           experimental
+Category:            Graphics
+Homepage:            http://gloss.ouroborus.net
+Bug-reports:         gloss@ouroborus.net
+Description:         
+	An example using the gloss graphics library.
+
+Synopsis:
+        Implementation of the Boids flocking algorithm.
+          by Matthew Sottile <matt@galois.com> <mjsottile@computer.org>            
+          Described in http://syntacticsalt.com/2011/03/10/functional-flocks/      
+                                                                                   
+        Read more about Boids here: http://www.red3d.com/cwr/boids/                
+
+source-repository head
+        type:           git
+        location:       https://github.com/benl23x5/gloss
+
+Executable gloss-boids
+  Build-depends:
+        base            == 4.7.*,
+        gloss           == 1.9.2.*,
+        random
+  Main-is:        Main.hs
+  other-modules:  KDTree2d Vec2
+  hs-source-dirs: src
+  ghc-options:    -threaded -O2
