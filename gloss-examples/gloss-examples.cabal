@@ -21,17 +21,6 @@ source-repository head
         type:           git
         location:       https://github.com/benl23x5/gloss
 
-Executable gloss-visibility
-  Build-depends: 
-        base            == 4.7.*, 
-        vector          == 0.10.*,
-        gloss           == 1.9.2.*
-  Main-is:        Main.hs
-  other-modules:  Draw Interface State World Geometry.Randomish Geometry.Segment
-  hs-source-dirs: picture/Visibility 
-  ghc-options:    -threaded -O2
-
-
 Executable gloss-zen
   Build-depends: 
         base            == 4.7.*, 

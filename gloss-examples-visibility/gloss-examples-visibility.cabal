@@ -1,0 +1,31 @@
+Name:                gloss-examples-visibility
+Version:             1.9.2.1
+License:             MIT
+License-file:        LICENSE
+Author:              Ben Lippmeier
+Maintainer:          benl@ouroborus.net
+Build-Type:          Simple
+Cabal-Version:       >=1.6
+Stability:           experimental
+Category:            Graphics
+Homepage:            http://gloss.ouroborus.net
+Bug-reports:         gloss@ouroborus.net
+Description:         
+	An example using the gloss graphics library.
+
+Synopsis:
+        Visibility on the 2D plane. Uses an instance of Warnocks algorithm.
+
+source-repository head
+        type:           git
+        location:       https://github.com/benl23x5/gloss
+
+Executable gloss-visibility
+  Build-depends: 
+        base            == 4.7.*, 
+        vector          == 0.10.*,
+        gloss           == 1.9.2.*
+  Main-is:        Main.hs
+  other-modules:  Draw Interface State World Geometry.Randomish Geometry.Segment
+  hs-source-dirs: src
+  ghc-options:    -threaded -O2
