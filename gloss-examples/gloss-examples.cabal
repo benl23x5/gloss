@@ -21,26 +21,6 @@ source-repository head
         type:           git
         location:       https://github.com/benl23x5/gloss
 
-Executable gloss-lifespan
-  Build-depends: 
-        base            == 4.7.*, 
-        gloss           == 1.9.2.*,
-        random          == 1.1.*
-  Main-is:        Main.hs
-  other-modules:  Cell Community World
-  hs-source-dirs: picture/Lifespan
-  ghc-options:    -threaded -O2
-
-
-Executable gloss-machina
-  Build-depends: 
-        base            == 4.7.*, 
-        gloss           == 1.9.2.*
-  Main-is:        Main.hs
-  hs-source-dirs: picture/Machina
-  ghc-options:    -threaded -O2
- 
-
 Executable gloss-occlusion
   Build-depends: 
         base             == 4.7.*, 
