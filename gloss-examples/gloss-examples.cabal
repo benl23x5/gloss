@@ -21,18 +21,6 @@ source-repository head
         type:           git
         location:       https://github.com/benl23x5/gloss
 
-Executable gloss-styrene
-  Build-depends: 
-        base            == 4.7.*,
-        ghc-prim        == 0.3.*,
-        containers      == 0.5.*,
-        gloss           == 1.9.2.*
-  Main-is:        Main.hs
-  other-modules:  Actor Advance Collide Config Contact QuadTree World
-  hs-source-dirs: picture/Styrene
-  ghc-options:    -threaded -O2
-
-
 Executable gloss-tree
   Build-depends: 
         base            == 4.7.*, 
