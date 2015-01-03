@@ -1,0 +1,30 @@
+Name:                gloss-examples-eden
+Version:             1.9.2.1
+License:             MIT
+License-file:        LICENSE
+Author:              Ben Lippmeier
+Maintainer:          benl@ouroborus.net
+Build-Type:          Simple
+Cabal-Version:       >=1.6
+Stability:           experimental
+Category:            Graphics
+Homepage:            http://gloss.ouroborus.net
+Bug-reports:         gloss@ouroborus.net
+Description:         
+	An example using the gloss graphics library.
+
+Synopsis:
+
+source-repository head
+        type:           git
+        location:       https://github.com/benl23x5/gloss
+
+Executable gloss-eden
+  Build-depends: 
+        base            == 4.7.*,
+        random          == 1.1.*,
+        gloss           == 1.9.2.*
+  Main-is:        Main.hs
+  other-modules:  Cell Community World
+  hs-source-dirs: src
+  ghc-options:    -threaded -O2
