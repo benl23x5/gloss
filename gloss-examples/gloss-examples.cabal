@@ -145,17 +145,6 @@ Executable gloss-mandel
         PatternGuards
 
 
-Executable gloss-graph
-  Build-depends:
-        base            == 4.7.*,
-        containers      == 0.5.*,
-        gloss           == 1.9.2.*
-  Main-is:        Main.hs
-  hs-source-dirs: picture/Graph
-  ghc-options:
-        -Wall -O2
-
-
 Executable gloss-render
   Build-depends:
         base            == 4.7.*,

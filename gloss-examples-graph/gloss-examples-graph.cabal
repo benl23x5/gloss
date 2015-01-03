@@ -1,0 +1,30 @@
+Name:                gloss-examples-graph
+Version:             1.9.2.1
+License:             MIT
+License-file:        LICENSE
+Author:              Ben Lippmeier
+Maintainer:          benl@ouroborus.net
+Build-Type:          Simple
+Cabal-Version:       >=1.6
+Stability:           experimental
+Category:            Graphics
+Homepage:            http://gloss.ouroborus.net
+Bug-reports:         gloss@ouroborus.net
+Description:         
+	An example using the gloss graphics library.
+
+Synopsis:
+        Graph layout using charged particles and springs. See
+        <http://mazzo.li/posts/graph-drawing.html> for a lengthy
+        explanation about this code.
+
+Executable gloss-graph
+  Build-depends:
+        base            == 4.7.*,
+        containers      == 0.5.*,
+        gloss           == 1.9.2.*,
+        random
+  Main-is:        Main.hs
+  hs-source-dirs: src
+  ghc-options:
+        -Wall -O2
