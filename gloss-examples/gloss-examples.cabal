@@ -143,17 +143,3 @@ Executable gloss-mandel
         -fllvm -optlo-O3
   extensions:
         PatternGuards
-
-
-Executable gloss-render
-  Build-depends:
-        base            == 4.7.*,
-        containers      == 0.5.*,
-        gloss           == 1.9.2.*,
-        gloss-rendering == 1.9.2.*,
-        GLFW-b
-  Main-is:        Main.hs
-  hs-source-dirs: picture/Render
-  ghc-options:
-        -Wall -O2
-
