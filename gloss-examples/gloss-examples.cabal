@@ -21,26 +21,6 @@ source-repository head
         type:           git
         location:       https://github.com/benl23x5/gloss
 
-Executable gloss-conway
-  Build-depends: 
-        base            == 4.7.*,
-        vector          == 0.10.*,
-        gloss           == 1.9.2.*
-  Main-is:        Main.hs
-  other-modules:  Cell World
-  hs-source-dirs: picture/Conway
-  ghc-options:    -threaded -O2
-
-
-Executable gloss-draw
-  Build-depends:
-        base            == 4.7.*,
-        gloss           == 1.9.2.*
-  Main-is:        Main.hs
-  hs-source-dirs: picture/Draw
-  ghc-options:    -threaded -O2
-
-
 Executable gloss-easy
   Build-depends:
         base            == 4.7.*,
