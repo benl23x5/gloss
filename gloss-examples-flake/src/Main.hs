@@ -39,7 +39,7 @@ snowflake n
  = let	oneSide	= side n
    in 	Pictures
 		[ oneSide 
-		, Translate edge 0 			$ Rotate (-120) $ oneSide
+		, Translate edge     0			$ Rotate (-120) $ oneSide
 		, Translate (edge/2) (edge * sqrt 3/2)	$ Rotate 120	$ oneSide]
 
 
