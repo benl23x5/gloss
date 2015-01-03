@@ -21,17 +21,6 @@ source-repository head
         type:           git
         location:       https://github.com/benl23x5/gloss
 
-Executable gloss-eden
-  Build-depends: 
-        base            == 4.7.*,
-        random          == 1.1.*,
-        gloss           == 1.9.2.*
-  Main-is:        Main.hs
-  other-modules:  Cell Community World
-  hs-source-dirs: picture/Eden
-  ghc-options:    -threaded -O2
-
-
 Executable gloss-flake
   Build-depends:
         base            == 4.7.*,
