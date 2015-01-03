@@ -21,17 +21,6 @@ source-repository head
         type:           git
         location:       https://github.com/benl23x5/gloss
 
-Executable gloss-occlusion
-  Build-depends: 
-        base             == 4.7.*, 
-        gloss            == 1.9.2.*,
-        gloss-algorithms == 1.9.2.*
-  Main-is: Main.hs
-  other-modules:  Cell World State Data
-  hs-source-dirs: picture/Occlusion
-  ghc-options:    -threaded -O2
-
-
 Executable gloss-styrene
   Build-depends: 
         base            == 4.7.*,
