@@ -25,7 +25,8 @@ module Graphics.Gloss.Rendering
         , renderPicture
         , withModelview
         , withClearBuffer
-        , RS.initState)
+        , RS.initState
+        , RS.State)
 
 where
 import Graphics.Gloss.Internals.Rendering.Common
