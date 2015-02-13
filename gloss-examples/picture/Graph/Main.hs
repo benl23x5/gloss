@@ -278,7 +278,7 @@ windowSize = (800, 600)
 
 sceneWindow :: Scene -> IO ()
 sceneWindow sc 
- = play (InWindow "Graph Drawing - ctrl + left mouse button to drag" windowSize (10, 10))
+ = play (InWindow "Graph Drawing - shift + left mouse button to drag" windowSize (10, 10))
         black 30 sc drawScene handleEvent updatePositions
 
 
