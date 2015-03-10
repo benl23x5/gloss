@@ -17,11 +17,8 @@ import qualified Graphics.Rendering.OpenGL.GL   as GL
 -- | Render options settings
 data State
 	= State
-	{ -- | Whether to force wireframe mode only
-	  stateWireframe	:: !Bool
-
-	-- | Whether to use alpha blending
-	, stateBlendAlpha	:: !Bool
+	{ -- | Whether to use alpha blending
+	  stateBlendAlpha	:: !Bool
 
 	-- | Whether to use line smoothing
 	, stateLineSmooth	:: !Bool
@@ -60,8 +57,7 @@ initState :: IO State
 initState
  = do   textures        <- newIORef []
 	return  State
-	        { stateWireframe	= False
-	        , stateBlendAlpha	= True
+	        { stateBlendAlpha	= True
 	        , stateLineSmooth	= False 
 	        , stateTextures         = textures }
 	

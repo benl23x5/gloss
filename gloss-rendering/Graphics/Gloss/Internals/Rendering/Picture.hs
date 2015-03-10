@@ -60,11 +60,6 @@ drawPicture state circScale picture
 
 	-- polygon (where?)
 	Polygon path
-	 | stateWireframe state
-	 -> GL.renderPrimitive GL.LineLoop
-	 	$ vertexPFs path
-		
-	 | otherwise
 	 -> GL.renderPrimitive GL.Polygon
 	 	$ vertexPFs path
 
