@@ -93,7 +93,6 @@ drawPicture state circScale picture
 
 	-- colors with float components.
 	Color col p
-	 |  stateColor state
 	 ->  do	oldColor 	 <- get GL.currentColor
 
 		let RGBA r g b a  = col
@@ -101,9 +100,6 @@ drawPicture state circScale picture
 		GL.currentColor	 $= GL.Color4 (gf r) (gf g) (gf b) (gf a)
 		drawPicture state circScale p
 		GL.currentColor	 $= oldColor		
-
-	 |  otherwise
-	 -> 	drawPicture state circScale p
 
 
         -- Translation --------------------------
