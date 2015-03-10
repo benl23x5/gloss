@@ -30,10 +30,9 @@ import Graphics.Gloss.Rendering
 
 
 -- | Normalise a color to the value of its largest RGB component.
-normalizeColor :: Color -> Color
-normalizeColor cc
- = let  (r, g, b, a)    = rgbaOfColor cc
-        m               = maximum [r, g, b]
+normalizeColor :: Float -> Float -> Float -> Float -> Color
+normalizeColor r g b a
+ = let  m               = maximum [r, g, b]
    in   makeColor (r / m) (g / m) (b / m) a
 
 
@@ -70,8 +69,7 @@ addColors c1 c2
 	(r2, g2, b2, a2) = rgbaOfColor c2
 
    in	normalizeColor 
-	 $ makeColor 
-                (r1 + r2)
+		(r1 + r2)
 		(g1 + g2)
 		(b1 + b2)
 		((a1 + a2) / 2)
