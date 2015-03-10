@@ -17,11 +17,8 @@ import qualified Graphics.Rendering.OpenGL.GL   as GL
 -- | Render options settings
 data State
 	= State
-	{ -- | Whether to use alpha blending
-	  stateBlendAlpha	:: !Bool
-
-	-- | Whether to use line smoothing
-	, stateLineSmooth	:: !Bool
+	{ -- | Whether to use line smoothing
+	  stateLineSmooth	:: !Bool
 	
 	-- | Cache of Textures that we've sent to OpenGL.
 	, stateTextures         :: !(IORef [Texture])
@@ -57,8 +54,7 @@ initState :: IO State
 initState
  = do   textures        <- newIORef []
 	return  State
-	        { stateBlendAlpha	= True
-	        , stateLineSmooth	= False 
+	        { stateLineSmooth	= False 
 	        , stateTextures         = textures }
 	
 

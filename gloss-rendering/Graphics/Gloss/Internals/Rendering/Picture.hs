@@ -35,8 +35,11 @@ renderPicture state circScale picture
  = do   
         -- Setup render state for world
 	setLineSmooth	(stateLineSmooth state)
-	setBlendAlpha	(stateBlendAlpha state)
-	
+
+        -- Turn alpha blending on
+ 	GL.blend	$= GL.Enabled
+	GL.blendFunc	$= (GL.SrcAlpha, GL.OneMinusSrcAlpha)
+
 	-- Draw the picture
         checkErrors "before drawPicture."
         drawPicture state circScale picture
@@ -317,17 +320,6 @@ freeTexture tex
 
 
 -- Utils ----------------------------------------------------------------------
--- | Turn alpha blending on or off
-setBlendAlpha :: Bool -> IO ()
-setBlendAlpha state
- 	| state	
- 	= do	GL.blend	$= GL.Enabled
-		GL.blendFunc	$= (GL.SrcAlpha, GL.OneMinusSrcAlpha)
-
-	| otherwise
- 	= do	GL.blend	$= GL.Disabled
-		GL.blendFunc	$= (GL.One, GL.Zero) 	
-
 -- | Turn line smoothing on or off
 setLineSmooth :: Bool -> IO ()
 setLineSmooth state
