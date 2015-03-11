@@ -33,8 +33,8 @@ renderPicture
 
 renderPicture state circScale picture
  = do   
-        -- Setup render state for world
-	setLineSmooth	(stateLineSmooth state)
+        -- | Turn line smoothing off
+	GL.lineSmooth $= GL.Disabled
 
         -- Turn alpha blending on
  	GL.blend	$= GL.Enabled
@@ -320,13 +320,6 @@ freeTexture tex
 
 
 -- Utils ----------------------------------------------------------------------
--- | Turn line smoothing on or off
-setLineSmooth :: Bool -> IO ()
-setLineSmooth state
-	| state		= GL.lineSmooth	$= GL.Enabled
-	| otherwise	= GL.lineSmooth $= GL.Disabled
-
-
 vertexPFs ::	[(Float, Float)] -> IO ()
 {-# INLINE vertexPFs #-}
 vertexPFs []	= return ()
