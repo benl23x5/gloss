@@ -33,10 +33,13 @@ renderPicture
 
 renderPicture state circScale picture
  = do   
-        -- Setup render state for world
-	setLineSmooth	(stateLineSmooth state)
-	setBlendAlpha	(stateBlendAlpha state)
-	
+        -- | Turn line smoothing off
+	GL.lineSmooth $= GL.Disabled
+
+        -- Turn alpha blending on
+ 	GL.blend	$= GL.Enabled
+	GL.blendFunc	$= (GL.SrcAlpha, GL.OneMinusSrcAlpha)
+
 	-- Draw the picture
         checkErrors "before drawPicture."
         drawPicture state circScale picture
@@ -60,11 +63,6 @@ drawPicture state circScale picture
 
 	-- polygon (where?)
 	Polygon path
-	 | stateWireframe state
-	 -> GL.renderPrimitive GL.LineLoop
-	 	$ vertexPFs path
-		
-	 | otherwise
 	 -> GL.renderPrimitive GL.Polygon
 	 	$ vertexPFs path
 
@@ -93,7 +91,6 @@ drawPicture state circScale picture
 
 	-- colors with float components.
 	Color col p
-	 |  stateColor state
 	 ->  do	oldColor 	 <- get GL.currentColor
 
 		let RGBA r g b a  = col
@@ -101,9 +98,6 @@ drawPicture state circScale picture
 		GL.currentColor	 $= GL.Color4 (gf r) (gf g) (gf b) (gf a)
 		drawPicture state circScale p
 		GL.currentColor	 $= oldColor		
-
-	 |  otherwise
-	 -> 	drawPicture state circScale p
 
 
         -- Translation --------------------------
@@ -326,24 +320,6 @@ freeTexture tex
 
 
 -- Utils ----------------------------------------------------------------------
--- | Turn alpha blending on or off
-setBlendAlpha :: Bool -> IO ()
-setBlendAlpha state
- 	| state	
- 	= do	GL.blend	$= GL.Enabled
-		GL.blendFunc	$= (GL.SrcAlpha, GL.OneMinusSrcAlpha)
-
-	| otherwise
- 	= do	GL.blend	$= GL.Disabled
-		GL.blendFunc	$= (GL.One, GL.Zero) 	
-
--- | Turn line smoothing on or off
-setLineSmooth :: Bool -> IO ()
-setLineSmooth state
-	| state		= GL.lineSmooth	$= GL.Enabled
-	| otherwise	= GL.lineSmooth $= GL.Disabled
-
-
 vertexPFs ::	[(Float, Float)] -> IO ()
 {-# INLINE vertexPFs #-}
 vertexPFs []	= return ()
