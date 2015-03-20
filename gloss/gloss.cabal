@@ -41,8 +41,8 @@ Library
         ghc-prim   == 0.3.*,
         containers == 0.5.*,
         bytestring == 0.10.*,
-        OpenGL     == 2.9.*,
-        GLUT       == 2.5.*,
+        OpenGL     >= 2.9 && < 2.12,
+        GLUT       >= 2.5 && < 2.7,
         bmp        == 1.2.*,
         gloss-rendering == 1.9.2.*
 
