@@ -3,10 +3,10 @@
 
 -- | Data types for representing pictures.
 module Graphics.Gloss.Internals.Data.Picture
-	( Point
-	, Vector
-	, Path
-	, Picture(..)
+        ( Point
+        , Vector
+        , Path
+        , Picture(..)
 
         -- * Bitmaps
         , BitmapData
@@ -56,75 +56,75 @@ type Vector     = Point
 
 
 -- | A path through the x-y plane.
-type Path	= [Point]				
+type Path       = [Point]                               
 
 
 -- | A 2D picture
 data Picture
-	-- Primitives -------------------------------------
+        -- Primitives -------------------------------------
 
-	-- | A blank picture, with nothing in it.
-	= Blank
+        -- | A blank picture, with nothing in it.
+        = Blank
 
-	-- | A convex polygon filled with a solid color.
-	| Polygon 	Path
-	
-	-- | A line along an arbitrary path.
-	| Line		Path
+        -- | A convex polygon filled with a solid color.
+        | Polygon       Path
+        
+        -- | A line along an arbitrary path.
+        | Line          Path
 
-	-- | A circle with the given radius.
-	| Circle	Float
+        -- | A circle with the given radius.
+        | Circle        Float
 
-	-- | A circle with the given thickness and radius.
-	--   If the thickness is 0 then this is equivalent to `Circle`.
-	| ThickCircle	Float Float
+        -- | A circle with the given thickness and radius.
+        --   If the thickness is 0 then this is equivalent to `Circle`.
+        | ThickCircle   Float Float
 
-	-- | A circular arc drawn counter-clockwise between two angles 
+        -- | A circular arc drawn counter-clockwise between two angles 
         --  (in degrees) at the given radius.
         | Arc           Float Float Float
 
-	-- | A circular arc drawn counter-clockwise between two angles 
+        -- | A circular arc drawn counter-clockwise between two angles 
         --  (in degrees), with the given radius  and thickness.
-	--   If the thickness is 0 then this is equivalent to `Arc`.
-        | ThickArc	Float Float Float Float
+        --   If the thickness is 0 then this is equivalent to `Arc`.
+        | ThickArc      Float Float Float Float
 
-	-- | Some text to draw with a vector font.
-	| Text		String
+        -- | Some text to draw with a vector font.
+        | Text          String
 
-	-- | A bitmap image with a width, height and some 32-bit RGBA
+        -- | A bitmap image with a width, height and some 32-bit RGBA
         --   bitmap data.
-	-- 
-	--  The boolean flag controls whether Gloss should cache the data
+        -- 
+        --  The boolean flag controls whether Gloss should cache the data
         --  between frames for speed. If you are programatically generating
         --  the image for each frame then use `False`. If you have loaded it
         --  from a file then use `True`.
-	| Bitmap	Int	Int 	BitmapData Bool
+        | Bitmap        Int     Int     BitmapData Bool
 
-	-- Color ------------------------------------------
-	-- | A picture drawn with this color.
-	| Color		Color  		Picture
+        -- Color ------------------------------------------
+        -- | A picture drawn with this color.
+        | Color         Color           Picture
 
-	-- Transforms -------------------------------------
-	-- | A picture translated by the given x and y coordinates.
-	| Translate	Float Float	Picture
+        -- Transforms -------------------------------------
+        -- | A picture translated by the given x and y coordinates.
+        | Translate     Float Float     Picture
 
-	-- | A picture rotated clockwise by the given angle (in degrees).
-	| Rotate	Float		Picture
+        -- | A picture rotated clockwise by the given angle (in degrees).
+        | Rotate        Float           Picture
 
-	-- | A picture scaled by the given x and y factors.
-	| Scale		Float	Float	Picture
+        -- | A picture scaled by the given x and y factors.
+        | Scale         Float   Float   Picture
 
-	-- More Pictures ----------------------------------
-	-- | A picture consisting of several others.
-	| Pictures	[Picture]
-	deriving (Show, Eq, Data, Typeable)
+        -- More Pictures ----------------------------------
+        -- | A picture consisting of several others.
+        | Pictures      [Picture]
+        deriving (Show, Eq, Data, Typeable)
 
 
 -- Instances ------------------------------------------------------------------
 instance Monoid Picture where
-	mempty		= Blank
-	mappend a b	= Pictures [a, b]
-	mconcat		= Pictures
+        mempty          = Blank
+        mappend a b     = Pictures [a, b]
+        mconcat         = Pictures
 
 
 -- Bitmaps --------------------------------------------------------------------

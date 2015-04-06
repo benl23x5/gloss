@@ -29,8 +29,8 @@ overlap (Cell (x1,y1) r1 _) (Cell (x2,y2) r2 _) = centreDist < (r1 + r2) *0.999
 -- thickness of circle is determined by lifespan
 render :: Cell -> Picture
 render (Cell (x,y) r life) 
-	= Color (makeColor 0.6 z 0.6 1.0)
-	$ Translate x y
-	$ ThickCircle (r - thickness / 2) thickness
-	where	z 		= fromIntegral life * 0.12
-		thickness	= fromIntegral life
+        = Color (makeColor 0.6 z 0.6 1.0)
+        $ Translate x y
+        $ ThickCircle (r - thickness / 2) thickness
+        where   z               = fromIntegral life * 0.12
+                thickness       = fromIntegral life

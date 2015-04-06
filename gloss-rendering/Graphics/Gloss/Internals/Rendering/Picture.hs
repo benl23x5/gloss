@@ -1,7 +1,7 @@
 {-# OPTIONS_HADDOCK hide #-}
 
 module Graphics.Gloss.Internals.Rendering.Picture
-	(renderPicture)
+        (renderPicture)
 where
 import Graphics.Gloss.Internals.Rendering.State
 import Graphics.Gloss.Internals.Rendering.Common
@@ -14,10 +14,10 @@ import Foreign.ForeignPtr
 import Data.IORef
 import Data.List
 import Control.Monad
-import Graphics.Rendering.OpenGL	               	(($=), get)
-import qualified Graphics.Rendering.OpenGL.GL	        as GL
+import Graphics.Rendering.OpenGL                        (($=), get)
+import qualified Graphics.Rendering.OpenGL.GL           as GL
 import qualified Graphics.Rendering.OpenGL.GLU.Errors   as GLU
-import qualified Graphics.UI.GLUT		        as GLUT
+import qualified Graphics.UI.GLUT                       as GLUT
 
 
 -- | Render a picture into the current OpenGL context.
@@ -25,56 +25,56 @@ import qualified Graphics.UI.GLUT		        as GLUT
 --   Assumes that the OpenGL matrix mode is set to @Modelview@
 --
 renderPicture
-	:: State        -- ^ Current rendering state.
-	-> Float        -- ^ View port scale, which controls the level of detail.
+        :: State        -- ^ Current rendering state.
+        -> Float        -- ^ View port scale, which controls the level of detail.
                         --   Use 1.0 to start with.
-	-> Picture      -- ^ Picture to render.
-	-> IO ()
+        -> Picture      -- ^ Picture to render.
+        -> IO ()
 
 renderPicture state circScale picture
  = do   
         -- Setup render state for world
-	setLineSmooth	(stateLineSmooth state)
-	setBlendAlpha	(stateBlendAlpha state)
-	
-	-- Draw the picture
+        setLineSmooth   (stateLineSmooth state)
+        setBlendAlpha   (stateBlendAlpha state)
+        
+        -- Draw the picture
         checkErrors "before drawPicture."
         drawPicture state circScale picture
         checkErrors "after drawPicture."
 
 
-drawPicture :: State -> Float -> Picture -> IO ()	  
+drawPicture :: State -> Float -> Picture -> IO ()         
 drawPicture state circScale picture
  = {-# SCC "drawComponent" #-}
    case picture of
 
-	-- nothin'
-	Blank
-	 -> 	return ()
+        -- nothin'
+        Blank
+         ->     return ()
 
-	-- line
- 	Line path	
-	 -> GL.renderPrimitive GL.LineStrip 
-		$ vertexPFs path
+        -- line
+        Line path       
+         -> GL.renderPrimitive GL.LineStrip 
+                $ vertexPFs path
 
 
-	-- polygon (where?)
-	Polygon path
-	 | stateWireframe state
-	 -> GL.renderPrimitive GL.LineLoop
-	 	$ vertexPFs path
-		
-	 | otherwise
-	 -> GL.renderPrimitive GL.Polygon
-	 	$ vertexPFs path
+        -- polygon (where?)
+        Polygon path
+         | stateWireframe state
+         -> GL.renderPrimitive GL.LineLoop
+                $ vertexPFs path
+                
+         | otherwise
+         -> GL.renderPrimitive GL.Polygon
+                $ vertexPFs path
 
-	-- circle
-	Circle radius
-	 ->  renderCircle 0 0 circScale radius 0
-	
-	ThickCircle radius thickness
-	 ->  renderCircle 0 0 circScale radius thickness
-	
+        -- circle
+        Circle radius
+         ->  renderCircle 0 0 circScale radius 0
+        
+        ThickCircle radius thickness
+         ->  renderCircle 0 0 circScale radius thickness
+        
         -- arc
         Arc a1 a2 radius
          ->  renderArc 0 0 circScale radius a1 a2 0
@@ -82,54 +82,54 @@ drawPicture state circScale picture
         ThickArc a1 a2 radius thickness
          ->  renderArc 0 0 circScale radius a1 a2 thickness
              
-	-- stroke text
-	-- 	text looks weird when we've got blend on,
-	--	so disable it during the renderString call.
-	Text str 
-	 -> do
-	 	GL.blend	$= GL.Disabled
+        -- stroke text
+        --      text looks weird when we've got blend on,
+        --      so disable it during the renderString call.
+        Text str 
+         -> do
+                GL.blend        $= GL.Disabled
                 GL.preservingMatrix $ GLUT.renderString GLUT.Roman str
-		GL.blend	$= GL.Enabled
+                GL.blend        $= GL.Enabled
 
-	-- colors with float components.
-	Color col p
-	 |  stateColor state
-	 ->  do	oldColor 	 <- get GL.currentColor
+        -- colors with float components.
+        Color col p
+         |  stateColor state
+         ->  do oldColor         <- get GL.currentColor
 
-		let RGBA r g b a  = col
+                let RGBA r g b a  = col
 
-		GL.currentColor	 $= GL.Color4 (gf r) (gf g) (gf b) (gf a)
-		drawPicture state circScale p
-		GL.currentColor	 $= oldColor		
+                GL.currentColor  $= GL.Color4 (gf r) (gf g) (gf b) (gf a)
+                drawPicture state circScale p
+                GL.currentColor  $= oldColor            
 
-	 |  otherwise
-	 -> 	drawPicture state circScale p
+         |  otherwise
+         ->     drawPicture state circScale p
 
 
         -- Translation --------------------------
         -- Easy translations are done directly to avoid calling GL.perserveMatrix.
-	Translate posX posY (Circle radius)
-	 -> renderCircle posX posY circScale radius 0
+        Translate posX posY (Circle radius)
+         -> renderCircle posX posY circScale radius 0
 
-	Translate posX posY (ThickCircle radius thickness)
-	 -> renderCircle posX posY circScale radius thickness
+        Translate posX posY (ThickCircle radius thickness)
+         -> renderCircle posX posY circScale radius thickness
 
-	Translate posX posY (Arc a1 a2 radius)
-	 -> renderArc posX posY circScale radius a1 a2 0
+        Translate posX posY (Arc a1 a2 radius)
+         -> renderArc posX posY circScale radius a1 a2 0
 
-	Translate posX posY (ThickArc a1 a2 radius thickness)
-	 -> renderArc posX posY circScale radius a1 a2 thickness
+        Translate posX posY (ThickArc a1 a2 radius thickness)
+         -> renderArc posX posY circScale radius a1 a2 thickness
              
-	Translate tx ty (Rotate deg p)
-	 -> GL.preservingMatrix
-	  $ do	GL.translate (GL.Vector3 (gf tx) (gf ty) 0)
-		GL.rotate    (gf deg) (GL.Vector3 0 0 (-1))
-		drawPicture state circScale p
+        Translate tx ty (Rotate deg p)
+         -> GL.preservingMatrix
+          $ do  GL.translate (GL.Vector3 (gf tx) (gf ty) 0)
+                GL.rotate    (gf deg) (GL.Vector3 0 0 (-1))
+                drawPicture state circScale p
 
-	Translate tx ty	p
-	 -> GL.preservingMatrix
-	  $ do	GL.translate (GL.Vector3 (gf tx) (gf ty) 0)
-		drawPicture state circScale p
+        Translate tx ty p
+         -> GL.preservingMatrix
+          $ do  GL.translate (GL.Vector3 (gf tx) (gf ty) 0)
+                drawPicture state circScale p
 
 
         -- Rotation -----------------------------
@@ -147,61 +147,61 @@ drawPicture state circScale picture
          -> renderArc      0 0 circScale radius (a1-deg) (a2-deg) thickness
 
         
-	Rotate deg p
-	 -> GL.preservingMatrix
-	  $ do	GL.rotate (gf deg) (GL.Vector3 0 0 (-1))
-		drawPicture state circScale p
+        Rotate deg p
+         -> GL.preservingMatrix
+          $ do  GL.rotate (gf deg) (GL.Vector3 0 0 (-1))
+                drawPicture state circScale p
 
 
         -- Scale --------------------------------
-	Scale sx sy p
-	 -> GL.preservingMatrix
-	  $ do	GL.scale (gf sx) (gf sy) 1
-		let mscale	= max sx sy
-		drawPicture state (circScale * mscale) p
-			
-	-- Bitmap -------------------------------
-	Bitmap width height imgData cacheMe
-	 -> do	
+        Scale sx sy p
+         -> GL.preservingMatrix
+          $ do  GL.scale (gf sx) (gf sy) 1
+                let mscale      = max sx sy
+                drawPicture state (circScale * mscale) p
+                        
+        -- Bitmap -------------------------------
+        Bitmap width height imgData cacheMe
+         -> do  
                 -- Load the image data into a texture,
                 -- or grab it from the cache if we've already done that before.
-	        tex     <- loadTexture (stateTextures state) width height imgData cacheMe
-	 
-		-- Set up wrap and filtering mode
-		GL.textureWrapMode GL.Texture2D GL.S $= (GL.Repeated, GL.Repeat)
-		GL.textureWrapMode GL.Texture2D GL.T $= (GL.Repeated, GL.Repeat)
-		GL.textureFilter   GL.Texture2D      $= ((GL.Nearest, Nothing), GL.Nearest)
-		
-		-- Enable texturing
-		GL.texture GL.Texture2D $= GL.Enabled
-		GL.textureFunction      $= GL.Combine
-		
-		-- Set current texture
-		GL.textureBinding GL.Texture2D $= Just (texObject tex)
-		
-		-- Set to opaque
-		GL.currentColor $= GL.Color4 1.0 1.0 1.0 1.0
-		
-		-- Draw textured polygon
-		GL.renderPrimitive GL.Polygon
-		 $ zipWithM_
-		        (\(pX, pY) (tX, tY)
-			  -> do GL.texCoord $ GL.TexCoord2 (gf tX) (gf tY)
-		           	GL.vertex   $ GL.Vertex2   (gf pX) (gf pY))
+                tex     <- loadTexture (stateTextures state) width height imgData cacheMe
+         
+                -- Set up wrap and filtering mode
+                GL.textureWrapMode GL.Texture2D GL.S $= (GL.Repeated, GL.Repeat)
+                GL.textureWrapMode GL.Texture2D GL.T $= (GL.Repeated, GL.Repeat)
+                GL.textureFilter   GL.Texture2D      $= ((GL.Nearest, Nothing), GL.Nearest)
+                
+                -- Enable texturing
+                GL.texture GL.Texture2D $= GL.Enabled
+                GL.textureFunction      $= GL.Combine
+                
+                -- Set current texture
+                GL.textureBinding GL.Texture2D $= Just (texObject tex)
+                
+                -- Set to opaque
+                GL.currentColor $= GL.Color4 1.0 1.0 1.0 1.0
+                
+                -- Draw textured polygon
+                GL.renderPrimitive GL.Polygon
+                 $ zipWithM_
+                        (\(pX, pY) (tX, tY)
+                          -> do GL.texCoord $ GL.TexCoord2 (gf tX) (gf tY)
+                                GL.vertex   $ GL.Vertex2   (gf pX) (gf pY))
 
-			(bitmapPath (fromIntegral width) (fromIntegral height))
-			        [(0,0), (1.0,0), (1.0,1.0), (0,1.0)]
+                        (bitmapPath (fromIntegral width) (fromIntegral height))
+                                [(0,0), (1.0,0), (1.0,1.0), (0,1.0)]
 
-		-- Disable texturing
-		GL.texture GL.Texture2D $= GL.Disabled
+                -- Disable texturing
+                GL.texture GL.Texture2D $= GL.Disabled
 
                 -- Free uncachable texture objects.
                 freeTexture tex
                 
 
-	Pictures ps
-	 -> mapM_ (drawPicture state circScale) ps
-	
+        Pictures ps
+         -> mapM_ (drawPicture state circScale) ps
+        
 -- Errors ---------------------------------------------------------------------
 checkErrors :: String -> IO ()
 checkErrors place
@@ -282,25 +282,25 @@ installTexture
 
 installTexture width height bitmapData@(BitmapData _ fptr) cacheMe
  = do   
-	-- Allocate texture handle for texture
-	[tex] <- GL.genObjectNames 1
-	GL.textureBinding GL.Texture2D $= Just tex
+        -- Allocate texture handle for texture
+        [tex] <- GL.genObjectNames 1
+        GL.textureBinding GL.Texture2D $= Just tex
 
-	-- Sets the texture in imgData as the current texture
-	-- This copies the data from the pointer into OpenGL texture memory, 
-	-- so it's ok if the foreignptr gets garbage collected after this.
+        -- Sets the texture in imgData as the current texture
+        -- This copies the data from the pointer into OpenGL texture memory, 
+        -- so it's ok if the foreignptr gets garbage collected after this.
         withForeignPtr fptr
          $ \ptr ->
-   	   GL.texImage2D
-		GL.Texture2D
-		GL.NoProxy
-		0
-		GL.RGBA8
-		(GL.TextureSize2D
-			(gsizei width)
-			(gsizei height))
-		0
-		(GL.PixelData GL.RGBA GL.UnsignedInt8888 ptr)
+           GL.texImage2D
+                GL.Texture2D
+                GL.NoProxy
+                0
+                GL.RGBA8
+                (GL.TextureSize2D
+                        (gsizei width)
+                        (gsizei height))
+                0
+                (GL.PixelData GL.RGBA GL.UnsignedInt8888 ptr)
 
         -- Make a stable name that we can use to identify this data again.
         -- If the user gives us the same texture data at the same size then we
@@ -329,27 +329,27 @@ freeTexture tex
 -- | Turn alpha blending on or off
 setBlendAlpha :: Bool -> IO ()
 setBlendAlpha state
- 	| state	
- 	= do	GL.blend	$= GL.Enabled
-		GL.blendFunc	$= (GL.SrcAlpha, GL.OneMinusSrcAlpha)
+        | state 
+        = do    GL.blend        $= GL.Enabled
+                GL.blendFunc    $= (GL.SrcAlpha, GL.OneMinusSrcAlpha)
 
-	| otherwise
- 	= do	GL.blend	$= GL.Disabled
-		GL.blendFunc	$= (GL.One, GL.Zero) 	
+        | otherwise
+        = do    GL.blend        $= GL.Disabled
+                GL.blendFunc    $= (GL.One, GL.Zero)    
 
 -- | Turn line smoothing on or off
 setLineSmooth :: Bool -> IO ()
 setLineSmooth state
-	| state		= GL.lineSmooth	$= GL.Enabled
-	| otherwise	= GL.lineSmooth $= GL.Disabled
+        | state         = GL.lineSmooth $= GL.Enabled
+        | otherwise     = GL.lineSmooth $= GL.Disabled
 
 
-vertexPFs ::	[(Float, Float)] -> IO ()
+vertexPFs ::    [(Float, Float)] -> IO ()
 {-# INLINE vertexPFs #-}
-vertexPFs []	= return ()
+vertexPFs []    = return ()
 vertexPFs ((x, y) : rest)
- = do	GL.vertex $ GL.Vertex2 (gf x) (gf y)
- 	vertexPFs rest
+ = do   GL.vertex $ GL.Vertex2 (gf x) (gf y)
+        vertexPFs rest
 
 
 

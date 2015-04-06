@@ -9,13 +9,13 @@ type Community = [Cell]
 -- that is, does it overlap with any others?
 fits :: Cell -> Community -> Bool
 fits cell cells 
-	= not $ any (overlap cell) cells
+        = not $ any (overlap cell) cells
 
 -- For each member of a community, produce one offspring
 -- The lists of Floats are the (random) parameters that determine size
 -- and location of each offspring.
 spawn :: Community -> [Float] -> [Float] -> [Cell]
-spawn 	= zipWith3 offspring
+spawn   = zipWith3 offspring
 
 -- Given a collection of cells (one spawned by each member of the
 -- community) check if it fits, and if so add it to the community.
@@ -24,17 +24,17 @@ spawn 	= zipWith3 offspring
 survive :: [Cell] -> Community -> Community
 survive [] comm = comm
 survive (cell:cells) comm
-	| fits cell comm  = survive cells (cell:comm)
-	| otherwise       = survive cells comm
+        | fits cell comm  = survive cells (cell:comm)
+        | otherwise       = survive cells comm
 
 -- The next generation of a community
 generation :: Community ->  [Float] -> [Float] -> Community
 generation comm angles scales 
-	= survive (spawn comm angles scales) comm
+        = survive (spawn comm angles scales) comm
 
 render :: Community -> Picture
 render comm 
-	= Pictures $ map Cell.render comm
+        = Pictures $ map Cell.render comm
 
 initial :: Community
 initial = [Cell (0,0) 50 0]

@@ -1,5 +1,5 @@
 Name:                gloss-raster
-Version:             1.9.2.1
+Version:             1.9.3.1
 License:             MIT
 License-file:        LICENSE
 Author:              Ben Lippmeier
@@ -16,22 +16,27 @@ Description:
 Synopsis:
         Parallel rendering of raster images.
 
+Flag llvm
+  Description:  Compile via LLVM. This produces much better object code,
+                but your GHC needs to have been built against the LLVM compiler.
+
+  Default:      False
+
 source-repository head
         type:           git
         location:       https://github.com/benl23x5/gloss
 
 Library
   Build-Depends: 
-        base       == 4.7.*,
-        ghc-prim   == 0.3.*,
-        containers == 0.5.*,
-        repa       == 3.3.*,
-        gloss      == 1.9.2.*,
-        gloss-rendering == 1.9.2.*
+        base            == 4.8.*,
+        ghc-prim        == 0.4.*,
+        containers      == 0.5.*,
+        repa            == 3.4.*,
+        gloss           == 1.9.3.*,
+        gloss-rendering == 1.9.3.*
 
   ghc-options:
         -Odph -fno-liberate-case
-        -fllvm -optlo-O3
 
   Exposed-modules:
         Graphics.Gloss.Raster.Field

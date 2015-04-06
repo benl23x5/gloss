@@ -7,10 +7,10 @@
 --   changes over finite time steps. The behavior of the model can also depent
 --   on the current `ViewPort`.
 module Graphics.Gloss.Interface.Pure.Simulate
- 	( module Graphics.Gloss.Data.Display
+        ( module Graphics.Gloss.Data.Display
         , module Graphics.Gloss.Data.Picture
-	, module Graphics.Gloss.Data.Color
-	, simulate
+        , module Graphics.Gloss.Data.Color
+        , simulate
         , ViewPort(..))
 where
 import Graphics.Gloss.Data.Display

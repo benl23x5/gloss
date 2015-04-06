@@ -1,6 +1,6 @@
 
 -- | Gloss hides the pain of drawing simple vector graphics behind a nice data type and
---	a few display functions. 
+--      a few display functions. 
 --
 --   Getting something on the screen is as easy as:
 --
@@ -11,13 +11,13 @@
 --
 --   Once the window is open you can use the following:
 --
--- 	* Quit - esc-key.
+--      * Quit - esc-key.
 --
---	* Move Viewport - left-click drag, arrow keys.
+--      * Move Viewport - left-click drag, arrow keys.
 --
---	* Rotate Viewport - right-click drag, control-left-click drag, or home\/end-keys.
+--      * Rotate Viewport - right-click drag, control-left-click drag, or home\/end-keys.
 --
---	* Zoom Viewport - mouse wheel, or page up\/down-keys.
+--      * Zoom Viewport - mouse wheel, or page up\/down-keys.
 --
 --   Animations can be constructed similarly using the `animate`.
 --
@@ -66,14 +66,14 @@
 -- For more information, check out <http://gloss.ouroborus.net>.
 --
 module Graphics.Gloss 
-	( module Graphics.Gloss.Data.Picture
-	, module Graphics.Gloss.Data.Color
+        ( module Graphics.Gloss.Data.Picture
+        , module Graphics.Gloss.Data.Color
         , module Graphics.Gloss.Data.Bitmap
         , Display(..)
-	, display
-	, animate
+        , display
+        , animate
         , simulate
-	, play)
+        , play)
 where
 import Graphics.Gloss.Data.Display
 import Graphics.Gloss.Data.Picture

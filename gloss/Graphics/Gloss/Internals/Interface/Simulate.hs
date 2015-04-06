@@ -20,7 +20,6 @@ import Graphics.Gloss.Internals.Interface.Simulate.Idle
 import qualified Graphics.Gloss.Internals.Interface.Callback            as Callback
 import qualified Graphics.Gloss.Internals.Interface.Simulate.State      as SM
 import qualified Graphics.Gloss.Internals.Interface.Animate.State       as AN
-import Data.Functor ((<$>))
 import Data.IORef
 import System.Mem
 

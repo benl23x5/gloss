@@ -49,8 +49,8 @@ generation comm angles scales =
 
 render :: Community -> Picture
 render comm 
-	= Pictures 
-	$ map Cell.render comm
+        = Pictures 
+        $ map Cell.render comm
 
 initial :: Community
 initial = [Cell (0,0) 50 5]

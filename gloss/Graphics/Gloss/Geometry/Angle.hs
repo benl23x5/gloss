@@ -1,19 +1,19 @@
 -- | Geometric functions concerning angles. If not otherwise specified, all angles are in radians.
 module Graphics.Gloss.Geometry.Angle
-	( degToRad
-	, radToDeg
-	, normalizeAngle )
+        ( degToRad
+        , radToDeg
+        , normalizeAngle )
 where
 
 -- | Convert degrees to radians
 degToRad :: Float -> Float
-degToRad d	= d * pi / 180
+degToRad d      = d * pi / 180
 {-# INLINE degToRad #-}
 
 
 -- | Convert radians to degrees
 radToDeg :: Float -> Float
-radToDeg r	= r * 180 / pi
+radToDeg r      = r * 180 / pi
 {-# INLINE radToDeg #-}
 
 

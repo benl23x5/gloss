@@ -8,7 +8,7 @@
 --         Allow viewpoint to be set with the mouse.
 --
 --  TODO:  To start with just do brute force visibility by dividing field into cells
---	   and doing vis based on center point of cell.
+--         and doing vis based on center point of cell.
 --
 
 import Interface
@@ -19,9 +19,9 @@ import Graphics.Gloss.Interface.Pure.Game
 
 main :: IO ()
 main
- = do	world		<- initialWorld
-	let state	=  initialState world
-	
-	play   (InWindow "Visibility" (800, 800) (10,  10))
-	       black 100 state
+ = do   world           <- initialWorld
+        let state       =  initialState world
+        
+        play   (InWindow "Visibility" (800, 800) (10,  10))
+               black 100 state
                drawState handleInput stepState

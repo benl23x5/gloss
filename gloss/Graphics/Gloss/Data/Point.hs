@@ -1,8 +1,8 @@
 {-# OPTIONS -fno-warn-missing-methods -fno-warn-orphans #-}
 {-# LANGUAGE TypeSynonymInstances, FlexibleInstances #-}
 module Graphics.Gloss.Data.Point
-	( Point, Path
-	, pointInBox)
+        ( Point, Path
+        , pointInBox)
 where
 import Graphics.Gloss.Data.Picture
 
@@ -20,12 +20,12 @@ import Graphics.Gloss.Data.Picture
 -- @
 --
 pointInBox 
-	:: Point 
-	-> Point 
-	-> Point -> Bool
-	
+        :: Point 
+        -> Point 
+        -> Point -> Bool
+        
 pointInBox (x0, y0) (x1, y1) (x2, y2)
- 	=  x0 >= min x1 x2
- 	&& x0 <= max x1 x2
-	&& y0 >= min y1 y2
-	&& y0 <= max y1 y2
+        =  x0 >= min x1 x2
+        && x0 <= max x1 x2
+        && y0 >= min y1 y2
+        && y0 <= max y1 y2

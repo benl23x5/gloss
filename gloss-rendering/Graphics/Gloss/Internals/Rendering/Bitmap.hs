@@ -2,11 +2,11 @@
 
 -- | Helper functions for rendering bitmaps
 module Graphics.Gloss.Internals.Rendering.Bitmap
-	( BitmapData(..)
-	, reverseRGBA
-	, bitmapPath
-	, freeBitmapData
-	)
+        ( BitmapData(..)
+        , reverseRGBA
+        , bitmapPath
+        , freeBitmapData
+        )
 where
 import Data.Data
 import Foreign
@@ -28,8 +28,8 @@ instance Show BitmapData where
 bitmapPath :: Float -> Float -> [(Float, Float)]
 bitmapPath width height 
  = [(-width', -height'), (width', -height'), (width', height'), (-width', height')]
- where	width'  = width  / 2
-	height' = height / 2
+ where  width'  = width  / 2
+        height' = height / 2
 
 
 -- | Destructively reverse the byte order in an array.
@@ -47,13 +47,13 @@ reverseRGBA_ptr length8 ptr8
         go :: Int -> Ptr Word32 -> Int -> IO ()
         go len ptr count
          | count < len 
-         = do	curr <- peekElemOff ptr count
-      	        let byte0 = shift (isolateByte0 curr) 24
-      	        let byte1 = shift (isolateByte1 curr) 8
-      	        let byte2 = shift (isolateByte2 curr) (-8)
-      	        let byte3 = shift (isolateByte3 curr) (-24)
-      	        pokeElemOff ptr count (byte0 .|. byte1 .|. byte2 .|. byte3)
-      	        go len ptr (count + 1)
+         = do   curr <- peekElemOff ptr count
+                let byte0 = shift (isolateByte0 curr) 24
+                let byte1 = shift (isolateByte1 curr) 8
+                let byte2 = shift (isolateByte2 curr) (-8)
+                let byte3 = shift (isolateByte3 curr) (-24)
+                pokeElemOff ptr count (byte0 .|. byte1 .|. byte2 .|. byte3)
+                go len ptr (count + 1)
 
          | otherwise 
          = return ()

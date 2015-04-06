@@ -163,7 +163,7 @@ initialize n sp sv
 limiter :: Vec2 -> Double -> Vec2
 limiter x lim = let d = vecNorm x
                 in if (d < lim) then x
-	               else vecScale (vecNormalize x) lim
+                       else vecScale (vecNormalize x) lim
 
 -- | Vector with all components length epsilon
 epsvec :: Vec2

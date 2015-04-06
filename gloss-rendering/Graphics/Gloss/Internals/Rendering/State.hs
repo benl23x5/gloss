@@ -2,9 +2,9 @@
 
 -- | Rendering options
 module Graphics.Gloss.Internals.Rendering.State
-	( State (..)
-	, initState
-	, Texture (..))
+        ( State (..)
+        , initState
+        , Texture (..))
 where
 import Graphics.Gloss.Internals.Data.Picture
 import Foreign.ForeignPtr
@@ -16,23 +16,23 @@ import qualified Graphics.Rendering.OpenGL.GL   as GL
 
 -- | Render options settings
 data State
-	= State
-	{ -- | Whether to use color
-	  stateColor		:: !Bool
+        = State
+        { -- | Whether to use color
+          stateColor            :: !Bool
 
-	-- | Whether to force wireframe mode only
-	, stateWireframe	:: !Bool
+        -- | Whether to force wireframe mode only
+        , stateWireframe        :: !Bool
 
-	-- | Whether to use alpha blending
-	, stateBlendAlpha	:: !Bool
+        -- | Whether to use alpha blending
+        , stateBlendAlpha       :: !Bool
 
-	-- | Whether to use line smoothing
-	, stateLineSmooth	:: !Bool
-	
-	-- | Cache of Textures that we've sent to OpenGL.
-	, stateTextures         :: !(IORef [Texture])
-	}
-	
+        -- | Whether to use line smoothing
+        , stateLineSmooth       :: !Bool
+        
+        -- | Cache of Textures that we've sent to OpenGL.
+        , stateTextures         :: !(IORef [Texture])
+        }
+        
 
 -- | A texture that we've sent to OpenGL.
 data Texture
@@ -62,11 +62,11 @@ data Texture
 initState :: IO State
 initState
  = do   textures        <- newIORef []
-	return  State
-	        { stateColor		= True
-                , stateWireframe	= False
-	        , stateBlendAlpha	= True
-	        , stateLineSmooth	= False 
-	        , stateTextures         = textures }
-	
+        return  State
+                { stateColor            = True
+                , stateWireframe        = False
+                , stateBlendAlpha       = True
+                , stateLineSmooth       = False 
+                , stateTextures         = textures }
+        
 
