@@ -180,6 +180,7 @@ drawPicture state circScale picture
                 GL.textureBinding GL.Texture2D $= Just (texObject tex)
                 
                 -- Set to opaque
+                oldColor <- get GL.currentColor
                 GL.currentColor $= GL.Color4 1.0 1.0 1.0 1.0
                 
                 -- Draw textured polygon
@@ -191,6 +192,9 @@ drawPicture state circScale picture
 
                         (bitmapPath (fromIntegral width) (fromIntegral height))
                                 [(0,0), (1.0,0), (1.0,1.0), (0,1.0)]
+
+                -- Restore color
+                GL.currentColor $= oldColor
 
                 -- Disable texturing
                 GL.texture GL.Texture2D $= GL.Disabled
