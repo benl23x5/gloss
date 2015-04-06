@@ -47,7 +47,7 @@ Library
         gloss-rendering == 1.9.3.*
 
   ghc-options:
-        -O2 -Wall -Werror
+        -O2 -Wall
 
   Exposed-modules:
         Graphics.Gloss
