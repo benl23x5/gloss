@@ -1,5 +1,5 @@
 Name:                gloss-algorithms
-Version:             1.9.3.1
+Version:             1.9.4.1
 License:             MIT
 License-file:        LICENSE
 Author:              Ben Lippmeier
@@ -25,7 +25,7 @@ Library
         base       == 4.8.*,
         ghc-prim   == 0.4.*,
         containers == 0.5.*,
-        gloss      == 1.9.3.*
+        gloss      == 1.9.4.*
 
   ghc-options:
         -O2 -Wall

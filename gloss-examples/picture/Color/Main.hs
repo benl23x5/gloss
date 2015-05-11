@@ -1,4 +1,5 @@
 
+-- Draw a color wheel.
 import Graphics.Gloss
 
 main 
@@ -22,7 +23,7 @@ colors
         , cyan
         , azure
         , blue
-        , mixColors 0.8 0.2 blue magenta -- violet
+        , violet
         , magenta
         , rose
         ]
