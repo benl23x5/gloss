@@ -110,21 +110,21 @@ dark c
 
 
 -------------------------------------------------------------------------------
--- | Set the alpha value of a `Color`.
+-- | Set the red value of a `Color`.
 withRed :: Float -> Color -> Color
 withRed r c
  = let  (_, g, b, a) = rgbaOfColor c
    in   makeColor r g b a
 
 
--- | Set the alpha value of a `Color`.
+-- | Set the green value of a `Color`.
 withGreen :: Float -> Color -> Color
 withGreen g c
  = let  (r, _, b, a) = rgbaOfColor c
    in   makeColor r g b a
 
 
--- | Set the alpha value of a `Color`.
+-- | Set the blue value of a `Color`.
 withBlue :: Float -> Color -> Color
 withBlue b c
  = let  (r, g, _, a) = rgbaOfColor c
