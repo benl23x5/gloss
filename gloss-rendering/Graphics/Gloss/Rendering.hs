@@ -15,6 +15,7 @@ module Graphics.Gloss.Rendering
 
           -- * Bitmaps
         , BitmapData
+        , BitmapFormat(..), PixelFormat(..), RowOrder(..)
         , bitmapOfForeignPtr
         , bitmapOfByteString
         , bitmapOfBMP

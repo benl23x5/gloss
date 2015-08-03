@@ -9,7 +9,7 @@ module Graphics.Gloss.Internals.Data.Picture
         , Picture(..)
 
         -- * Bitmaps
-        , BitmapData
+        , BitmapData, PixelFormat(..), BitmapFormat(..), RowOrder(..)
         , bitmapOfForeignPtr
         , bitmapOfByteString
         , bitmapOfBMP
@@ -93,7 +93,7 @@ data Picture
 
         -- | A bitmap image with a width, height and some 32-bit RGBA
         --   bitmap data.
-        -- 
+        --
         --  The boolean flag controls whether Gloss should cache the data
         --  between frames for speed. If you are programatically generating
         --  the image for each frame then use `False`. If you have loaded it
@@ -119,7 +119,6 @@ data Picture
         | Pictures      [Picture]
         deriving (Show, Eq, Data, Typeable)
 
-
 -- Instances ------------------------------------------------------------------
 instance Monoid Picture where
         mempty          = Blank
@@ -135,12 +134,11 @@ instance Monoid Picture where
 --   between frames for speed. If you are programatically generating
 --   the image for each frame then use `False`. If you have loaded it
 --   from a file then use `True`.
-bitmapOfForeignPtr :: Int -> Int -> ForeignPtr Word8 -> Bool -> Picture
-bitmapOfForeignPtr width height fptr cacheMe
+bitmapOfForeignPtr :: Int -> Int -> BitmapFormat -> ForeignPtr Word8 -> Bool -> Picture
+bitmapOfForeignPtr width height fmt fptr cacheMe
  = let  len     = width * height * 4
-        bdata   = BitmapData len fptr
-   in   Bitmap width height bdata cacheMe 
-
+        bdata   = BitmapData len fmt fptr
+   in   Bitmap width height bdata cacheMe
 
 -- | O(size). Copy a `ByteString` of RGBA data into a bitmap with the given
 --   width and height.
@@ -150,8 +148,8 @@ bitmapOfForeignPtr width height fptr cacheMe
 --   the image for each frame then use `False`. If you have loaded it
 --   from a file then use `True`.
 {-# NOINLINE bitmapOfByteString #-}
-bitmapOfByteString :: Int -> Int -> ByteString -> Bool -> Picture
-bitmapOfByteString width height bs cacheMe
+bitmapOfByteString :: Int -> Int -> BitmapFormat -> ByteString -> Bool -> Picture
+bitmapOfByteString width height fmt bs cacheMe
  = unsafePerformIO
  $ do   let len = width * height * 4
         ptr     <- mallocBytes len
@@ -160,7 +158,7 @@ bitmapOfByteString width height bs cacheMe
         BSU.unsafeUseAsCString bs
          $ \cstr -> copyBytes ptr (castPtr cstr) len
 
-        let bdata = BitmapData len fptr
+        let bdata = BitmapData len fmt fptr
         return $ Bitmap width height bdata cacheMe
 
 
@@ -170,7 +168,7 @@ bitmapOfBMP :: BMP -> Picture
 bitmapOfBMP bmp
  = unsafePerformIO
  $ do   let (width, height)     = bmpDimensions bmp
-        let bs                  = unpackBMPToRGBA32 bmp 
+        let bs                  = unpackBMPToRGBA32 bmp
         let len                 = width * height * 4
 
         ptr     <- mallocBytes len
@@ -179,8 +177,7 @@ bitmapOfBMP bmp
         BSU.unsafeUseAsCString bs
          $ \cstr -> copyBytes ptr (castPtr cstr) len
 
-        let bdata = BitmapData len fptr
-        reverseRGBA bdata
+        let bdata = BitmapData len (BitmapFormat BottomToTop PxRGBA) fptr
 
         return $ Bitmap width height bdata True
 

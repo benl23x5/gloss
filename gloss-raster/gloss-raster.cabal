@@ -1,5 +1,5 @@
 Name:                gloss-raster
-Version:             1.9.4.1
+Version:             1.10
 License:             MIT
 License-file:        LICENSE
 Author:              Ben Lippmeier
@@ -27,13 +27,13 @@ source-repository head
         location:       https://github.com/benl23x5/gloss
 
 Library
-  Build-Depends: 
+  Build-Depends:
         base            == 4.8.*,
         ghc-prim        == 0.4.*,
         containers      == 0.5.*,
         repa            == 3.4.*,
-        gloss           == 1.9.4.*,
-        gloss-rendering == 1.9.3.*
+        gloss           == 1.10.*,
+        gloss-rendering == 1.10.*
 
   ghc-options:
         -Odph -fno-liberate-case

@@ -205,11 +205,12 @@ makePicture !winSizeX !winSizeY !zoomX !zoomY !makePixel
         traceEventIO "Gloss.Raster[makePicture]: done, returning picture."
 
         -- Wrap the ForeignPtr from the Array as a gloss picture.
-        let picture     
+        let picture
                 = Scale (fromIntegral zoomX) (fromIntegral zoomY)
                 $ bitmapOfForeignPtr
                         sizeX sizeY     -- raw image size
-                        (R.toForeignPtr $ unsafeCoerce arrRGB)   
+                        (BitmapFormat BottomToTop PxRGBA)
+                        (R.toForeignPtr $ unsafeCoerce arrRGB)
                                         -- the image data.
                         False           -- don't cache this in texture memory.
 
