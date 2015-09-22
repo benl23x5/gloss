@@ -163,6 +163,10 @@ drawPicture state circScale picture
         -- Bitmap -------------------------------
         Bitmap width height imgData cacheMe
          -> do  
+                let rowInfo =
+                      case rowOrder (bitmapFormat imgData) of
+                         BottomToTop -> [(0,0), (1,0), (1,1), (0,1)]
+                         TopToBottom -> [(0,1), (1,1), (1,0), (0,0)]
                 -- Load the image data into a texture,
                 -- or grab it from the cache if we've already done that before.
                 tex     <- loadTexture (stateTextures state) width height imgData cacheMe
@@ -191,7 +195,7 @@ drawPicture state circScale picture
                                 GL.vertex   $ GL.Vertex2   (gf pX) (gf pY))
 
                         (bitmapPath (fromIntegral width) (fromIntegral height))
-                                [(0,0), (1.0,0), (1.0,1.0), (0,1.0)]
+                                rowInfo
 
                 -- Restore color
                 GL.currentColor $= oldColor
@@ -284,8 +288,11 @@ installTexture
         -> Bool
         -> IO Texture
 
-installTexture width height bitmapData@(BitmapData _ fptr) cacheMe
+installTexture width height bitmapData@(BitmapData _ fmt fptr) cacheMe
  = do   
+        let glFormat = case pixelFormat fmt of
+                           PxABGR -> GL.RGBA
+                           PxRGBA -> GL.ABGR
         -- Allocate texture handle for texture
         [tex] <- GL.genObjectNames 1
         GL.textureBinding GL.Texture2D $= Just tex
@@ -304,7 +311,7 @@ installTexture width height bitmapData@(BitmapData _ fptr) cacheMe
                         (gsizei width)
                         (gsizei height))
                 0
-                (GL.PixelData GL.RGBA GL.UnsignedInt8888 ptr)
+                (GL.PixelData glFormat GL.UnsignedInt8888 ptr)
 
         -- Make a stable name that we can use to identify this data again.
         -- If the user gives us the same texture data at the same size then we

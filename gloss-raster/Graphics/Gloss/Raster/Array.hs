@@ -252,7 +252,8 @@ makeFrame (scaleX, scaleY) !array
                 = Scale (fromIntegral scaleX) (fromIntegral scaleY)
                 $ bitmapOfForeignPtr
                         sizeX sizeY     -- raw image size
-                        (R.toForeignPtr $ unsafeCoerce arrRGB)   
+                        (BitmapFormat BottomToTop PxRGBA)
+                        (R.toForeignPtr $ unsafeCoerce arrRGB)
                                         -- the image data.
                         False           -- don't cache this in texture memory.
 
