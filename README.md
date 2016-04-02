@@ -4,7 +4,9 @@ gloss
 Gloss hides the pain of drawing simple vector graphics behind a nice
 data type and a few display functions. 
 
-Home page and bug tracker are on a [separate site](http://gloss.ouroborus.net).
+* Home page and bug tracker are on a [separate site](http://gloss.ouroborus.net).
+
+* PULL REQUESTS: If you want your pull request merged then send email to benl AT ouroborus.net. I am brutal about ignoring notifications from web things like github, but am happy to receive emails from people. If you have changed any internal functionality then please test that all the gloss-examples still work before submitting your pull request.
 
 Example
 -------
