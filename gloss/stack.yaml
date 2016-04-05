@@ -1,0 +1,4 @@
+resolver: lts-5.0
+packages:
+- ../gloss-rendering
+- .
