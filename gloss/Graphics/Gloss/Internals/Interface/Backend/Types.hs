@@ -92,12 +92,22 @@ type IdleCallback          = forall a . Backend a => IORef a -> IO ()
 type ReshapeCallback       = forall a . Backend a => IORef a -> (Int,Int) -> IO ()
 
 
+-------------------------------------------------------------------------------
 data Callback
         = Display  DisplayCallback
         | KeyMouse KeyboardMouseCallback
         | Idle     IdleCallback
         | Motion   MotionCallback
         | Reshape  ReshapeCallback
+
+
+-- | Check if this is an `Idle` callback.
+isIdleCallback :: Callback -> Bool
+isIdleCallback cc
+ = case cc of 
+        Idle _  -> True
+        _       -> False
+
 
 -------------------------------------------------------------------------------
 -- This is Glosses view of mouse and keyboard events.

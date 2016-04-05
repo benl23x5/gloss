@@ -269,8 +269,17 @@ installIdleCallbackGLUT
         -> IO ()
 
 installIdleCallbackGLUT ref callbacks
+        -- If the callback list does not actually contain an idle callback
+        -- then don't install one that just does nothing. If we do then GLUT
+        -- will still call us back after whenever it's idle and waste CPU time.
+        | any isIdleCallback callbacks
         = GLUT.idleCallback $= Just (callbackIdle ref callbacks)
 
+        | otherwise
+        = return ()
+
+
+-- | Call back when glut is idle.
 callbackIdle 
         :: IORef GLUTState -> [Callback]
         -> IO ()
