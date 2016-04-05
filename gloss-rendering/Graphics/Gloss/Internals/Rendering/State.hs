@@ -69,4 +69,3 @@ initState
                 , stateLineSmooth       = False 
                 , stateTextures         = textures }
         
-

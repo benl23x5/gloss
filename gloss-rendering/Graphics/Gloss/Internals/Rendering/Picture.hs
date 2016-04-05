@@ -356,11 +356,9 @@ setLineSmooth state
 
 
 vertexPFs ::    [(Float, Float)] -> IO ()
-{-# INLINE vertexPFs #-}
 vertexPFs []    = return ()
 vertexPFs ((x, y) : rest)
  = do   GL.vertex $ GL.Vertex2 (gf x) (gf y)
         vertexPFs rest
-
-
+{-# INLINE vertexPFs #-}
 

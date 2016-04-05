@@ -14,6 +14,7 @@ import qualified Graphics.UI.GLFW          as GLFW
 import qualified Graphics.Rendering.OpenGL as GL
 import qualified Control.Exception         as X
 
+
 -- [Note: FreeGlut]
 -- ~~~~~~~~~~~~~~~~
 -- We use GLUT for font rendering.

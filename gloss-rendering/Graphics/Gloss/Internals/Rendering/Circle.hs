@@ -15,13 +15,13 @@ import  qualified Graphics.Rendering.OpenGL.GL          as GL
 --   the size of the circle on the screen, not its intrinsic radius.
 --   If the viewport has been zoomed-in then we need to use more segments.
 --
-{-# INLINE circleSteps #-}
 circleSteps :: Float -> Int
 circleSteps sDiam
         | sDiam < 8     = 8
         | sDiam < 16    = 16
         | sDiam < 32    = 32
         | otherwise     = 64
+{-# INLINE circleSteps #-}
 
 
 -- Circle ---------------------------------------------------------------------

@@ -77,19 +77,24 @@ class Backend a where
 -- can thus call the appropriate backend functions.
 
 -- | Display callback has no arguments.
-type DisplayCallback       = forall a . Backend a => IORef a -> IO ()
+type DisplayCallback
+        = forall a . Backend a => IORef a -> IO ()
 
 -- | Arguments: KeyType, Key Up \/ Down, Ctrl \/ Alt \/ Shift pressed, latest mouse location.
-type KeyboardMouseCallback = forall a . Backend a => IORef a -> Key -> KeyState -> Modifiers -> (Int,Int) -> IO ()
+type KeyboardMouseCallback 
+        = forall a . Backend a => IORef a -> Key -> KeyState -> Modifiers -> (Int,Int) -> IO ()
 
 -- | Arguments: (PosX,PosY) in pixels.
-type MotionCallback        = forall a . Backend a => IORef a -> (Int,Int) -> IO ()
+type MotionCallback
+        = forall a . Backend a => IORef a -> (Int,Int) -> IO ()
 
 -- | No arguments.
-type IdleCallback          = forall a . Backend a => IORef a -> IO ()
+type IdleCallback
+        = forall a . Backend a => IORef a -> IO ()
 
 -- | Arguments: (Width,Height) in pixels.
-type ReshapeCallback       = forall a . Backend a => IORef a -> (Int,Int) -> IO ()
+type ReshapeCallback
+        = forall a . Backend a => IORef a -> (Int,Int) -> IO ()
 
 
 -------------------------------------------------------------------------------
@@ -203,10 +208,11 @@ data SpecialKey
         | KeyPadEnter
         deriving (Show, Eq, Ord)
 
+
 data Modifiers
         = Modifiers
         { shift :: KeyState
         , ctrl  :: KeyState
-        , alt   :: KeyState
-        }
+        , alt   :: KeyState }
         deriving (Show, Eq, Ord)
+

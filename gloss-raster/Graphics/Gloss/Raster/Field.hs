@@ -209,7 +209,7 @@ makePicture !winSizeX !winSizeY !zoomX !zoomY !makePixel
                 = Scale (fromIntegral zoomX) (fromIntegral zoomY)
                 $ bitmapOfForeignPtr
                         sizeX sizeY     -- raw image size
-                        (BitmapFormat BottomToTop PxRGBA)
+                        (BitmapFormat BottomToTop PxABGR)
                         (R.toForeignPtr $ unsafeCoerce arrRGB)
                                         -- the image data.
                         False           -- don't cache this in texture memory.

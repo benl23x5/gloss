@@ -129,7 +129,7 @@ pictureOfModel (scaleX, scaleY) m
 
         let picDens :: G.Picture
             picDens = G.bitmapOfForeignPtr width' height'
-                        (G.BitmapFormat G.BottomToTop G.PxRGBA)
+                        (G.BitmapFormat G.BottomToTop G.PxABGR)
                         (R.toForeignPtr $ unsafeCoerce arrDensity)
                         False
 

@@ -78,9 +78,10 @@ simulate_run simSR _ viewSA worldSR worldAdvance backendRef
         let nFinal      = nStart + thisSteps
 
         -- keep advancing the world until we get to the final iteration number
-        (_,world') <- untilM    (\(n, _)        -> n >= nFinal)
-                                (\(n, w)        -> liftM (\w' -> (n+1,w')) ( worldAdvance viewS timePerStep w))
-                                (nStart, worldS)
+        (_,world') 
+         <- untilM (\(n, _)        -> n >= nFinal)
+                   (\(n, w)        -> liftM (\w' -> (n+1,w')) ( worldAdvance viewS timePerStep w))
+                   (nStart, worldS)
 
         -- write the world back into its IORef
         -- We need to seq on the world to avoid space leaks when the window is not showing.

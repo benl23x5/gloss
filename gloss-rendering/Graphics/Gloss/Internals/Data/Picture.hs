@@ -119,6 +119,7 @@ data Picture
         | Pictures      [Picture]
         deriving (Show, Eq, Data, Typeable)
 
+
 -- Instances ------------------------------------------------------------------
 instance Monoid Picture where
         mempty          = Blank
@@ -140,6 +141,7 @@ bitmapOfForeignPtr width height fmt fptr cacheMe
         bdata   = BitmapData len fmt fptr
    in   Bitmap width height bdata cacheMe
 
+
 -- | O(size). Copy a `ByteString` of RGBA data into a bitmap with the given
 --   width and height.
 --
@@ -147,7 +149,6 @@ bitmapOfForeignPtr width height fmt fptr cacheMe
 --   between frames for speed. If you are programatically generating
 --   the image for each frame then use `False`. If you have loaded it
 --   from a file then use `True`.
-{-# NOINLINE bitmapOfByteString #-}
 bitmapOfByteString :: Int -> Int -> BitmapFormat -> ByteString -> Bool -> Picture
 bitmapOfByteString width height fmt bs cacheMe
  = unsafePerformIO
@@ -160,10 +161,10 @@ bitmapOfByteString width height fmt bs cacheMe
 
         let bdata = BitmapData len fmt fptr
         return $ Bitmap width height bdata cacheMe
+{-# NOINLINE bitmapOfByteString #-}
 
 
 -- | O(size). Copy a `BMP` file into a bitmap.
-{-# NOINLINE bitmapOfBMP #-}
 bitmapOfBMP :: BMP -> Picture
 bitmapOfBMP bmp
  = unsafePerformIO
@@ -180,6 +181,7 @@ bitmapOfBMP bmp
         let bdata = BitmapData len (BitmapFormat BottomToTop PxRGBA) fptr
 
         return $ Bitmap width height bdata True
+{-# NOINLINE bitmapOfBMP #-}
 
 
 -- | Load an uncompressed 24 or 32bit RGBA BMP file as a bitmap.
@@ -189,5 +191,4 @@ loadBMP filePath
         case ebmp of
          Left err       -> error $ show err
          Right bmp      -> return $ bitmapOfBMP bmp
-
 

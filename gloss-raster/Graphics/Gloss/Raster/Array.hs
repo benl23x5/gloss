@@ -9,7 +9,8 @@
 --  result add INLINE pragmas to all of your numeric functions and use the following
 --  compile options.  
 --
---  @-threaded -Odph -fno-liberate-case -funfolding-use-threshold1000 -funfolding-keeness-factor1000 -fllvm -optlo-O3@
+--  @-threaded -Odph -fno-liberate-case -funfolding-use-threshold1000 
+--   -funfolding-keeness-factor1000 -fllvm -optlo-O3@
 --
 --  See the examples the @raster@ directory of the @gloss-examples@ package 
 --  for more details.
@@ -252,7 +253,7 @@ makeFrame (scaleX, scaleY) !array
                 = Scale (fromIntegral scaleX) (fromIntegral scaleY)
                 $ bitmapOfForeignPtr
                         sizeX sizeY     -- raw image size
-                        (BitmapFormat BottomToTop PxRGBA)
+                        (BitmapFormat BottomToTop PxABGR)
                         (R.toForeignPtr $ unsafeCoerce arrRGB)
                                         -- the image data.
                         False           -- don't cache this in texture memory.

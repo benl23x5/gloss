@@ -55,9 +55,9 @@ invertViewPort
 
 
 -- | Convert degrees to radians
-{-# INLINE degToRad #-}
 degToRad :: Float -> Float
 degToRad d      = d * pi / 180
+{-# INLINE degToRad #-}
 
 
 -- | Multiply a vector by a scalar.

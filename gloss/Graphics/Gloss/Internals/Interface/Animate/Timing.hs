@@ -64,8 +64,11 @@ animateEnd stateRef backendRef
         -- timing gate, limits the maximum frame frequency (FPS)
         timeClamp       <- stateRef `getsIORef` stateDisplayTimeClamp
 
-        gateTimeStart   <- elapsedTime backendRef                       -- the start of this gate
-        gateTimeEnd     <- stateRef `getsIORef` stateGateTimeEnd        -- end of the previous gate
+        -- the start of this gate
+        gateTimeStart   <- elapsedTime backendRef                       
+
+        -- end of the previous gate
+        gateTimeEnd     <- stateRef `getsIORef` stateGateTimeEnd        
         let gateTimeElapsed = gateTimeStart - gateTimeEnd
 
         when (gateTimeElapsed < timeClamp)
@@ -81,3 +84,4 @@ animateEnd stateRef backendRef
 getsIORef :: IORef a -> (a -> r) -> IO r
 getsIORef ref fun
  = liftM fun $ readIORef ref
+
