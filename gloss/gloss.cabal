@@ -53,6 +53,7 @@ Library
         Graphics.Gloss
         Graphics.Gloss.Data.Bitmap
         Graphics.Gloss.Data.Color
+        Graphics.Gloss.Data.Controller
         Graphics.Gloss.Data.Display
         Graphics.Gloss.Data.Picture
         Graphics.Gloss.Data.Point
@@ -66,6 +67,7 @@ Library
         Graphics.Gloss.Interface.Pure.Simulate
         Graphics.Gloss.Interface.Pure.Game
         Graphics.Gloss.Interface.IO.Animate
+        Graphics.Gloss.Interface.IO.Display
         Graphics.Gloss.Interface.IO.Simulate
         Graphics.Gloss.Interface.IO.Game
 

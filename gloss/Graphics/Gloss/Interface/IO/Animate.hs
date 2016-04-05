@@ -1,5 +1,5 @@
 
--- | Display mode is for drawing a static picture.
+-- | Animate a picture in a window.
 module Graphics.Gloss.Interface.IO.Animate
         ( module Graphics.Gloss.Data.Display
         , module Graphics.Gloss.Data.Picture

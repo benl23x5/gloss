@@ -23,19 +23,23 @@ displayWithBackend
         => a                -- ^ Initial state of the backend.
         -> Display          -- ^ Display config.
         -> Color            -- ^ Background color.
-        -> Picture          -- ^ The picture to draw.
+        -> IO Picture       -- ^ Make the picture to draw.
         -> IO ()
 
-displayWithBackend backend displayMode background picture
+displayWithBackend
+        backend displayMode background
+        makePicture
+
  =  do  viewSR          <- newIORef viewStateInit
 
         renderS         <- initState
         renderSR        <- newIORef renderS
         
         let renderFun backendRef = do
-                port      <- viewStateViewPort <$> readIORef viewSR
-                options   <- readIORef renderSR
+                port       <- viewStateViewPort <$> readIORef viewSR
+                options    <- readIORef renderSR
                 windowSize <- getWindowDimensions backendRef
+                picture    <- makePicture
 
                 displayPicture 
                         windowSize

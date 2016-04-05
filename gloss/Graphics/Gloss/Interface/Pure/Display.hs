@@ -27,4 +27,9 @@ display :: Display          -- ^ Display mode.
         -> Picture          -- ^ The picture to draw.
         -> IO ()
 
-display = displayWithBackend defaultBackendState
+display dis backColor picture
+        = displayWithBackend
+                defaultBackendState
+                dis
+                backColor
+                (return picture)
