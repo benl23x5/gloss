@@ -25,6 +25,7 @@ data Command
 
         | CTranslate
         | CRotate
+        | CScale
 
         -- bump zoom
         | CBumpZoomOut
@@ -54,13 +55,22 @@ defaultCommandConfig
 
         , (CTranslate,
                 [ ( MouseButton LeftButton
-                  , Just (Modifiers { shift = Up, ctrl = Up, alt = Up }))
+                  , Just (Modifiers { shift = Up, ctrl = Up,   alt = Up }))
+                ])
+
+        , (CScale,
+                [ ( MouseButton LeftButton
+                  , Just (Modifiers { shift = Up, ctrl = Down, alt = Up }))
+
+                , ( MouseButton RightButton
+                  , Just (Modifiers { shift = Up, ctrl = Up,   alt = Up })) 
                 ])
 
         , (CRotate,
-                [ ( MouseButton RightButton
-                  , Nothing)
-                , ( MouseButton LeftButton
+                [ ( MouseButton LeftButton
+                  , Just (Modifiers { shift = Up, ctrl = Up,   alt = Down }))
+
+                , ( MouseButton RightButton
                   , Just (Modifiers { shift = Up, ctrl = Down, alt = Up }))
                 ])
 
@@ -140,14 +150,22 @@ data ViewState
         -- | How many degrees to rotate the world by for each pixel of x motion.
         , viewStateRotateFactor         :: !Float
 
+        -- | Ratio to scale the world by for each pixel of y motion.
+        , viewStateScaleFactor          :: !Float
+
         -- | During viewport translation,
-        --      where the mouse was clicked on the window.
+        --      where the mouse was clicked on the window to start the translate.
         , viewStateTranslateMark        :: !(Maybe (Float, Float))
 
         -- | During viewport rotation,  
-        --      where the mouse was clicked on the window
+        --      where the mouse was clicked on the window to starte the rotate.
         , viewStateRotateMark           :: !(Maybe (Float, Float))
 
+        -- | During viewport scale,
+        --      where the mouse was clicked on the window to start the scale.
+        , viewStateScaleMark            :: !(Maybe (Float, Float))
+
+        -- | The current viewport.
         , viewStateViewPort             :: ViewPort
         }
 
@@ -164,8 +182,10 @@ viewStateInitWithConfig commandConfig
         { viewStateCommands             = Map.fromList commandConfig
         , viewStateScaleStep            = 0.85
         , viewStateRotateFactor         = 0.6
+        , viewStateScaleFactor          = 0.01
         , viewStateTranslateMark        = Nothing
         , viewStateRotateMark           = Nothing
+        , viewStateScaleMark            = Nothing
         , viewStateViewPort             = viewPortInit }
 
 
@@ -217,41 +237,51 @@ updateViewStateWithEventMaybe (EventKey key keyState keyMods pos) viewState
         = Just $ viewState { viewStateViewPort 
                                 = port { viewPortRotate = viewPortRotate port - 5 } }
 
+
+        -- Start Translation.
         | isCommand commands CTranslate key keyMods
         , keyState      == Down
-        , not currentlyRotating
+        , not  $ currentlyRotating    || currentlyScaling
         = Just $ viewState { viewStateTranslateMark = Just pos }
 
-        -- We don't want to use 'isCommand' here because the user may have
-        -- released the translation modifier key before the mouse button.
-        -- and we still want to cancel the translation.
-        | currentlyTranslating
-        , keyState      == Up
-        = Just $ viewState { viewStateTranslateMark = Nothing }
-
+        -- Start Rotation.
         | isCommand commands CRotate key keyMods
         , keyState      == Down
-        , not currentlyTranslating
+        , not  $ currentlyTranslating || currentlyScaling
         = Just $ viewState { viewStateRotateMark = Just pos }
 
-        -- We don't want to use 'isCommand' here because the user may have
-        -- released the rotation modifier key before the mouse button, 
-        -- and we still want to cancel the rotation.
-        | currentlyRotating
-        , keyState      == Up
-        = Just $ viewState { viewStateRotateMark = Nothing }
+        -- Start Scale.
+        | isCommand commands CScale key keyMods
+        , keyState      == Down
+        , not  $ currentlyTranslating || currentlyRotating
+        = Just $ viewState { viewStateScaleMark  = Just pos }
+
+
+        -- Kill current translate/rotate/scale command when the mouse button
+        -- is released.
+        | keyState      == Up
+        = let   killTranslate vs = vs { viewStateTranslateMark = Nothing }
+                killRotate    vs = vs { viewStateRotateMark    = Nothing }
+                killScale     vs = vs { viewStateScaleMark     = Nothing }
+          in  Just
+                $ (if currentlyTranslating then killTranslate else id)
+                $ (if currentlyRotating    then killRotate    else id)
+                $ (if currentlyScaling     then killScale     else id)
+                $ viewState
 
         | otherwise
         = Nothing
         where   commands                = viewStateCommands viewState
                 port                    = viewStateViewPort viewState
                 currentlyTranslating    = isJust $ viewStateTranslateMark viewState
-                currentlyRotating       = isJust $ viewStateRotateMark viewState
+                currentlyRotating       = isJust $ viewStateRotateMark    viewState
+                currentlyScaling        = isJust $ viewStateScaleMark     viewState
 
 
 -- Note that only a translation or rotation applies, not both at the same time.
 updateViewStateWithEventMaybe (EventMotion pos) viewState
- = motionTranslate (viewStateTranslateMark viewState) pos viewState `mplus`
+ = motionScale     (viewStateScaleMark     viewState) pos viewState `mplus`
+   motionTranslate (viewStateTranslateMark viewState) pos viewState `mplus`
    motionRotate    (viewStateRotateMark    viewState) pos viewState
 
 updateViewStateWithEventMaybe (EventResize _) _ 
@@ -295,8 +325,8 @@ motionBump
 
 -- | Apply a translation to the `ViewState`.
 motionTranslate 
-        :: Maybe (Float, Float) 
-        -> (Float, Float) 
+        :: Maybe (Float, Float)         -- Location of first mark.
+        -> (Float, Float)               -- Current position.
         -> ViewState -> Maybe ViewState
 
 motionTranslate Nothing _ _ = Nothing
@@ -317,8 +347,8 @@ motionTranslate (Just (markX, markY)) (posX, posY) viewState
 
 -- | Apply a rotation to the `ViewState`.
 motionRotate 
-        :: Maybe (Float, Float) 
-        -> (Float, Float) 
+        :: Maybe (Float, Float)         -- Location of first mark.
+        -> (Float, Float)               -- Current position.
         -> ViewState -> Maybe ViewState
 
 motionRotate Nothing _ _ = Nothing
@@ -331,4 +361,32 @@ motionRotate (Just (markX, _markY)) (posX, posY) viewState
  where  port            = viewStateViewPort viewState
         rotate          = viewPortRotate port
         rotateFactor    = viewStateRotateFactor viewState
+
+
+-- | Apply a scale to the `ViewState`.
+motionScale
+        :: Maybe (Float, Float)         -- Location of first mark.
+        -> (Float, Float)               -- Current position.
+        -> ViewState -> Maybe ViewState
+
+motionScale Nothing _ _ = Nothing
+motionScale (Just (_markX, markY)) (posX, posY) viewState
+ = Just $ viewState
+        { viewStateViewPort
+          = let   -- Limit the amount of downward scaling so it maxes
+                  -- out at 1 percent of the original. There's not much
+                  -- point scaling down to no pixels, or going negative
+                  -- so that the image is inverted.
+                  ss      = if posY > markY
+                                then scale + scale * (scaleFactor * (posY  - markY))
+                                else scale - scale * (scaleFactor * (markY - posY))
+
+                  ss'     = max 0.01 ss
+            in    port { viewPortScale = ss' }
+
+        , viewStateScaleMark    = Just (posX, posY) }
+ where  port            = viewStateViewPort viewState
+        scale           = viewPortScale port
+        scaleFactor     = viewStateScaleFactor viewState
+
 
