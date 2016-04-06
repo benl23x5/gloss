@@ -88,7 +88,7 @@ simulate_run simSR _ viewSA worldSR worldAdvance backendRef
         world' `seq` writeIORef worldSR world'
 
         -- update the control state
-        simSR `modifyIORef` \c -> c
+        modifyIORef' simSR $ \c -> c
                 { SM.stateIteration     = nFinal
                 , SM.stateSimTime       = newSimTime }
         

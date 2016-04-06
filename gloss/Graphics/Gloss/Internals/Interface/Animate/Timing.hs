@@ -29,15 +29,15 @@ animateBegin stateRef backendRef
         displayTimeLast         <- stateRef `getsIORef` stateDisplayTime
         let displayTimeElapsed  = displayTime - displayTimeLast
 
-        stateRef `modifyIORef` \s -> s 
+        modifyIORef' stateRef $ \s -> s 
                 { stateDisplayTime      = displayTime 
                 , stateDisplayTimeLast  = displayTimeLast }
 
         -- increment the animation time
-        animate         <- stateRef `getsIORef` stateAnimate
-        animateCount    <- stateRef `getsIORef` stateAnimateCount
-        animateTime     <- stateRef `getsIORef` stateAnimateTime
-        animateStart    <- stateRef `getsIORef` stateAnimateStart
+        animate        <- stateRef `getsIORef` stateAnimate
+        animateCount   <- stateRef `getsIORef` stateAnimateCount
+        animateTime    <- stateRef `getsIORef` stateAnimateTime
+        animateStart   <- stateRef `getsIORef` stateAnimateStart
 
 {-      when (animateCount `mod` 5 == 0)
          $  putStr  $  "  displayTime        = " ++ show displayTime                ++ "\n"
@@ -46,11 +46,11 @@ animateBegin stateRef backendRef
                     ++ "  fps                = " ++ show (truncate $ 1 / displayTimeElapsed)   ++ "\n"
 -}      
         when (animate && not animateStart)
-         $ stateRef `modifyIORef` \s -> s
+         $ modifyIORef' stateRef $ \s -> s
                { stateAnimateTime       = animateTime + displayTimeElapsed }
                         
         when animate
-         $ stateRef `modifyIORef` \s -> s
+         $ modifyIORef' stateRef $ \s -> s
                { stateAnimateCount      = animateCount + 1
                , stateAnimateStart      = False  }
 
@@ -76,7 +76,7 @@ animateEnd stateRef backendRef
 
         gateTimeFinal   <- elapsedTime backendRef
 
-        stateRef `modifyIORef` \s -> s 
+        modifyIORef' stateRef $ \s -> s 
                 { stateGateTimeEnd      = gateTimeFinal 
                 , stateGateTimeElapsed  = gateTimeElapsed }
 

@@ -33,6 +33,7 @@ import qualified Graphics.UI.GLUT          as GLUT
 
 import Graphics.Gloss.Internals.Interface.Backend.Types
 
+
 -- | State of the GLFW backend library.
 data GLFWState
         = GLFWState
@@ -194,8 +195,8 @@ installDisplayCallbackGLFW
         :: IORef GLFWState -> [Callback] -> IO ()
 
 installDisplayCallbackGLFW stateRef callbacks
- =  modifyIORef stateRef
-        $ \s -> s { display = callbackDisplay stateRef callbacks }
+ =  modifyIORef' stateRef $ \s -> s
+        { display = callbackDisplay stateRef callbacks }
 
 
 callbackDisplay
@@ -409,7 +410,10 @@ setMousePos
         -> IO (Int, Int)
 setMousePos stateRef x y
  = do   let pos = (x,y)
-        modifyIORef stateRef (\s -> s {mousePosition = pos})
+
+        modifyIORef' stateRef $ \s -> s 
+                { mousePosition = pos }
+
         return pos
 
 
@@ -421,7 +425,8 @@ installIdleCallbackGLFW
         -> IO ()
 
 installIdleCallbackGLFW stateRef callbacks 
-        = modifyIORef stateRef (\s -> s {idle = callbackIdle stateRef callbacks})
+        = modifyIORef' stateRef $ \s -> s 
+                { idle = callbackIdle stateRef callbacks }
 
 callbackIdle 
         :: IORef GLFWState -> [Callback]
@@ -455,7 +460,9 @@ runMainLoopGLFW stateRef
                        display s
                        GLFW.swapBuffers
 
-               modifyIORef stateRef $ \s -> s { dirtyScreen = False }
+               modifyIORef' stateRef $ \s -> s 
+                        { dirtyScreen = False }
+
                (readIORef stateRef) >>= (\s -> idle s)
                GLFW.sleep 0.001
                runMainLoopGLFW stateRef
@@ -467,8 +474,8 @@ postRedisplayGLFW
         -> IO ()
 
 postRedisplayGLFW stateRef
-        = modifyIORef stateRef
-        $ \s -> s { dirtyScreen = True }
+        = modifyIORef' stateRef $ \s -> s 
+                { dirtyScreen = True }
 
 
 -- Key Code Conversion --------------------------------------------------------
