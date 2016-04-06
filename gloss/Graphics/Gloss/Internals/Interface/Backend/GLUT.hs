@@ -356,10 +356,6 @@ callbackIdle ref callbacks
         $ [f ref | Idle f <- callbacks]
 
 
--- Timeout Callback -----------------------------------------------------------
-
-
-
 -------------------------------------------------------------------------------
 -- | Convert GLUTs key codes to our internal ones.
 glutKeyToKey :: GLUT.Key -> Key
