@@ -11,6 +11,5 @@ data Controller
         { -- | Indicate that we want the picture to be redrawn.
           controllerSetRedraw       :: IO ()
 
-          -- | Modify the current viewport,
-          --   also forcing it to refresh.
+          -- | Modify the current viewport, also indicating that it should be redrawn.
         , controllerModifyViewPort  :: (ViewPort -> IO ViewPort) -> IO () }

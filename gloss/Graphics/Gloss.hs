@@ -5,19 +5,31 @@
 --   Getting something on the screen is as easy as:
 --
 --  @
---    import Graphics.Gloss
---    main = `display` (InWindow \"Nice Window\" (200, 200) (10, 10)) `white` (`Circle` 80)
+--  import Graphics.Gloss
+--  main = `display` (InWindow \"Nice Window\" (200, 200) (10, 10)) `white` (`Circle` 80)
 --  @
 --
 --   Once the window is open you can use the following:
 --
---      * Quit - esc-key.
+-- @
+-- * Quit            
+--   - esc-key
 --
---      * Move Viewport - left-click drag, arrow keys.
+-- * Move Viewport   
+--   - arrow keys
+--   - left-click drag
 --
---      * Rotate Viewport - right-click drag, control-left-click drag, or home\/end-keys.
+-- * Zoom Viewport
+--   - page up/down-keys
+--   - control-left-click drag
+--   - right-click drag
+--   - mouse wheel
 --
---      * Zoom Viewport - mouse wheel, or page up\/down-keys.
+-- * Rotate Viewport
+--   - home/end-keys
+--   - alt-left-click drag
+-- @
+--
 --
 --   Animations can be constructed similarly using the `animate`.
 --
@@ -37,30 +49,27 @@
 -- @
 -- Release Notes:
 --
--- For 1.9:
+--  For 1.10.1:
+--   * Gloss no longer consumes CPU time when displaying static pictures.
+--   * Added displayIO wrapper for mostly static pictures, eg when
+--     plotting graphs generated from infrequently updated files.
+--   * Allow viewport to be scaled with control-left-click drag.
+--   * Rotation of viewport changed to alt-left-click drag.
+--   * Preserve current colour when rendering bitmpaps.
+--   * Changed to proper sum-of-squares colour mixing, rather than naive
+--     addition of components which was causing mixed colours to be too dark.
+--  Thanks to Thomas DuBuisson
+--   * Allow bitmaps to be specified in RGBA byte order as well as ABGR.
+--  Thanks to Gabriel Gonzalez
+--   * Package definitions for building with Stack.
+--
+-- For 1.9.1:
 --  Thanks to Elise Huard
 --   * Split rendering code into gloss-rendering package.
 --
--- For 1.8
+-- For 1.8.0:
 --  Thanks to Francesco Mazzoli
 --   * Factored out ViewPort and ViewState handling into user visible modules.
---
--- For 1.7:
---   * Tweaked circle level-of-detail reduction code.
---   * Increased frame rate cap to 100hz.
---   Thanks to Doug Burke
---   * Primitives for drawing arcs and sectors.
---   Thanks to Thomas DuBuisson
---   * IO versions of animate, simulate and play.
---
--- For 1.6:
---   Thanks to Anthony Cowley
---   * Full screen display mode.
--- 
--- For 1.5:
---   * O(1) Conversion of ForeignPtrs to bitmaps.
---   * An extra flag on the Bitmap constructor allows bitmaps to be cached
---     in texture memory between frames.
 -- @
 --
 -- For more information, check out <http://gloss.ouroborus.net>.

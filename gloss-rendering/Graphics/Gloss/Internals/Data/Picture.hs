@@ -130,7 +130,7 @@ instance Monoid Picture where
 -- Bitmaps --------------------------------------------------------------------
 -- | O(1). Use a `ForeignPtr` of RGBA data as a bitmap with the given
 --   width and height.
-
+--
 --   The boolean flag controls whether Gloss should cache the data
 --   between frames for speed. If you are programatically generating
 --   the image for each frame then use `False`. If you have loaded it

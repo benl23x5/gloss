@@ -13,11 +13,22 @@ EXAMPLE
 
 USAGE
     Once the window is open you can use the following:
-      * Quit            - esc-key.
-      * Move Viewport   - left-click drag, arrow keys.
-      * Rotate Viewport - right-click drag, control-left-click drag, 
-                          or home/end-keys.
-      * Zoom Viewport   - mouse wheel, or page up/down-keys.
+      * Quit            
+        - esc-key.
+
+      * Move Viewport   
+        - arrow keys
+        - left-click drag
+
+      * Zoom Viewport
+        - page up/down-keys
+        - control-left-click drag
+        - right-click drag
+        - mouse wheel
+
+      * Rotate Viewport
+        - home/end-keys
+        - alt-left-click drag
 
 OTHER THINGS
     Animations and simulations can be constructed similarly using the
@@ -29,7 +40,25 @@ OTHER THINGS
 -------------------------------------------------------------------------------
 Release Notes:
 
- For 1.8.0
+  For 1.10.1:
+   * Gloss no longer consumes CPU time when displaying static pictures.
+   * Added displayIO wrapper for mostly static pictures, eg when
+     plotting graphs generated from infrequently updated files.
+   * Allow viewport to be scaled with control-left-click drag.
+   * Rotation of viewport changed to alt-left-click drag.
+   * Preserve current colour when rendering bitmpaps.
+   * Changed to proper sum-of-squares colour mixing, rather than naive
+     addition of components which was causing mixed colours to be too dark.
+  Thanks to Thomas DuBuisson
+   * Allow bitmaps to be specified in RGBA byte order as well as ABGR.
+  Thanks to Gabriel Gonzalez
+   * Package definitions for building with Stack.
+
+ For 1.9.1:
+  Thanks to Elise Huard
+   * Split rendering code into gloss-rendering package.
+
+ For 1.8.0:
    Thanks to Francesco Mazzoli
    * Factored out ViewPort and ViewState handling into user visible modules.
 
