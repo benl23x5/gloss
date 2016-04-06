@@ -3,6 +3,7 @@ module Graphics.Gloss.Internals.Interface.Animate
         (animateWithBackendIO)
 where   
 import Graphics.Gloss.Data.Color
+import Graphics.Gloss.Data.Controller
 import Graphics.Gloss.Data.Picture
 import Graphics.Gloss.Data.ViewPort
 import Graphics.Gloss.Data.ViewState
@@ -30,9 +31,12 @@ animateWithBackendIO
         -> Color                 -- ^ Background color.
         -> (Float -> IO Picture) -- ^ Function to produce the next frame of animation.
                                  --     It is passed the time in seconds since the program started.
+        -> (Controller -> IO ()) -- ^ Eat the controller.
         -> IO ()
 
-animateWithBackendIO backend pannable display backColor frameOp
+animateWithBackendIO
+        backend pannable display backColor
+        frameOp eatController
  = do   
         -- 
         viewSR          <- newIORef viewStateInit
@@ -76,7 +80,25 @@ animateWithBackendIO backend pannable display backColor frameOp
                   then [callback_viewState_keyMouse viewSR]
                   else [])
 
-        createWindow backend display backColor callbacks
+        createWindow backend display backColor callbacks 
+           $ \ backendRef
+           ->  eatController
+                $ Controller
+                { controllerSetRedraw
+                   = postRedisplay backendRef
+
+                , controllerModifyViewPort 
+                   = \modViewPort
+                     -> do viewState       <- readIORef viewSR
+                           port'           <- modViewPort $ viewStateViewPort viewState
+                           let viewState'  =  viewState { viewStateViewPort = port' }
+                           writeIORef viewSR viewState'
+                           postRedisplay backendRef
+                }
+
+
+
+
 
 getsIORef :: IORef a -> (a -> r) -> IO r
 getsIORef ref fun

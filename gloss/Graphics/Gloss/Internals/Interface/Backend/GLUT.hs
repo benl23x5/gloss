@@ -13,13 +13,27 @@ import qualified System.Exit                    as System
 import Graphics.Gloss.Internals.Interface.Backend.Types
 
 
--- | We don't maintain any state information for the GLUT backend, 
---   so this data type is empty.
+-- | State information for the GLUT backend.
 data GLUTState 
         = GLUTState
+        { -- Count of total number of frames that we have drawn.
+          glutStateFrameCount   :: Int 
 
+          -- Bool to remember if we've set the timeout callback.
+        , glutStateHasTimeout   :: Bool 
+
+          -- Bool to remember if we've set the idle callback.
+        , glutStateHasIdle      :: Bool }
+        deriving Show
+
+
+-- | Initial GLUT state.
 glutStateInit :: GLUTState
-glutStateInit  = GLUTState
+glutStateInit  
+        = GLUTState
+        { glutStateFrameCount   = 0 
+        , glutStateHasTimeout   = False 
+        , glutStateHasIdle      = False }
 
 
 instance Backend GLUTState where
@@ -174,27 +188,77 @@ installDisplayCallbackGLUT
 installDisplayCallbackGLUT ref callbacks
         = GLUT.displayCallback $= callbackDisplay ref callbacks
 
+
 callbackDisplay 
         :: IORef GLUTState -> [Callback]
         -> IO ()
 
-callbackDisplay ref callbacks 
- = do   -- clear the display
+callbackDisplay refState callbacks 
+ = do   
+        -- Clear the display
         GL.clear [GL.ColorBuffer, GL.DepthBuffer]
         GL.color $ GL.Color4 0 0 0 (1 :: GL.GLfloat)
 
-        -- get the display callbacks from the chain
-        let funs  = [f ref | (Display f) <- callbacks]
+        -- Run all the display callbacks to draw the window contents.
+        let funs  = [f refState | (Display f) <- callbacks]
         sequence_ funs
 
-        -- swap front and back buffers
+        -- Swap front and back buffers
         GLUT.swapBuffers
+
+        -- Timeout.
+        -- When there is no idle callback set the GLUT mainloop will block
+        -- forever waiting for display events. This prevents us from updating
+        -- the display on external events like files changing. The API doesn't
+        -- provide a way to wake it up on these other events.
+        --
+        -- Set a timeout so that GLUT will return from its mainloop after a
+        -- a second and give us a chance to check for other events.
+        --
+        -- The alternative would be to set an Idle callback and spin the CPU.
+        -- This is ok for real-time animations, but a CPU hog for mostly static
+        -- displays.
+        --
+        -- We only want to add a timeout when one doesn't already exist,
+        -- otherwise we'll get both events.
+        --
+        state   <- readIORef refState
+        when (  (not $ glutStateHasTimeout state)
+             && (not $ glutStateHasIdle    state))
+         $ do   
+                -- Setting the timer interrupt to 1sec keeps CPU usage for a
+                -- single process to < 0.5% or so on OSX. This is the rate
+                -- that the process is woken up, but GLUT will only actually
+                -- call the display call if postRedisplay has been set.
+                let msecHeartbeat = 1000
+
+                -- We're installing this callback on the first display
+                -- call because it's a GLUT specific mechanism. 
+                -- We don't do the same thing for other Backends.
+                GLUT.addTimerCallback msecHeartbeat
+                 $ timerCallback msecHeartbeat
+
+                -- Rember that we've done this filthy hack.
+                atomicModifyIORef' refState
+                 $ \state -> (state { glutStateHasTimeout = True }, ())
+
 
     -- Don't report errors by default.
     -- The windows OpenGL implementation seems to complain for no reason. 
     --  GLUT.reportErrors
 
+        atomicModifyIORef' refState
+         $ \state -> ( state { glutStateFrameCount = glutStateFrameCount state + 1 }
+                     , ())
+
         return ()
+
+
+-- | Oneshot timer callback that re-registers itself.
+timerCallback msec
+ = do   GLUT.addTimerCallback msec
+         $ do   timerCallback msec
+
 
 -- Reshape Callback -----------------------------------------------------------
 installReshapeCallbackGLUT
@@ -268,12 +332,14 @@ installIdleCallbackGLUT
         :: IORef GLUTState -> [Callback]
         -> IO ()
 
-installIdleCallbackGLUT ref callbacks
+installIdleCallbackGLUT refState callbacks
         -- If the callback list does not actually contain an idle callback
         -- then don't install one that just does nothing. If we do then GLUT
         -- will still call us back after whenever it's idle and waste CPU time.
         | any isIdleCallback callbacks
-        = GLUT.idleCallback $= Just (callbackIdle ref callbacks)
+        = do    GLUT.idleCallback $= Just (callbackIdle refState callbacks)
+                atomicModifyIORef' refState
+                 $ \state -> (state { glutStateHasIdle = True }, ())
 
         | otherwise
         = return ()
@@ -287,6 +353,10 @@ callbackIdle
 callbackIdle ref callbacks
         = sequence_
         $ [f ref | Idle f <- callbacks]
+
+
+-- Timeout Callback -----------------------------------------------------------
+
 
 
 -------------------------------------------------------------------------------

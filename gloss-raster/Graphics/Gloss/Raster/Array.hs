@@ -111,7 +111,7 @@ animateArray display scale@(scaleX, scaleY) makeArray
                 P.++ show (scaleX, scaleY)
    else let {-# INLINE frame #-}
             frame !time          = return $ makeFrame scale (makeArray time)
-        in  animateFixedIO display black frame
+        in  animateFixedIO display black frame (const $ return ())
 {-# INLINE animateArray #-}
 --  INLINE so the repa functions fuse with the users client functions.
 
@@ -138,7 +138,7 @@ animateArrayIO display scale@(scaleX, scaleY) makeArray
                 P.++ show (scaleX, scaleY)
    else let {-# INLINE frame #-}
             frame !time          = fmap (makeFrame scale) (makeArray time)
-        in  animateFixedIO display black frame
+        in  animateFixedIO display black frame (const $ return ())
 {-# INLINE animateArrayIO #-}
 --  INLINE so the repa functions fuse with the users client functions.
 

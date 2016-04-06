@@ -33,3 +33,4 @@ display dis backColor picture
                 dis
                 backColor
                 (return picture)
+                (const (return ()))

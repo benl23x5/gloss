@@ -43,10 +43,11 @@ simulate
 simulate display backColor simResolution 
          modelStart modelToPicture modelStep
 
- = simulateWithBackendIO defaultBackendState
-         display backColor simResolution
-         modelStart
-         (return . modelToPicture)
-         (\view time model -> return $ modelStep view time model)
+ = do   _       <- simulateWithBackendIO defaultBackendState
+                        display backColor simResolution
+                        modelStart
+                        (return . modelToPicture)
+                        (\view time model -> return $ modelStep view time model)
+        return ()
 
         

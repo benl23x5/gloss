@@ -100,4 +100,8 @@ simulateWithBackendIO
                 , callback_viewState_motion   viewSR
                 , callback_viewState_reshape ]
 
-        createWindow backend display backgroundColor callbacks
+        createWindow backend display backgroundColor
+                callbacks
+                (const (return ()))
+
+

@@ -35,10 +35,11 @@ play    :: Display              -- ^ Display mode.
 play    display backColor simResolution
         worldStart worldToPicture worldHandleEvent worldAdvance
 
- = playWithBackendIO defaultBackendState 
-        display backColor simResolution
-        worldStart 
-        (return . worldToPicture)
-        (\event world -> return $ worldHandleEvent event world)
-        (\time  world -> return $ worldAdvance     time  world)
-        True
+ = do   _       <- playWithBackendIO defaultBackendState 
+                        display backColor simResolution
+                        worldStart 
+                        (return . worldToPicture)
+                        (\event world -> return $ worldHandleEvent event world)
+                        (\time  world -> return $ worldAdvance     time  world)
+                        True
+        return ()

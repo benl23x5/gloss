@@ -118,7 +118,7 @@ animateField display (zoomX, zoomY) makePixel
                 = return
                 $ makePicture winSizeX winSizeY zoomX zoomY (makePixel time)
 
-   in   animateFixedIO display black frame
+   in   animateFixedIO display black frame (const $ return ())
 {-# INLINE animateField #-}
 --  INLINE so the repa functions fuse with the users client functions.
 

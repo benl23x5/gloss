@@ -29,3 +29,4 @@ animate display backColor frameFun
                 True            -- pannable
                 display backColor
                 (return . frameFun) 
+                (const (return ()))

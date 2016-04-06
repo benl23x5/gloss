@@ -102,7 +102,13 @@ playWithBackendIO
         let exitCallback
                  = if withCallbackExit then [callback_exit ()] else []
 
-        createWindow backend display backgroundColor $ callbacks ++ exitCallback
+        createWindow 
+                backend 
+                display 
+                backgroundColor 
+                (callbacks ++ exitCallback)
+                (\_ -> return ())
+
 
 
 -- | Callback for KeyMouse events.

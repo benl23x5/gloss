@@ -10,7 +10,7 @@ import Graphics.Gloss.Internals.Interface.Backend
 import Graphics.Gloss.Internals.Interface.Debug
 import Graphics.Rendering.OpenGL                        (($=))
 import qualified Graphics.Rendering.OpenGL.GL           as GL
-import Data.IORef (newIORef)
+import Data.IORef (IORef, newIORef)
 import Control.Monad
 
 -- | Open a window and use the supplied callbacks to handle window events.
@@ -19,7 +19,9 @@ createWindow
         => a
         -> Display
         -> Color                -- ^ Color to use when clearing.
-        -> [Callback]           -- ^ Callbacks to use
+        -> [Callback]           -- ^ Callbacks to use.
+        -> (IORef a -> IO ())   -- ^ Give the backend back to the caller before
+                                --   entering the main loop.
         -> IO ()
 
 createWindow
@@ -27,6 +29,7 @@ createWindow
         display
         clearColor
         callbacks
+        eatBackend
  = do
         -- Turn this on to spew debugging info to stdout
         let debug       = False
@@ -67,6 +70,8 @@ createWindow
                 dumpFramebufferState
                 dumpFragmentState
 
+        eatBackend backendStateRef
+
         when debug
          $ do   putStr  $ "* entering mainloop..\n"
 
@@ -76,4 +81,3 @@ createWindow
         when debug
          $      putStr  $ "* all done\n"
 
-        return ()
