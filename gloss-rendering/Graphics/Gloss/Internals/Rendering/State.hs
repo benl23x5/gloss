@@ -14,7 +14,8 @@ import Data.IORef
 import qualified Graphics.Rendering.OpenGL.GL   as GL
 
 
--- | Render options settings
+-- | Abstract Gloss render state which holds references to textures
+--   loaded into the GPU context.
 data State
         = State
         { -- | Whether to use color

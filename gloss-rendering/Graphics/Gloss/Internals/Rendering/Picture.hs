@@ -167,6 +167,7 @@ drawPicture state circScale picture
                       case rowOrder (bitmapFormat imgData) of
                          BottomToTop -> [(0,0), (1,0), (1,1), (0,1)]
                          TopToBottom -> [(0,1), (1,1), (1,0), (0,0)]
+
                 -- Load the image data into a texture,
                 -- or grab it from the cache if we've already done that before.
                 tex     <- loadTexture (stateTextures state) width height imgData cacheMe
@@ -328,7 +329,7 @@ installTexture width height bitmapData@(BitmapData _ fmt fptr) cacheMe
 
 
 -- | If this texture does not have its `cacheMe` flag set then delete it from 
---   OpenGL and free the memory.
+--   OpenGL and free the GPU memory.
 freeTexture :: Texture -> IO ()
 freeTexture tex
  | texCacheMe tex       = return ()

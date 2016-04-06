@@ -95,9 +95,13 @@ data Picture
         --   bitmap data.
         --
         --  The boolean flag controls whether Gloss should cache the data
-        --  between frames for speed. If you are programatically generating
-        --  the image for each frame then use `False`. If you have loaded it
-        --  from a file then use `True`.
+        --  in GPU memory between frames. If you are programatically generating
+        --  the image for each frame then use @False@. If you have loaded it
+        --  from a file then use @True@. 
+        --  Setting @False@ for static images will make rendering slower
+        --  than it needs to be.
+        --  Setting @True@  for dynamically generated images will cause a
+        --  GPU memory leak.
         | Bitmap        Int     Int     BitmapData Bool
 
         -- Color ------------------------------------------
