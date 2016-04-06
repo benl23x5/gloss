@@ -6,7 +6,7 @@ data type and a few display functions.
 
 * Home page and bug tracker are on a [separate site](http://gloss.ouroborus.net).
 
-* PULL REQUESTS: If you want your pull request merged then send email to benl AT ouroborus.net. I don't pay attention to github notifications, but am happy to receive emails from people. If you have changed any internal functionality then please test that all the gloss-examples still work before submitting your pull request.
+* PULL REQUESTS: As Gloss is now fairly stable, I typically make releases only when there is a new GHC version. If you have added a new feature or fixed a bug, and want your pull request merged sooner than that, then send email to benl AT ouroborus.net. I don't pay attention to github notifications, but am happy to receive emails from people. If you have changed any internal functionality then please test that all the gloss-examples still work before submitting your pull request.
 
 Example
 -------
