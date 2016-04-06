@@ -18,7 +18,7 @@ import Data.Map                 (Map)
 
 main 
   = simulate 
-        (InWindow  "Polystyrene - right-click-drag rotates"
+        (InWindow  "Polystyrene - alt-left-click-drag rotates"
                    (600, 600)   -- x and y size of window (in pixels).
                    (10, 10))    -- position of window
         black                   -- background color
