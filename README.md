@@ -20,10 +20,26 @@ Usage
 -----
 Once the window is open you can use the following:
 
-* Quit            - esc-key.
-* Move Viewport   - left-click drag, arrow keys.
-* Rotate Viewport - right-click drag, control-left-click drag, or home/end-keys.
-* Zoom Viewport   - mouse wheel, or page up/down-keys.
+ * Quit            
+   - esc-key
+
+ * Move Viewport   
+   - arrow keys
+   - left-click drag
+
+ * Zoom Viewport
+   - page up/down-keys
+   - control-left-click drag
+   - right-click drag
+   - mouse wheel
+
+ * Rotate Viewport
+   - home/end-keys
+   - alt-left-click drag
+
+ * Reset Viewport
+   - 'r'-key
+
 
 More
 ----
