@@ -28,6 +28,9 @@
 -- * Rotate Viewport
 --   - home/end-keys
 --   - alt-left-click drag
+--
+-- * Reset Viewport
+--   'r'-key
 -- @
 --
 --

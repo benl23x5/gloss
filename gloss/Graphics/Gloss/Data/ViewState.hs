@@ -296,7 +296,7 @@ controlZoomIn
         , viewStateScaleStep    = scaleStep }
  = viewState 
         { viewStateViewPort     
-                = port { viewPortScale = viewPortScale port * scaleStep } }
+                = port { viewPortScale = viewPortScale port / scaleStep } }
 
 
 -- | Zoom out a `ViewState` by the scale step.
@@ -307,7 +307,7 @@ controlZoomOut
         , viewStateScaleStep    = scaleStep }
  = viewState
         { viewStateViewPort     
-                = port { viewPortScale = viewPortScale port / scaleStep } }
+                = port { viewPortScale = viewPortScale port * scaleStep } }
 
 
 -- | Offset a viewport.
@@ -378,8 +378,8 @@ motionScale (Just (_markX, markY)) (posX, posY) viewState
                   -- point scaling down to no pixels, or going negative
                   -- so that the image is inverted.
                   ss      = if posY > markY
-                                then scale + scale * (scaleFactor * (posY  - markY))
-                                else scale - scale * (scaleFactor * (markY - posY))
+                                then scale - scale * (scaleFactor * (posY  - markY))
+                                else scale + scale * (scaleFactor * (markY - posY))
 
                   ss'     = max 0.01 ss
             in    port { viewPortScale = ss' }

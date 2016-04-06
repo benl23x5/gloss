@@ -16,7 +16,7 @@ import Data.Function
 -- | The quadtree contains cells of unit extent (NetHack style).
 --   Given a line segement (P1-P2) through the tree, get the cell 
 --   closest to P1 that intersects the segment, if any.
---   
+---
 --   TODO: This currently uses a naive algorithm. It just calls 
 --         `traceSegIntoCellularQuadTree` and sorts the results
 --         to get the one closest to P1. It'd be better to do a 
