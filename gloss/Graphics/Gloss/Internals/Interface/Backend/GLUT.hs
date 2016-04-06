@@ -240,7 +240,7 @@ callbackDisplay refState callbacks
 
                 -- Rember that we've done this filthy hack.
                 atomicModifyIORef' refState
-                 $ \state -> (state { glutStateHasTimeout = True }, ())
+                 $ \s -> (s { glutStateHasTimeout = True }, ())
 
 
     -- Don't report errors by default.
@@ -248,13 +248,14 @@ callbackDisplay refState callbacks
     --  GLUT.reportErrors
 
         atomicModifyIORef' refState
-         $ \state -> ( state { glutStateFrameCount = glutStateFrameCount state + 1 }
-                     , ())
+         $ \s -> ( s { glutStateFrameCount = glutStateFrameCount s + 1 }
+                 , ())
 
         return ()
 
 
 -- | Oneshot timer callback that re-registers itself.
+timerCallback :: Int -> IO ()
 timerCallback msec
  = do   GLUT.addTimerCallback msec
          $ do   timerCallback msec

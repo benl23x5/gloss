@@ -15,7 +15,6 @@ import Graphics.Gloss.Internals.Interface.ViewState.KeyMouse
 import Graphics.Gloss.Internals.Interface.ViewState.Motion
 import Graphics.Gloss.Internals.Interface.ViewState.Reshape
 import qualified Graphics.Gloss.Internals.Interface.Callback as Callback
-import qualified Graphics.UI.GLUT as GLUT
 import Data.IORef
 import System.Mem
 
