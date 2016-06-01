@@ -17,7 +17,7 @@ import Graphics.Gloss.Internals.Interface.Backend.Types
 data GLUTState 
         = GLUTState
         { -- Count of total number of frames that we have drawn.
-          glutStateFrameCount   :: Int 
+          glutStateFrameCount   :: !Int
 
           -- Bool to remember if we've set the timeout callback.
         , glutStateHasTimeout   :: Bool 
