@@ -37,8 +37,8 @@ Flag ExplicitBackend
 
 Library
   Build-Depends: 
-        base       == 4.8.*,
-        ghc-prim   == 0.4.*,
+        base       >= 4.8 && < 4.10,
+        ghc-prim   >= 0.4 && < 0.6,
         containers == 0.5.*,
         bytestring == 0.10.*,
         OpenGL     >= 2.12 && < 3.1,
