@@ -11,7 +11,7 @@ import Data.Vector.Unboxed      (Unbox)
 
 -- | Addition of forces stage for simulation
 addSources 
-        :: (FieldElt a, FieldSource a, Unbox a)
+        :: (FieldSource a, Unbox a)
         => Delta                -- ^ Time delta.
         -> a                    -- ^ Value to insert.
         -> Maybe (SourceDensity a) 
@@ -28,7 +28,7 @@ addSources _ _ Nothing field
 
 
 insertSource 
-        :: (FieldElt a, FieldSource a) 
+        :: (FieldSource a) 
         => Delta
         -> a            -- ^ Value to insert
         -> DIM2 -> a 

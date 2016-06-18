@@ -1,5 +1,5 @@
 name:           gloss-rendering
-version:        1.10.1.1
+version:        1.10.2.1
 license:        MIT
 license-file:   LICENSE
 author:         Elise Huard
@@ -28,7 +28,7 @@ library
         Graphics.Gloss.Internals.Rendering.State
 
   build-depends:       
-        base       == 4.8.*,
+        base       == 4.9.*,
         containers == 0.5.*,
         bytestring == 0.10.*,
         OpenGL     >= 2.12 && < 3.1,

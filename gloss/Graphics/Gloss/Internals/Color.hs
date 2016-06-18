@@ -8,7 +8,7 @@ import qualified Graphics.Rendering.OpenGL.GL           as GL
 import Unsafe.Coerce
 
 -- | Convert one of our Colors to OpenGL's representation.
-glColor4OfColor :: Fractional a => Color -> GL.Color4 a
+glColor4OfColor :: Color -> GL.Color4 a
 glColor4OfColor color
  = case rgbaOfColor color of
         (r, g, b, a)

@@ -1,5 +1,5 @@
 Name:                gloss-examples
-Version:             1.10.1.1
+Version:             1.10.2.1
 License:             MIT
 License-file:        LICENSE
 Author:              Ben Lippmeier
@@ -29,7 +29,7 @@ source-repository head
 
 Executable gloss-bitmap
   Build-depends:
-        base            == 4.8.*,
+        base            == 4.9.*,
         bytestring      == 0.10.*,
         bmp             == 1.2.*,
         gloss           == 1.10.*
@@ -40,7 +40,7 @@ Executable gloss-bitmap
 
 Executable gloss-boids
   Build-depends:
-        base            == 4.8.*,
+        base            == 4.9.*,
         gloss           == 1.10.*
   Main-is:        Main.hs
   other-modules:  KDTree2d Vec2
@@ -50,7 +50,7 @@ Executable gloss-boids
 
 Executable gloss-clock
   Build-depends: 
-        base            == 4.8.*,
+        base            == 4.9.*,
         gloss           == 1.10.*
   Main-is:        Main.hs
   hs-source-dirs: picture/Clock
@@ -59,8 +59,8 @@ Executable gloss-clock
 
 Executable gloss-color
   Build-depends: 
-        base            == 4.8.*,
-        vector          == 0.10.*,
+        base            == 4.9.*,
+        vector          == 0.11.*,
         gloss           == 1.10.*
   Main-is:        Main.hs
   hs-source-dirs: picture/Color
@@ -70,8 +70,8 @@ Executable gloss-color
 
 Executable gloss-conway
   Build-depends: 
-        base            == 4.8.*,
-        vector          == 0.10.*,
+        base            == 4.9.*,
+        vector          == 0.11.*,
         gloss           == 1.10.*
   Main-is:        Main.hs
   other-modules:  Cell World
@@ -81,7 +81,7 @@ Executable gloss-conway
 
 Executable gloss-draw
   Build-depends:
-        base            == 4.8.*,
+        base            == 4.9.*,
         gloss           == 1.10.*
   Main-is:        Main.hs
   hs-source-dirs: picture/Draw
@@ -90,7 +90,7 @@ Executable gloss-draw
 
 Executable gloss-easy
   Build-depends:
-        base            == 4.8.*,
+        base            == 4.9.*,
         gloss           == 1.10.*
   Main-is:        Main.hs
   hs-source-dirs: picture/Easy
@@ -99,7 +99,7 @@ Executable gloss-easy
 
 Executable gloss-eden
   Build-depends: 
-        base            == 4.8.*,
+        base            == 4.9.*,
         random          == 1.1.*,
         gloss           == 1.10.*
   Main-is:        Main.hs
@@ -110,7 +110,7 @@ Executable gloss-eden
 
 Executable gloss-flake
   Build-depends:
-        base            == 4.8.*,
+        base            == 4.9.*,
         gloss           == 1.10.*
   Main-is:        Main.hs
   hs-source-dirs: picture/Flake
@@ -119,7 +119,7 @@ Executable gloss-flake
 
 Executable gloss-gameevent
   Build-depends: 
-        base            == 4.8.*,
+        base            == 4.9.*,
         gloss           == 1.10.*
   Main-is:        Main.hs
   hs-source-dirs: picture/GameEvent
@@ -128,7 +128,7 @@ Executable gloss-gameevent
 
 Executable gloss-hello
   Build-depends: 
-        base            == 4.8.*, 
+        base            == 4.9.*, 
         gloss           == 1.10.*
   Main-is:        Main.hs
   hs-source-dirs: picture/Hello
@@ -137,7 +137,7 @@ Executable gloss-hello
 
 Executable gloss-lifespan
   Build-depends: 
-        base            == 4.8.*, 
+        base            == 4.9.*, 
         gloss           == 1.10.*,
         random          == 1.1.*
   Main-is:        Main.hs
@@ -148,7 +148,7 @@ Executable gloss-lifespan
 
 Executable gloss-machina
   Build-depends: 
-        base            == 4.8.*, 
+        base            == 4.9.*, 
         gloss           == 1.10.*
   Main-is:        Main.hs
   hs-source-dirs: picture/Machina
@@ -157,7 +157,7 @@ Executable gloss-machina
 
 Executable gloss-occlusion
   Build-depends: 
-        base             == 4.8.*, 
+        base             == 4.9.*, 
         gloss            == 1.10.*,
         gloss-algorithms == 1.10.*
   Main-is: Main.hs
@@ -168,8 +168,8 @@ Executable gloss-occlusion
 
 Executable gloss-styrene
   Build-depends: 
-        base            == 4.8.*,
-        ghc-prim        == 0.4.*,
+        base            == 4.9.*,
+        ghc-prim        == 0.5.*,
         containers      == 0.5.*,
         gloss           == 1.10.*
   Main-is:        Main.hs
@@ -180,7 +180,7 @@ Executable gloss-styrene
 
 Executable gloss-tree
   Build-depends: 
-        base            == 4.8.*, 
+        base            == 4.9.*, 
         gloss           == 1.10.*
   Main-is:        Main.hs
   hs-source-dirs: picture/Tree
@@ -189,8 +189,8 @@ Executable gloss-tree
 
 Executable gloss-visibility
   Build-depends: 
-        base            == 4.8.*, 
-        vector          == 0.10.*,
+        base            == 4.9.*, 
+        vector          == 0.11.*,
         gloss           == 1.10.*
   Main-is:        Main.hs
   other-modules:  Draw Interface State World Geometry.Randomish Geometry.Segment
@@ -200,7 +200,7 @@ Executable gloss-visibility
 
 Executable gloss-zen
   Build-depends: 
-        base            == 4.8.*, 
+        base            == 4.9.*, 
         gloss           == 1.10.*
   Main-is:        Main.hs
   hs-source-dirs: picture/Zen
@@ -209,7 +209,7 @@ Executable gloss-zen
 
 Executable gloss-crystal
   Build-depends:
-        base            == 4.8.*,
+        base            == 4.9.*,
         gloss           == 1.10.*,
         gloss-raster    == 1.10.*
   Main-is:        Main.hs
@@ -233,7 +233,7 @@ Executable gloss-crystal
 
 Executable gloss-ray
   Build-depends:
-        base           == 4.8.*,
+        base           == 4.9.*,
         gloss          == 1.10.*,
         gloss-raster   == 1.10.*
   Main-is:        Main.hs
@@ -252,7 +252,7 @@ Executable gloss-ray
 
 Executable gloss-pulse
   Build-depends:
-        base           == 4.8.*,
+        base           == 4.9.*,
         gloss          == 1.10.*,
         gloss-raster   == 1.10.*
   Main-is:        Main.hs
@@ -270,9 +270,9 @@ Executable gloss-pulse
 
 Executable gloss-wave
   Build-depends:
-        base           == 4.8.*,
-        ghc-prim       == 0.4.*,
-        vector         == 0.10.*,
+        base           == 4.9.*,
+        ghc-prim       == 0.5.*,
+        vector         == 0.11.*,
         gloss          == 1.10.*,
         gloss-raster   == 1.10.*
   Main-is:        Main.hs
@@ -290,9 +290,9 @@ Executable gloss-wave
 
 Executable gloss-fluid
   Build-depends:
-        base            == 4.8.*,
-        ghc-prim        == 0.4.*,
-        vector          == 0.10.*,
+        base            == 4.9.*,
+        ghc-prim        == 0.5.*,
+        vector          == 0.11.*,
         repa            == 3.4.*,
         repa-io         == 3.4.*,
         repa-algorithms == 3.4.*,
@@ -322,7 +322,7 @@ Executable gloss-fluid
 
 Executable gloss-snow
   Build-depends:
-        base            == 4.8.*,
+        base            == 4.9.*,
         repa            == 3.4.*,
         gloss           == 1.10.*
   Main-is:      Main.hs
@@ -340,7 +340,7 @@ Executable gloss-snow
 
 Executable gloss-mandel
   Build-depends:
-        base            == 4.8.*,
+        base            == 4.9.*,
         repa            == 3.4.*,
         gloss           == 1.10.*
   Main-is:        Main.hs
@@ -364,7 +364,7 @@ Executable gloss-mandel
 
 Executable gloss-graph
   Build-depends:
-        base            == 4.8.*,
+        base            == 4.9.*,
         containers      == 0.5.*,
         gloss           == 1.10.*
   Main-is:        Main.hs
@@ -375,7 +375,7 @@ Executable gloss-graph
 
 Executable gloss-render
   Build-depends:
-        base            == 4.8.*,
+        base            == 4.9.*,
         containers      == 0.5.*,
         gloss           == 1.10.*,
         gloss-rendering == 1.10.*,

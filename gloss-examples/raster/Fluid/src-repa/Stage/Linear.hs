@@ -15,7 +15,7 @@ import Prelude as P
 
 -------------------------------------------------------------------------------
 linearSolver 
-        :: (FieldElt a, Source U a, Unbox a, Elt a, Num a, Show a)
+        :: (FieldElt a, Source U a, Unbox a, Elt a, Num a)
         => Field a      -- ^ Original field.
         -> Field a      -- ^ Current field.
         -> Float
@@ -89,7 +89,7 @@ linearSolverCoeffs (Z:.j:.i)
 
 -- Unstable -------------------------------------------------------------------
 unstableSolver 
-        :: (FieldElt a, Source U a, Unbox a, Elt a, Num a, Show a)
+        :: (FieldElt a, Source U a, Unbox a, Elt a, Num a)
         => Field a      -- ^ Original field.
         -> Field a      -- ^ Current field.
         -> Float

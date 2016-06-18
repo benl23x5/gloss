@@ -12,7 +12,7 @@ import Data.Vector.Unboxed      (Unbox)
 -- | Apply a velocity field to another field.
 --   Both fields must have the same extent.
 advection 
-        :: (FieldElt a, Unbox a, Show a)
+        :: (FieldElt a, Unbox a)
         => Delta
         -> VelocityField 
         -> Field a 
@@ -36,7 +36,7 @@ advection !delta velField field
 
 -- | Compute the new field value at the given location.
 advectElem 
-        :: (FieldElt a, Unbox a)
+        :: (FieldElt a)
         => Delta                -- ^ Time delta (in seconds)
         -> VelocityField        -- ^ Velocity field that moves the source field.
         -> (DIM2 -> a)          -- ^ Get an element from the source field.
