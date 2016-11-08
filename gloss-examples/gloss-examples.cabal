@@ -372,16 +372,16 @@ Executable gloss-graph
   ghc-options:
         -Wall -O2
 
-
-Executable gloss-render
-  Build-depends:
-        base            >= 4.8 && < 4.10,
-        containers      == 0.5.*,
-        gloss           == 1.10.*,
-        gloss-rendering == 1.10.*,
-        GLFW-b
-  Main-is:        Main.hs
-  hs-source-dirs: picture/Render
-  ghc-options:
-        -Wall -O2
+-- Disabled on 8/11/2016 as GLFW-b does not build on OSX.
+-- Executable gloss-render
+--   Build-depends:
+--         base            >= 4.8 && < 4.10,
+--         containers      == 0.5.*,
+--         gloss           == 1.10.*,
+--         gloss-rendering == 1.10.*,
+--         GLFW-b
+--   Main-is:        Main.hs
+--   hs-source-dirs: picture/Render
+--   ghc-options:
+--         -Wall -O2
 

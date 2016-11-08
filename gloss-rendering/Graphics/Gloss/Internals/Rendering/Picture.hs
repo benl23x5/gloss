@@ -314,7 +314,7 @@ installTexture width height bitmapData@(BitmapData _ fmt fptr) cacheMe
                         (gsizei width)
                         (gsizei height))
                 0
-                (GL.PixelData glFormat GL.UnsignedInt8888Rev ptr)
+                (GL.PixelData glFormat GL.UnsignedByte ptr)
 
         -- Make a stable name that we can use to identify this data again.
         -- If the user gives us the same texture data at the same size then we
