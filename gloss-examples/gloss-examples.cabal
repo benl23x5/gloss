@@ -1,5 +1,5 @@
 Name:                gloss-examples
-Version:             1.10.2.3
+Version:             1.10.2.4
 License:             MIT
 License-file:        LICENSE
 Author:              Ben Lippmeier
@@ -234,6 +234,8 @@ Executable gloss-crystal
 Executable gloss-ray
   Build-depends:
         base           >= 4.8 && < 4.10,
+        repa           == 3.4.*,
+        repa-io        == 3.4.*,
         gloss          == 1.10.*,
         gloss-raster   == 1.10.*
   Main-is:        Main.hs
@@ -288,35 +290,39 @@ Executable gloss-wave
         -fllvm -optlo-O3
 
 
-Executable gloss-fluid
-  Build-depends:
-        base            >= 4.8 && < 4.10,
-        ghc-prim        == 0.5.*,
-        vector          == 0.11.*,
-        repa            == 3.4.*,
-        repa-io         == 3.4.*,
-        repa-algorithms == 3.4.*,
-        gloss           == 1.10.*
-  Main-is:        Main.hs
-  other-modules:  
-        Args Config FieldElt Model UserEvent
-        Solve.Density   Solve.Velocity
-        Stage.Advection Stage.Boundary Stage.Diffusion
-        Stage.Linear    Stage.Project  Stage.Sources
-  hs-source-dirs: raster/Fluid/src-repa
-
-  extensions:
-        PatternGuards
-
-  ghc-options:
-        -Wall -threaded -rtsopts -eventlog
-        -Odph -fno-liberate-case
-        -funfolding-use-threshold1000
-        -funfolding-keeness-factor1000
-
- if flag(llvm)
-  ghc-options:
-        -fllvm -optlo-O3
+-- Disabled on 8/11/2016 as the linear solver is taking too long to build.
+-- GHC compile time performance has regressed recently, so we could enable
+-- it again once that it fixed.
+--
+-- Executable gloss-fluid
+--   Build-depends:
+--         base            >= 4.8 && < 4.10,
+--         ghc-prim        == 0.5.*,
+--         vector          == 0.11.*,
+--         repa            == 3.4.*,
+--         repa-io         == 3.4.*,
+--         repa-algorithms == 3.4.*,
+--         gloss           == 1.10.*
+--   Main-is:        Main.hs
+--   other-modules:  
+--         Args Config FieldElt Model UserEvent
+--         Solve.Density   Solve.Velocity
+--         Stage.Advection Stage.Boundary Stage.Diffusion
+--         Stage.Linear    Stage.Project  Stage.Sources
+--   hs-source-dirs: raster/Fluid/src-repa
+-- 
+--   extensions:
+--         PatternGuards
+-- 
+--   ghc-options:
+--         -Wall -threaded -rtsopts -eventlog
+--         -Odph -fno-liberate-case
+--         -funfolding-use-threshold1000
+--         -funfolding-keeness-factor1000
+-- 
+--  if flag(llvm)
+--   ghc-options:
+--         -fllvm -optlo-O3
 
         
 
@@ -324,6 +330,7 @@ Executable gloss-snow
   Build-depends:
         base            >= 4.8 && < 4.10,
         repa            == 3.4.*,
+        repa-algorithms == 3.4.*,
         gloss           == 1.10.*
   Main-is:      Main.hs
   hs-source-dirs: raster/Snow
@@ -371,6 +378,7 @@ Executable gloss-graph
   hs-source-dirs: picture/Graph
   ghc-options:
         -Wall -O2
+
 
 -- Disabled on 8/11/2016 as GLFW-b does not build on OSX.
 -- Executable gloss-render
