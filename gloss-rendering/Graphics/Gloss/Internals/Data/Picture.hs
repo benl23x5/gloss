@@ -182,7 +182,7 @@ bitmapOfBMP bmp
         BSU.unsafeUseAsCString bs
          $ \cstr -> copyBytes ptr (castPtr cstr) len
 
-        let bdata = BitmapData len (BitmapFormat BottomToTop PxABGR) fptr
+        let bdata = BitmapData len (BitmapFormat BottomToTop PxRGBA) fptr
 
         return $ Bitmap width height bdata True
 {-# NOINLINE bitmapOfBMP #-}

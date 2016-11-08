@@ -291,9 +291,11 @@ installTexture
 
 installTexture width height bitmapData@(BitmapData _ fmt fptr) cacheMe
  = do   
-        let glFormat = case pixelFormat fmt of
-                           PxABGR -> GL.RGBA
-                           PxRGBA -> GL.ABGR
+        let glFormat 
+                = case pixelFormat fmt of
+                        PxABGR -> GL.ABGR
+                        PxRGBA -> GL.RGBA
+
         -- Allocate texture handle for texture
         [tex] <- GL.genObjectNames 1
         GL.textureBinding GL.Texture2D $= Just tex
@@ -312,7 +314,7 @@ installTexture width height bitmapData@(BitmapData _ fmt fptr) cacheMe
                         (gsizei width)
                         (gsizei height))
                 0
-                (GL.PixelData glFormat GL.UnsignedInt8888 ptr)
+                (GL.PixelData glFormat GL.UnsignedInt8888Rev ptr)
 
         -- Make a stable name that we can use to identify this data again.
         -- If the user gives us the same texture data at the same size then we
