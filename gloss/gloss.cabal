@@ -1,5 +1,5 @@
 Name:                gloss
-Version:             1.10.2.2
+Version:             1.10.2.3
 License:             MIT
 License-file:        LICENSE
 Author:              Ben Lippmeier
@@ -37,8 +37,8 @@ Flag ExplicitBackend
 
 Library
   Build-Depends: 
-        base       == 4.9.*,
-        ghc-prim   == 0.5.*,
+        base       >= 4.8 && < 4.10,
+        ghc-prim   >= 0.4 && < 0.6,
         containers == 0.5.*,
         bytestring == 0.10.*,
         OpenGL     >= 2.12 && < 3.1,
