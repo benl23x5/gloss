@@ -29,7 +29,7 @@ module Graphics.Gloss.Data.Picture
 where
 import Graphics.Gloss.Rendering
 import Graphics.Gloss.Geometry.Angle
-
+import Graphics.Gloss.Geometry.Triangulation
 
 -- Constructors ----------------------------------------------------------------
 -- NOTE: The docs here should be identical to the ones on the constructors.
@@ -39,8 +39,9 @@ blank :: Picture
 blank   = Blank
 
 -- | A convex polygon filled with a solid color.
+--   Triangulate so non-convex polygons can be drawn properly.
 polygon :: Path -> Picture
-polygon = Polygon
+polygon = pictures . triangulate
 
 -- | A line along an arbitrary path.
 line :: Path -> Picture

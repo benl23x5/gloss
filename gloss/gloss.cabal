@@ -62,6 +62,7 @@ Library
         Graphics.Gloss.Data.ViewState
         Graphics.Gloss.Geometry.Angle
         Graphics.Gloss.Geometry.Line
+        Graphics.Gloss.Geometry.Triangulation
         Graphics.Gloss.Interface.Pure.Display
         Graphics.Gloss.Interface.Pure.Animate
         Graphics.Gloss.Interface.Pure.Simulate
