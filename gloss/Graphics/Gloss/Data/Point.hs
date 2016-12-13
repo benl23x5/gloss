@@ -7,6 +7,7 @@ where
 import Graphics.Gloss.Data.Picture
 
 
+
 -- | Test whether a point lies within a rectangular box that is oriented
 --   on the x-y plane. The points P1-P2 are opposing points of the box,
 --   but need not be in a particular order.
