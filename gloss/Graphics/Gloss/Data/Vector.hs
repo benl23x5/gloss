@@ -14,7 +14,8 @@ module Graphics.Gloss.Data.Vector
         , normalizeV
         , unitVectorAtAngle )
 where
-import Graphics.Gloss.Data.Picture
+--import Graphics.Gloss.Data.Picture
+import Graphics.Gloss.Rendering
 import Graphics.Gloss.Geometry.Angle
 
 

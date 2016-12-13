@@ -4,8 +4,8 @@ module Graphics.Gloss.Data.Point
         ( Point, Path
         , pointInBox)
 where
-import Graphics.Gloss.Data.Picture
-
+--import Graphics.Gloss.Data.Picture
+import Graphics.Gloss.Rendering
 
 
 -- | Test whether a point lies within a rectangular box that is oriented
