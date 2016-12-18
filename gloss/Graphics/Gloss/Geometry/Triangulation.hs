@@ -15,14 +15,14 @@ data Edge
         = Edge
         { start :: Vertex
         , end :: Vertex }
-
+        deriving (Show)
 data Event
         = Event
         { eventCoordinates :: Point
         , startOf :: Set.Set Edge
         , intersectionOf :: Set.Set Edge
         , endOf :: Set.Set Edge }
-
+        deriving (Show)
 
 instance Eq Vertex where
         Vertex {vertexCoordinates = p0} == Vertex {vertexCoordinates = p1} = p0 == p1
@@ -59,7 +59,6 @@ intersection (Edge {start= Vertex {vertexCoordinates=p0}, end= Vertex {vertexCoo
         = intersectSegSeg p0 p1 p2 p3
 
 makeInitialVertexSet :: Path -> Set.Set Vertex
---makeInitialVertexSet list@(_:xs)  | trace ("makeInitialVertexSet " ++ show list ++ "\n" ) False = undefined
 makeInitialVertexSet [] = undefined
 makeInitialVertexSet list@(_:xs) = foldr accumulator Set.empty ( zip list (xs ++ list))
                                    where accumulator (p , q ) acc =
@@ -80,6 +79,18 @@ getVertex p set
         | otherwise  = Just (Set.elemAt (fromJust index) set)
         where index = Set.lookupIndex (Vertex {vertexCoordinates = p, neighbours = Set.empty}) set
 
+
+initialEventSet :: Set.Set Vertex -> Set.Set Event
+initialEventSet set = Set.mapMonotonic (event set) set
+
+event :: Set.Set Vertex -> Vertex -> Event
+
+event set v@(Vertex { vertexCoordinates = p@(px,py) , neighbours = list}) = let outCompare (x,y) = if (py == y) then px < x else py > y
+                                                                                edgeStart point = Edge {start = v, end = (fromJust (getVertex point set))}
+                                                                                edgeEnd point = Edge {end = v, start = (fromJust (getVertex point set))}
+                                                                                startSet = Set.map edgeStart (Set.filter outCompare list)
+                                                                                endSet = Set.map edgeEnd (Set.filter (not.outCompare) list)
+                                                        in Event {eventCoordinates = p, startOf = startSet, intersectionOf = Set.empty , endOf = endSet}
 
 triangulate :: Path -> [Picture]
 triangulate x = [Polygon x]
