@@ -92,6 +92,20 @@ event set v@(Vertex { vertexCoordinates = p@(px,py) , neighbours = list}) = let 
                                                                                 endSet = Set.map edgeEnd (Set.filter (not.outCompare) list)
                                                         in Event {eventCoordinates = p, startOf = startSet, intersectionOf = Set.empty , endOf = endSet}
 
+traverseVertices :: ((a, Set.Set b) -> b -> (a, Set.Set b)) -> a -> Set.Set b -> a
+traverseVertices _ start set | Set.null set = start
+traverseVertices fn start set = let (min, withoutMin) = deleteFindMin set
+                                    (newStart, newSet) = fn (start, withoutMin) min
+                                in traverseVertices fn newStart newSet
+-- TODO stopped here :D
+-- type accumulatorType = (Set.Set Edge, Set.Set Vertex)
+--
+-- accumulatorFunction :: (accumulatorType , Set.Set Event) -> Event -> (accumulatorType, Set.Set Event)
+-- accumulatorFunction ((edges, vertices), events) event = let deletedEdges = edges `difference` (startOf event `union` endOf event)
+--
+
+
+
 triangulate :: Path -> [Picture]
 triangulate x = [Polygon x]
 
