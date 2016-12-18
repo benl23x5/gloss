@@ -3,12 +3,14 @@ where
 import Graphics.Gloss.Rendering
 import Graphics.Gloss.Geometry.Line
 import qualified Data.Set as Set
+import Data.Maybe
+--import Debug.Trace
 
 data Vertex
         = Vertex
         { vertexCoordinates :: Point
-        , neighbours :: Set.Set Vertex }
-
+        , neighbours :: Set.Set Point }
+        deriving (Show)
 data Edge
         = Edge
         { start :: Vertex
@@ -22,8 +24,16 @@ data Event
         , endOf :: Set.Set Edge }
 
 
+instance Eq Vertex where
+        Vertex {vertexCoordinates = p0} == Vertex {vertexCoordinates = p1} = p0 == p1
+
+instance Ord Vertex where
+        Vertex {vertexCoordinates=(ax,ay)} < Vertex {vertexCoordinates=(bx,by)} = if by == ay then ax < bx else ay < by
+        compare x y = if x == y then EQ else if x < y then LT else GT
+
+
 instance Eq Event where
-        Event {eventCoordinates=(ax,ay)} == Event {eventCoordinates=(bx,by)} = by == ay && ax == bx
+        Event {eventCoordinates= p0} == Event {eventCoordinates= p1} = p0 == p1
 
 instance Ord Event where
         Event {eventCoordinates=(ax,ay)} < Event {eventCoordinates=(bx,by)} = if by == ay then ax < bx else ay < by
@@ -47,6 +57,29 @@ instance Ord Edge where
 intersection :: Edge -> Edge -> Maybe Point
 intersection (Edge {start= Vertex {vertexCoordinates=p0}, end= Vertex {vertexCoordinates=p1}})  (Edge {start= Vertex {vertexCoordinates=p2}, end= Vertex {vertexCoordinates=p3}})
         = intersectSegSeg p0 p1 p2 p3
+
+makeInitialVertexSet :: Path -> Set.Set Vertex
+--makeInitialVertexSet list@(_:xs)  | trace ("makeInitialVertexSet " ++ show list ++ "\n" ) False = undefined
+makeInitialVertexSet [] = undefined
+makeInitialVertexSet list@(_:xs) = foldr accumulator Set.empty ( zip list (xs ++ list))
+                                   where accumulator (p , q ) acc =
+                                                let pm = getVertex p acc
+                                                    qm = getVertex q acc
+                                                    pneig = if (null pm) then Set.empty else (neighbours (fromJust pm))
+                                                    qneig = if (null qm) then Set.empty else (neighbours (fromJust qm))
+                                                in insertVertices [Vertex {vertexCoordinates = p, neighbours = Set.insert q pneig}, Vertex {vertexCoordinates = q, neighbours = Set.insert p qneig}] acc
+
+
+
+insertVertices :: [Vertex] -> Set.Set Vertex -> Set.Set Vertex
+insertVertices = Set.union . Set.fromList
+
+getVertex :: Point -> Set.Set Vertex -> Maybe Vertex
+getVertex p set
+        | null (index ) = Nothing
+        | otherwise  = Just (Set.elemAt (fromJust index) set)
+        where index = Set.lookupIndex (Vertex {vertexCoordinates = p, neighbours = Set.empty}) set
+
 
 triangulate :: Path -> [Picture]
 triangulate x = [Polygon x]
