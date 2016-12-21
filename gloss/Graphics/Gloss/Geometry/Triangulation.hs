@@ -3,18 +3,17 @@ where
 import Graphics.Gloss.Rendering
 import Graphics.Gloss.Geometry.Line
 import qualified Data.Set as Set
-import Data.Maybe
+import qualified Data.Map.Strict as Map
+
 --import Debug.Trace
 
-data Vertex
-        = Vertex
-        { vertexCoordinates :: Point
-        , neighbours :: Set.Set Point }
-        deriving (Show)
+
+type Vertices = Map.Map Point (Set.Set Point)
+
 data Edge
         = Edge
-        { start :: Vertex
-        , end :: Vertex }
+        { start :: Point
+        , end :: Point }
         deriving (Show)
 data Event
         = Event
@@ -24,12 +23,6 @@ data Event
         , endOf :: Set.Set Edge }
         deriving (Show)
 
-instance Eq Vertex where
-        Vertex {vertexCoordinates = p0} == Vertex {vertexCoordinates = p1} = p0 == p1
-
-instance Ord Vertex where
-        Vertex {vertexCoordinates=(ax,ay)} < Vertex {vertexCoordinates=(bx,by)} = if by == ay then ax < bx else ay < by
-        compare x y = if x == y then EQ else if x < y then LT else GT
 
 
 instance Eq Event where
@@ -37,66 +30,60 @@ instance Eq Event where
 
 instance Ord Event where
         Event {eventCoordinates=(ax,ay)} < Event {eventCoordinates=(bx,by)} = if by == ay then ax < bx else ay < by
-        compare x y = if x == y then EQ else if x < y then LT else GT
+        compare x y
+                | x == y = EQ
+                | x < y = LT
+                | otherwise = GT
 
 instance Eq Edge where
-        (Edge {start= Vertex {vertexCoordinates=p0}, end= Vertex {vertexCoordinates=p1}}) == (Edge {start= Vertex {vertexCoordinates=p2}, end= Vertex {vertexCoordinates=p3}})
+        Edge{start = p0, end = p1} == Edge{start = p2, end = p3}
                 = p0 == p2 && p1 == p3
 
 instance Ord Edge where
-        (Edge {start= Vertex {vertexCoordinates=p0@(x0,y0)}, end= Vertex {vertexCoordinates=p1@(x1,y1)}}) < (Edge {start= Vertex {vertexCoordinates=p2@(x2,y2)}, end= Vertex {vertexCoordinates=p3@(x3,y3)}})
-                = let y = min y0 y2
-                      Just (px, _) = intersectSegHorzLine p0 p1 y
-                      Just (qx, _) = intersectSegHorzLine p2 p3 y
-                in if x0 == x2 then (if y0 == y1 then True else (if y2 == y3 then False else x1 < x3)) else px < qx
-        compare x y = if x == y then EQ else if x < y then LT else GT
+        Edge{start = p0@(x0, y0), end = p1@(x1, y1)} < Edge{start = p2@(x2, y2), end = p3@(x3, y3)}
+                = let x = max x0 x2
+                      Just (_, py) = intersectSegVertLine p0 p1 x
+                      Just (_, qy) = intersectSegVertLine p2 p3 x
+                in if y0 == y2 then (x0 == x1) || ((x2 /= x3) && (y1 < y3)) else py < qy
+        compare x y
+                | x == y = EQ
+                | x < y = LT
+                | otherwise = GT
 
 
 
 -- Finds intersections of two Edges.
 intersection :: Edge -> Edge -> Maybe Point
-intersection (Edge {start= Vertex {vertexCoordinates=p0}, end= Vertex {vertexCoordinates=p1}})  (Edge {start= Vertex {vertexCoordinates=p2}, end= Vertex {vertexCoordinates=p3}})
+intersection Edge{start = p0, end = p1}  Edge{start = p2, end = p3}
         = intersectSegSeg p0 p1 p2 p3
 
-makeInitialVertexSet :: Path -> Set.Set Vertex
+makeInitialVertexSet :: Path -> Vertices
 makeInitialVertexSet [] = undefined
-makeInitialVertexSet list@(_:xs) = foldr accumulator Set.empty ( zip list (xs ++ list))
-                                   where accumulator (p , q ) acc =
-                                                let pm = getVertex p acc
-                                                    qm = getVertex q acc
-                                                    pneig = if (null pm) then Set.empty else (neighbours (fromJust pm))
-                                                    qneig = if (null qm) then Set.empty else (neighbours (fromJust qm))
-                                                in insertVertices [Vertex {vertexCoordinates = p, neighbours = Set.insert q pneig}, Vertex {vertexCoordinates = q, neighbours = Set.insert p qneig}] acc
+makeInitialVertexSet list@(_:xs) = foldr accumulator Map.empty ( zip list (xs ++ list))
+                                   where accumulator (p , q) acc =
+                                                let insert p1 q1 = Map.insertWith Set.union p1 (Set.singleton q1) 
+                                                in insert p q (insert q p acc)
 
 
 
-insertVertices :: [Vertex] -> Set.Set Vertex -> Set.Set Vertex
-insertVertices = Set.union . Set.fromList
+initialEventSet :: Vertices -> Set.Set Event
+initialEventSet = Map.foldrWithKey event Set.empty
 
-getVertex :: Point -> Set.Set Vertex -> Maybe Vertex
-getVertex p set
-        | null (index ) = Nothing
-        | otherwise  = Just (Set.elemAt (fromJust index) set)
-        where index = Set.lookupIndex (Vertex {vertexCoordinates = p, neighbours = Set.empty}) set
+event :: Point -> Set.Set Point -> Set.Set Event -> Set.Set Event
 
-
-initialEventSet :: Set.Set Vertex -> Set.Set Event
-initialEventSet set = Set.mapMonotonic (event set) set
-
-event :: Set.Set Vertex -> Vertex -> Event
-
-event set v@(Vertex { vertexCoordinates = p@(px,py) , neighbours = list}) = let outCompare (x,y) = if (py == y) then px < x else py > y
-                                                                                edgeStart point = Edge {start = v, end = (fromJust (getVertex point set))}
-                                                                                edgeEnd point = Edge {end = v, start = (fromJust (getVertex point set))}
-                                                                                startSet = Set.map edgeStart (Set.filter outCompare list)
-                                                                                endSet = Set.map edgeEnd (Set.filter (not.outCompare) list)
-                                                        in Event {eventCoordinates = p, startOf = startSet, intersectionOf = Set.empty , endOf = endSet}
+event p@(px,py) neighbours events  = let outCompare (x,y) = if px == x then py > y else px < x
+                                         edgeStart point = Edge {start = p, end = point}
+                                         edgeEnd point = Edge {end = p, start = point}
+                                         startSet = Set.map edgeStart (Set.filter outCompare neighbours)
+                                         endSet = Set.map edgeEnd (Set.filter (not.outCompare) neighbours)
+                                    in Set.insert Event{eventCoordinates = p, startOf = startSet,
+                                                            intersectionOf = Set.empty, endOf = endSet} events
 
 traverseVertices :: ((a, Set.Set b) -> b -> (a, Set.Set b)) -> a -> Set.Set b -> a
-traverseVertices _ start set | Set.null set = start
-traverseVertices fn start set = let (min, withoutMin) = deleteFindMin set
-                                    (newStart, newSet) = fn (start, withoutMin) min
-                                in traverseVertices fn newStart newSet
+traverseVertices _ acc set | Set.null set = acc
+traverseVertices fn acc set = let ( minElement, withoutMin) = Set.deleteFindMin set
+                                  ( newAcc, newSet) = fn  (acc, withoutMin) minElement
+                                in traverseVertices fn  newAcc newSet
 -- TODO stopped here :D
 -- type accumulatorType = (Set.Set Edge, Set.Set Vertex)
 --
