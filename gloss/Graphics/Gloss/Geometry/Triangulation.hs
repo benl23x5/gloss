@@ -76,7 +76,7 @@ initialEvents = Map.foldrWithKey event Map.empty
 
 event :: Point -> Set.Set Point -> Events -> Events
 
-event p@(px,py) neighbours events  = let outCompare (x,y) = if px == x then py > y else px < x
+event p@(px,py) neighbours events  = let outCompare (x,y) = if px == x then py < y else px < x
                                          edgeStart point = Edge {start = p, end = point}
                                          edgeEnd point = Edge {end = p, start = point}
                                          startSet = Set.map edgeStart (Set.filter outCompare neighbours)
