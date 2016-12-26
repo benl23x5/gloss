@@ -4,6 +4,7 @@ import Graphics.Gloss.Rendering
 import Graphics.Gloss.Geometry.Line
 import qualified Data.Set as Set
 import qualified Data.Map.Strict as Map
+import Debug.Trace
 
 --import Debug.Trace
 
@@ -39,7 +40,7 @@ type Events = Map.Map Point (Set.Set Edge, Set.Set Edge)
 instance Eq Edge where
         Edge{start = p0, end = p1} == Edge{start = p2, end = p3}
                 = p0 == p2 && p1 == p3
-
+-- TODO fix when one of segments are vertical
 instance Ord Edge where
         Edge{start = p0@(x0, y0), end = p1@(x1, y1)} < Edge{start = p2@(x2, y2), end = p3@(x3, y3)}
                 = let x = max x0 x2
@@ -95,6 +96,7 @@ type AccumulatorType = (Set.Set Edge, Vertices)
 
 accumulatorFunction :: (AccumulatorType , Events) -> (Point, (Set.Set Edge, Set.Set Edge)) -> (AccumulatorType, Events)
 
+accumulatorFunction p q | trace ("Accumulator \n" ++ show p ++ "\n" ++ show q ++ "\n") False = undefined
 accumulatorFunction ((edges, vertices), events) (_, (startOf, endOf)) = let deletedEdges = edges `Set.difference` (startOf  `Set.union` endOf)
                                                                             minElem = lookupMin startOf
                                                                             maxElem = lookupMax startOf
@@ -115,6 +117,7 @@ accumulatorFunction ((edges, vertices), events) (_, (startOf, endOf)) = let dele
                                                                         in ((edges2, addVertex endOf vertices), event4)
 
 addVertex :: Set.Set Edge -> Vertices -> Vertices
+
 addVertex edges vertices  
                     | null edges = vertices
                     | otherwise = Set.foldr accumulator vertices edges
@@ -138,6 +141,7 @@ addMaybeEdge (Just x) Nothing edges = Set.insert x edges
 addMaybeEdge _ _ edges = edges
 
 insertEvent :: Maybe Point -> Maybe Edge -> Maybe Edge -> Events -> Events
+
 insertEvent (Just p) (Just Edge{start = p0, end = p1}) (Just Edge{start = p2, end = p3}) events 
             = let startOf = Set.insert Edge{start = p, end = p3} $ Set.insert Edge{start = p, end = p1} Set.empty
                   endOf = Set.insert Edge{start = p0, end = p} $ Set.insert Edge{start = p2, end = p} Set.empty
@@ -152,12 +156,14 @@ replaceEdge _ _ events = events
 
 replaceStartOf :: Point -> Edge -> Edge -> Events -> Events
 -- e1 brisem e2 dodajem
+replaceStartOf p q r t  | trace ("replaceStartOf " ++ (show p) ++ " " ++ (show q) ++ " " ++ (show r)++  "\n" ++ show t) False = undefined
 replaceStartOf p e1 e2 events = let (startOf, endOf) = events Map.! p
                                     newStartOf = Set.insert e2 $ Set.delete e1 startOf
                                 in Map.insert p  (newStartOf, endOf) events
 
 replaceEndOf :: Point -> Edge -> Edge -> Events -> Events
 -- e1 brisem e2 dodajem
+replaceEndOf p q r t  | trace ("replaceEndOf " ++ (show p) ++ "\n" ++ (show q) ++ "\n" ++ (show r) ++ "\n" ++ show t++"\n\n") False = undefined
 replaceEndOf p e1 e2 events = let (startOf, endOf) = events Map.! p
                                   newEndOf = Set.insert e2 $ Set.delete e1 endOf
                               in Map.insert p  (startOf, newEndOf) events
