@@ -5,6 +5,7 @@ import Graphics.Gloss.Geometry.Line
 import qualified Data.Set as Set
 import qualified Data.Map.Strict as Map
 import Debug.Trace
+import Data.List (minimumBy, maximumBy)
 
 --import Debug.Trace
 
@@ -36,6 +37,10 @@ type Events = Map.Map Point (Set.Set Edge, Set.Set Edge)
 --                 | x == y = EQ
 --                 | x < y = LT
 --                 | otherwise = GT
+
+-- instance Eq Point where
+--         (x1,y1) == (x2,y2) = (x1-x2)^2 + (y1-y2)^2 < 0.0001
+
 
 instance Eq Edge where
         Edge{start = p0, end = p1} == Edge{start = p2, end = p3}
@@ -192,14 +197,34 @@ polygonGraph :: Path -> Vertices
 
 polygonGraph l = snd $ traverseVertices accumulatorFunction ( Set.empty, Map.empty) $ initialEvents (makeInitialVertexSet l)
 
-pointsPositiveOrientation :: Point -> Point -> Point -> Bool
-pointsPositiveOrientation (x0,y0) (x1,y1) (x2,y2) = (x1-x0)*(y2-y0) > (x2-x0)*(y1-y0)
+pointsPositiveOrientation :: Point -> Point -> Point -> Ordering
+pointsPositiveOrientation (x0,y0) (x1,y1) (x2,y2) = compare ((x1-x0)*(y2-y0)) ((x2-x0)*(y1-y0))
+
+removeNeighbors :: Point -> Point -> Vertices -> Vertices
+removeNeighbors point1 point2 verteces = helper point2 point1 $ helper point1 point2 verteces
+                          where helper p1 p2 v = let p1Set = v Map.! p1
+                                                     newP1Set = Set.delete p2 p1Set
+                                                 in if Set.null newP1Set then Map.delete p1 v else Map.insert p1 newP1Set v
 
 
--- breakUpToSimplePolygons :: Path -> [Path]
+breakUpToSimplePolygons :: Path -> [Path]
+breakUpToSimplePolygons path = traversePolygonGraph Nothing [] $ polygonGraph path
 
+traversePolygonGraph :: Maybe Point -> [Path] -> Vertices -> [Path]
+traversePolygonGraph _ paths vertices | Map.null vertices = paths
+traversePolygonGraph Nothing paths verteces = let (minVertexKey, minVertexKeyValue) = Map.findMin verteces
+                                                  nextVertex = maximumBy (pointsPositiveOrientation minVertexKey) minVertexKeyValue
+                                                  newVerteces = removeNeighbors minVertexKey nextVertex verteces
+                                              in traversePolygonGraph (Just minVertexKey) ([nextVertex, minVertexKey]:paths) newVerteces
+traversePolygonGraph (Just firstVetex) (currentPolygon@(lastVertex:_):oldPolygons) verteces = let currentNeighbors = verteces Map.! lastVertex
+                                                                                                  nextVertex = minimumBy (pointsPositiveOrientation lastVertex) currentNeighbors
+                                                                                                  newVerteces = removeNeighbors lastVertex nextVertex verteces
+                                                                                              in if firstVetex == nextVertex 
+                                                                                                then traversePolygonGraph Nothing (currentPolygon:oldPolygons) newVerteces 
+                                                                                                else traversePolygonGraph (Just firstVetex) ((nextVertex:currentPolygon):oldPolygons) newVerteces 
 
 triangulate :: Path -> [Picture]
-triangulate x = [Polygon x]
+triangulate x | trace ("TRACE:   " ++ show x) False = undefined
+triangulate x = map Polygon $ breakUpToSimplePolygons x
 
 
