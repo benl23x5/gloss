@@ -44,9 +44,10 @@ instance Eq Edge where
 instance Ord Edge where
         Edge{start = p0@(x0, y0), end = p1@(x1, y1)} < Edge{start = p2@(x2, y2), end = p3@(x3, y3)}
                 = let x = max x0 x2
-                      Just (_, py) = intersectSegVertLine p0 p1 x
-                      Just (_, qy) = intersectSegVertLine p2 p3 x
-                in if y0 == y2 then (x0 == x1) || ((x2 /= x3) && (y1 < y3)) else py < qy
+                      intersectHelper a@(ax,_) b@(bx,_) x = if ax == bx && ax == x then Just a else intersectSegVertLine a b x
+                      Just (_, py) = intersectHelper p0 p1 x
+                      Just (_, qy) = intersectHelper p2 p3 x
+                in if py == qy then (x1-x)*(y3-py) > (x3-x)*(y1-py) else py < qy
         compare x y
                 | x == y = EQ
                 | x < y = LT
@@ -87,8 +88,8 @@ event p@(px,py) neighbours events  = let outCompare (x,y) = if px == x then py <
 traverseVertices :: ((a, Map.Map b c) -> (b, c) -> (a, Map.Map b c)) -> a -> Map.Map b c -> a
 traverseVertices _ acc dictionary | Map.null dictionary = acc
 traverseVertices fn acc dictionary = let ( minElement, withoutMin) = Map.deleteFindMin dictionary
-                                         ( newAcc, newSet) = fn  (acc, withoutMin) minElement
-                                in traverseVertices fn  newAcc newSet
+                                         ( newAcc, newDictionary) = fn  (acc, dictionary) minElement
+                                in traverseVertices fn  newAcc (Map.deleteMin newDictionary)
 
 
 
@@ -96,7 +97,7 @@ type AccumulatorType = (Set.Set Edge, Vertices)
 
 accumulatorFunction :: (AccumulatorType , Events) -> (Point, (Set.Set Edge, Set.Set Edge)) -> (AccumulatorType, Events)
 
-accumulatorFunction p q | trace ("Accumulator \n" ++ show p ++ "\n" ++ show q ++ "\n") False = undefined
+-- accumulatorFunction ((edges, vertices), events) _ | trace ("Accumulator \n" ++ show events ++ "\n\n") False = undefined
 accumulatorFunction ((edges, vertices), events) (_, (startOf, endOf)) = let deletedEdges = edges `Set.difference` (startOf  `Set.union` endOf)
                                                                             minElem = lookupMin startOf
                                                                             maxElem = lookupMax startOf
@@ -110,7 +111,9 @@ accumulatorFunction ((edges, vertices), events) (_, (startOf, endOf)) = let dele
                                                                             uIntersect = intersection maxElem maxElemGT
                                                                             event1 = replaceEdge minElem dIntersect events
                                                                             event2 = replaceEdge maxElem uIntersect event1
-                                                                            event3 = insertEvent dIntersect minElem minElemLT event2
+                                                                            event5 = replaceEdge minElemLT dIntersect event2
+                                                                            event6 = replaceEdge maxElemGT uIntersect event5
+                                                                            event3 = insertEvent dIntersect minElem minElemLT event6
                                                                             event4 = insertEvent uIntersect maxElem maxElemGT event3
                                                                             edges1 = deletedEdges `Set.union` difference startOf minElem maxElem
                                                                             edges2 = addMaybeEdge minElem dIntersect $ addMaybeEdge maxElem uIntersect edges1
@@ -118,6 +121,7 @@ accumulatorFunction ((edges, vertices), events) (_, (startOf, endOf)) = let dele
 
 addVertex :: Set.Set Edge -> Vertices -> Vertices
 
+-- |addVertex e v  | trace ("addVertex TRACE : \n" ++ show e ++ "\n" ++ show v ++ "\n\n") False = undefined
 addVertex edges vertices  
                     | null edges = vertices
                     | otherwise = Set.foldr accumulator vertices edges
@@ -150,20 +154,23 @@ insertEvent _ _ _ events = events
 
 replaceEdge :: Maybe Edge -> Maybe Point -> Events -> Events
 
-replaceEdge (Just edge@Edge{start = p0, end = p1}) (Just p) events = let e = replaceEndOf p0 edge Edge{start = p0, end = p} events
-                                                                     in replaceStartOf p1 edge Edge{start = p, end = p1} e
+-- replaceEdge e p events | trace ("replaceEdge TRACE  \n" ++ show e ++ "\n" ++ show p ++ "\n" ++ show events ++"\n\n") False = undefined
+-- replaceEdge (Just edge@Edge{start = p0, end = p1}) (Just p) events = let e = replaceEndOf p0 edge Edge{start = p0, end = p} events
+--                                                                      in replaceStartOf p1 edge Edge{start = p, end = p1} e
+replaceEdge (Just edge@Edge{start = p0, end = p1}) (Just p) events = replaceEndOf p1 edge Edge{start = p, end = p1} events
+
 replaceEdge _ _ events = events
 
 replaceStartOf :: Point -> Edge -> Edge -> Events -> Events
 -- e1 brisem e2 dodajem
-replaceStartOf p q r t  | trace ("replaceStartOf " ++ (show p) ++ " " ++ (show q) ++ " " ++ (show r)++  "\n" ++ show t) False = undefined
+-- replaceStartOf p q r t  | trace ("replaceStartOf " ++ (show p) ++ " " ++ (show q) ++ " " ++ (show r)++  "\n" ++ show t) False = undefined
 replaceStartOf p e1 e2 events = let (startOf, endOf) = events Map.! p
                                     newStartOf = Set.insert e2 $ Set.delete e1 startOf
                                 in Map.insert p  (newStartOf, endOf) events
 
 replaceEndOf :: Point -> Edge -> Edge -> Events -> Events
 -- e1 brisem e2 dodajem
-replaceEndOf p q r t  | trace ("replaceEndOf " ++ (show p) ++ "\n" ++ (show q) ++ "\n" ++ (show r) ++ "\n" ++ show t++"\n\n") False = undefined
+-- replaceEndOf p q r t  | trace ("replaceEndOf " ++ (show p) ++ "\n" ++ (show q) ++ "\n" ++ (show r) ++ "\n" ++ show t++"\n\n") False = undefined
 replaceEndOf p e1 e2 events = let (startOf, endOf) = events Map.! p
                                   newEndOf = Set.insert e2 $ Set.delete e1 endOf
                               in Map.insert p  (startOf, newEndOf) events
