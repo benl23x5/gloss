@@ -19,11 +19,12 @@ prismPath = [ (0.0, prismHeight / 2.0)
 
 drawing :: Picture
 drawing = scale 200 200 $
-          pictures [prismBackground, prismBorder]
+          pictures [prismBackground, prismBorder, nekiTekst]
 
 prismBackground = color red $ polygon prismPath
 prismBorder     = color white $ lineLoop prismPath
 
+nekiTekst = scale 0.01 0.01 $ color blue $ text "e"
 
 
 main :: IO ()

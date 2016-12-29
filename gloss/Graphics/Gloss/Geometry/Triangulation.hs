@@ -311,5 +311,10 @@ makeXMonoton :: Path -> [Path]
 makeXMonoton path = traversePolygonGraph Nothing [] graph doubleEdges
                         where (graph,_,doubleEdges) = makeXMonotonGraph path
 
+
+triangulateXMonoton :: Path -> [Path]
+triangulateXMonoton points = foldl 
+
+
 triangulate :: Path -> [Picture]
 triangulate x = map Polygon $ breakUpToSimplePolygons x
