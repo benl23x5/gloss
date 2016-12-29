@@ -11,7 +11,7 @@ import Data.List (minimumBy, maximumBy, sortBy)
 import Control.Applicative
 import Data.Maybe
 
--- import Debug.Trace
+import Debug.Trace
 
 
 type Vertices = Map.Map Vertex (Set.Set Vertex)
@@ -308,19 +308,25 @@ makeXMonotonGraph points = foldl accFn (makeInitialVertexSet points, Map.empty, 
                                                                                         then (addNeighbour (Vertex $ eventCootdinates helper) (Vertex $ eventCootdinates currentEvent) verteces, addNeighbourSet (Vertex $ eventCootdinates helper) (Vertex $ eventCootdinates currentEvent) doubleEdges)
                                                                                         else (verteces, doubleEdges)
 makeXMonoton :: Path -> [Path]
+makeXMonoton path | trace ("TRACE!!!   makeXMonoton  " ++ show path ++ "\n\n") False = undefined
 makeXMonoton path = traversePolygonGraph Nothing [] graph doubleEdges
                         where (graph,_,doubleEdges) = makeXMonotonGraph path
 
-(sortBy (\(_,a,_) (_,b,_) -> compare (eventCootdinates a) (eventCootdinates b)) $ zip3Tail $ markVerteces points)
 triangulateXMonoton :: Path -> [Path]
 triangulateXMonoton points = fst $ foldl accFn ([],[]) events
-                                where events = map mapFn $ sortBy (\(_,a,_) (_,b,_) -> compare a b) $ zip3Tail points
-                                      mapFn (a,b,c) | a < b = (a,b, REGULARDOWN) -- ovo treba da se obradi drugacije ako je END teme 
-                                                    | otherwise = (c,b, REGULARUP)
-                                      accFn (triangles, x:y:xs) (perviousPoint, currentPoint)
-                                          | x == previousPoint && (y-x) `detV` (x - currentPoint) < 0 = accFn ([y,lastPoint,x]:triangles, y:xs) (y,currentPoint)
-                                      accFn (triangles, l) (_, currentPoint) = (triangles, currentPoint : l)
+                                where events = sortBy (\(_,a,_) (_,b,_) -> compare a b) $ zip3Tail points
+                                      accFn (triangles, funnel@(x:y:xs)) (perviousPoint, currentPoint, nextPoint)
+                                          | x == perviousPoint && (y-x) `detV` (x - currentPoint) < 0 = accFn ([y,currentPoint,x]:triangles, y:xs) (y,currentPoint, nextPoint)
+                                          | x == nextPoint &&  (y-x) `detV` (x - currentPoint) > 0 = accFn ([y,currentPoint,x]:triangles, y:xs) (perviousPoint,currentPoint,y)
+                                          | x /= nextPoint && x /= perviousPoint = (newTriangles currentPoint funnel ++ triangles, [currentPoint,x])
+                                      accFn (triangles, l) (_, currentPoint, _) = (triangles, currentPoint : l)
+                                      newTriangles point funnel = zipWith (\a b -> [a,b,point]) funnel $ tail funnel
 
 
 triangulate :: Path -> [Picture]
-triangulate x = map Polygon $ breakUpToSimplePolygons x
+triangulate path | trace ("TRACE!!! triangulate  " ++ show path ++ "\n\n") False = undefined
+triangulate x = map Polygon (trace ("TRACE!!!  triangulate result " ++ show res) res)
+                                where res = [triangle | simplePolygon <- breakUpToSimplePolygons x
+                                                      , xMonoton <- makeXMonoton simplePolygon
+                                                      , triangle <- triangulateXMonoton xMonoton
+                                                      ]
