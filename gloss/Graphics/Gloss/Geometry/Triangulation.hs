@@ -311,9 +311,15 @@ makeXMonoton :: Path -> [Path]
 makeXMonoton path = traversePolygonGraph Nothing [] graph doubleEdges
                         where (graph,_,doubleEdges) = makeXMonotonGraph path
 
-
+(sortBy (\(_,a,_) (_,b,_) -> compare (eventCootdinates a) (eventCootdinates b)) $ zip3Tail $ markVerteces points)
 triangulateXMonoton :: Path -> [Path]
-triangulateXMonoton points = foldl 
+triangulateXMonoton points = fst $ foldl accFn ([],[]) events
+                                where events = map mapFn $ sortBy (\(_,a,_) (_,b,_) -> compare a b) $ zip3Tail points
+                                      mapFn (a,b,c) | a < b = (a,b, REGULARDOWN) -- ovo treba da se obradi drugacije ako je END teme 
+                                                    | otherwise = (c,b, REGULARUP)
+                                      accFn (triangles, x:y:xs) (perviousPoint, currentPoint)
+                                          | x == previousPoint && (y-x) `detV` (x - currentPoint) < 0 = accFn ([y,lastPoint,x]:triangles, y:xs) (y,currentPoint)
+                                      accFn (triangles, l) (_, currentPoint) = (triangles, currentPoint : l)
 
 
 triangulate :: Path -> [Picture]
