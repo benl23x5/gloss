@@ -36,7 +36,7 @@ Flag ExplicitBackend
   Default:     False
 
 Library
-  Build-Depends: 
+  Build-Depends:
         base       >= 4.8 && < 4.10,
         ghc-prim   >= 0.4 && < 0.6,
         containers == 0.5.*,
@@ -108,4 +108,3 @@ Library
     CPP-Options: -DWITHGLFW
     Other-modules:
         Graphics.Gloss.Internals.Interface.Backend.GLFW
-
