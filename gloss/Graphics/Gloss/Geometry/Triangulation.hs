@@ -55,12 +55,18 @@ instance Ord Edge where
                 | otherwise = GT
 
 
+-- razlicite tacke
+
+(!=) :: Point -> Point -> Bool
+
+(!=) (x1, y1) (x2, y2) = abs(x1 - x2) + abs(y1 - y2) > 0.001
 
 -- Finds intersections of two Edges.
 intersection :: Maybe Edge -> Maybe Edge -> Maybe Vertex
+--intersection a b | trace ("TRACE intersection = " ++ show a ++ show b ++ "\n") False = undefined
 intersection (Just Edge{start = Vertex p0, end = Vertex p1}) (Just Edge{start = Vertex p2, end = Vertex p3})
                 | Just x <- intersectSegSeg p0 p1 p2 p3
-                , (x /= p0) && (x /= p1) && (x /= p2) && ( x /= p3)
+                , (x != p0) && (x != p1) && (x != p2) && ( x != p3)
                 = Just (Vertex x)
                 | otherwise = Nothing
 intersection _ _ = Nothing
@@ -99,7 +105,7 @@ type AccumulatorType = (Set.Set Edge, Vertices)
 
 accumulatorFunction :: (AccumulatorType , Events) -> (Vertex, (Set.Set Edge, Set.Set Edge)) -> (AccumulatorType, Events)
 
--- accumulatorFunction ((edges, vertices), events) _ | trace ("Accumulator \n" ++ show events ++ "\n\n") False = undefined
+--accumulatorFunction ((edges, vertices), events) _ | trace ("Accumulator \n" ++ show events ++ "\n\n") False = undefined
 accumulatorFunction ((edges, vertices), events) (_, (startOf, endOf)) = let deletedEdges = edges `Set.difference` (startOf  `Set.union` endOf)
                                                                             minElem = lookupMin startOf
                                                                             maxElem = lookupMax startOf
@@ -179,7 +185,7 @@ lookupMax set
 
 
 polygonGraph :: Path -> Vertices
-
+--polygonGraph l | trace ("TRACE polygonGraph " ++ show l ++ "\n\n" ) False = undefined
 polygonGraph l = snd $ traverseVertices accumulatorFunction ( Set.empty, Map.empty) $ initialEvents (makeInitialVertexSet l)
 
 pointsPositiveOrientation :: Vertex -> Vertex -> Vertex -> Ordering
@@ -308,7 +314,7 @@ makeXMonotonGraph points = foldl accFn (makeInitialVertexSet points, Map.empty, 
                                                                                         then (addNeighbour (Vertex $ eventCootdinates helper) (Vertex $ eventCootdinates currentEvent) verteces, addNeighbourSet (Vertex $ eventCootdinates helper) (Vertex $ eventCootdinates currentEvent) doubleEdges)
                                                                                         else (verteces, doubleEdges)
 makeXMonoton :: Path -> [Path]
-makeXMonoton path | trace ("TRACE!!!   makeXMonoton  " ++ show path ++ "\n\n") False = undefined
+--makeXMonoton path | trace ("TRACE!!!   makeXMonoton  " ++ show path ++ "\n\n") False = undefined
 makeXMonoton path = traversePolygonGraph Nothing [] graph doubleEdges
                         where (graph,_,doubleEdges) = makeXMonotonGraph path
 
@@ -324,9 +330,9 @@ triangulateXMonoton points = fst $ foldl accFn ([],[]) events
 
 
 triangulate :: Path -> [Picture]
-triangulate path | trace ("TRACE!!! triangulate  " ++ show path ++ "\n\n") False = undefined
-triangulate x = map Polygon (trace ("TRACE!!!  triangulate result " ++ show res) res)
-                                where res = [triangle | simplePolygon <- breakUpToSimplePolygons x
-                                                      , xMonoton <- makeXMonoton simplePolygon
-                                                      , triangle <- triangulateXMonoton xMonoton
-                                                      ]
+--triangulate path | trace ("TRACE!!! triangulate  " ++ show path ++ "\n\n") False = undefined
+triangulate x = map Polygon res
+                            where res = [triangle | simplePolygon <- breakUpToSimplePolygons x
+                                                  , xMonoton <- makeXMonoton simplePolygon
+                                                  , triangle <- triangulateXMonoton xMonoton
+                                        ]
