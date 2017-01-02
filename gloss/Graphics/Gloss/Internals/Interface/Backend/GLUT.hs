@@ -134,10 +134,12 @@ openWindowGLUT _ display
                           (fromIntegral sizeY)
 
           FullScreen (sizeX, sizeY) -> 
-            do GLUT.gameModeCapabilities $= 
-                 [ GLUT.Where' GLUT.GameModeWidth GLUT.IsEqualTo sizeX
-                 , GLUT.Where' GLUT.GameModeHeight GLUT.IsEqualTo sizeY ]
-               void $ GLUT.enterGameMode
+            do GLUT.initialWindowSize
+                     $= GL.Size
+                          (fromIntegral sizeX)
+                          (fromIntegral sizeY)
+               _ <- GLUT.createWindow "Gloss Application"
+               GLUT.fullScreen
 
         --  Switch some things.
         --  auto repeat interferes with key up / key down checks.
