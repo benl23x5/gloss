@@ -70,7 +70,8 @@ Library
         Graphics.Gloss.Interface.IO.Display
         Graphics.Gloss.Interface.IO.Simulate
         Graphics.Gloss.Interface.IO.Game
-
+        Graphics.Gloss.Util
+        
   Other-modules:
         Graphics.Gloss.Internals.Color
         Graphics.Gloss.Internals.Interface.Animate.State
