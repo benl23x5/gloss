@@ -8,41 +8,15 @@ window = InWindow "Dark side" (400, 400) (10, 10)
 
 background :: Color
 background = black
+prismPath = [(0,0),(4,0),(4,4),(-1,5), (0,4), (3,3), (2.9,1), (1,1), (1,2.9)]--,-- (0,4)]
+drawing = scale 200 200 $ pictures
+          [prismBackground
+          ]
 
-prismSide :: Float
-prismSide = 1.0
-
-prismHeight :: Float
-prismHeight = prismSide *  sqrt 3.0 / 2.0
-
-prismPath :: [(Float, Float)]
-prismPath = [ (0.0, prismHeight)
-            , (prismSide * 0.3, 0)
-            , (prismSide, 0)
-            , (prismSide * 0.4, - prismHeight * 0.4)
-            , (prismSide * 0.6, - prismHeight)
-            , (0 , - prismHeight * 0.5)
-            , (-prismSide * 0.6, - prismHeight)
-            , (-prismSide * 0.4, - prismHeight * 0.4)
-            , (-prismSide, 0)
-            , (-prismSide * 0.3, 0)
-            ]
-
-drawing :: Picture
-drawing = scale 200 200 $
-          pictures [prismBackground
-                   , prismBorder
-                --    , nekiTekst
-                   ]
-
-prismBackground :: Picture
 prismBackground = color red $ polygon prismPath
-prismBorder :: Picture
-prismBorder     = color white $ lineLoop prismPath
 
-nekiTekst :: Picture
-nekiTekst = scale 0.01 0.01 $ color blue $ text "e"
-
+nekiTekst =  scale 0.01 0.01 $ color blue $ text "ћћћ ччч шшшThe quick brown fox"
+nekiTekst2 = scale 0.01 0.01 $ translate 50 50 $ color red $ text  " jump over the lazy dog"
 
 main :: IO ()
 
