@@ -46,8 +46,6 @@ instance Eq Edge where
                 = p0 == p2 && p1 == p3
 instance Ord Edge where
         Edge{start = Vertex p0@(x0, _), end = Vertex p1@(x1, y1)} < Edge{start = Vertex p2@(x2, _), end = Vertex p3@(x3, y3)}
-                -- | trace ("TRACE " ++ show p0 ++ "\t" ++ show p1 ++ "\t" ++ show p2 ++ "\t" ++show p3 ++ "\n\n" ) False = undefined
-                -- | otherwise =
                             = let x = max x0 x2
                                   intersectHelper a@(ax,_) b@(bx,_) yAxisXCoorcinate
                                         = if ax == bx && ax == yAxisXCoorcinate then Just a else intersectSegVertLine a b yAxisXCoorcinate
@@ -116,8 +114,6 @@ type AccumulatorType = (Set.Set Edge, Vertices)
 -- | Accumulator function used for events processing.
 accumulatorFunction :: (AccumulatorType , Events) -> (Vertex, (Set.Set Edge, Set.Set Edge)) -> (AccumulatorType, Events)
 
--- accumulatorFunction ((edges, vertices), events) (p, (startOf, endOf)) | trace ("Accumulator \n"  ++ "Edges : \n" ++ show edges ++ "\n-------------------------------------\n" ++ "Vertices : \n" ++ show vertices ++ "Events : \n" ++ show events ++ "\n-------------------------------------\n" ++ "Event : \n"
---                                                                                 ++ show p ++ "\nstartOf :\n" ++ show startOf ++ "\nendOf : \n"++ show endOf ++ "\n\n") False = undefined
 accumulatorFunction ((edges, vertices), events) (_, (startOf, endOf)) = let deletedEdges = edges `Set.difference` (startOf  `Set.union` endOf)
                                                                             minElem = lookupMin startOf
                                                                             maxElem = lookupMax startOf
@@ -135,11 +131,11 @@ accumulatorFunction ((edges, vertices), events) (_, (startOf, endOf)) = let dele
                                                                             event6 = replaceEdge maxElemGT uIntersect event5
                                                                             event3 = insertEvent dIntersect minElem minElemLT event6
                                                                             event4 = insertEvent uIntersect maxElem maxElemGT event3
-                                                                            edges1 = (difference deletedEdges maxElemGT minElemLT) `Set.union` difference startOf minElem maxElem
-                                                                            edges2 = addMaybeEdge minElem minElemLT dIntersect edges1
-                                                                            edges3 = addMaybeEdge maxElem maxElemGT uIntersect edges2
-                                                                            edges4 | Set.null deletedEdges =  addEdge1 minElem $ addEdge1 maxElem edges3
-                                                                                   | minElem /= maxElem = addEdgeCond minElem (null minElemLT ) $ addEdgeCond maxElem (null maxElemGT) edges3
+                                                                            edges1 = difference deletedEdges maxElemGT minElemLT `Set.union` difference startOf minElem maxElem
+                                                                            edges2 = addMaybeEdgeCliped minElem minElemLT dIntersect edges1
+                                                                            edges3 = addMaybeEdgeCliped maxElem maxElemGT uIntersect edges2
+                                                                            edges4 | Set.null deletedEdges =  addMaybeEdge minElem $ addMaybeEdge maxElem edges3
+                                                                                   | minElem /= maxElem = addEdgeConditionaly minElem (null minElemLT ) $ addEdgeConditionaly maxElem (null maxElemGT) edges3
                                                                                    | otherwise = edges3
                                                                         in ((edges4, addVertex endOf vertices), event4)
 
@@ -147,7 +143,6 @@ accumulatorFunction ((edges, vertices), events) (_, (startOf, endOf)) = let dele
 -- | Utility function for adding an @Edge@ in a drawing represented by @Vertices@.
 addVertex :: Set.Set Edge -> Vertices -> Vertices
 
---addVertex e v  | trace ("addVertex TRACE : \n" ++ show e ++ "\n" ++ show v ++ "\n\n") False = undefined
 addVertex edges vertices
         | null edges = vertices
         | otherwise = Set.foldr accumulator vertices edges
@@ -157,28 +152,28 @@ addVertex edges vertices
 
 -- | Utility function for removing edges from a set if they exist.
 difference :: Set.Set Edge -> Maybe Edge -> Maybe Edge -> Set.Set Edge
---difference edges e1 e2 | trace ("TRACE difference " ++ "----------------------------\n" ++ show edges ++ "-------------------\n" ++ show e1 ++ "\t" ++ show e2 ++ "\n\n") False = undefined
 difference edges edge1 edge2 = let delete e s
                                     | Just x <- e = Set.delete x s
                                     | otherwise = s
                                in delete edge1 $ delete edge2 edges
 
-addEdgeCond :: Maybe Edge -> Bool ->  Set.Set Edge -> Set.Set Edge
-addEdgeCond (Just x) True edges = Set.insert x edges
-addEdgeCond _ _ edges = edges
+-- | Utility function for adding an @Edge@ if provided and condition is @True@.
+addEdgeConditionaly :: Maybe Edge -> Bool ->  Set.Set Edge -> Set.Set Edge
+addEdgeConditionaly (Just x) True edges = Set.insert x edges
+addEdgeConditionaly _ _ edges = edges
 
-addEdge1 :: Maybe Edge -> Set.Set Edge -> Set.Set Edge
 
-addEdge1 (Just x) edges = Set.insert x edges
-addEdge1 _ edges = edges
+-- | Utility function for removing an @Edge@ from a set if provided.
+addMaybeEdge :: Maybe Edge -> Set.Set Edge -> Set.Set Edge
+
+addMaybeEdge (Just x) edges = Set.insert x edges
+addMaybeEdge _ edges = edges
 
 -- | Utility function for adding new @Edge@ to a set. Shortening the @Edge@ if @Vertex@ is provided.
-
-addMaybeEdge :: Maybe Edge -> Maybe Edge -> Maybe Vertex -> Set.Set Edge -> Set.Set Edge
--- addMaybeEdge e v1 v2 edges | trace ("addMaybeEdge " ++ show e ++ "\n------------------------------\n" ++ show v1 ++ "\n-------------------------\n" ++ show v2 ++ "\n-------------------------\n" ++ show edges ++ "-----------------------\n\n") False = undefined
-addMaybeEdge (Just Edge{start = p1}) (Just Edge{start = p2}) (Just p) edges = Set.insert Edge{start=p2, end = p} $ Set.insert Edge{start=p1, end = p} edges
-addMaybeEdge (Just x) (Just _) Nothing edges = Set.insert x edges
-addMaybeEdge _ _ _ edges = edges
+addMaybeEdgeCliped :: Maybe Edge -> Maybe Edge -> Maybe Vertex -> Set.Set Edge -> Set.Set Edge
+addMaybeEdgeCliped (Just Edge{start = p1}) (Just Edge{start = p2}) (Just p) edges = Set.insert Edge{start=p2, end = p} $ Set.insert Edge{start=p1, end = p} edges
+addMaybeEdgeCliped (Just x) (Just _) Nothing edges = Set.insert x edges
+addMaybeEdgeCliped _ _ _ edges = edges
 
 -- | Utility function for calculating and inserting new events in @Events@ if parametars "exist".
 insertEvent :: Maybe Vertex -> Maybe Edge -> Maybe Edge -> Events -> Events
@@ -197,7 +192,6 @@ replaceEdge _ _ events = events
 
 -- | Utility function for replacing an edge with another edge (cut version of the original edge).
 replaceEndOf :: Vertex -> Edge -> Edge -> Events -> Events
--- e1 brisem e2 dodajem
 replaceEndOf p e1 e2 events = let (startOf, endOf) = events Map.! p
                                   newEndOf = Set.insert e2 $ Set.delete e1 endOf
                               in Map.insert p  (startOf, newEndOf) events
@@ -304,7 +298,6 @@ getHelper = flip (Map.!)
 
 -- | Utility function for changing helper of the edge beneath given event.
 changeHelper :: MonotoneEvent -> EdgesWithHelpers -> EdgesWithHelpers
--- changeHelper p edgesWithHelpers | trace ("TRACE!!!    " ++ show p ++ "\n" ++ show edgesWithHelpers ++ "\n\n") False = undefined
 changeHelper p edgesWithHelpers = let Just e = findEdge p edgesWithHelpers
                                   in Map.insert e p edgesWithHelpers
 
@@ -338,7 +331,6 @@ markVerteces points = map mapFn $ zip3Tail points
 makeXMonotoneGraph :: Path -> (Vertices, EdgesWithHelpers, Set.Set (Vertex,Vertex))
 makeXMonotoneGraph points = foldl accFn (makeInitialVertexSet points, Map.empty, Set.empty) (sortBy (\(_,a,_) (_,b,_) -> compare (eventCootdinates a) (eventCootdinates b)) $ zip3Tail $ markVerteces points)
                                 where accFn (verteces, edges, doubleEdges) (perviousEvent, currentEvent@MonotoneEvent {eventType = t}, nextEvent)
-                                        -- | trace ("accFn Trace: " ++ show edges ++ "\n event = " ++ show currentEvent ++ "\n\n") False = undefined
                                         | t == REGULARUP = let helper = findHelper currentEvent edges
                                                                newEdges = changeHelper currentEvent edges
                                                                (newVerteces, newDoubleEdges) = connectWithMerge helper currentEvent verteces doubleEdges
