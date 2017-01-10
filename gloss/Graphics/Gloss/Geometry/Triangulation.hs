@@ -234,9 +234,9 @@ addNeighbour point1 point2 verteces = helper point2 point1 $ helper point1 point
                           where helper p1 p2 = Map.insertWith Set.union p1 (Set.singleton p2)
 
 -- | Utility function for removing neighbouring verteces.
-removeNeighbors :: Vertex -> Vertex -> Vertices -> Vertices
+removeNeighbors :: (Vertex, Vertex) -> Vertices -> Vertices
 
-removeNeighbors point1 point2 verteces = helper point2 point1 $ helper point1 point2 verteces
+removeNeighbors (point1, point2) verteces = helper point2 point1 $ helper point1 point2 verteces
                           where helper p1 p2 v = let p1Set = v Map.! p1
                                                      newP1Set = Set.delete p2 p1Set
                                                  in if Set.null newP1Set then Map.delete p1 v else Map.insert p1 newP1Set v
@@ -244,29 +244,26 @@ removeNeighbors point1 point2 verteces = helper point2 point1 $ helper point1 po
 -- | Breaks @Path@ into a list of simple paths.
 breakUpToSimplePolygons :: Path -> [Path]
 
-breakUpToSimplePolygons path = traversePolygonGraph Nothing [] (polygonGraph path) Set.empty
+breakUpToSimplePolygons path = traversePolygonGraph Nothing [] (\_ _ _ -> True) Set.empty (polygonGraph path)
 
 -- | Traverse planar graph and calculates simple polygons that bound inner fealds of given graph.
-traversePolygonGraph :: Maybe Vertex -> [Path] -> Vertices -> Set.Set (Vertex, Vertex) -> [Path]
+traversePolygonGraph :: Maybe (Vertex, Vertex) -> [Path] -> (Vertices -> Vertex -> Vertex -> Bool) -> Set.Set (Vertex, Vertex) -> Vertices -> [Path]
 
-traversePolygonGraph _ paths vertices _ | Map.null vertices = paths
-traversePolygonGraph Nothing paths verteces doubleEdges
-        = let (minVertexKey, minVertexKeyValue) = Map.findMin verteces
-              nextVertex = maximumBy (pointsPositiveOrientation minVertexKey) minVertexKeyValue
-              (newVerteces, newDoubleEdges) = if Set.member (minVertexKey, nextVertex) doubleEdges
-                      then (verteces, Set.difference doubleEdges (Set.fromList [(minVertexKey, nextVertex),(nextVertex, minVertexKey)]))
-                      else (removeNeighbors minVertexKey nextVertex verteces, doubleEdges)
-          in traversePolygonGraph (Just minVertexKey) ([toPoint nextVertex, toPoint minVertexKey]:paths) newVerteces newDoubleEdges
-traversePolygonGraph (Just firstVetex) (currentPolygon@(lastPoint:previousPoint:_):oldPolygons) verteces doubleEdges
-        = let currentNeighbors = Set.delete (Vertex previousPoint) (verteces Map.! Vertex lastPoint)
+traversePolygonGraph _ paths _ _ vertices | Map.null vertices = paths
+traversePolygonGraph Nothing paths deciderFn vertexTrash vertices
+        = let (minVertexKey, minVertexValue) = Map.findMin vertices
+              nextVertex = maximumBy (pointsPositiveOrientation minVertexKey) minVertexValue
+              newVertexTrash = if deciderFn vertices minVertexKey nextVertex then Set.insert (minVertexKey, nextVertex) vertexTrash else vertexTrash
+          in traversePolygonGraph (Just (minVertexKey, nextVertex)) ([toPoint nextVertex, toPoint minVertexKey]:paths) deciderFn newVertexTrash vertices
+traversePolygonGraph (Just (firstVetex, secondVertex)) (currentPolygon@(lastPoint:previousPoint:_):oldPolygons) deciderFn vertexTrash vertices
+        = let currentNeighbors = Set.delete (Vertex previousPoint) (vertices Map.! Vertex lastPoint)
               nextVertex = minimumBy (compareAngles (Vertex previousPoint) (Vertex lastPoint)) currentNeighbors
-              (newVerteces, newDoubleEdges) = if Set.member (Vertex lastPoint, nextVertex) doubleEdges
-                      then (verteces, Set.difference doubleEdges (Set.fromList [(Vertex lastPoint, nextVertex),(nextVertex, Vertex lastPoint)]))
-                      else (removeNeighbors (Vertex lastPoint) nextVertex verteces, doubleEdges)
-          in if firstVetex == nextVertex
-             then traversePolygonGraph Nothing (currentPolygon:oldPolygons) newVerteces newDoubleEdges
-             else traversePolygonGraph (Just firstVetex) ((toPoint nextVertex:currentPolygon):oldPolygons) newVerteces newDoubleEdges
-traversePolygonGraph _ _ _ _ = error "Should not be here! Wrong input proboblly."
+              newVertexTrash = if deciderFn vertices (Vertex lastPoint) nextVertex then Set.insert (Vertex lastPoint, nextVertex) vertexTrash else vertexTrash
+          in if toPoint firstVetex == lastPoint && secondVertex == nextVertex
+             then let newVertices = Set.foldr removeNeighbors vertices vertexTrash
+                  in traversePolygonGraph Nothing (tail currentPolygon:oldPolygons) deciderFn Set.empty newVertices
+             else traversePolygonGraph (Just (firstVetex, secondVertex)) ((toPoint nextVertex:currentPolygon):oldPolygons) deciderFn newVertexTrash vertices
+traversePolygonGraph _ _ _ _ _ = error "Should not be here! Wrong input proboblly."
 
 -- | Data type for marking polygon vertices
 data EventType = START | MERGE | REGULARDOWN | REGULARUP | SPLIT | END
@@ -365,8 +362,9 @@ makeXMonotoneGraph points = foldl accFn (makeInitialVertexSet points, Map.empty,
 -- | Breaks @Path@ into a list of x-monotone paths.
 makeXMonotone :: Path -> [Path]
 
-makeXMonotone path = traversePolygonGraph Nothing [] graph doubleEdges
-                        where (graph,_,doubleEdges) = makeXMonotoneGraph path
+makeXMonotone path = traversePolygonGraph Nothing [] deciderFn Set.empty graph
+                        where (graph,_,_) = makeXMonotoneGraph path
+                              deciderFn vertices v1 v2 = Set.size (vertices Map.! v1) < 3 || Set.size (vertices Map.! v2) < 3
 
 -- | Breaks x-monotone @Path@ into a list of triangles.
 triangulateXMonotone :: Path -> [Path]
