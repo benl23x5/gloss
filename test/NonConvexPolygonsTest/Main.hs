@@ -1,58 +1,57 @@
-
 module Main where
 
 import Graphics.Gloss
 
 window :: Display
-window = InWindow "Dark side" (400, 400) (10, 10)
+window = InWindow "Test" (400, 400) (10, 10)
 
 background :: Color
 background = black
 
-prismSide :: Float
-prismSide = 1.0
+testSide :: Float
+testSide = 1.0
 
-prismHeight :: Float
-prismHeight = prismSide *  sqrt 3.0 / 2.0
+testHeight :: Float
+testHeight = testSide *  sqrt 3.0 / 2.0
 
--- prismPath :: [(Float, Float)]
--- prismPath = [ (0.0, prismHeight)
---             , (prismSide * 0.3, 0)
---             , (prismSide, 0)
---             , (prismSide * 0.4, - prismHeight * 0.4)
---             , (prismSide * 0.6, - prismHeight)
---             , (0 , - prismHeight * 0.5)
---             , (-prismSide * 0.6, - prismHeight)
---             , (-prismSide * 0.4, - prismHeight * 0.4)
---             , (-prismSide, 0)
---             , (-prismSide * 0.3, 0)
+-- testPath :: [(Float, Float)]
+-- testPath = [ (0.0, testHeight)
+--             , (testSide * 0.3, 0)
+--             , (testSide, 0)
+--             , (testSide * 0.4, - testHeight * 0.4)
+--             , (testSide * 0.6, - testHeight)
+--             , (0 , - testHeight * 0.5)
+--             , (-testSide * 0.6, - testHeight)
+--             , (-testSide * 0.4, - testHeight * 0.4)
+--             , (-testSide, 0)
+--             , (-testSide * 0.3, 0)
 --             ]
-
-prismPath :: [(Float, Float)]
-prismPath = [ (prismSide * (-0.6), prismHeight * 0.7) -- 1
-            , (prismSide * 0.7, prismHeight * 0.7) -- 2
-            , (prismSide * 0.7, prismHeight * (-0.7)) -- 3
-            , (prismSide * (-0.7), prismHeight * (-0.7)) -- 4
-            , (prismSide * (-0.7), prismHeight * 0.6) -- 5
-            , (prismSide * (-0.5), prismHeight * 0.4) -- 6
-            , (prismSide * (-0.5), prismHeight * (-0.5)) -- 7
-            , (prismSide * 0.5, prismHeight * (-0.5)) -- 8
-            , (prismSide * 0.5, prismHeight * 0.5) -- 9
-            , (prismSide * (-0.4), prismHeight * 0.5) -- 10
+--
+testPath :: [(Float, Float)]
+testPath = [ (testSide * (-0.6), testHeight * 0.7) -- 1
+            , (testSide * 0.7, testHeight * 0.7) -- 2
+            , (testSide * 0.7, testHeight * (-0.7)) -- 3
+            , (testSide * (-0.7), testHeight * (-0.7)) -- 4
+            , (testSide * (-0.7), testHeight * 0.6) -- 5
+            , (testSide * (-0.5), testHeight * 0.4) -- 6
+            , (testSide * (-0.55), testHeight * (-0.55)) -- 7
+            , (testSide * 0.5, testHeight * (-0.5)) -- 8
+            , (testSide * 0.5, testHeight * 0.5) -- 9
+            , (testSide * (-0.4), testHeight * 0.5) -- 10
             ]
 
 
 drawing :: Picture
 drawing = scale 200 200 $
-          pictures [prismBackground
-                   , prismBorder
+          pictures [testBackground
+                   , testBorder
                 --    , nekiTekst
                    ]
 
-prismBackground :: Picture
-prismBackground = color red $ polygon prismPath
-prismBorder :: Picture
-prismBorder     = color white $ lineLoop prismPath
+testBackground :: Picture
+testBackground = color red $ polygon testPath
+testBorder :: Picture
+testBorder     = color white $ lineLoop testPath
 
 nekiTekst :: Picture
 nekiTekst = scale 0.01 0.01 $ color blue $ text "e"
