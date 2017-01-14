@@ -1,4 +1,5 @@
 module Graphics.Gloss.Geometry.Triangulation
+        (triangulate)
 where
         --TODO put exported functions here. triangulate only to be exact. pozdrav!
 import Graphics.Gloss.Rendering
@@ -382,6 +383,6 @@ triangulateXMonotone points = fst $ foldl accFn ([],[]) events
 -- | Breaks @Path@ into a list of triangles.
 triangulate :: Path -> [Picture]
 triangulate path = map Polygon [triangle | simplePolygon <- breakUpToSimplePolygons path
-                                      , xMonotone <- makeXMonotone simplePolygon
-                                      , triangle <- triangulateXMonotone xMonotone
-                            ]
+                                         , xMonotone <- makeXMonotone simplePolygon
+                                         , triangle <- triangulateXMonotone xMonotone
+                               ]
