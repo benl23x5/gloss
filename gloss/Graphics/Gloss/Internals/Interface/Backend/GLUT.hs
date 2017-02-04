@@ -133,11 +133,9 @@ openWindowGLUT _ display
                           (fromIntegral sizeX)
                           (fromIntegral sizeY)
 
-          FullScreen (sizeX, sizeY) -> 
-            do GLUT.initialWindowSize
-                     $= GL.Size
-                          (fromIntegral sizeX)
-                          (fromIntegral sizeY)
+          FullScreen -> 
+            do size <- get GLUT.screenSize
+               GLUT.initialWindowSize $= size
                _ <- GLUT.createWindow "Gloss Application"
                GLUT.fullScreen
 
