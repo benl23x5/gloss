@@ -38,6 +38,7 @@ import Graphics.Gloss.Data.Bitmap
 import Graphics.Gloss.Interface.Pure.Game
 import Graphics.Gloss.Interface.IO.Animate
 import Graphics.Gloss.Rendering
+import Graphics.Gloss.Util
 import Data.Word
 import System.IO.Unsafe
 import Unsafe.Coerce
@@ -111,14 +112,14 @@ animateField display (zoomX, zoomY) makePixel
    then error $ "Graphics.Gloss.Raster.Field: invalid pixel scale factor "
                 P.++ show (zoomX, zoomY)
    else 
-    let (winSizeX, winSizeY) = sizeOfDisplay display
-
-        {-# INLINE frame #-}
-        frame !time
-                = return
+    do (winSizeX, winSizeY) <- sizeOfDisplay display
+       
+       let  frame !time
+              = return
                 $ makePicture winSizeX winSizeY zoomX zoomY (makePixel time)
 
-   in   animateFixedIO display black frame (const $ return ())
+       animateFixedIO display black frame (const $ return ())
+    
 {-# INLINE animateField #-}
 --  INLINE so the repa functions fuse with the users client functions.
 
@@ -147,8 +148,8 @@ playField !display (zoomX, zoomY) !stepRate
    if zoomX < 1 || zoomY < 1
      then  error $ "Graphics.Gloss.Raster.Field: invalid pixel scale factor " 
                  P.++ show (zoomX, zoomY)
-     else  let  (winSizeX, winSizeY) = sizeOfDisplay display
-           in   winSizeX `seq` winSizeY `seq`
+     else  do (winSizeX, winSizeY) <- sizeOfDisplay display
+              winSizeX `seq` winSizeY `seq`
                 play display black stepRate 
                    initWorld
                    (\world -> 
@@ -159,11 +160,11 @@ playField !display (zoomX, zoomY) !stepRate
 {-# INLINE playField #-}
 
 
-sizeOfDisplay :: Display -> (Int, Int)
+sizeOfDisplay :: Display -> IO (Int, Int)
 sizeOfDisplay display
  = case display of
-        InWindow _ s _  -> s
-        FullScreen s    -> s
+        InWindow _ s _  -> return s
+        FullScreen      -> screensize
 {-# INLINE sizeOfDisplay #-}
 
 
