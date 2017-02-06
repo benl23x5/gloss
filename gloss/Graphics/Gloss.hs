@@ -85,7 +85,8 @@ module Graphics.Gloss
         , display
         , animate
         , simulate
-        , play)
+        , play
+        , screensize)
 where
 import Graphics.Gloss.Data.Display
 import Graphics.Gloss.Data.Picture
@@ -95,3 +96,4 @@ import Graphics.Gloss.Interface.Pure.Display
 import Graphics.Gloss.Interface.Pure.Animate
 import Graphics.Gloss.Interface.Pure.Simulate
 import Graphics.Gloss.Interface.Pure.Game
+import Graphics.Gloss.Util
