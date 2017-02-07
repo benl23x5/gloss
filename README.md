@@ -13,6 +13,12 @@ Getting something on the screen is as easy as:
     import Graphics.Gloss
     main = display (InWindow "Nice Window" (200, 200) (10, 10)) white (Circle 80)
 
+Explore and run the example projects using [stack](http://haskellstack.org):
+
+    $ stack setup
+    $ stack build
+    $ stack exec gloss-boids
+
 
 Usage
 -----
