@@ -12,6 +12,9 @@ import Debug.Trace
 import Graphics.Gloss
 import Graphics.Gloss.Interface.Pure.Simulate
 
+-- Temp
+import qualified Graphics.Rendering.OpenGL.GL           as GL
+
 
 -- Parameters -----------------------------------------------------------------
 cParam  = 0.0075
@@ -30,7 +33,7 @@ miny    = -8.0
 
 -- Colors ---------------------------------------------------------------------
 boidColor       = makeColor 1.0 1.0 0.0 1.0
-radiusColor     = makeColor 0.5 1.0 1.0 0.2
+radiusColor     = makeColor 0.5 1.0 1.0 0.3
 cohesionColor   = makeColor 1.0 0.0 0.0 1.0
 separationColor = makeColor 0.0 1.0 0.0 1.0
 alignmentColor  = makeColor 0.0 0.0 1.0 1.0
@@ -118,6 +121,7 @@ renderboid world b
 
         , Color radiusColor $
                 Translate xs ys $
+                --Blend GL.One GL.One $
                 Circle ((realToFrac epsilon) * sf')
 
         , Color boidColor $          

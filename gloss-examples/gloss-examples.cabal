@@ -41,7 +41,8 @@ Executable gloss-bitmap
 Executable gloss-boids
   Build-depends:
         base            >= 4.8 && < 4.10,
-        gloss           == 1.10.*
+        gloss           == 1.10.*,
+        OpenGL
   Main-is:        Main.hs
   other-modules:  KDTree2d Vec2
   hs-source-dirs: picture/Boids

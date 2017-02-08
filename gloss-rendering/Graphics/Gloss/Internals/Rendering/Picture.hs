@@ -35,7 +35,7 @@ renderPicture state circScale picture
  = do   
         -- Setup render state for world
         setLineSmooth   (stateLineSmooth state)
-        setBlendAlpha   (stateBlendAlpha state)
+        setBlendMode    (stateBlending state) GL.One GL.Zero
         
         -- Draw the picture
         checkErrors "before drawPicture."
@@ -159,6 +159,18 @@ drawPicture state circScale picture
           $ do  GL.scale (gf sx) (gf sy) 1
                 let mscale      = max sx sy
                 drawPicture state (circScale * mscale) p
+
+        -- Blend --------------------------------
+        Blend bm_src bm_dest p
+         | stateBlending state
+         -> do
+                orig_b <- get GL.blendFunc
+                GL.blendFunc $= (bm_src, bm_dest)
+                drawPicture state circScale p
+                GL.blendFunc $= orig_b
+
+         | otherwise
+         ->     drawPicture state circScale p
                         
         -- Bitmap -------------------------------
         Bitmap width height imgData cacheMe
@@ -340,12 +352,12 @@ freeTexture tex
 
 
 -- Utils ----------------------------------------------------------------------
--- | Turn alpha blending on or off
-setBlendAlpha :: Bool -> IO ()
-setBlendAlpha state
+-- | Update the blend mode
+setBlendMode :: Bool -> GL.BlendingFactor -> GL.BlendingFactor -> IO ()
+setBlendMode state bm_src bm_dest
         | state 
         = do    GL.blend        $= GL.Enabled
-                GL.blendFunc    $= (GL.SrcAlpha, GL.OneMinusSrcAlpha)
+                GL.blendFunc    $= (bm_src, bm_dest)
 
         | otherwise
         = do    GL.blend        $= GL.Disabled

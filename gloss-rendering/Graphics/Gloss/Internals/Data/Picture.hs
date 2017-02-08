@@ -1,5 +1,6 @@
 {-# OPTIONS_HADDOCK hide #-}
 {-# OPTIONS -fno-warn-orphans #-}
+{-# LANGUAGE StandaloneDeriving #-}
 
 -- | Data types for representing pictures.
 module Graphics.Gloss.Internals.Data.Picture
@@ -17,6 +18,7 @@ module Graphics.Gloss.Internals.Data.Picture
 where
 import Graphics.Gloss.Internals.Data.Color
 import Graphics.Gloss.Internals.Rendering.Bitmap
+import qualified Graphics.Rendering.OpenGL.GL           as GL
 import Codec.BMP
 import Foreign.ForeignPtr
 import Foreign.Marshal.Alloc
@@ -102,7 +104,7 @@ data Picture
         --  than it needs to be.
         --  Setting @True@  for dynamically generated images will cause a
         --  GPU memory leak.
-        | Bitmap        Int     Int     BitmapData Bool
+        | Bitmap        Int     Int     BitmapData      Bool
 
         -- Color ------------------------------------------
         -- | A picture drawn with this color.
@@ -118,6 +120,9 @@ data Picture
         -- | A picture scaled by the given x and y factors.
         | Scale         Float   Float   Picture
 
+        -- | A picture blended using the given blend equation and blend function
+        | Blend         GL.BlendingFactor  GL.BlendingFactor   Picture
+
         -- More Pictures ----------------------------------
         -- | A picture consisting of several others.
         | Pictures      [Picture]
@@ -130,6 +135,8 @@ instance Monoid Picture where
         mappend a b     = Pictures [a, b]
         mconcat         = Pictures
 
+-- Orphan Instances -----------------------------------------------------------
+deriving instance Data GL.BlendingFactor
 
 -- Bitmaps --------------------------------------------------------------------
 -- | O(1). Use a `ForeignPtr` of RGBA data as a bitmap with the given
