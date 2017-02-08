@@ -24,8 +24,8 @@ data State
         -- | Whether to force wireframe mode only
         , stateWireframe        :: !Bool
 
-        -- | Whether to use alpha blending
-        , stateBlendAlpha       :: !Bool
+        -- | Whether to use blending (including alpha blends)
+        , stateBlending         :: !Bool
 
         -- | Whether to use line smoothing
         , stateLineSmooth       :: !Bool
@@ -66,7 +66,7 @@ initState
         return  State
                 { stateColor            = True
                 , stateWireframe        = False
-                , stateBlendAlpha       = True
+                , stateBlending         = True
                 , stateLineSmooth       = False 
                 , stateTextures         = textures }
         
