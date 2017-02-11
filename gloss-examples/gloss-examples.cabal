@@ -393,3 +393,20 @@ Executable gloss-graph
 --   ghc-options:
 --         -Wall -O2
 
+
+
+Executable gloss-export
+  Build-depends:
+        base            == 4.8.*,
+        containers      == 0.5.*,
+        gloss           == 1.10.*,
+        gloss-rendering == 1.10.*,
+        GLFW-b,
+        OpenGLRaw       == 2.5.*,
+        JuicyPixels     == 3.2.*,
+        vector          == 0.10.*
+  Main-is:        Main.hs
+  hs-source-dirs: picture/Export
+  ghc-options:
+        -Wall -O2
+
