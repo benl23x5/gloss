@@ -6,7 +6,6 @@ import Solver
 import Data.Array.Repa.IO.BMP
 import System.Exit
 import System.Environment
-import System.IO.Unsafe
 import Data.Maybe
 import Data.Char
 
@@ -15,10 +14,15 @@ main :: IO ()
 main 
  = do   args            <- getArgs
         config          <- parseArgs args defaultConfig
+
+        (width,height) <-
+          if configDisplay config == FullScreen
+          then screensize
+          else return (configSizeX config, configSizeY config)
+
         let world       = configPreset config
-                        $ (initWorld (configSizeX config)
-                                     (configSizeY config))
-                          { worldPixelsDynamic = configPixelsDynamic config}
+                          $ (initWorld width height)
+                            { worldPixelsDynamic = configPixelsDynamic config}
 
         case configFileName config of
          -- Run interactively.
@@ -69,9 +73,7 @@ parseArgs args config
 
         | "-fullscreen" : rest <- args
         = parseArgs rest 
-        $ config { configDisplay = FullScreen 
-                 , configSizeX   = screensizeX
-                 , configSizeY   = screensizeY }
+        $ config { configDisplay = FullScreen }
 
         | "-window" : sizeX : sizeY : rest <- args
         , all isDigit sizeX
@@ -103,7 +105,6 @@ parseArgs args config
         | otherwise
         = do    printUsage
                 exitWith $ ExitFailure 1
-  where (screensizeX,screensizeY) = unsafePerformIO screensize
 
         
 printUsage :: IO ()

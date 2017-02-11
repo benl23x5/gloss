@@ -10,7 +10,6 @@ import Graphics.Gloss.Raster.Field
 import Graphics.Gloss.Util
 import System.Environment
 import System.Exit
-import System.IO.Unsafe
 import Data.Char
 
 -- Main -----------------------------------------------------------------------
@@ -20,11 +19,11 @@ main
         config  <- parseArgs args defaultConfig
 
         let display
-             = case configFullScreen config of
-                True  -> FullScreen
-                False -> InWindow "Crystal" 
-                                    (configSizeX config, configSizeY config)
-                                    (10, 10)
+             = if configFullScreen config
+               then FullScreen
+               else InWindow "Crystal"
+                             (configSizeX config, configSizeY config)
+                             (10, 10)
 
         let scale =  fromIntegral $ configScale config
         animateField display
@@ -61,9 +60,7 @@ parseArgs args config
 
         | "-fullscreen" : rest <- args
         = parseArgs rest
-        $ config { configSizeX          = screensizeX
-                 , configSizeY          = screensizeY
-                 , configFullScreen     = True }
+        $ config { configFullScreen     = True }
 
         | "-window" : sizeX : sizeY : rest <- args
         , all isDigit sizeX
@@ -91,7 +88,6 @@ parseArgs args config
         | otherwise
         = do    printUsage
                 exitWith $ ExitFailure 1
-  where (screensizeX,screensizeY) = unsafePerformIO screensize
 
 printUsage :: IO ()
 printUsage
