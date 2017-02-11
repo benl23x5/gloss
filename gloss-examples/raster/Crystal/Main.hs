@@ -1,3 +1,5 @@
+{-# LANGUAGE BangPatterns #-}
+
 
 -- Quasicrystals demo. 
 --  
@@ -5,8 +7,10 @@
 --   http://mainisusuallyafunction.blogspot.com/2011/10/quasicrystals-as-sums-of-waves-in-plane.html
 --
 import Graphics.Gloss.Raster.Field
+import Graphics.Gloss.Util
 import System.Environment
 import System.Exit
+import System.IO.Unsafe
 import Data.Char
 
 -- Main -----------------------------------------------------------------------
@@ -17,7 +21,7 @@ main
 
         let display
              = case configFullScreen config of
-                True  -> FullScreen (configSizeX config, configSizeY config)
+                True  -> FullScreen
                 False -> InWindow "Crystal" 
                                     (configSizeX config, configSizeY config)
                                     (10, 10)
@@ -55,12 +59,10 @@ parseArgs args config
         | []    <- args
         = return config
 
-        | "-fullscreen" : sizeX : sizeY : rest <- args
-        , all isDigit sizeX
-        , all isDigit sizeY
+        | "-fullscreen" : rest <- args
         = parseArgs rest
-        $ config { configSizeX          = read sizeX
-                 , configSizeY          = read sizeY
+        $ config { configSizeX          = screensizeX
+                 , configSizeY          = screensizeY
                  , configFullScreen     = True }
 
         | "-window" : sizeX : sizeY : rest <- args
@@ -89,7 +91,7 @@ parseArgs args config
         | otherwise
         = do    printUsage
                 exitWith $ ExitFailure 1
-
+  where (screensizeX,screensizeY) = unsafePerformIO screensize
 
 printUsage :: IO ()
 printUsage

@@ -163,7 +163,7 @@ sizeOfDisplay :: Display -> (Int, Int)
 sizeOfDisplay display
  = case display of
         InWindow _ s _  -> s
-        FullScreen s    -> s
+        FullScreen      -> unsafePerformIO screensize
 {-# INLINE sizeOfDisplay #-}
 
 
