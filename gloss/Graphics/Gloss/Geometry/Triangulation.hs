@@ -1,3 +1,11 @@
+-- | Geometric functions concerning trianglulation.
+--
+--  Algorithms used here are based on the book
+--  "Computational Geometry: Algorithms and Applications"
+--  by Mark de Berg, Otfried Cheong, Marc van Kreveld and Mark Overmars
+--
+--  For decomposition to simple polygons, the solution is based on "Line Segment Intersection" algorithm described staring from page 20.
+--  Triangulation is described in sections "Partitioning a Polygon into Monotone Pieces" and "Triangulating a Monotone Polygon" on pages 49 and 55.
 module Graphics.Gloss.Geometry.Triangulation
         (triangulate)
 where
