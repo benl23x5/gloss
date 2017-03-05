@@ -23,7 +23,7 @@ data Vertex
         = Vertex Point
         deriving (Show)
 
--- | Utility function to convert @Vertex@ to @Point@
+-- | Convert @Vertex@ to @Point@
 toPoint :: Vertex -> Point
 
 toPoint (Vertex x) = x
@@ -101,7 +101,7 @@ initialEvents = Map.foldrWithKey accFn Map.empty
                               endSet = Set.map edgeEnd (Set.filter (not.outCompare) neighbours)
                           in Map.insert (Vertex p)  (startSet, endSet) events
 
--- | Utility function for processing events. Similar to fold but the accumulator function also computes the new container.
+-- | Processing events. Similar to fold but the accumulator function also computes the new container.
 traverseVertices :: ((a, Map.Map b c) -> (b, c) -> (a, Map.Map b c)) -> a -> Map.Map b c -> a
 
 traverseVertices _ acc dictionary | Map.null dictionary = acc
@@ -141,7 +141,7 @@ accumulatorFunction ((edges, vertices), events) (_, (startOf, endOf)) = let dele
                                                                         in ((edges4, addVertex endOf vertices), event4)
 
 
--- | Utility function for adding an @Edge@ in a drawing represented by @Vertices@.
+-- | Adding an @Edge@ in a drawing represented by @Vertices@.
 addVertex :: Set.Set Edge -> Vertices -> Vertices
 
 addVertex edges vertices
@@ -151,32 +151,32 @@ addVertex edges vertices
                                 let insert p1 q1 = Map.insertWith Set.union p1 (Set.singleton q1)
                                 in insert p q (insert q p acc)
 
--- | Utility function for removing edges from a set if they exist.
+-- | Removing edges from a set if they exist.
 difference :: Set.Set Edge -> Maybe Edge -> Maybe Edge -> Set.Set Edge
 difference edges edge1 edge2 = let delete e s
                                     | Just x <- e = Set.delete x s
                                     | otherwise = s
                                in delete edge1 $ delete edge2 edges
 
--- | Utility function for adding an @Edge@ if provided and condition is @True@.
+-- | Adding an @Edge@ if provided and condition is @True@.
 addEdgeConditionaly :: Maybe Edge -> Bool ->  Set.Set Edge -> Set.Set Edge
 addEdgeConditionaly (Just x) True edges = Set.insert x edges
 addEdgeConditionaly _ _ edges = edges
 
 
--- | Utility function for removing an @Edge@ from a set if provided.
+-- | Removing an @Edge@ from a set if provided.
 addMaybeEdge :: Maybe Edge -> Set.Set Edge -> Set.Set Edge
 
 addMaybeEdge (Just x) edges = Set.insert x edges
 addMaybeEdge _ edges = edges
 
--- | Utility function for adding new @Edge@ to a set. Shortening the @Edge@ if @Vertex@ is provided.
+-- | Adding new @Edge@ to a set. Shortening the @Edge@ if @Vertex@ is provided.
 addMaybeEdgeCliped :: Maybe Edge -> Maybe Edge -> Maybe Vertex -> Set.Set Edge -> Set.Set Edge
 addMaybeEdgeCliped (Just Edge{start = p1}) (Just Edge{start = p2}) (Just p) edges = Set.insert Edge{start=p2, end = p} $ Set.insert Edge{start=p1, end = p} edges
 addMaybeEdgeCliped (Just x) (Just _) Nothing edges = Set.insert x edges
 addMaybeEdgeCliped _ _ _ edges = edges
 
--- | Utility function for calculating and inserting new events in @Events@ if parametars "exist".
+-- | Calculating and inserting new events in @Events@ if parametars "exist".
 insertEvent :: Maybe Vertex -> Maybe Edge -> Maybe Edge -> Events -> Events
 
 insertEvent (Just p) (Just Edge{start = p0, end = p1}) (Just Edge{start = p2, end = p3}) events
@@ -185,25 +185,25 @@ insertEvent (Just p) (Just Edge{start = p0, end = p1}) (Just Edge{start = p2, en
               in Map.insertWith (\(x,y) (a, b) -> (x `Set.union` a, y `Set.union` b)) p (startOf, endOf) events
 insertEvent _ _ _ events = events
 
--- | Utility function for cutting an @Edge@ with a @Vertex@.
+-- | Cutting an @Edge@ with a @Vertex@.
 replaceEdge :: Maybe Edge -> Maybe Vertex -> Events -> Events
 
 replaceEdge (Just edge@Edge{start = _, end = p1}) (Just p) events = replaceEndOf p1 edge Edge{start = p, end = p1} events
 replaceEdge _ _ events = events
 
--- | Utility function for replacing an edge with another edge (cut version of the original edge).
+-- | Replacing an edge with another edge (cut version of the original edge).
 replaceEndOf :: Vertex -> Edge -> Edge -> Events -> Events
 replaceEndOf p e1 e2 events = let (startOf, endOf) = events Map.! p
                                   newEndOf = Set.insert e2 $ Set.delete e1 endOf
                               in Map.insert p  (startOf, newEndOf) events
 
--- Utility function for safe lookupMin, since set breaks when empty.
+-- Safe lookupMin, since set breaks when empty.
 lookupMin :: Set.Set a -> Maybe a
 lookupMin set
         | Set.null set = Nothing
         | otherwise = Just $ Set.findMin set
 
--- Utility function for safe lookupMax, since set breaks when empty.
+-- Safe lookupMax, since set breaks when empty.
 lookupMax :: Set.Set a -> Maybe a
 lookupMax set
         | Set.null set = Nothing
@@ -214,7 +214,7 @@ polygonGraph :: Path -> Vertices
 
 polygonGraph l = snd $ traverseVertices accumulatorFunction ( Set.empty, Map.empty) $ initialEvents (makeInitialVertexSet l)
 
--- | Utility function for checking orientation of vertices.
+-- | Checking orientation of vertices.
 pointsPositiveOrientation :: Vertex -> Vertex -> Vertex -> Ordering
 pointsPositiveOrientation (Vertex (x0,y0)) (Vertex (x1,y1)) (Vertex (x2,y2)) = compare ((x1-x0)*(y2-y0)) ((x2-x0)*(y1-y0))
 
@@ -228,13 +228,13 @@ compareAngles :: Vertex -> Vertex -> Vertex -> Vertex -> Ordering
 
 compareAngles (Vertex v1) (Vertex v2) (Vertex v3) (Vertex v4) = compare (oriantedAngleVV (v1-v2) (v3-v2)) (oriantedAngleVV (v1-v2) (v4-v2))
 
--- | Utility function for adding neighbouring verteces.
+-- | Adding neighbouring verteces.
 addNeighbour ::  Vertex -> Vertex -> Vertices -> Vertices
 
 addNeighbour point1 point2 verteces = helper point2 point1 $ helper point1 point2 verteces
                           where helper p1 p2 = Map.insertWith Set.union p1 (Set.singleton p2)
 
--- | Utility function for removing neighbouring verteces.
+-- | Removing neighbouring verteces.
 removeNeighbors :: (Vertex, Vertex) -> Vertices -> Vertices
 
 removeNeighbors (point1, point2) verteces = helper point2 point1 $ helper point1 point2 verteces
@@ -280,41 +280,41 @@ data MonotoneEvent
 -- | Map of edges asociated with helpers.
 type EdgesWithHelpers = Map.Map Edge MonotoneEvent
 
--- | Utility function for adding new @Edge@ to edges map.
+-- | Adding new @Edge@ to edges map.
 addEdge :: MonotoneEvent -> MonotoneEvent -> EdgesWithHelpers -> EdgesWithHelpers
 addEdge p1@MonotoneEvent{eventCootdinates = (x1, _)} p2@MonotoneEvent{eventCootdinates = (x2, _)} edges
         | x1 == x2 = edges
         | otherwise = Map.insert (Edge (Vertex (eventCootdinates p1)) (Vertex (eventCootdinates p2))) p1 edges
 
--- | Utility function for finding first edge down from given event.
+-- | Finding first edge down from given event.
 findEdge :: MonotoneEvent -> EdgesWithHelpers -> Maybe Edge
 findEdge p edgesWithHelpers = fst Control.Applicative.<$> Map.lookupLT (Edge (Vertex (eventCootdinates p)) (Vertex (eventCootdinates p))) edgesWithHelpers
 
--- | Utility function for getting helper.
+-- | Getting helper.
 getHelper :: Edge -> EdgesWithHelpers -> Maybe MonotoneEvent
 getHelper  =  Map.lookup
 
--- | Utility function for changing helper of the edge beneath given event.
+-- | Changing helper of the edge beneath given event.
 changeHelper :: MonotoneEvent -> EdgesWithHelpers -> EdgesWithHelpers
 changeHelper p edgesWithHelpers = let Just e = findEdge p edgesWithHelpers
                                   in Map.insert e p edgesWithHelpers
 
--- | Utility function for removing an edge.
+-- | Removing an edge.
 removeEdge :: MonotoneEvent -> MonotoneEvent -> EdgesWithHelpers -> EdgesWithHelpers
 removeEdge p1 p2 = Map.delete (Edge (Vertex (eventCootdinates p1)) (Vertex (eventCootdinates p2)))
 
--- | Utility function for finging helper of the edge beneath given event.
+-- | Finging helper of the edge beneath given event.
 findHelper :: MonotoneEvent -> EdgesWithHelpers -> MonotoneEvent
 findHelper p edgesWithHelpers = let Just e = findEdge p edgesWithHelpers
                                     Just event = getHelper e edgesWithHelpers
                                 in event
 
--- | Utility function for making a list contatinging tupples of adjacent elements.
+-- | Making a list contatinging tupples of adjacent elements.
 zip3Tail :: [a] -> [(a,a,a)]
 zip3Tail xs = zip3 xs (tail xsForever) (tail $ tail xsForever)
                 where xsForever = xs ++ xs
 
--- | Utility function for adding an edge to a set of edges.
+-- | Adding an edge to a set of edges.
 addNeighbourSet :: Vertex -> Vertex -> Set.Set (Vertex, Vertex) -> Set.Set (Vertex, Vertex)
 addNeighbourSet v1 v2 s = Set.union s $ Set.fromList [(v1,v2), (v2,v1)]
 
