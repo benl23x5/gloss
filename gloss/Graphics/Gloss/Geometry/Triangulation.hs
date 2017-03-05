@@ -19,9 +19,12 @@ import qualified Data.Map.Strict as Map
 import Data.List (minimumBy, maximumBy, sortBy)
 import Control.Applicative
 import Data.Maybe
+import Control.Monad
 
 -- import Debug.Trace
 
+compareThreshold:: Float
+compareThreshold = 0.0001
 
 -- | Type for representing planar graphs.
 type Vertices = Map.Map Vertex (Set.Set Vertex)
@@ -37,7 +40,7 @@ toPoint :: Vertex -> Point
 toPoint (Vertex x) = x
 
 instance Eq Vertex where
-        (Vertex (x1,y1)) == (Vertex (x2,y2)) = abs (x1-x2) + abs (y1-y2) < 0.0001
+        (Vertex (x1,y1)) == (Vertex (x2,y2)) = abs (x1-x2) + abs (y1-y2) < compareThreshold
 
 instance Ord Vertex where
         compare v1@(Vertex (x1,y1)) v2@(Vertex (x2,y2))
@@ -69,6 +72,14 @@ instance Ord Edge where
 
 -- | Map of events for processing. Holds segments that end in given $Vertex$ and segments that begin there.
 type Events = Map.Map Vertex (Set.Set Edge, Set.Set Edge)
+
+distance :: Point -> Point -> Float
+distance (x0, y0) (x1, y1) = sqrt $ (x1 - x0)*(x1 - x0) + (y1 - y0) * (y1 - y0)
+
+minimalDistance :: Path -> Float
+minimalDistance path =  let dist (x, y, z) =  [distance x y, distance x z]
+                            distances = filter ( /= 0 ) $ join $ map dist $ zip3Tail path
+                        in if null distances then 1 else minimum distances
 
 -- | Determen if points are close enough.
 (!=) :: Point -> Point -> Bool
@@ -388,9 +399,16 @@ triangulateXMonotone points = fst $ foldl accFn ([],[]) events
                                       accFn (triangles, l) (_, currentPoint, _) = (triangles, currentPoint : l)
                                       newTriangles point funnel = zipWith (\a b -> [a,b,point]) funnel $ tail funnel
 
+
+scale :: Float -> Path -> Path
+scale a path = let f (x, y) = (a*x, a*y)
+               in map f path
+
 -- | Breaks @Path@ into a list of triangles.
 triangulate :: Path -> [Picture]
-triangulate path = map Polygon [triangle | simplePolygon <- breakUpToSimplePolygons path
-                                         , xMonotone <- makeXMonotone simplePolygon
-                                         , triangle <- triangulateXMonotone xMonotone
+triangulate path = map Polygon [scale factor triangle | simplePolygon <- breakUpToSimplePolygons scaledPath
+                                                      , xMonotone <- makeXMonotone simplePolygon
+                                                      , triangle <- triangulateXMonotone xMonotone
                                ]
+                  where factor = minimalDistance path
+                        scaledPath = scale (1/factor) path
