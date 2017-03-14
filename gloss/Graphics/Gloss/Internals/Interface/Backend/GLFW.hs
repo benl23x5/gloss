@@ -6,11 +6,11 @@ module Graphics.Gloss.Internals.Interface.Backend.GLFW
         (GLFWState)
 where
 import Data.IORef
-import Data.Char                           (toLower)
 import Control.Monad
+import Control.Concurrent                  (threadDelay)
 import Graphics.Gloss.Data.Display
-import Graphics.UI.GLFW                    (WindowValue(..))
 import qualified Graphics.UI.GLFW          as GLFW
+import qualified Bindings.GLFW             as BGLFW
 import qualified Graphics.Rendering.OpenGL as GL
 import qualified Control.Exception         as X
 
@@ -27,9 +27,7 @@ import qualified Control.Exception         as X
 --
 --   We assume also assume that only linux installations use freeglut.
 --
-#ifdef linux_HOST_OS
 import qualified Graphics.UI.GLUT          as GLUT
-#endif
 
 import Graphics.Gloss.Internals.Interface.Backend.Types
 
@@ -44,7 +42,7 @@ data GLFWState
         , mousePosition :: (Int,Int)
 
         -- | Latest mousewheel position
-        , mouseWheelPos :: Int
+        , mouseWheelPos :: Double
 
         -- | Does the screen need to be redrawn?
         , dirtyScreen   :: Bool
@@ -54,6 +52,9 @@ data GLFWState
 
         -- | Action perforrmed when idling
         , idle          :: IO ()
+
+        -- | Handle to the current window
+        , backendWindow        :: Maybe GLFW.Window
         }
 
 
@@ -66,7 +67,8 @@ glfwStateInit
         , mouseWheelPos = 0
         , dirtyScreen   = True
         , display       = return ()
-        , idle          = return () }
+        , idle          = return ()
+        , backendWindow = Nothing }
 
 
 
@@ -84,23 +86,40 @@ instance Backend GLFWState where
         installIdleCallback        = installIdleCallbackGLFW
         runMainLoop                = runMainLoopGLFW
         postRedisplay              = postRedisplayGLFW
-        getWindowDimensions        = (\_     -> GLFW.getWindowDimensions)
-        elapsedTime                = (\_     -> GLFW.getTime)
-        sleep                      = (\_ sec -> GLFW.sleep sec)
+        getWindowDimensions        = getWindowSizeGLFW
+        elapsedTime                = (\_     -> fmap (maybe 0 id) GLFW.getTime)
+        sleep                      = (\_ sec -> threadDelay (floor (sec * 1000000)))
 
+
+withBackendWindow :: IORef GLFWState -> (GLFW.Window -> IO ()) -> IO ()
+withBackendWindow stateRef f = do
+  maybeWindow <- fmap backendWindow (readIORef stateRef)
+  case maybeWindow of
+    Nothing -> return ()
+    Just window -> f window
+
+
+getWindowSizeGLFW :: IORef GLFWState -> IO (Int, Int)
+getWindowSizeGLFW stateRef = do
+  maybeWindow <- fmap backendWindow (readIORef stateRef)
+  case maybeWindow of
+    Nothing -> return (0,0)
+    Just window -> GLFW.getWindowSize window
 
 -- Initialise -----------------------------------------------------------------
 -- | Initialise the GLFW backend.
 initializeGLFW :: IORef GLFWState -> Bool-> IO ()
 initializeGLFW _ debug
  = do
-        _                   <- GLFW.initialize
-        glfwVersion         <- GLFW.getGlfwVersion
+        when debug $ putStrLn "* initializeGLFW start"
+        _                   <- GLFW.init
+        when debug $ putStrLn "* called GLFW.init"
+        glfwVersion         <- GLFW.getVersion
+        when debug $ putStrLn "* called GLFW.getVersion"
 
-#ifdef linux_HOST_OS
 -- See [Note: FreeGlut] for why we need this.
         (_progName, _args)  <- GLUT.getArgsAndInitialize
-#endif
+        when debug $ putStrLn "* called GLUT.getArgsAndInitialize"
 
         when debug
          $ putStr  $ "  glfwVersion        = " ++ show glfwVersion   ++ "\n"
@@ -109,13 +128,13 @@ initializeGLFW _ debug
 -- Exit -----------------------------------------------------------------------
 -- | Tell the GLFW backend to close the window and exit.
 exitGLFW :: IORef GLFWState -> IO ()
-exitGLFW _
+exitGLFW stateRef
  = do
-#ifdef linux_HOST_OS
 -- See [Note: FreeGlut] on why we exit GLUT for Linux
         GLUT.exit
-#endif
-        GLFW.closeWindow
+        withBackendWindow stateRef $ \window -> do
+          GLFW.destroyWindow window
+        GLFW.terminate
 
 
 -- Open Window ----------------------------------------------------------------
@@ -125,57 +144,83 @@ openWindowGLFW
         -> Display
         -> IO ()
 
-openWindowGLFW _ (InWindow title (sizeX, sizeY) pos)
- = do   _ <- GLFW.openWindow
-                GLFW.defaultDisplayOptions
-                 { GLFW.displayOptions_width        = sizeX
-                 , GLFW.displayOptions_height       = sizeY
-                 , GLFW.displayOptions_displayMode  = GLFW.Window }
-        
-        uncurry GLFW.setWindowPosition pos
-        GLFW.setWindowTitle title
+openWindowGLFW stateRef (InWindow title (sizeX, sizeY) pos)
+ = do   maybeWindow <- GLFW.createWindow
+                           sizeX
+                           sizeY
+                           ""      -- window title will be set separately below
+                           Nothing -- no fullscreen
+                           Nothing -- no existing window to share context with
+        case maybeWindow of
+          Nothing -> do
+            -- Failed to create a window - this is an error and
+            -- execution should not continue
+            putStrLn "Could not create window - an error occurred in openWindowGLFW (GLFW.openWindow)"
+            dumpStateGLFW stateRef
+            exitGLFW stateRef
 
-        -- Try to enable sync-to-vertical-refresh by setting the number 
-        -- of buffer swaps per vertical refresh to 1.
-        GLFW.setWindowBufferSwapInterval 1
+          Just window -> do
+            modifyIORef stateRef (\state -> state {backendWindow = Just window})
 
-openWindowGLFW _ (FullScreen (sizeX, sizeY))
- = do   _ <- GLFW.openWindow
-                GLFW.defaultDisplayOptions
-                 { GLFW.displayOptions_width        = sizeX
-                 , GLFW.displayOptions_height       = sizeY
-                 , GLFW.displayOptions_displayMode  = GLFW.Fullscreen }
-        
-        -- Try to enable sync-to-vertical-refresh by setting the number 
-        -- of buffer swaps per vertical refresh to 1.
-        GLFW.setWindowBufferSwapInterval 1
-        GLFW.enableMouseCursor
+            uncurry (GLFW.setWindowPos window) pos
+            GLFW.setWindowTitle window title
+
+            -- Try to enable sync-to-vertical-refresh by setting the number 
+            -- of buffer swaps per vertical refresh to 1.
+            GLFW.swapInterval 1
+
+openWindowGLFW stateRef (FullScreen (sizeX, sizeY))
+ = do   primaryMonitor <- GLFW.getPrimaryMonitor
+        maybeWindow <- GLFW.createWindow
+                           sizeX
+                           sizeY
+                           ""             -- no window title
+                           primaryMonitor -- fullscreen on the primary monitor
+                           Nothing        -- no existing window to share context with
+        case maybeWindow of
+          Nothing -> do
+            -- Failed to create a window - this is an error and
+            -- execution should not continue
+            putStrLn "Could not create window - an error occurred in openWindowGLFW (GLFW.openWindow)"
+            dumpStateGLFW stateRef
+            exitGLFW stateRef
+
+          Just window -> do
+            modifyIORef stateRef (\state -> state {backendWindow = Just window})
+
+            -- Try to enable sync-to-vertical-refresh by setting the number 
+            -- of buffer swaps per vertical refresh to 1.
+            GLFW.swapInterval 1
+            GLFW.setCursorInputMode window GLFW.CursorInputMode'Normal
 
 -- Dump State -----------------------------------------------------------------
 -- | Print out the internal GLFW state.
-dumpStateGLFW :: IORef a -> IO ()
-dumpStateGLFW _
- = do   (ww,wh)     <- GLFW.getWindowDimensions
+dumpStateGLFW :: IORef GLFWState -> IO ()
+dumpStateGLFW stateRef
+ = do   state       <- readIORef stateRef
+        (ww,wh)     <- case (backendWindow state) of
+          Nothing     -> return (0,0)
+          Just window -> GLFW.getWindowSize window
 
-        r           <- GLFW.getWindowValue NumRedBits
-        g           <- GLFW.getWindowValue NumGreenBits
-        b           <- GLFW.getWindowValue NumBlueBits
-        a           <- GLFW.getWindowValue NumAlphaBits
-        let rgbaBD  = [r,g,b,a]
+        let r           = BGLFW.c'GLFW_RED_BITS         :: Int
+        let g           = BGLFW.c'GLFW_GREEN_BITS       :: Int
+        let b           = BGLFW.c'GLFW_BLUE_BITS        :: Int
+        let a           = BGLFW.c'GLFW_ALPHA_BITS       :: Int
+        let rgbaBD      = [r,g,b,a]
 
-        depthBD     <- GLFW.getWindowValue NumDepthBits
+        let depthBD     = BGLFW.c'GLFW_DEPTH_BITS       :: Int
 
-        ra          <- GLFW.getWindowValue NumAccumRedBits
-        ga          <- GLFW.getWindowValue NumAccumGreenBits
-        ba          <- GLFW.getWindowValue NumAccumBlueBits
-        aa          <- GLFW.getWindowValue NumAccumAlphaBits
-        let accumBD = [ra,ga,ba,aa]
+        let ra          = BGLFW.c'GLFW_ACCUM_RED_BITS   :: Int
+        let ga          = BGLFW.c'GLFW_ACCUM_GREEN_BITS :: Int
+        let ba          = BGLFW.c'GLFW_ACCUM_BLUE_BITS  :: Int
+        let aa          = BGLFW.c'GLFW_ACCUM_ALPHA_BITS :: Int
+        let accumBD     = [ra,ga,ba,aa]
 
-        stencilBD   <- GLFW.getWindowValue NumStencilBits
+        let stencilBD   = BGLFW.c'GLFW_STENCIL_BITS     :: Int
 
-        auxBuffers  <- GLFW.getWindowValue NumAuxBuffers
+        let auxBuffers  = BGLFW.c'GLFW_AUX_BUFFERS      :: Int
 
-        fsaaSamples <- GLFW.getWindowValue NumFsaaSamples
+        let fsaaSamples = BGLFW.c'GLFW_SAMPLES          :: Int
 
         putStr  $ "* dumpGlfwState\n"
                 ++ " windowWidth  = " ++ show ww          ++ "\n"
@@ -221,32 +266,31 @@ callbackDisplay stateRef callbacks
 installWindowCloseCallbackGLFW 
         :: IORef GLFWState -> IO ()
 
-installWindowCloseCallbackGLFW _
- = GLFW.setWindowCloseCallback 
- $ do
+installWindowCloseCallbackGLFW stateRef
+ = withBackendWindow stateRef $ \window -> do
+     GLFW.setWindowCloseCallback window . Just $ \_ -> do
 #ifdef linux_HOST_OS
 -- See [Note: FreeGlut] for why we need this.
-        GLUT.exit
+       GLUT.exit
 #endif
-        return True
+       return ()
 
 
 -- Reshape --------------------------------------------------------------------
 -- | Callback for when the user reshapes the window.
 installReshapeCallbackGLFW
-        :: Backend a
-        => IORef a -> [Callback] -> IO ()
+        :: IORef GLFWState -> [Callback] -> IO ()
 
 installReshapeCallbackGLFW stateRef callbacks
-        = GLFW.setWindowSizeCallback (callbackReshape stateRef callbacks)
+        = withBackendWindow stateRef $ \window -> do
+            GLFW.setWindowSizeCallback window $ Just (callbackReshape stateRef callbacks)
 
 callbackReshape 
-        :: Backend a
-        => IORef a -> [Callback]
-        -> Int -> Int
+        :: IORef GLFWState -> [Callback]
+        -> GLFW.Window -> Int -> Int
         -> IO ()
 
-callbackReshape glfwState callbacks sizeX sizeY
+callbackReshape glfwState callbacks _ sizeX sizeY
   = sequence_
   $ map   (\f -> f (sizeX, sizeY))
     [f glfwState | Reshape f  <- callbacks]
@@ -265,28 +309,29 @@ installKeyMouseCallbackGLFW
         -> IO ()
 
 installKeyMouseCallbackGLFW stateRef callbacks
- = do   GLFW.setKeyCallback         $ (callbackKeyboard    stateRef callbacks)
-        GLFW.setCharCallback        $ (callbackChar        stateRef callbacks)
-        GLFW.setMouseButtonCallback $ (callbackMouseButton stateRef callbacks)
-        GLFW.setMouseWheelCallback  $ (callbackMouseWheel  stateRef callbacks)
+ = withBackendWindow stateRef $ \window -> do
+        GLFW.setKeyCallback window         $ Just (callbackKeyboard    stateRef callbacks)
+        GLFW.setCharCallback window        $ Just (callbackChar        stateRef callbacks)
+        GLFW.setMouseButtonCallback window $ Just (callbackMouseButton stateRef callbacks)
+        GLFW.setScrollCallback window      $ Just (callbackMouseWheel  stateRef callbacks)
 
 
 -- GLFW calls this on a non-character keyboard action.
 callbackKeyboard 
         :: IORef GLFWState -> [Callback]
-        -> GLFW.Key -> Bool
+        -> GLFW.Window -> GLFW.Key -> Int -> GLFW.KeyState -> GLFW.ModifierKeys
         -> IO ()
 
-callbackKeyboard stateRef callbacks key keystate
- = do   (modsSet, GLFWState mods pos _ _ _ _)
-                <- setModifiers stateRef key keystate     
+callbackKeyboard stateRef callbacks _ key _ keystate _
+ = do   let keystate' = if keystate == GLFW.KeyState'Pressed || keystate == GLFW.KeyState'Repeating then Down else Up
+        (modsSet, GLFWState mods pos _ _ _ _ _)
+                <- setModifiers stateRef key (keystate' == Down)
         let key'      = fromGLFW key
-        let keystate' = if keystate then Down else Up
         let isCharKey (Char _) = True
             isCharKey _        = False
 
         -- Call the Gloss KeyMouse actions with the new state.
-        unless (modsSet || isCharKey key' && keystate)
+        unless (modsSet || isCharKey key' && (keystate' == Down))
          $ sequence_ 
          $ map  (\f -> f key' keystate' mods pos)
                 [f stateRef | KeyMouse f <- callbacks]
@@ -301,10 +346,10 @@ setModifiers stateRef key pressed
  = do   glfwState <- readIORef stateRef
         let mods  = modifiers glfwState
         let mods' = case key of
-                GLFW.KeyLeftShift -> mods {shift = if pressed then Down else Up}
-                GLFW.KeyLeftCtrl  -> mods {ctrl  = if pressed then Down else Up}
-                GLFW.KeyLeftAlt   -> mods {alt   = if pressed then Down else Up}
-                _                 -> mods
+                GLFW.Key'LeftShift   -> mods {shift = if pressed then Down else Up}
+                GLFW.Key'LeftControl -> mods {ctrl  = if pressed then Down else Up}
+                GLFW.Key'LeftAlt     -> mods {alt   = if pressed then Down else Up}
+                _                    -> mods
 
         if (mods' /= mods)
          then do
@@ -314,13 +359,13 @@ setModifiers stateRef key pressed
          else return (False, glfwState)
 
 
--- GLFW calls this on a when the user presses or releases a character key.
+-- GLFW calls this on a when the user types a character key.
 callbackChar 
         :: IORef GLFWState -> [Callback]
-        -> Char -> Bool -> IO ()
+        -> GLFW.Window -> Char -> IO ()
 
-callbackChar stateRef callbacks char keystate
- = do   (GLFWState mods pos _ _ _ _) <- readIORef stateRef
+callbackChar stateRef callbacks _ char
+ = do   (GLFWState mods pos _ _ _ _ _) <- readIORef stateRef
         let key'      = charToSpecial char
         -- Only key presses of characters are passed to this callback,
         -- character key releases are caught by the 'keyCallback'. This is an
@@ -328,7 +373,7 @@ callbackChar stateRef callbacks char keystate
         -- the '>' char  (on a US Intl keyboard) is captured by this callback,
         -- but a release is captured as a '.' with the shift-modifier in the
         -- keyCallback.
-        let keystate' = if keystate then Down else Up
+        let keystate' = Down
 
         -- Call all the Gloss KeyMouse actions with the new state.
         sequence_ 
@@ -339,14 +384,13 @@ callbackChar stateRef callbacks char keystate
 -- GLFW calls on this when the user clicks or releases a mouse button.
 callbackMouseButton 
         :: IORef GLFWState -> [Callback]
-        -> GLFW.MouseButton
-        -> Bool
+        -> GLFW.Window -> GLFW.MouseButton -> GLFW.MouseButtonState -> GLFW.ModifierKeys
         -> IO ()
 
-callbackMouseButton stateRef callbacks key keystate
- = do   (GLFWState mods pos _ _ _ _) <- readIORef stateRef
+callbackMouseButton stateRef callbacks _ key keystate _
+ = do   (GLFWState mods pos _ _ _ _ _) <- readIORef stateRef
         let key'      = fromGLFW key
-        let keystate' = if keystate then Down else Up
+        let keystate' = if keystate == GLFW.MouseButtonState'Pressed then Down else Up
 
         -- Call all the Gloss KeyMouse actions with the new state.
         sequence_ 
@@ -357,12 +401,12 @@ callbackMouseButton stateRef callbacks key keystate
 -- GLFW calls on this when the user moves the mouse wheel.
 callbackMouseWheel
         :: IORef GLFWState -> [Callback]
-        -> Int
+        -> GLFW.Window -> Double -> Double
         -> IO ()
 
-callbackMouseWheel stateRef callbacks w
- = do   (key, keystate)  <- setMouseWheel stateRef w
-        (GLFWState mods pos _ _ _ _) <- readIORef stateRef
+callbackMouseWheel stateRef callbacks _ _ y
+ = do   (key, keystate)  <- setMouseWheel stateRef y
+        (GLFWState mods pos _ _ _ _ _) <- readIORef stateRef
 
         -- Call all the Gloss KeyMouse actions with the new state.
         sequence_ 
@@ -371,13 +415,14 @@ callbackMouseWheel stateRef callbacks w
 
 setMouseWheel
         :: IORef GLFWState
-        -> Int
+        -> Double
         -> IO (Key, KeyState)
 
 setMouseWheel stateRef w
  = do   glfwState <- readIORef stateRef
         writeIORef stateRef $ glfwState {mouseWheelPos = w}
-        case compare w (mouseWheelPos glfwState) of
+        putStrLn $ "DEBUG: mouseWheelPos = " ++ show w
+        case compare (mouseWheelPos glfwState) 0.0 of
                 LT -> return (MouseButton WheelDown , Down)
                 GT -> return (MouseButton WheelUp   , Down)
                 EQ -> return (SpecialKey  KeyUnknown, Up  )
@@ -390,14 +435,15 @@ installMotionCallbackGLFW
         -> IO ()
 
 installMotionCallbackGLFW stateRef callbacks
-        = GLFW.setMousePositionCallback $ (callbackMotion stateRef callbacks)
+        = withBackendWindow stateRef $ \window -> do
+            GLFW.setCursorPosCallback window $ Just (callbackMotion stateRef callbacks)
 
 callbackMotion 
         :: IORef GLFWState -> [Callback]
-        -> Int -> Int
+        -> GLFW.Window -> Double -> Double
         -> IO ()
-callbackMotion stateRef callbacks x y
- = do   pos <- setMousePos stateRef x y
+callbackMotion stateRef callbacks _ x y
+ = do   pos <- setMousePos stateRef (floor x) (floor y)
 
         -- Call all the Gloss Motion actions with the new state.
         sequence_ 
@@ -450,22 +496,22 @@ runMainLoopGLFW stateRef
 
   go   :: IO ()
   go 
-   = do windowIsOpen <- GLFW.windowIsOpen
-        when windowIsOpen 
-         $ do  GLFW.pollEvents
-               dirty <- fmap dirtyScreen $ readIORef stateRef
+   = withBackendWindow stateRef $ \window -> do
+       windowIsOpen <- GLFW.getWindowVisible window
+       when windowIsOpen 
+        $ do  GLFW.pollEvents
+              dirty <- fmap dirtyScreen $ readIORef stateRef
 
-               when dirty
-                $ do   s <- readIORef stateRef
-                       display s
-                       GLFW.swapBuffers
+              when dirty
+               $ do   s <- readIORef stateRef
+                      display s
+                      GLFW.swapBuffers window
 
-               modifyIORef' stateRef $ \s -> s 
-                        { dirtyScreen = False }
+              modifyIORef' stateRef $ \s -> s 
+                       { dirtyScreen = False }
 
-               (readIORef stateRef) >>= (\s -> idle s)
-               GLFW.sleep 0.001
-               runMainLoopGLFW stateRef
+              (readIORef stateRef) >>= (\s -> idle s)
+              runMainLoopGLFW stateRef
 
 
 -- Redisplay ------------------------------------------------------------------
@@ -485,65 +531,113 @@ class GLFWKey a where
 instance GLFWKey GLFW.Key where
   fromGLFW key 
    = case key of
-        GLFW.CharKey c      -> charToSpecial (toLower c)
-        GLFW.KeySpace       -> SpecialKey KeySpace
-        GLFW.KeyEsc         -> SpecialKey KeyEsc
-        GLFW.KeyF1          -> SpecialKey KeyF1
-        GLFW.KeyF2          -> SpecialKey KeyF2
-        GLFW.KeyF3          -> SpecialKey KeyF3
-        GLFW.KeyF4          -> SpecialKey KeyF4
-        GLFW.KeyF5          -> SpecialKey KeyF5
-        GLFW.KeyF6          -> SpecialKey KeyF6
-        GLFW.KeyF7          -> SpecialKey KeyF7
-        GLFW.KeyF8          -> SpecialKey KeyF8
-        GLFW.KeyF9          -> SpecialKey KeyF9
-        GLFW.KeyF10         -> SpecialKey KeyF10
-        GLFW.KeyF11         -> SpecialKey KeyF11
-        GLFW.KeyF12         -> SpecialKey KeyF12
-        GLFW.KeyF13         -> SpecialKey KeyF13
-        GLFW.KeyF14         -> SpecialKey KeyF14
-        GLFW.KeyF15         -> SpecialKey KeyF15
-        GLFW.KeyF16         -> SpecialKey KeyF16
-        GLFW.KeyF17         -> SpecialKey KeyF17
-        GLFW.KeyF18         -> SpecialKey KeyF18
-        GLFW.KeyF19         -> SpecialKey KeyF19
-        GLFW.KeyF20         -> SpecialKey KeyF20
-        GLFW.KeyF21         -> SpecialKey KeyF21
-        GLFW.KeyF22         -> SpecialKey KeyF22
-        GLFW.KeyF23         -> SpecialKey KeyF23
-        GLFW.KeyF24         -> SpecialKey KeyF24
-        GLFW.KeyF25         -> SpecialKey KeyF25
-        GLFW.KeyUp          -> SpecialKey KeyUp
-        GLFW.KeyDown        -> SpecialKey KeyDown
-        GLFW.KeyLeft        -> SpecialKey KeyLeft
-        GLFW.KeyRight       -> SpecialKey KeyRight
-        GLFW.KeyTab         -> SpecialKey KeyTab
-        GLFW.KeyEnter       -> SpecialKey KeyEnter
-        GLFW.KeyBackspace   -> SpecialKey KeyBackspace
-        GLFW.KeyInsert      -> SpecialKey KeyInsert
-        GLFW.KeyDel         -> SpecialKey KeyDelete
-        GLFW.KeyPageup      -> SpecialKey KeyPageUp
-        GLFW.KeyPagedown    -> SpecialKey KeyPageDown
-        GLFW.KeyHome        -> SpecialKey KeyHome
-        GLFW.KeyEnd         -> SpecialKey KeyEnd
-        GLFW.KeyPad0        -> SpecialKey KeyPad0
-        GLFW.KeyPad1        -> SpecialKey KeyPad1
-        GLFW.KeyPad2        -> SpecialKey KeyPad2
-        GLFW.KeyPad3        -> SpecialKey KeyPad3
-        GLFW.KeyPad4        -> SpecialKey KeyPad4
-        GLFW.KeyPad5        -> SpecialKey KeyPad5
-        GLFW.KeyPad6        -> SpecialKey KeyPad6
-        GLFW.KeyPad7        -> SpecialKey KeyPad7
-        GLFW.KeyPad8        -> SpecialKey KeyPad8
-        GLFW.KeyPad9        -> SpecialKey KeyPad9
-        GLFW.KeyPadDivide   -> SpecialKey KeyPadDivide
-        GLFW.KeyPadMultiply -> SpecialKey KeyPadMultiply
-        GLFW.KeyPadSubtract -> SpecialKey KeyPadSubtract
-        GLFW.KeyPadAdd      -> SpecialKey KeyPadAdd
-        GLFW.KeyPadDecimal  -> SpecialKey KeyPadDecimal
-        GLFW.KeyPadEqual    -> Char '='
-        GLFW.KeyPadEnter    -> SpecialKey KeyPadEnter
-        _                   -> SpecialKey KeyUnknown
+        GLFW.Key'Space        -> SpecialKey KeySpace
+        GLFW.Key'Apostrophe   -> charToSpecial '\''
+        GLFW.Key'Comma        -> charToSpecial ','
+        GLFW.Key'Minus        -> charToSpecial '-'
+        GLFW.Key'Period       -> charToSpecial '.'
+        GLFW.Key'Slash        -> charToSpecial '/'
+        GLFW.Key'0            -> charToSpecial '0'
+        GLFW.Key'1            -> charToSpecial '1'
+        GLFW.Key'2            -> charToSpecial '2'
+        GLFW.Key'3            -> charToSpecial '3'
+        GLFW.Key'4            -> charToSpecial '4'
+        GLFW.Key'5            -> charToSpecial '5'
+        GLFW.Key'6            -> charToSpecial '6'
+        GLFW.Key'7            -> charToSpecial '7'
+        GLFW.Key'8            -> charToSpecial '8'
+        GLFW.Key'9            -> charToSpecial '9'
+        GLFW.Key'Semicolon    -> charToSpecial ';'
+        GLFW.Key'Equal        -> charToSpecial '='
+        GLFW.Key'A            -> charToSpecial 'a'
+        GLFW.Key'B            -> charToSpecial 'b'
+        GLFW.Key'C            -> charToSpecial 'c'
+        GLFW.Key'D            -> charToSpecial 'd'
+        GLFW.Key'E            -> charToSpecial 'e'
+        GLFW.Key'F            -> charToSpecial 'f'
+        GLFW.Key'G            -> charToSpecial 'g'
+        GLFW.Key'H            -> charToSpecial 'h'
+        GLFW.Key'I            -> charToSpecial 'i'
+        GLFW.Key'J            -> charToSpecial 'j'
+        GLFW.Key'K            -> charToSpecial 'k'
+        GLFW.Key'L            -> charToSpecial 'l'
+        GLFW.Key'M            -> charToSpecial 'n'
+        GLFW.Key'N            -> charToSpecial 'm'
+        GLFW.Key'O            -> charToSpecial 'o'
+        GLFW.Key'P            -> charToSpecial 'p'
+        GLFW.Key'Q            -> charToSpecial 'q'
+        GLFW.Key'R            -> charToSpecial 'r'
+        GLFW.Key'S            -> charToSpecial 's'
+        GLFW.Key'T            -> charToSpecial 't'
+        GLFW.Key'U            -> charToSpecial 'u'
+        GLFW.Key'V            -> charToSpecial 'v'
+        GLFW.Key'W            -> charToSpecial 'w'
+        GLFW.Key'X            -> charToSpecial 'x'
+        GLFW.Key'Y            -> charToSpecial 'y'
+        GLFW.Key'Z            -> charToSpecial 'z'
+        GLFW.Key'LeftBracket  -> charToSpecial '['
+        GLFW.Key'Backslash    -> charToSpecial '\\'
+        GLFW.Key'RightBracket -> charToSpecial ']'
+        GLFW.Key'GraveAccent  -> charToSpecial '`'
+        GLFW.Key'World1       -> SpecialKey KeyUnknown
+        GLFW.Key'World2       -> SpecialKey KeyUnknown
+        GLFW.Key'Escape       -> SpecialKey KeyEsc
+        GLFW.Key'F1           -> SpecialKey KeyF1
+        GLFW.Key'F2           -> SpecialKey KeyF2
+        GLFW.Key'F3           -> SpecialKey KeyF3
+        GLFW.Key'F4           -> SpecialKey KeyF4
+        GLFW.Key'F5           -> SpecialKey KeyF5
+        GLFW.Key'F6           -> SpecialKey KeyF6
+        GLFW.Key'F7           -> SpecialKey KeyF7
+        GLFW.Key'F8           -> SpecialKey KeyF8
+        GLFW.Key'F9           -> SpecialKey KeyF9
+        GLFW.Key'F10          -> SpecialKey KeyF10
+        GLFW.Key'F11          -> SpecialKey KeyF11
+        GLFW.Key'F12          -> SpecialKey KeyF12
+        GLFW.Key'F13          -> SpecialKey KeyF13
+        GLFW.Key'F14          -> SpecialKey KeyF14
+        GLFW.Key'F15          -> SpecialKey KeyF15
+        GLFW.Key'F16          -> SpecialKey KeyF16
+        GLFW.Key'F17          -> SpecialKey KeyF17
+        GLFW.Key'F18          -> SpecialKey KeyF18
+        GLFW.Key'F19          -> SpecialKey KeyF19
+        GLFW.Key'F20          -> SpecialKey KeyF20
+        GLFW.Key'F21          -> SpecialKey KeyF21
+        GLFW.Key'F22          -> SpecialKey KeyF22
+        GLFW.Key'F23          -> SpecialKey KeyF23
+        GLFW.Key'F24          -> SpecialKey KeyF24
+        GLFW.Key'F25          -> SpecialKey KeyF25
+        GLFW.Key'Up           -> SpecialKey KeyUp
+        GLFW.Key'Down         -> SpecialKey KeyDown
+        GLFW.Key'Left         -> SpecialKey KeyLeft
+        GLFW.Key'Right        -> SpecialKey KeyRight
+        GLFW.Key'Tab          -> SpecialKey KeyTab
+        GLFW.Key'Enter        -> SpecialKey KeyEnter
+        GLFW.Key'Backspace    -> SpecialKey KeyBackspace
+        GLFW.Key'Insert       -> SpecialKey KeyInsert
+        GLFW.Key'Delete       -> SpecialKey KeyDelete
+        GLFW.Key'PageUp       -> SpecialKey KeyPageUp
+        GLFW.Key'PageDown     -> SpecialKey KeyPageDown
+        GLFW.Key'Home         -> SpecialKey KeyHome
+        GLFW.Key'End          -> SpecialKey KeyEnd
+        GLFW.Key'Pad0         -> SpecialKey KeyPad0
+        GLFW.Key'Pad1         -> SpecialKey KeyPad1
+        GLFW.Key'Pad2         -> SpecialKey KeyPad2
+        GLFW.Key'Pad3         -> SpecialKey KeyPad3
+        GLFW.Key'Pad4         -> SpecialKey KeyPad4
+        GLFW.Key'Pad5         -> SpecialKey KeyPad5
+        GLFW.Key'Pad6         -> SpecialKey KeyPad6
+        GLFW.Key'Pad7         -> SpecialKey KeyPad7
+        GLFW.Key'Pad8         -> SpecialKey KeyPad8
+        GLFW.Key'Pad9         -> SpecialKey KeyPad9
+        GLFW.Key'PadDivide    -> SpecialKey KeyPadDivide
+        GLFW.Key'PadMultiply  -> SpecialKey KeyPadMultiply
+        GLFW.Key'PadSubtract  -> SpecialKey KeyPadSubtract
+        GLFW.Key'PadAdd       -> SpecialKey KeyPadAdd
+        GLFW.Key'PadDecimal   -> SpecialKey KeyPadDecimal
+        GLFW.Key'PadEqual     -> Char '='
+        GLFW.Key'PadEnter     -> SpecialKey KeyPadEnter
+        _                     -> SpecialKey KeyUnknown
 
 
 -- | Convert char keys to special keys to work around a bug in 
@@ -581,11 +675,11 @@ charToSpecial c = case (fromEnum c) of
 instance GLFWKey GLFW.MouseButton where
   fromGLFW mouse
    = case mouse of
-        GLFW.MouseButton0 -> MouseButton LeftButton
-        GLFW.MouseButton1 -> MouseButton RightButton
-        GLFW.MouseButton2 -> MouseButton MiddleButton
-        GLFW.MouseButton3 -> MouseButton $ AdditionalButton 3
-        GLFW.MouseButton4 -> MouseButton $ AdditionalButton 4
-        GLFW.MouseButton5 -> MouseButton $ AdditionalButton 5
-        GLFW.MouseButton6 -> MouseButton $ AdditionalButton 6
-        GLFW.MouseButton7 -> MouseButton $ AdditionalButton 7
+        GLFW.MouseButton'1 -> MouseButton LeftButton
+        GLFW.MouseButton'2 -> MouseButton RightButton
+        GLFW.MouseButton'3 -> MouseButton MiddleButton
+        GLFW.MouseButton'4 -> MouseButton $ AdditionalButton 3
+        GLFW.MouseButton'5 -> MouseButton $ AdditionalButton 4
+        GLFW.MouseButton'6 -> MouseButton $ AdditionalButton 5
+        GLFW.MouseButton'7 -> MouseButton $ AdditionalButton 6
+        GLFW.MouseButton'8 -> MouseButton $ AdditionalButton 7

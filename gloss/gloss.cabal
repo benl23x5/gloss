@@ -104,7 +104,8 @@ Library
 
   If flag(GLFW)
     Build-Depends:
-        GLFW-b >= 1.4.1.0 && < 2
+        GLFW-b >= 1.4.1 && < 2,
+        bindings-GLFW >= 3.0
     CPP-Options: -DWITHGLFW
     Other-modules:
         Graphics.Gloss.Internals.Interface.Backend.GLFW
