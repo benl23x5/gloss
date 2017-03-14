@@ -52,6 +52,10 @@
 -- @
 -- Release Notes:
 --
+--  For 1.11.1:
+--   Thanks to Lars Wyssard
+--   * Use default display resolution in full-screen mode.
+--
 --  For 1.10.1:
 --   * Gloss no longer consumes CPU time when displaying static pictures.
 --   * Added displayIO wrapper for mostly static pictures, eg when
@@ -65,14 +69,6 @@
 --   * Allow bitmaps to be specified in RGBA byte order as well as ABGR.
 --  Thanks to Gabriel Gonzalez
 --   * Package definitions for building with Stack.
---
--- For 1.9.1:
---  Thanks to Elise Huard
---   * Split rendering code into gloss-rendering package.
---
--- For 1.8.0:
---  Thanks to Francesco Mazzoli
---   * Factored out ViewPort and ViewState handling into user visible modules.
 -- @
 --
 -- For more information, check out <http://gloss.ouroborus.net>.
@@ -95,3 +91,4 @@ import Graphics.Gloss.Interface.Pure.Display
 import Graphics.Gloss.Interface.Pure.Animate
 import Graphics.Gloss.Interface.Pure.Simulate
 import Graphics.Gloss.Interface.Pure.Game
+

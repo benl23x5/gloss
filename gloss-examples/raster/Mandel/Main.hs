@@ -1,6 +1,7 @@
 {-# LANGUAGE BangPatterns, ScopedTypeVariables #-}
 
 import Graphics.Gloss.Interface.IO.Game
+import Graphics.Gloss.Interface.Environment
 import Solver
 import Data.Array.Repa.IO.BMP
 import System.Exit
@@ -13,10 +14,15 @@ main :: IO ()
 main 
  = do   args            <- getArgs
         config          <- parseArgs args defaultConfig
+
+        (width,height) 
+         <- if configDisplay config == FullScreen
+             then getScreenSize
+             else return (configSizeX config, configSizeY config)
+
         let world       = configPreset config
-                        $ (initWorld (configSizeX config)
-                                     (configSizeY config))
-                          { worldPixelsDynamic = configPixelsDynamic config}
+                          $ (initWorld width height)
+                            { worldPixelsDynamic = configPixelsDynamic config}
 
         case configFileName config of
          -- Run interactively.
@@ -65,13 +71,9 @@ parseArgs args config
         | []    <- args
         = return config
 
-        | "-fullscreen" : sizeX : sizeY : rest <- args
-        , all isDigit sizeX
-        , all isDigit sizeY
+        | "-fullscreen" : rest <- args
         = parseArgs rest 
-        $ config { configDisplay = FullScreen (read sizeX, read sizeY) 
-                 , configSizeX   = read sizeX
-                 , configSizeY   = read sizeY }
+        $ config { configDisplay = FullScreen }
 
         | "-window" : sizeX : sizeY : rest <- args
         , all isDigit sizeX
@@ -104,12 +106,13 @@ parseArgs args config
         = do    printUsage
                 exitWith $ ExitFailure 1
 
+        
 printUsage :: IO ()
 printUsage
  = putStrLn 
         $ unlines
         [ "Usage: gloss-mandel [flags]"
-        , "  -fullscreen  <width::INT> <height::INT>"
+        , "  -fullscreen"
         , "  -window      <width::INT> <height::INT>" 
         , "  -bmp         <width::INT> <height::INT> <FILE>" 
         , "  -dynamic     <INT>   Level of detail reduction when zooming and panning. (4) "

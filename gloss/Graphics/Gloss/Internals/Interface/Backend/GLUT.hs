@@ -1,6 +1,6 @@
 {-# OPTIONS_HADDOCK hide #-}
 module Graphics.Gloss.Internals.Interface.Backend.GLUT
-        (GLUTState)
+        (GLUTState,glutStateInit,initializeGLUT)
 where
 
 import Data.IORef
@@ -11,7 +11,17 @@ import qualified Graphics.Rendering.OpenGL as GL
 import qualified Graphics.UI.GLUT               as GLUT
 import qualified System.Exit                    as System
 import Graphics.Gloss.Internals.Interface.Backend.Types
+import System.IO.Unsafe
 
+-- Were we to support freeglut only, we could use GLUT.get to discover
+-- whether we are initialized or not. If not, we do a quick initialize,
+-- get the screenzie, and then do GLUT.exit. This avoids the use of
+-- global variables. Unfortunately, there is no failsafe way to check
+-- whether glut is initialized in some older versions of glut, which is
+-- what we'd use instead of the global variable to get the required info.  
+glutInitialized :: IORef Bool
+{-# NOINLINE glutInitialized #-}
+glutInitialized = unsafePerformIO $ do newIORef False
 
 -- | State information for the GLUT backend.
 data GLUTState 
@@ -31,8 +41,8 @@ data GLUTState
 glutStateInit :: GLUTState
 glutStateInit  
         = GLUTState
-        { glutStateFrameCount   = 0 
-        , glutStateHasTimeout   = False 
+        { glutStateFrameCount   = 0
+        , glutStateHasTimeout   = False
         , glutStateHasIdle      = False }
 
 
@@ -83,25 +93,28 @@ initializeGLUT
         -> IO ()
 
 initializeGLUT _ debug 
- = do   (_progName, _args)  <- GLUT.getArgsAndInitialize
+  = do initialized <- readIORef glutInitialized
+       if not initialized
+         then do  (_progName, _args)  <- GLUT.getArgsAndInitialize
+                  glutVersion         <- get GLUT.glutVersion
+                  when debug
+                    $ putStr  $ "  glutVersion        = " ++ show glutVersion   ++ "\n"
+                  
+                  GLUT.initialDisplayMode
+                    $= [ GLUT.RGBMode
+                       , GLUT.DoubleBuffered]
 
-        glutVersion         <- get GLUT.glutVersion
-        when debug
-         $ putStr  $ "  glutVersion        = " ++ show glutVersion   ++ "\n"
-
-        GLUT.initialDisplayMode
-          $= [ GLUT.RGBMode
-             , GLUT.DoubleBuffered]
-
-        -- See if our requested display mode is possible
-        displayMode         <- get GLUT.initialDisplayMode
-        displayModePossible <- get GLUT.displayModePossible
-        when debug
-         $ do putStr $  "  displayMode        = " ++ show displayMode ++ "\n"
-                     ++ "       possible      = " ++ show displayModePossible ++ "\n"
-                     ++ "\n"
-
-
+                  writeIORef glutInitialized True
+                  
+                  -- See if our requested display mode is possible
+                  displayMode         <- get GLUT.initialDisplayMode
+                  displayModePossible <- get GLUT.displayModePossible
+                  when debug
+                    $ do putStr $  "  displayMode        = " ++ show displayMode ++ "\n"
+                                ++ "       possible      = " ++ show displayModePossible ++ "\n"
+                                ++ "\n"
+         else when debug (putStrLn "Already initialized")
+         
 -- Open Window ----------------------------------------------------------------
 openWindowGLUT
         :: IORef GLUTState
@@ -133,11 +146,9 @@ openWindowGLUT _ display
                           (fromIntegral sizeX)
                           (fromIntegral sizeY)
 
-          FullScreen (sizeX, sizeY) -> 
-            do GLUT.initialWindowSize
-                     $= GL.Size
-                          (fromIntegral sizeX)
-                          (fromIntegral sizeY)
+          FullScreen -> 
+            do size <- get GLUT.screenSize
+               GLUT.initialWindowSize $= size
                _ <- GLUT.createWindow "Gloss Application"
                GLUT.fullScreen
 

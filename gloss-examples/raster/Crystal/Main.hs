@@ -1,3 +1,5 @@
+{-# LANGUAGE BangPatterns #-}
+
 
 -- Quasicrystals demo. 
 --  
@@ -16,11 +18,11 @@ main
         config  <- parseArgs args defaultConfig
 
         let display
-             = case configFullScreen config of
-                True  -> FullScreen (configSizeX config, configSizeY config)
-                False -> InWindow "Crystal" 
-                                    (configSizeX config, configSizeY config)
-                                    (10, 10)
+             = if configFullScreen config
+               then FullScreen
+               else InWindow "Crystal"
+                             (configSizeX config, configSizeY config)
+                             (10, 10)
 
         let scale =  fromIntegral $ configScale config
         animateField display
@@ -55,13 +57,9 @@ parseArgs args config
         | []    <- args
         = return config
 
-        | "-fullscreen" : sizeX : sizeY : rest <- args
-        , all isDigit sizeX
-        , all isDigit sizeY
+        | "-fullscreen" : rest <- args
         = parseArgs rest
-        $ config { configSizeX          = read sizeX
-                 , configSizeY          = read sizeY
-                 , configFullScreen     = True }
+        $ config { configFullScreen     = True }
 
         | "-window" : sizeX : sizeY : rest <- args
         , all isDigit sizeX
@@ -90,12 +88,11 @@ parseArgs args config
         = do    printUsage
                 exitWith $ ExitFailure 1
 
-
 printUsage :: IO ()
 printUsage
  = putStr $ unlines
         [ "quazicrystal [flags]"
-        , "    -fullscreen sizeX sizeY  Run full screen"
+        , "    -fullscreen              Run full screen"
         , "    -window     sizeX sizeY  Run in a window                     (default 800, 600)"
         , "    -zoom       <NAT>        Pixel replication factor            (default 5)"
         , "    -scale      <NAT>        Feature size of visualisation       (default 30)"
