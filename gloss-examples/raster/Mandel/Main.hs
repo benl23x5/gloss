@@ -1,7 +1,7 @@
 {-# LANGUAGE BangPatterns, ScopedTypeVariables #-}
 
 import Graphics.Gloss.Interface.IO.Game
-import Graphics.Gloss.Util
+import Graphics.Gloss.Interface.Environment
 import Solver
 import Data.Array.Repa.IO.BMP
 import System.Exit
@@ -15,10 +15,10 @@ main
  = do   args            <- getArgs
         config          <- parseArgs args defaultConfig
 
-        (width,height) <-
-          if configDisplay config == FullScreen
-          then screensize
-          else return (configSizeX config, configSizeY config)
+        (width,height) 
+         <- if configDisplay config == FullScreen
+             then getScreenSize
+             else return (configSizeX config, configSizeY config)
 
         let world       = configPreset config
                           $ (initWorld width height)

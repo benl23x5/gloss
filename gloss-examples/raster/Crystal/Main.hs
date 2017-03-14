@@ -7,7 +7,6 @@
 --   http://mainisusuallyafunction.blogspot.com/2011/10/quasicrystals-as-sums-of-waves-in-plane.html
 --
 import Graphics.Gloss.Raster.Field
-import Graphics.Gloss.Util
 import System.Environment
 import System.Exit
 import Data.Char

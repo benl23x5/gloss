@@ -39,6 +39,9 @@ OTHER THINGS
 
 -------------------------------------------------------------------------------
 Release Notes:
+  For 1.11.1:
+   Thanks to Lars Wyssard
+   * Use default display resolution in full-screen mode.
 
   For 1.10.1:
    * Gloss no longer consumes CPU time when displaying static pictures.

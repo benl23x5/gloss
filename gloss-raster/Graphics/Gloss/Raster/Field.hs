@@ -37,8 +37,7 @@ import Graphics.Gloss.Data.Display
 import Graphics.Gloss.Data.Bitmap
 import Graphics.Gloss.Interface.Pure.Game
 import Graphics.Gloss.Interface.IO.Animate
-import Graphics.Gloss.Rendering
-import Graphics.Gloss.Util
+import Graphics.Gloss.Interface.Environment
 import Data.Word
 import System.IO.Unsafe
 import Unsafe.Coerce
@@ -68,7 +67,7 @@ rgbI r g b  = makeColorI r g b 255
 
 -- | Construct a color from red, green, blue components.
 rgb8w :: Word8 -> Word8 -> Word8 -> Color
-rgb8w r g b = makeRawColorI (fromIntegral r) (fromIntegral g) (fromIntegral b) 255
+rgb8w r g b = makeColorI (fromIntegral r) (fromIntegral g) (fromIntegral b) 255
 {-# INLINE rgb8w #-}
 
 
@@ -78,7 +77,7 @@ rgb8w r g b = makeRawColorI (fromIntegral r) (fromIntegral g) (fromIntegral b) 2
 --   however if your components are out of range then the picture you get will
 --   be implementation dependent.
 rgb' :: Float -> Float -> Float -> Color
-rgb' r g b  = makeRawColor r g b 1.0
+rgb' r g b  = makeColor r g b 1.0
 {-# INLINE rgb' #-}
 
 
@@ -88,7 +87,7 @@ rgb' r g b  = makeRawColor r g b 1.0
 --   however if your components are out of range then the picture you get will
 --   be implementation dependent.
 rgbI' :: Int -> Int -> Int -> Color
-rgbI' r g b  = makeRawColorI r g b 255
+rgbI' r g b  = makeColorI r g b 255
 {-# INLINE rgbI' #-}
 
 
@@ -164,7 +163,7 @@ sizeOfDisplay :: Display -> IO (Int, Int)
 sizeOfDisplay display
  = case display of
         InWindow _ s _  -> return s
-        FullScreen      -> screensize
+        FullScreen      -> getScreenSize
 {-# INLINE sizeOfDisplay #-}
 
 
@@ -270,3 +269,4 @@ unpackColor c
           , word8OfFloat (g * 255)
           , word8OfFloat (b * 255))
 {-# INLINE unpackColor #-}
+

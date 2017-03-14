@@ -35,8 +35,8 @@ import Graphics.Gloss.Data.Bitmap
 import Graphics.Gloss.Interface.Pure.Game
 import Graphics.Gloss.Interface.IO.Animate
 import Graphics.Gloss.Interface.IO.Game
+import Graphics.Gloss.Interface.Environment
 import Graphics.Gloss.Rendering
-import Graphics.Gloss.Util
 import Data.Word
 import System.IO.Unsafe
 import Unsafe.Coerce
@@ -284,6 +284,6 @@ sizeOfDisplay :: Display -> IO (Int, Int)
 sizeOfDisplay display
  = case display of
         InWindow _ s _  -> return s
-        FullScreen      -> screensize
+        FullScreen      -> getScreenSize
 {-# INLINE sizeOfDisplay #-}
 
