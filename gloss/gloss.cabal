@@ -36,8 +36,8 @@ Flag ExplicitBackend
   Default:     False
 
 Library
-  Build-Depends: 
-        base       >= 4.8 && < 4.10,
+  Build-Depends:
+        base       >= 4.8 && < 4.11,
         ghc-prim   >= 0.4 && < 0.6,
         containers == 0.5.*,
         bytestring == 0.10.*,
