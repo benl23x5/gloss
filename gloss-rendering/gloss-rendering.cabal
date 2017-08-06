@@ -28,7 +28,7 @@ library
         Graphics.Gloss.Internals.Rendering.State
 
   build-depends:       
-        base       >= 4.8 && < 4.10,
+        base       >= 4.8 && < 4.11,
         containers == 0.5.*,
         bytestring == 0.10.*,
         OpenGL     >= 2.12 && < 3.1,
