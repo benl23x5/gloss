@@ -206,10 +206,64 @@ drawPicture state circScale picture
 
                 -- Free uncachable texture objects.
                 freeTexture tex
-                
+
+        BitmapSection width height imgData cacheMe imgSectionPos imgSectionSize ->
+          do
+            let rowInfo =
+                  let defTexCoords =
+                        map (\(x,y) -> (fromIntegral x / fromIntegral width, fromIntegral y / fromIntegral height)) $
+                        [ imgSectionPos
+                        , (fst imgSectionPos + fst imgSectionSize, snd imgSectionPos)
+                        , (fst imgSectionPos + fst imgSectionSize, snd imgSectionPos + snd imgSectionSize)
+                        , (fst imgSectionPos, snd imgSectionPos + snd imgSectionSize)
+                        ]
+                        :: [(Float,Float)]
+                  in
+                    case rowOrder (bitmapFormat imgData) of
+                      BottomToTop -> defTexCoords
+                      TopToBottom -> reverse defTexCoords
+
+            -- Load the image data into a texture,
+            -- or grab it from the cache if we've already done that before.
+            tex     <- loadTexture (stateTextures state) width height imgData cacheMe
+
+            -- Set up wrap and filtering mode
+            GL.textureWrapMode GL.Texture2D GL.S $= (GL.Repeated, GL.Repeat)
+            GL.textureWrapMode GL.Texture2D GL.T $= (GL.Repeated, GL.Repeat)
+            GL.textureFilter   GL.Texture2D      $= ((GL.Nearest, Nothing), GL.Nearest)
+
+            -- Enable texturing
+            GL.texture GL.Texture2D $= GL.Enabled
+            GL.textureFunction      $= GL.Combine
+
+            -- Set current texture
+            GL.textureBinding GL.Texture2D $= Just (texObject tex)
+
+            -- Set to opaque
+            oldColor <- get GL.currentColor
+            GL.currentColor $= GL.Color4 1.0 1.0 1.0 1.0
+ 
+            -- Draw textured polygon
+            GL.renderPrimitive GL.Polygon $
+              forM_ (bitmapPath (fromIntegral $ fst imgSectionSize) (fromIntegral $ snd imgSectionSize) `zip` rowInfo) $
+              \((polygonCoordX, polygonCoordY), (textureCoordX,textureCoordY)) ->
+              do
+                GL.texCoord $ GL.TexCoord2 (gf textureCoordX) (gf textureCoordY)
+                GL.vertex   $ GL.Vertex2 (gf polygonCoordX) (gf polygonCoordY)
+
+            -- Restore color
+            GL.currentColor $= oldColor
+
+            -- Disable texturing
+            GL.texture GL.Texture2D $= GL.Disabled
+
+            -- Free uncachable texture objects.
+            freeTexture tex
 
         Pictures ps
          -> mapM_ (drawPicture state circScale) ps
+
+
         
 -- Errors ---------------------------------------------------------------------
 checkErrors :: String -> IO ()
