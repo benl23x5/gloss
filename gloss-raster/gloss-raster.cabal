@@ -42,3 +42,4 @@ Library
         Graphics.Gloss.Raster.Field
         Graphics.Gloss.Raster.Array
 
+-- vim: nospell

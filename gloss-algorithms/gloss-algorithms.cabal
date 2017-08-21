@@ -39,3 +39,5 @@ Library
   Extensions:
         DeriveDataTypeable
         PatternGuards
+
+-- vim: nospell

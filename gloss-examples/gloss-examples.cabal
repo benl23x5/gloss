@@ -60,7 +60,7 @@ Executable gloss-clock
 Executable gloss-color
   Build-depends: 
         base            >= 4.8 && < 4.11,
-        vector          == 0.11.*,
+        vector          >= 0.11 && < 0.13,
         gloss           == 1.11.*
   Main-is:        Main.hs
   hs-source-dirs: picture/Color
@@ -71,7 +71,7 @@ Executable gloss-color
 Executable gloss-conway
   Build-depends: 
         base            >= 4.8 && < 4.11,
-        vector          == 0.11.*,
+        vector          >= 0.11 && < 0.13,
         gloss           == 1.11.*
   Main-is:        Main.hs
   other-modules:  Cell World
@@ -169,7 +169,7 @@ Executable gloss-occlusion
 Executable gloss-styrene
   Build-depends: 
         base            >= 4.8 && < 4.11,
-        ghc-prim        >= 0.4 && < 0.6,
+        ghc-prim,
         containers      == 0.5.*,
         gloss           == 1.11.*
   Main-is:        Main.hs
@@ -190,7 +190,7 @@ Executable gloss-tree
 Executable gloss-visibility
   Build-depends: 
         base            >= 4.8 && < 4.11,
-        vector          == 0.11.*,
+        vector          >= 0.11 && < 0.13,
         gloss           == 1.11.*
   Main-is:        Main.hs
   other-modules:  Draw Interface State World Geometry.Randomish Geometry.Segment
@@ -273,8 +273,8 @@ Executable gloss-pulse
 Executable gloss-wave
   Build-depends:
         base           >= 4.8 && < 4.11,
-        ghc-prim       == 0.5.*,
-        vector         == 0.11.*,
+        ghc-prim,
+        vector         >= 0.11 && < 0.13,
         gloss          == 1.11.*,
         gloss-raster   == 1.11.*
   Main-is:        Main.hs
@@ -297,7 +297,7 @@ Executable gloss-wave
 -- Executable gloss-fluid
 --   Build-depends:
 --         base            >= 4.8 && < 4.11,
---         ghc-prim        == 0.5.*,
+--         ghc-prim,
 --         vector          == 0.11.*,
 --         repa            == 3.4.*,
 --         repa-io         == 3.4.*,
@@ -404,3 +404,4 @@ Executable gloss-gravity
 --   ghc-options:
 --         -Wall -O2
 
+-- vim: nospell

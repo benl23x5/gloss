@@ -109,3 +109,4 @@ Library
     Other-modules:
         Graphics.Gloss.Internals.Interface.Backend.GLFW
 
+-- vim: nospell

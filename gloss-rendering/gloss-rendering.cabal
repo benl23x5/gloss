@@ -47,3 +47,5 @@ library
         TypeSynonymInstances
         FlexibleInstances
         DeriveDataTypeable
+
+-- vim: nospell
