@@ -98,7 +98,7 @@ printUsage :: IO ()
 printUsage 
  = putStrLn $ unlines
           [ "gloss-ray [flags]"
-           , "    -window  <sizeX::INT> <sizeY::INT> <zoom::INT>  (800, 400, 4)"
+           , "    -window  <sizeX::INT> <sizeY::INT> <zoom::INT>  (800, 600, 4)"
            , "    -bmp     <sizeX::INT> <sizeY::INT> <FILE>"
            , "    -fov     <INT>    Field of view                 (100)"
            , "    -bounces <INT>    Ray bounce limit              (4)"
