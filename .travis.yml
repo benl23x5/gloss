@@ -1,0 +1,103 @@
+# vim: nospell
+#
+# Basic template to test with GHC=[7.8, 7.10, 8.0].
+# Caches the 'stack' build directory to speed subsequent compilations.
+#
+language: generic
+dist: trusty
+sudo: required  # not really, but these instances have more memory
+
+cache:
+  timeout: 600
+  directories:
+    - $HOME/.stack
+    - $HOME/llvm
+    - .stack-work/install
+
+before_cache:
+  - rm -vrf $(stack path --local-install-root)/bin
+  - rm -vrf $(stack path --local-install-root)/doc
+
+addons:
+  apt:
+    sources: &apt_sources
+      - hvr-ghc
+      - ubuntu-toolchain-r-test
+      - llvm-toolchain-trusty
+      - llvm-toolchain-precise-3.5
+      # - llvm-toolchain-precise-3.6
+      - llvm-toolchain-precise-3.7
+      # - llvm-toolchain-precise-3.8
+      # - llvm-toolchain-precise-3.9
+      # - llvm-toolchain-precise-4.0  # not white-listed yet
+      - sourceline: 'deb http://apt.llvm.org/trusty/ llvm-toolchain-trusty-4.0 main'
+        key_url: 'http://apt.llvm.org/llvm-snapshot.gpg.key'
+
+    packages: &apt_packages
+      - alex-3.1.7
+      - g++-4.8
+      - gcc-4.8
+      - happy-1.19.5
+      - libedit-dev
+      - libgmp-dev
+      - freeglut3-dev
+
+matrix:
+  fast_finish: true
+  include:
+    - env: GHC=7.10.3 CABAL=1.22 LLVM=3.5.1
+      compiler: "GHC 7.10"
+      addons:
+        apt:
+          sources: *apt_sources
+          packages:
+            - *apt_packages
+            - cabal-install-1.22
+            - llvm-3.5-dev
+
+    - env: GHC=8.0.2 CABAL=1.24 LLVM=3.7.1
+      compiler: "GHC 8.0"
+      addons:
+        apt:
+          sources: *apt_sources
+          packages:
+            - *apt_packages
+            - cabal-install-1.24
+            - llvm-3.7-dev
+
+    - env: GHC=8.2.1 CABAL=2.0 LLVM=4.0.1
+      compiler: "GHC 8.2"
+      addons:
+        apt:
+          sources: *apt_sources
+          packages:
+            - *apt_packages
+            - cabal-install-2.0
+            - llvm-4.0-dev
+
+before_install:
+  - export PATH=/opt/cabal/$CABAL/bin:/opt/alex/3.1.7/bin:/opt/happy/1.19.5/bin:$HOME/.cabal/bin:$PATH
+  - source .travis/install-stack.sh
+
+install:
+  - echo "$(stack exec ghc -- --version) [$(stack exec ghc -- --print-project-git-commit-id 2> /dev/null || echo '?')]"
+  - cabal --version
+  - stack --version
+  - llc --version; true
+  - opt --version; true
+  - |
+      if [ ${GHC} == head -o ! -e stack.yaml ]; then
+        travis_retry cabal install --only-dependencies || exit 1
+      else
+        travis_retry stack build --only-dependencies --fast --no-terminal --no-haddock-deps --ghc-options="-j +RTS -A128M -n4m -RTS" || exit 1
+      fi
+
+script:
+  - |
+      if [ ${GHC} == head -o ! -e stack.yaml ]; then
+        travis_retry cabal install || exit 1
+        travis_retry cabal haddock || exit 1
+      else
+        travis_retry stack build --fast --no-terminal --haddock --no-haddock-deps --ghc-options="-j +RTS -A128M -n4m -RTS" || exit 1
+      fi
+
