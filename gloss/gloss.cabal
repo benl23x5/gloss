@@ -1,5 +1,5 @@
 Name:                gloss
-Version:             1.11.1.1
+Version:             1.11.2.1
 License:             MIT
 License-file:        LICENSE
 Author:              Ben Lippmeier
@@ -68,10 +68,11 @@ Library
         Graphics.Gloss.Interface.Pure.Game
         Graphics.Gloss.Interface.IO.Animate
         Graphics.Gloss.Interface.IO.Display
+        Graphics.Gloss.Interface.IO.Interact
         Graphics.Gloss.Interface.IO.Simulate
         Graphics.Gloss.Interface.IO.Game
         Graphics.Gloss.Interface.Environment
-        
+
   Other-modules:
         Graphics.Gloss.Internals.Color
         Graphics.Gloss.Internals.Interface.Animate.State
@@ -89,6 +90,7 @@ Library
         Graphics.Gloss.Internals.Interface.Window
         Graphics.Gloss.Internals.Interface.Display
         Graphics.Gloss.Internals.Interface.Animate
+        Graphics.Gloss.Internals.Interface.Interact
         Graphics.Gloss.Internals.Interface.Simulate
         Graphics.Gloss.Internals.Interface.Game
         Graphics.Gloss.Internals.Interface.Backend
