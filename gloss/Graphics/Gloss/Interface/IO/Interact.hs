@@ -5,7 +5,8 @@ module Graphics.Gloss.Interface.IO.Interact
         , module Graphics.Gloss.Data.Picture
         , module Graphics.Gloss.Data.Color
         , interactIO
-        , Controller    (..))
+        , Controller    (..)
+        , Event(..), Key(..), SpecialKey(..), MouseButton(..), KeyState(..), Modifiers(..))
 where
 import Graphics.Gloss.Data.Display
 import Graphics.Gloss.Data.Controller
