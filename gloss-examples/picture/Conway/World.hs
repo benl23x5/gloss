@@ -82,7 +82,7 @@ getCell world coord@(x, y)
         = worldCells world Vec.! indexOfCoord world coord 
 
 
--- | Get the neighbourhood of cells aroudn this coordinate.
+-- | Get the neighbourhood of cells around this coordinate.
 getNeighbourhood :: World -> Coord -> [Cell]
 getNeighbourhood world (ix, iy)
  = let  indexes = [ (x, y) 
