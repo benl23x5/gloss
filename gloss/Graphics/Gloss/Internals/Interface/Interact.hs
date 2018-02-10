@@ -111,6 +111,7 @@ handle_keyMouse worldRef _ eventFn backendRef key keyState keyMods pos
         world      <- readIORef worldRef
         world'     <- eventFn ev world
         writeIORef worldRef world'
+        postRedisplay backendRef
 
 
 -- | Callback for Motion events.
@@ -133,24 +134,27 @@ handle_motion worldRef eventFn backendRef pos
         world    <- readIORef worldRef
         world'   <- eventFn ev world
         writeIORef worldRef world'
+        postRedisplay backendRef
 
 
 -- | Callback for Handle reshape event.
 callback_reshape
-  :: IORef world
-  -> (Event -> world -> IO world)
-  -> Callback
+        :: IORef world
+        -> (Event -> world -> IO world)
+        -> Callback
+
 callback_reshape worldRef eventFN
         = Reshape (handle_reshape worldRef eventFN)
 
 
 handle_reshape
-  :: IORef world
-  -> (Event -> world -> IO world)
-  -> ReshapeCallback
-handle_reshape worldRef eventFn stateRef (width,height)
+        :: IORef world
+        -> (Event -> world -> IO world)
+        -> ReshapeCallback
+handle_reshape worldRef eventFn backendRef (width,height)
  = do   world  <- readIORef worldRef
         world' <- eventFn (EventResize (width, height)) world
         writeIORef worldRef world'
-        viewState_reshape stateRef (width, height)
+        viewState_reshape backendRef (width, height)
+        postRedisplay backendRef
 
