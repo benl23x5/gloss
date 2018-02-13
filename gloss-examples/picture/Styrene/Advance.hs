@@ -13,6 +13,7 @@ import Graphics.Gloss.Interface.Pure.Simulate
 import Graphics.Gloss.Geometry.Line
 import Graphics.Gloss.Geometry.Angle
 import Graphics.Gloss.Data.Point
+import qualified Graphics.Gloss.Data.Point.Arithmetic as Pt
 import Graphics.Gloss.Data.Vector
 
 import Data.List
@@ -113,8 +114,8 @@ moveActor_free time force actor
                 beadMass        = 1
                 
                 -- calculate the new position and velocity of the bead.
-                pos'            = (pos + time  `mulSV` vel)
-                vel'            = (vel + (time / beadMass) `mulSV` force)
+                pos'            = (pos Pt.+ time  `mulSV` vel)
+                vel'            = (vel Pt.+ (time / beadMass) `mulSV` force)
 
                 -- if the bead is travelling slowly then set it as being stuck.
                 stuck'          

@@ -17,6 +17,7 @@ import qualified Data.Map                       as Map
 import Data.Map                                 (Map)
 import Data.Maybe
 import Control.Monad (mplus)
+import qualified Graphics.Gloss.Data.Point.Arithmetic as Pt
 
 
 -- | The commands suported by the view controller.
@@ -318,7 +319,7 @@ motionBump
         , viewPortScale         = scale
         , viewPortRotate        = r }
         (bumpX, bumpY)
- = port { viewPortTranslate = trans - o }
+ = port { viewPortTranslate = trans Pt.- o }
  where  offset  = (bumpX / scale, bumpY / scale)
         o       = rotateV (degToRad r) offset
 
@@ -332,7 +333,7 @@ motionTranslate
 motionTranslate Nothing _ _ = Nothing
 motionTranslate (Just (markX, markY)) (posX, posY) viewState
  = Just $ viewState
-        { viewStateViewPort      = port { viewPortTranslate = trans - o }
+        { viewStateViewPort      = port { viewPortTranslate = trans Pt.- o }
         , viewStateTranslateMark = Just (posX, posY) }
 
  where  port    = viewStateViewPort viewState

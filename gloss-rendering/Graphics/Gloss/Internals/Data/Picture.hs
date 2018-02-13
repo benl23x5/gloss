@@ -1,5 +1,4 @@
 {-# OPTIONS_HADDOCK hide #-}
-{-# OPTIONS -fno-warn-orphans #-}
 
 -- | Data types for representing pictures.
 module Graphics.Gloss.Internals.Data.Picture
@@ -33,22 +32,6 @@ import Prelude hiding (map)
 
 -- | A point on the x-y plane.
 type Point      = (Float, Float)                        
-
-
--- | Pretend a point is a number.
---      Vectors aren't real numbers according to Haskell, because they don't
---      support the multiply and divide field operators. We can pretend they
---      are though, and use the (+) and (-) operators as component-wise
---      addition and subtraction.
---
-instance Num Point where
-        (+) (x1, y1) (x2, y2)   = (x1 + x2, y1 + y2)
-        (-) (x1, y1) (x2, y2)   = (x1 - x2, y1 - y2)
-        (*) (x1, y1) (x2, y2)   = (x1 * x2, y1 * y2)
-        signum (x, y)           = (signum x, signum y)
-        abs    (x, y)           = (abs x, abs y)
-        negate (x, y)           = (negate x, negate y)  
-        fromInteger x           = (fromInteger x, fromInteger x)
 
 
 -- | A vector can be treated as a point, and vis-versa.

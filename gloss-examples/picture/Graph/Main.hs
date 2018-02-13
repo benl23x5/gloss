@@ -12,6 +12,7 @@ import Graphics.Gloss.Data.Vector
 import Graphics.Gloss.Data.ViewPort
 import Graphics.Gloss.Data.ViewState
 import Graphics.Gloss.Interface.Pure.Game
+import qualified Graphics.Gloss.Data.Point.Arithmetic as Pt
 
 type Vertex     = Int
 type Edge       = (Vertex, Vertex)
@@ -162,8 +163,8 @@ pushForce
 pushForce v1 v2 
  = -- If we are analysing the same vertex, l = 0
   if l > 0      then (charge / l) `mulSV` normalizeV d 
-                else 0
- where  d = v1 - v2
+                else (0, 0)
+ where  d = v1 Pt.- v2
         l = magV d ** 2
 
 
@@ -172,7 +173,7 @@ stiffness = 1 / 2
 
 pullForce :: Point -> Point -> Vector
 pullForce v1 v2 
- = stiffness `mulSV` (v2 - v1)
+ = stiffness `mulSV` (v2 Pt.- v1)
 
 
 -- | Apply forces to update the position of a single point.
@@ -183,7 +184,7 @@ updatePosition
         -> Point       -- New position
 
 updatePosition dt v1 sc@Scene{scPoints = pts, scGraph = gr} 
- = v1pos + pull + push
+ = v1pos Pt.+ pull Pt.+ push
  where
         v1pos  = vertexPos v1 sc
 
@@ -193,8 +194,8 @@ updatePosition dt v1 sc@Scene{scPoints = pts, scGraph = gr}
 
         -- Sum all the pushing and pulling.  All the other vertices push,
         -- the connected vertices pull.
-        push = Map.foldr' (\v2pos -> (getVel pushForce v2pos +)) 0 pts
-        pull = foldr    (\v2pos -> (getVel pullForce v2pos +)) 0
+        push = Map.foldr' (\v2pos -> (getVel pushForce v2pos Pt.+)) (0, 0) pts
+        pull = foldr    (\v2pos -> (getVel pullForce v2pos Pt.+)) (0, 0)
                         [vertexPos v2 sc | v2 <- Set.toList (vertexNeighs v1 gr)]
 
 
@@ -216,7 +217,7 @@ inCircle :: Point             -- Where the user has clicked
          -> Point             -- The position of the vertex
          -> Bool
 inCircle p sca v 
-        = magV (v - p) <= vertexRadius * sca
+        = magV (v Pt.- p) <= vertexRadius * sca
 
 
 findVertex :: Point -> Float -> Scene -> Maybe Vertex
