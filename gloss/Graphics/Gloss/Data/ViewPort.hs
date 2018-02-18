@@ -6,6 +6,7 @@ module Graphics.Gloss.Data.ViewPort
         , invertViewPort )
 where
 import Graphics.Gloss.Data.Picture
+import qualified Graphics.Gloss.Data.Point.Arithmetic as Pt
 
 
 -- | The 'ViewPort' represents the global transformation applied to the displayed picture.
@@ -51,7 +52,7 @@ invertViewPort
                  , viewPortTranslate    = vtrans
                  , viewPortRotate       = vrotate }
         pos
-        = rotateV (degToRad vrotate) (mulSV (1 / vscale) pos) - vtrans
+        = rotateV (degToRad vrotate) (mulSV (1 / vscale) pos) Pt.- vtrans
 
 
 -- | Convert degrees to radians

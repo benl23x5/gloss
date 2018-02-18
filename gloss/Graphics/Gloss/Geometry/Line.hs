@@ -27,7 +27,7 @@ module Graphics.Gloss.Geometry.Line
 where
 import Graphics.Gloss.Data.Point
 import Graphics.Gloss.Data.Vector
-
+import qualified Graphics.Gloss.Data.Point.Arithmetic as Pt
 
 -- | Check if line segment (P1-P2) clears a box (P3-P4) by being well outside it.
 segClearsBox 
@@ -56,7 +56,7 @@ closestPointOnLine
 {-# INLINE closestPointOnLine #-}
 
 closestPointOnLine p1 p2 p3
-        = p1 + (u `mulSV` (p2 - p1))
+        = p1 Pt.+ (u `mulSV` (p2 Pt.- p1))
         where   u       = closestPointOnLineParam p1 p2 p3
 
 
@@ -89,8 +89,8 @@ closestPointOnLineParam
         -> Float
 
 closestPointOnLineParam p1 p2 p3
-        = (p3 - p1) `dotV` (p2 - p1) 
-        / (p2 - p1) `dotV` (p2 - p1)
+        = (p3 Pt.- p1) `dotV` (p2 Pt.- p1) 
+        / (p2 Pt.- p1) `dotV` (p2 Pt.- p1)
 
 
 

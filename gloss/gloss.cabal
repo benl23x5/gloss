@@ -57,6 +57,7 @@ Library
         Graphics.Gloss.Data.Display
         Graphics.Gloss.Data.Picture
         Graphics.Gloss.Data.Point
+        Graphics.Gloss.Data.Point.Arithmetic
         Graphics.Gloss.Data.Vector
         Graphics.Gloss.Data.ViewPort
         Graphics.Gloss.Data.ViewState
