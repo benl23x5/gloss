@@ -37,8 +37,4 @@ Library
         Graphics.Gloss.Data.Quad
         Graphics.Gloss.Data.QuadTree
 
-  Extensions:
-        DeriveDataTypeable
-        PatternGuards
-
 -- vim: nospell
