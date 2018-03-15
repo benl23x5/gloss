@@ -41,11 +41,4 @@ library
   default-language:
         Haskell2010
 
-  default-extensions:
-        BangPatterns
-        MagicHash
-        TypeSynonymInstances
-        FlexibleInstances
-        DeriveDataTypeable
-
 -- vim: nospell

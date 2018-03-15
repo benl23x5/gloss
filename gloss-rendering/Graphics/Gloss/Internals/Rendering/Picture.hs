@@ -1,3 +1,4 @@
+{-# LANGUAGE DeriveDataTypeable #-}
 {-# OPTIONS_HADDOCK hide #-}
 
 module Graphics.Gloss.Internals.Rendering.Picture
@@ -32,18 +33,18 @@ renderPicture
         -> IO ()
 
 renderPicture state circScale picture
- = do   
+ = do
         -- Setup render state for world
         setLineSmooth   (stateLineSmooth state)
         setBlendAlpha   (stateBlendAlpha state)
-        
+
         -- Draw the picture
         checkErrors "before drawPicture."
         drawPicture state circScale picture
         checkErrors "after drawPicture."
 
 
-drawPicture :: State -> Float -> Picture -> IO ()         
+drawPicture :: State -> Float -> Picture -> IO ()
 drawPicture state circScale picture
  = {-# SCC "drawComponent" #-}
    case picture of
@@ -53,8 +54,8 @@ drawPicture state circScale picture
          ->     return ()
 
         -- line
-        Line path       
-         -> GL.renderPrimitive GL.LineStrip 
+        Line path
+         -> GL.renderPrimitive GL.LineStrip
                 $ vertexPFs path
 
 
@@ -63,7 +64,7 @@ drawPicture state circScale picture
          | stateWireframe state
          -> GL.renderPrimitive GL.LineLoop
                 $ vertexPFs path
-                
+
          | otherwise
          -> GL.renderPrimitive GL.Polygon
                 $ vertexPFs path
@@ -71,21 +72,21 @@ drawPicture state circScale picture
         -- circle
         Circle radius
          ->  renderCircle 0 0 circScale radius 0
-        
+
         ThickCircle radius thickness
          ->  renderCircle 0 0 circScale radius thickness
-        
+
         -- arc
         Arc a1 a2 radius
          ->  renderArc 0 0 circScale radius a1 a2 0
-             
+
         ThickArc a1 a2 radius thickness
          ->  renderArc 0 0 circScale radius a1 a2 thickness
-             
+
         -- stroke text
         --      text looks weird when we've got blend on,
         --      so disable it during the renderString call.
-        Text str 
+        Text str
          -> do
                 GL.blend        $= GL.Disabled
                 GL.preservingMatrix $ GLUT.renderString GLUT.Roman str
@@ -100,7 +101,7 @@ drawPicture state circScale picture
 
                 GL.currentColor  $= GL.Color4 (gf r) (gf g) (gf b) (gf a)
                 drawPicture state circScale p
-                GL.currentColor  $= oldColor            
+                GL.currentColor  $= oldColor
 
          |  otherwise
          ->     drawPicture state circScale p
@@ -119,7 +120,7 @@ drawPicture state circScale picture
 
         Translate posX posY (ThickArc a1 a2 radius thickness)
          -> renderArc posX posY circScale radius a1 a2 thickness
-             
+
         Translate tx ty (Rotate deg p)
          -> GL.preservingMatrix
           $ do  GL.translate (GL.Vector3 (gf tx) (gf ty) 0)
@@ -146,7 +147,7 @@ drawPicture state circScale picture
         Rotate deg (ThickArc a1 a2 radius thickness)
          -> renderArc      0 0 circScale radius (a1-deg) (a2-deg) thickness
 
-        
+
         Rotate deg p
          -> GL.preservingMatrix
           $ do  GL.rotate (gf deg) (GL.Vector3 0 0 (-1))
@@ -159,10 +160,10 @@ drawPicture state circScale picture
           $ do  GL.scale (gf sx) (gf sy) 1
                 let mscale      = max sx sy
                 drawPicture state (circScale * mscale) p
-                        
+
         -- Bitmap -------------------------------
         Bitmap width height imgData cacheMe
-         -> do  
+         -> do
                 let rowInfo =
                       case rowOrder (bitmapFormat imgData) of
                          BottomToTop -> [(0,0), (1,0), (1,1), (0,1)]
@@ -171,23 +172,23 @@ drawPicture state circScale picture
                 -- Load the image data into a texture,
                 -- or grab it from the cache if we've already done that before.
                 tex     <- loadTexture (stateTextures state) width height imgData cacheMe
-         
+
                 -- Set up wrap and filtering mode
                 GL.textureWrapMode GL.Texture2D GL.S $= (GL.Repeated, GL.Repeat)
                 GL.textureWrapMode GL.Texture2D GL.T $= (GL.Repeated, GL.Repeat)
                 GL.textureFilter   GL.Texture2D      $= ((GL.Nearest, Nothing), GL.Nearest)
-                
+
                 -- Enable texturing
                 GL.texture GL.Texture2D $= GL.Enabled
                 GL.textureFunction      $= GL.Combine
-                
+
                 -- Set current texture
                 GL.textureBinding GL.Texture2D $= Just (texObject tex)
-                
+
                 -- Set to opaque
                 oldColor <- get GL.currentColor
                 GL.currentColor $= GL.Color4 1.0 1.0 1.0 1.0
-                
+
                 -- Draw textured polygon
                 GL.renderPrimitive GL.Polygon
                  $ zipWithM_
@@ -206,11 +207,11 @@ drawPicture state circScale picture
 
                 -- Free uncachable texture objects.
                 freeTexture tex
-                
+
 
         Pictures ps
          -> mapM_ (drawPicture state circScale) ps
-        
+
 -- Errors ---------------------------------------------------------------------
 checkErrors :: String -> IO ()
 checkErrors place
@@ -222,7 +223,7 @@ handleError :: String -> GLU.Error -> IO ()
 handleError place err
  = case err of
     GLU.Error GLU.StackOverflow _
-     -> error $ unlines 
+     -> error $ unlines
       [ "Gloss / OpenGL Stack Overflow " ++ show place
       , "  This program uses the Gloss vector graphics library, which tried to"
       , "  draw a picture using more nested transforms (Translate/Rotate/Scale)"
@@ -238,13 +239,13 @@ handleError place err
       , "  transforms used when defining the Picture given to Gloss. Sorry." ]
 
     -- Issue #32: Spurious "Invalid Operation" errors under Windows 7 64-bit.
-    --   When using GLUT under Windows 7 it complains about InvalidOperation, 
-    --   but doesn't provide any other details. All the examples look ok, so 
+    --   When using GLUT under Windows 7 it complains about InvalidOperation,
+    --   but doesn't provide any other details. All the examples look ok, so
     --   we're just ignoring the error for now.
     GLU.Error GLU.InvalidOperation _
      -> return ()
-    _ 
-     -> error $ unlines 
+    _
+     -> error $ unlines
      [  "Gloss / OpenGL Internal Error " ++ show place
      ,  "  Please report this on haskell-gloss@googlegroups.com."
      ,  show err ]
@@ -265,16 +266,16 @@ loadTexture refTextures width height imgData cacheMe
 
         -- Try and find this same texture in the cache.
         name            <- makeStableName imgData
-        let mTexCached      
+        let mTexCached
                 = find (\tex -> texName   tex == name
                              && texWidth  tex == width
                              && texHeight tex == height)
                 textures
-                
+
         case mTexCached of
          Just tex
           ->    return tex
-                
+
          Nothing
           -> do tex     <- installTexture width height imgData cacheMe
                 when cacheMe
@@ -283,15 +284,15 @@ loadTexture refTextures width height imgData cacheMe
 
 
 -- | Install a texture into OpenGL.
-installTexture     
+installTexture
         :: Int -> Int
         -> BitmapData
         -> Bool
         -> IO Texture
 
 installTexture width height bitmapData@(BitmapData _ fmt fptr) cacheMe
- = do   
-        let glFormat 
+ = do
+        let glFormat
                 = case pixelFormat fmt of
                         PxABGR -> GL.ABGR
                         PxRGBA -> GL.RGBA
@@ -301,7 +302,7 @@ installTexture width height bitmapData@(BitmapData _ fmt fptr) cacheMe
         GL.textureBinding GL.Texture2D $= Just tex
 
         -- Sets the texture in imgData as the current texture
-        -- This copies the data from the pointer into OpenGL texture memory, 
+        -- This copies the data from the pointer into OpenGL texture memory,
         -- so it's ok if the foreignptr gets garbage collected after this.
         withForeignPtr fptr
          $ \ptr ->
@@ -330,7 +331,7 @@ installTexture width height bitmapData@(BitmapData _ fmt fptr) cacheMe
                 , texCacheMe    = cacheMe }
 
 
--- | If this texture does not have its `cacheMe` flag set then delete it from 
+-- | If this texture does not have its `cacheMe` flag set then delete it from
 --   OpenGL and free the GPU memory.
 freeTexture :: Texture -> IO ()
 freeTexture tex
@@ -343,13 +344,13 @@ freeTexture tex
 -- | Turn alpha blending on or off
 setBlendAlpha :: Bool -> IO ()
 setBlendAlpha state
-        | state 
+        | state
         = do    GL.blend        $= GL.Enabled
                 GL.blendFunc    $= (GL.SrcAlpha, GL.OneMinusSrcAlpha)
 
         | otherwise
         = do    GL.blend        $= GL.Disabled
-                GL.blendFunc    $= (GL.One, GL.Zero)    
+                GL.blendFunc    $= (GL.One, GL.Zero)
 
 -- | Turn line smoothing on or off
 setLineSmooth :: Bool -> IO ()
