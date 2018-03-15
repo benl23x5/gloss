@@ -1,3 +1,4 @@
+{-# LANGUAGE CPP                #-}
 {-# LANGUAGE DeriveDataTypeable #-}
 {-# OPTIONS_HADDOCK hide #-}
 
@@ -30,6 +31,10 @@ import System.IO.Unsafe
 import qualified Data.ByteString.Unsafe as BSU
 import Prelude hiding (map)
 
+#if __GLASGOW_HASKELL__ >= 800
+import Data.Semigroup
+import Data.List.NonEmpty
+#endif
 
 -- | A point on the x-y plane.
 type Point      = (Float, Float)
@@ -110,9 +115,16 @@ data Picture
 
 -- Instances ------------------------------------------------------------------
 instance Monoid Picture where
-        mempty          = Blank
-        mappend a b     = Pictures [a, b]
-        mconcat         = Pictures
+  mempty          = Blank
+  mappend a b     = Pictures [a, b]
+  mconcat         = Pictures
+
+#if __GLASGOW_HASKELL__ >= 800
+instance Semigroup Picture where
+  a <> b          = Pictures [a, b]
+  sconcat         = Pictures . toList
+  stimes          = stimesIdempotent
+#endif
 
 
 -- Bitmaps --------------------------------------------------------------------
