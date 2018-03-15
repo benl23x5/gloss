@@ -1,4 +1,7 @@
-{-# LANGUAGE BangPatterns, MagicHash, PatternGuards, ScopedTypeVariables #-}
+{-# LANGUAGE BangPatterns        #-}
+{-# LANGUAGE MagicHash           #-}
+{-# LANGUAGE PatternGuards       #-}
+{-# LANGUAGE ScopedTypeVariables #-}
 
 -- | Rendering of continuous 2D functions as raster fields.
 --
@@ -8,11 +11,11 @@
 --  The performance of programs using this interface is sensitive to how much
 --  boxing and unboxing the GHC simplifier manages to eliminate. For the best
 --  result add INLINE pragmas to all of your numeric functions and use the following
---  compile options.  
+--  compile options.
 --
 --  @-threaded -Odph -fno-liberate-case -funfolding-use-threshold1000 -funfolding-keeness-factor1000 -fllvm -optlo-O3@
 --
---  See the examples the @raster@ directory of the @gloss-examples@ package 
+--  See the examples the @raster@ directory of the @gloss-examples@ package
 --  for more details.
 --
 module Graphics.Gloss.Raster.Field
@@ -50,7 +53,7 @@ import Prelude                                  as P
 
 -- Color ----------------------------------------------------------------------
 -- | Construct a color from red, green, blue components.
---  
+--
 --   Each component is clamped to the range [0..1]
 rgb  :: Float -> Float -> Float -> Color
 rgb r g b   = makeColor r g b 1.0
@@ -73,7 +76,7 @@ rgb8w r g b = makeColorI (fromIntegral r) (fromIntegral g) (fromIntegral b) 255
 
 -- | Like `rgb`, but take pre-clamped components for speed.
 --
---   If you're building a new color for every pixel then use this version, 
+--   If you're building a new color for every pixel then use this version,
 --   however if your components are out of range then the picture you get will
 --   be implementation dependent.
 rgb' :: Float -> Float -> Float -> Color
@@ -83,7 +86,7 @@ rgb' r g b  = makeColor r g b 1.0
 
 -- | Like `rgbI`, but take pre-clamped components for speed.
 --
---   If you're building a new color for every pixel then use this version, 
+--   If you're building a new color for every pixel then use this version,
 --   however if your components are out of range then the picture you get will
 --   be implementation dependent.
 rgbI' :: Int -> Int -> Int -> Color
@@ -94,50 +97,50 @@ rgbI' r g b  = makeColorI r g b 255
 -- Animate --------------------------------------------------------------------
 -- | Animate a continuous 2D function.
 animateField
-        :: Display                      
+        :: Display
                 -- ^ Display mode.
-        -> (Int, Int)                   
+        -> (Int, Int)
                 -- ^ Number of pixels to draw per point.
-        -> (Float -> Point -> Color)    
+        -> (Float -> Point -> Color)
                 -- ^ Function to compute the color at a particular point.
                 --
                 --   It is passed the time in seconds since the program started,
                 --   and a point between (-1, -1) and (+1, +1).
         -> IO ()
-        
+
 animateField display (zoomX, zoomY) makePixel
  = zoomX `seq` zoomY `seq`
  if zoomX < 1 || zoomY < 1
    then error $ "Graphics.Gloss.Raster.Field: invalid pixel scale factor "
                 P.++ show (zoomX, zoomY)
-   else 
+   else
     do (winSizeX, winSizeY) <- sizeOfDisplay display
-       
+
        let  frame !time
               = return
                 $ makePicture winSizeX winSizeY zoomX zoomY (makePixel time)
 
        animateFixedIO display black frame (const $ return ())
-    
+
 {-# INLINE animateField #-}
 --  INLINE so the repa functions fuse with the users client functions.
 
 -- Play -----------------------------------------------------------------------
 -- | Play a game with a continous 2D function.
-playField 
-        :: Display                      
+playField
+        :: Display
                 -- ^ Display mode.
-        -> (Int, Int)   
+        -> (Int, Int)
                 -- ^ Number of pixels to draw per point.
         -> Int  -- ^ Number of simulation steps to take
                 --   for each second of real time
-        -> world 
+        -> world
                 -- ^ The initial world.
-        -> (world -> Point -> Color)    
+        -> (world -> Point -> Color)
                 -- ^ Function to compute the color of the world at the given point.
-        -> (Event -> world -> world)    
+        -> (Event -> world -> world)
                 -- ^ Function to handle input events.
-        -> (Float -> world -> world)    
+        -> (Float -> world -> world)
                 -- ^ Function to step the world one iteration.
                 --   It is passed the time in seconds since the program started.
         -> IO ()
@@ -145,14 +148,14 @@ playField !display (zoomX, zoomY) !stepRate
           !initWorld !makePixel !handleEvent !stepWorld
  = zoomX `seq` zoomY `seq`
    if zoomX < 1 || zoomY < 1
-     then  error $ "Graphics.Gloss.Raster.Field: invalid pixel scale factor " 
+     then  error $ "Graphics.Gloss.Raster.Field: invalid pixel scale factor "
                  P.++ show (zoomX, zoomY)
      else  do (winSizeX, winSizeY) <- sizeOfDisplay display
               winSizeX `seq` winSizeY `seq`
-                play display black stepRate 
+                play display black stepRate
                    initWorld
-                   (\world -> 
-                      world `seq` 
+                   (\world ->
+                      world `seq`
                       makePicture winSizeX winSizeY zoomX zoomY (makePixel world))
                    handleEvent
                    stepWorld
@@ -180,12 +183,12 @@ makePicture !winSizeX !winSizeY !zoomX !zoomY !makePixel
         sizeX = winSizeX `div` zoomX
         sizeY = winSizeY `div` zoomY
 
-        {-# INLINE conv #-} 
+        {-# INLINE conv #-}
         conv (r, g, b)
          = let  r'      = fromIntegral r
                 g'      = fromIntegral g
                 b'      = fromIntegral b
-                a       = 255 
+                a       = 255
 
                 !w      =   unsafeShiftL r' 24
                         .|. unsafeShiftL g' 16
@@ -199,7 +202,7 @@ makePicture !winSizeX !winSizeY !zoomX !zoomY !makePixel
         -- We don't need the alpha because we're only drawing one image.
         traceEventIO "Gloss.Raster[makePicture]: start frame evaluation."
         (arrRGB :: Array F DIM2 Word32)
-                <- R.computeP  
+                <- R.computeP
                 $  R.map conv
                 $  makeFrame sizeX sizeY makePixel
         traceEventIO "Gloss.Raster[makePicture]: done, returning picture."
@@ -247,7 +250,7 @@ makeFrame !sizeX !sizeY !makePixel
            in   makePixel (x', y')
 
    in   R.hintInterleave
-         $ R.map unpackColor 
+         $ R.map unpackColor
          $ R.fromFunction (Z :. sizeY  :. sizeX)
          $ pixelOfIndex
 {-# INLINE makeFrame #-}
@@ -258,7 +261,7 @@ makeFrame !sizeX !sizeY !makePixel
 --   doesn't have enout specialisations and goes via Integer.
 word8OfFloat :: Float -> Word8
 word8OfFloat f
-        = fromIntegral (truncate f :: Int) 
+        = fromIntegral (truncate f :: Int)
 {-# INLINE word8OfFloat #-}
 
 
