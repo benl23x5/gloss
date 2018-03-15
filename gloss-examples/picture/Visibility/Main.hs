@@ -21,7 +21,7 @@ main :: IO ()
 main
  = do   world           <- initialWorld
         let state       =  initialState world
-        
+
         play   (InWindow "Visibility" (800, 800) (10,  10))
                black 100 state
                drawState handleInput stepState

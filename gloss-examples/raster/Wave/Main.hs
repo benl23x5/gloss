@@ -1,11 +1,13 @@
-{-# LANGUAGE BangPatterns, MagicHash #-}
+{-# LANGUAGE BangPatterns #-}
+{-# LANGUAGE MagicHash    #-}
+
 import Graphics.Gloss.Raster.Field
 import qualified Data.Vector.Unboxed    as U
 import GHC.Prim
 import GHC.Exts
 
 main :: IO ()
-main 
+main
  = let  !n               = 65536
 
         !sins            = U.fromList [sin ( (i / n) * (2 * pi)) | i <- [0..n]]
@@ -20,7 +22,7 @@ main
 
         get :: Float -> Point -> Color
         get !t (x, y)
-         = t `seq` 
+         = t `seq`
            let  !x' = abs $ x + 1
                 !y' = abs $ y + 1
                 !r1 = abs $ 0.5 * (usin (x' + 0.2 * (usin t)) + ucos y')
@@ -28,7 +30,7 @@ main
            in  rgb' r1 0 r2
         {-# INLINE get #-}
 
-   in   animateField 
+   in   animateField
                 (InWindow "Wave" (800, 600) (100, 100))
                 (1, 1)
                 get
@@ -44,6 +46,5 @@ to64k f
         w'              = and# w (int2Word# 0x0ffff#)
         i               = word2Int# w'
    in   (I# i)
-{-# INLINE to64k #-}        
+{-# INLINE to64k #-}
 
- 

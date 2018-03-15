@@ -1,5 +1,6 @@
+{-# LANGUAGE RankNTypes          #-}
+{-# LANGUAGE ScopedTypeVariables #-}
 {-# OPTIONS_HADDOCK hide #-}
-{-# LANGUAGE ScopedTypeVariables, RankNTypes #-}
 
 module Graphics.Gloss.Internals.Interface.ViewState.Motion
         (callback_viewState_motion)

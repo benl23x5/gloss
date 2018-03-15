@@ -13,24 +13,25 @@ data State
 
 
 -- | Initial game state.
+initState :: World -> State
 initState world
         = State
         { stateWorld            = world
         , stateLineStart        = (10, 10)
         , stateLineEnd          = (10, 10) }
-        
+
 
 -- | Handle an input event.
 handleInput :: World -> Event -> State -> State
 handleInput world (EventKey key keyState mods pos) state
         | MouseButton LeftButton        <- key
         , Down                          <- keyState
-        , shift mods == Down    
+        , shift mods == Down
         = state { stateLineEnd = worldPosOfWindowPos world pos }
 
         | MouseButton LeftButton        <- key
         , Down                          <- keyState
-        = state { stateLineStart        = worldPosOfWindowPos world pos 
+        = state { stateLineStart        = worldPosOfWindowPos world pos
                 , stateLineEnd          = worldPosOfWindowPos world pos }
 
         | MouseButton RightButton       <- key

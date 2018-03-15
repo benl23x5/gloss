@@ -1,11 +1,11 @@
 {-# LANGUAGE PatternGuards #-}
+
 module Draw
         ( drawState
         , drawWorld)
 where
 import State
 import World
-import Geometry.Segment
 import Graphics.Gloss
 import Graphics.Gloss.Geometry.Line
 import qualified Data.Vector.Unboxed    as V
@@ -15,32 +15,32 @@ import Data.Maybe
 drawState :: State -> Picture
 drawState state
         | ModeDisplayWorld      <- stateModeDisplay state
-        = drawWorldWithViewPos 
+        = drawWorldWithViewPos
                 (stateModeOverlay state)
-                (stateViewPos     state) 
+                (stateViewPos     state)
                 (stateTargetPos   state)
                 (stateWorld       state)
 
         | ModeDisplayNormalised <- stateModeDisplay state
-        = drawWorldWithViewPos 
+        = drawWorldWithViewPos
                 (stateModeOverlay state)
-                (0, 0) 
+                (0, 0)
                 Nothing
                 $ normaliseWorld (stateViewPos state)
                 $ stateWorld state
 
         | otherwise
         = Blank
-        
+
 
 drawWorldWithViewPos :: ModeOverlay -> Point -> Maybe Point -> World -> Picture
-drawWorldWithViewPos 
+drawWorldWithViewPos
         modeOverlay
-        pView@(vx, vy) 
+        pView@(vx, vy)
         mTarget
         world
- = let  
-        -- the world 
+ = let
+        -- the world
         picWorld        = Color white
                         $ drawWorld world
 
@@ -56,7 +56,7 @@ drawWorldWithViewPos
 
                         -- line between view and target pos
                         picLine         = Line [pView, pTarget]
-                        
+
                         picSegsHit      = Pictures
                                         $ [ Line [p1, p2]
                                                 | (_, p1, p2)   <- V.toList $ worldSegments world
@@ -80,14 +80,14 @@ drawWorldWithViewPos
 -- | Draw a grid of points showing what is visible from a view position
 drawVisGrid :: Float -> Point -> World -> Picture
 drawVisGrid cellSize pView world
- = let  
+ = let
         visible pTarget = not $ any isJust
                         $ map (\(_, p1, p2) -> intersectSegSeg pView pTarget p1 p2)
-                        $ V.toList 
+                        $ V.toList
                         $ worldSegments world
-                        
+
         picGrid         = Pictures
-                        $ [ if visible (x, y) 
+                        $ [ if visible (x, y)
                                 then Color (dim green) $ Translate x y $ rectangleSolid cellSize cellSize
                                 else Color (greyN 0.2) $ Translate x y $ rectangleSolid cellSize cellSize
                                 | x     <- [-400, -400 + cellSize .. 400]
@@ -108,7 +108,7 @@ drawSegments :: V.Vector Segment -> Picture
 drawSegments segments
         = Pictures
         $ map drawSegment
-        $ V.toList 
+        $ V.toList
         $ segments
 
 

@@ -23,7 +23,7 @@ data Actor
                 !Position       -- ^ wall starting point
                 !Position       -- ^ wall ending point
 
-        | Bead  !Index          -- ^ unique index of this actor 
+        | Bead  !Index          -- ^ unique index of this actor
                 !Int            -- ^ whether the bead is stuck
                 !Radius         -- ^ radius of bead
                 !Position       -- ^ position of bead
@@ -35,7 +35,7 @@ data Actor
 --      We need Ord so we can put them in Maps and Sets.
 instance Eq Actor where
  a1 == a2       = actorIx a1 == actorIx a2
-        
+
 instance Ord Actor where
  compare a1 a2  = compare (actorIx a1) (actorIx a2)
 
@@ -63,7 +63,7 @@ actorIx actor
 actorSetIndex :: Actor -> Index -> Actor
 actorSetIndex actor ix
  = case actor of
-        Bead _ m r pos vel      -> Bead ix m r pos vel 
+        Bead _ m r pos vel      -> Bead ix m r pos vel
         Wall _ p1 p2            -> Wall ix p1 p2
 
 

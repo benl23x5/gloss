@@ -1,4 +1,6 @@
-{-# LANGUAGE BangPatterns, ScopedTypeVariables #-}
+{-# LANGUAGE BangPatterns        #-}
+{-# LANGUAGE ScopedTypeVariables #-}
+
 module Stage.Advection
         (advection)
 where
@@ -11,31 +13,31 @@ import Data.Vector.Unboxed      (Unbox)
 
 -- | Apply a velocity field to another field.
 --   Both fields must have the same extent.
-advection 
+advection
         :: (FieldElt a, Unbox a)
         => Delta
-        -> VelocityField 
-        -> Field a 
+        -> VelocityField
+        -> Field a
         -> IO (Field a)
 
 advection !delta velField field
- = {-# SCC "advection" #-} 
+ = {-# SCC "advection" #-}
    velField `deepSeqArray` field `deepSeqArray`
    do   computeP $ unsafeTraverse field id (advectElem delta velField)
 
-{-# SPECIALIZE advection 
+{-# SPECIALIZE advection
         :: Delta
         -> VelocityField -> Field Float
         -> IO (Field Float) #-}
 
-{-# SPECIALIZE advection 
+{-# SPECIALIZE advection
         :: Delta
         -> VelocityField -> Field (Float, Float)
         -> IO (Field (Float, Float)) #-}
 
 
 -- | Compute the new field value at the given location.
-advectElem 
+advectElem
         :: (FieldElt a)
         => Delta                -- ^ Time delta (in seconds)
         -> VelocityField        -- ^ Velocity field that moves the source field.
@@ -45,7 +47,7 @@ advectElem
 
 advectElem !delta !velField !get !pos@(Z:. j :. i)
  = velField `deepSeqArray`
-      (((d00 ~*~ t0) ~+~ (d01 ~*~ t1)) ~*~ s0) 
+      (((d00 ~*~ t0) ~+~ (d01 ~*~ t1)) ~*~ s0)
   ~+~ (((d10 ~*~ t0) ~+~ (d11 ~*~ t1)) ~*~ s1)
  where
         _ :. height' :. width' = R.extent velField
@@ -98,11 +100,11 @@ advectElem !delta !velField !get !pos@(Z:. j :. i)
 
 
 {-# SPECIALIZE advectElem
-        :: Delta 
-        -> VelocityField -> (DIM2 -> Float) 
+        :: Delta
+        -> VelocityField -> (DIM2 -> Float)
         -> DIM2 -> Float #-}
 
-{-# SPECIALIZE advectElem 
+{-# SPECIALIZE advectElem
         :: Delta
         -> VelocityField -> (DIM2 -> (Float,Float))
         -> DIM2  -> (Float,Float) #-}

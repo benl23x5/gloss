@@ -6,12 +6,10 @@ import Graphics.Gloss.Interface.Pure.Game
 import Graphics.Gloss.Data.Extent
 import Graphics.Gloss.Data.QuadTree
 import Graphics.Gloss.Algorithms.RayCast
-import System.IO
-import Control.Monad
 
 
 -- | The game world.
-data World      
+data World
         = World
         { worldWidth            :: Int
         , worldHeight           :: Int
@@ -27,24 +25,24 @@ worldExtent world
         = makeExtent (worldWidth world) 0 (worldHeight world) 0
 
 
--- | Load a world from a file.  
+-- | Load a world from a file.
 loadWorld :: FilePath -> IO World
 loadWorld fileName
  = do   str     <- readFile fileName
         return  $ readWorld str
-        
-        
+
+
 -- | Read a world from a string.
 readWorld :: String -> World
 readWorld str
- = let  ("WORLD" : strWidthHeight : skip : cellLines)   
+ = let  ("WORLD" : strWidthHeight : skip : cellLines)
                         = lines str
-        
+
         [width, height] = map read $ words strWidthHeight
         rows    = take height $ cellLines
 
-        cells   = concat 
-                $ map (readLine width) 
+        cells   = concat
+                $ map (readLine width)
                 $ reverse rows
 
         extent  = makeExtent height 0 width 0
@@ -77,21 +75,21 @@ windowSizeOfWorld world
 makeWorldTree :: Extent -> [Cell] -> QuadTree Cell
 makeWorldTree extent cells
  = foldr insert' emptyTree nonEmptyPosCells
- where 
+ where
         insert' (pos, cell) tree
          = case insertByCoord extent pos cell tree of
                 Nothing         -> tree
                 Just tree'      -> tree'
-        
-        (width, height) 
+
+        (width, height)
                 = sizeOfExtent extent
-        
-        posCells        
+
+        posCells
                 = zip   [(x, y) | y <- [0 .. height - 1]
                                 , x <- [0 .. width - 1]]
                         cells
-        
-        nonEmptyPosCells 
+
+        nonEmptyPosCells
                 = filter (\x -> snd x /= CellEmpty) posCells
 
 
@@ -100,12 +98,12 @@ worldPosOfWindowPos :: World -> Point -> Point
 worldPosOfWindowPos world (x, y)
  = let  (windowSizeX, windowSizeY)
                 = windowSizeOfWorld world
-                
+
         offsetX = fromIntegral $ windowSizeX `div` 2
         offsetY = fromIntegral $ windowSizeY `div` 2
-        
+
         scale   = fromIntegral $ worldCellSize world
-        
+
         x'      = (x + offsetX) / scale
         y'      = (y + offsetY) / scale
 
@@ -131,8 +129,8 @@ cellAtCoordIsVisibleFromPoint world pFrom (x', y')
         pb      = (x + 0.4999, y)
         pc      = (x, y - 0.4999)
         pd      = (x, y + 0.4999)
- 
-                
+
+
 -- | Check if a point on some cell (P2) is visible from some other point (P1).
 cellAtPointIsVisibleFromPoint :: World -> Point -> Point -> Bool
 cellAtPointIsVisibleFromPoint world p1 p2

@@ -1,8 +1,8 @@
-{-# LANGUAGE BangPatterns #-}
+{-# LANGUAGE BangPatterns  #-}
+{-# LANGUAGE PatternGuards #-}
 
-
--- Quasicrystals demo. 
---  
+-- Quasicrystals demo.
+--
 -- Based on code from:
 --   http://mainisusuallyafunction.blogspot.com/2011/10/quasicrystals-as-sums-of-waves-in-plane.html
 --
@@ -13,7 +13,7 @@ import Data.Char
 
 -- Main -----------------------------------------------------------------------
 main :: IO ()
-main 
+main
  = do   args    <- getArgs
         config  <- parseArgs args defaultConfig
 
@@ -44,7 +44,7 @@ data Config
 defaultConfig :: Config
 defaultConfig
         = Config
-        { configSizeX           = 800 
+        { configSizeX           = 800
         , configSizeY           = 600
         , configFullScreen      = False
         , configZoom            = 2
@@ -96,7 +96,7 @@ printUsage
         , "    -window     sizeX sizeY  Run in a window                     (default 800, 600)"
         , "    -zoom       <NAT>        Pixel replication factor            (default 5)"
         , "    -scale      <NAT>        Feature size of visualisation       (default 30)"
-        , "    -degree     <NAT>        Number waves to sum for each point  (default 5)" 
+        , "    -degree     <NAT>        Number waves to sum for each point  (default 5)"
         , ""
         , " You'll want to run this with +RTS -N to enable threads" ]
 
@@ -123,11 +123,11 @@ type Time   = Float
 quasicrystal :: Scale -> Degree -> Time -> Point -> Color
 quasicrystal !scale !degree !time !p
  = let  -- Scale the time to be the phi value of the animation.
-        -- The action seems to slow down at increasing phi values, 
+        -- The action seems to slow down at increasing phi values,
         -- so we increase phi faster as time moves on.
         phi     = 1 + (time ** 1.5) * 0.005
 
-   in   rampColor 
+   in   rampColor
           $ waves degree phi
           $ point scale p
 
@@ -143,8 +143,8 @@ waves !degree !phi !x = wrap $ waver 0 degree
      | n == 0    = acc
      | otherwise = waver (acc + wave (fromIntegral n * th) x)
                          (n - 1)
-         
-    wrap n 
+
+    wrap n
      = let !n_  = truncate n :: Int
            !n'  = n - fromIntegral n_
        in  if odd n_ then 1 - n'
@@ -163,13 +163,13 @@ wave !th = f where
 
 -- | Convert an image point to a point on our wave plane.
 point :: Scale -> Point -> Point
-point !scale (x, y) 
+point !scale (x, y)
         = (x * scale, y * scale)
 
 
 -- | Color ramp from blue to white.
 rampColor :: Float -> Color
-rampColor v 
+rampColor v
         = rgb' v (0.4 + (v * 0.6)) 1
 
 

@@ -93,8 +93,6 @@ Executable gloss-color
         -threaded
         -rtsopts
 
-  extensions: ParallelListComp
-
 
 Executable gloss-conway
   Main-is:        Main.hs
@@ -359,10 +357,6 @@ Executable gloss-crystal
         , gloss                         == 1.11.*
         , gloss-raster                  == 1.11.*
 
-  extensions:
-        PatternGuards
-        BangPatterns
-
   ghc-options:
         -Wall
         -threaded
@@ -486,9 +480,6 @@ Executable gloss-wave
 --         Stage.Linear    Stage.Project  Stage.Sources
 --   hs-source-dirs: raster/Fluid/src-repa
 --
---   extensions:
---         PatternGuards
---
 --   ghc-options:
 --         -Wall -threaded -rtsopts -eventlog
 --         -Odph -fno-liberate-case
@@ -538,9 +529,6 @@ Executable gloss-mandel
           base                          >= 4.8 && < 4.11
         , gloss                         == 1.11.*
         , repa                          == 3.4.*
-
-  extensions:
-        PatternGuards
 
   ghc-options:
         -Wall
