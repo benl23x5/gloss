@@ -2,7 +2,6 @@
 # vim: nospell
 
 resolver: ghc-8.4
-allow-newer: true # repa*
 
 packages:
 - 'gloss'
