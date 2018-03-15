@@ -1,5 +1,5 @@
 Name:                gloss
-Version:             1.11.2.1
+Version:             1.12.0.0
 License:             MIT
 License-file:        LICENSE
 Author:              Ben Lippmeier
@@ -42,7 +42,7 @@ Library
         , bytestring                    == 0.10.*
         , containers                    == 0.5.*
         , ghc-prim
-        , gloss-rendering               == 1.11.*
+        , gloss-rendering               == 1.12.*
         , GLUT                          == 2.7.*
         , OpenGL                        >= 2.12 && < 3.1
 

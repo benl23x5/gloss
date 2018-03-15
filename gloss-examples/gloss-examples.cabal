@@ -1,5 +1,5 @@
 Name:                gloss-examples
-Version:             1.11.1.1
+Version:             1.12.0.0
 License:             MIT
 License-file:        LICENSE
 Author:              Ben Lippmeier
@@ -35,7 +35,7 @@ Executable gloss-bitmap
           base                          >= 4.8 && < 4.12
         , bytestring                    == 0.10.*
         , bmp                           == 1.2.*
-        , gloss                         == 1.11.*
+        , gloss                         == 1.12.*
 
   ghc-options:
         -O2
@@ -54,7 +54,7 @@ Executable gloss-boids
 
   Build-depends:
           base                          >= 4.8 && < 4.12
-        , gloss                         == 1.11.*
+        , gloss                         == 1.12.*
 
   ghc-options:
         -O2
@@ -69,7 +69,7 @@ Executable gloss-clock
 
   Build-depends:
           base                          >= 4.8 && < 4.12
-        , gloss                         == 1.11.*
+        , gloss                         == 1.12.*
 
   ghc-options:
         -O2
@@ -84,7 +84,7 @@ Executable gloss-color
 
   Build-depends:
           base                          >= 4.8 && < 4.12
-        , gloss                         == 1.11.*
+        , gloss                         == 1.12.*
         , vector                        >= 0.11 && < 0.13
 
   ghc-options:
@@ -104,7 +104,7 @@ Executable gloss-conway
 
   Build-depends:
           base                          >= 4.8 && < 4.12
-        , gloss                         == 1.11.*
+        , gloss                         == 1.12.*
         , vector                        >= 0.11 && < 0.13
 
   ghc-options:
@@ -120,7 +120,7 @@ Executable gloss-draw
 
   Build-depends:
           base                          >= 4.8 && < 4.12
-        , gloss                         == 1.11.*
+        , gloss                         == 1.12.*
 
   ghc-options:
         -O2
@@ -135,7 +135,7 @@ Executable gloss-easy
 
   Build-depends:
           base                          >= 4.8 && < 4.12
-        , gloss                         == 1.11.*
+        , gloss                         == 1.12.*
 
   ghc-options:
         -O2
@@ -155,7 +155,7 @@ Executable gloss-eden
 
   Build-depends:
           base                          >= 4.8 && < 4.12
-        , gloss                         == 1.11.*
+        , gloss                         == 1.12.*
         , random                        == 1.1.*
 
   ghc-options:
@@ -171,7 +171,7 @@ Executable gloss-flake
 
   Build-depends:
           base                          >= 4.8 && < 4.12
-        , gloss                         == 1.11.*
+        , gloss                         == 1.12.*
 
   ghc-options:
         -O2
@@ -186,7 +186,7 @@ Executable gloss-gameevent
 
   Build-depends:
           base                          >= 4.8 && < 4.12
-        , gloss                         == 1.11.*
+        , gloss                         == 1.12.*
 
   ghc-options:
         -O2
@@ -201,7 +201,7 @@ Executable gloss-hello
 
   Build-depends:
           base                          >= 4.8 && < 4.12
-        , gloss                         == 1.11.*
+        , gloss                         == 1.12.*
 
   ghc-options:
         -O2
@@ -221,7 +221,7 @@ Executable gloss-lifespan
 
   Build-depends:
           base                          >= 4.8 && < 4.12
-        , gloss                         == 1.11.*
+        , gloss                         == 1.12.*
         , random                        == 1.1.*
 
   ghc-options:
@@ -237,7 +237,7 @@ Executable gloss-machina
 
   Build-depends:
           base                          >= 4.8 && < 4.12
-        , gloss                         == 1.11.*
+        , gloss                         == 1.12.*
 
   ghc-options:
         -O2
@@ -258,8 +258,8 @@ Executable gloss-occlusion
 
   Build-depends:
           base                          >= 4.8 && < 4.12
-        , gloss                         == 1.11.*
-        , gloss-algorithms              == 1.11.*
+        , gloss                         == 1.12.*
+        , gloss-algorithms              == 1.12.*
 
   ghc-options:
         -O2
@@ -285,7 +285,7 @@ Executable gloss-styrene
           base                          >= 4.8 && < 4.12
         , containers                    == 0.5.*
         , ghc-prim
-        , gloss                         == 1.11.*
+        , gloss                         == 1.12.*
 
   ghc-options:
         -O2
@@ -300,7 +300,7 @@ Executable gloss-tree
 
   Build-depends:
           base                          >= 4.8 && < 4.12
-        , gloss                         == 1.11.*
+        , gloss                         == 1.12.*
 
   ghc-options:
         -O2
@@ -323,7 +323,7 @@ Executable gloss-visibility
 
   Build-depends:
           base                          >= 4.8 && < 4.12
-        , gloss                         == 1.11.*
+        , gloss                         == 1.12.*
         , vector                        >= 0.11 && < 0.13
 
   ghc-options:
@@ -339,7 +339,7 @@ Executable gloss-zen
 
   Build-depends:
           base                          >= 4.8 && < 4.12
-        , gloss                         == 1.11.*
+        , gloss                         == 1.12.*
 
   ghc-options:
         -O2
@@ -354,8 +354,8 @@ Executable gloss-crystal
 
   Build-depends:
           base                          >= 4.8 && < 4.12
-        , gloss                         == 1.11.*
-        , gloss-raster                  == 1.11.*
+        , gloss                         == 1.12.*
+        , gloss-raster                  == 1.12.*
 
   ghc-options:
         -Wall
@@ -388,8 +388,8 @@ Executable gloss-ray
           base                          >= 4.8 && < 4.12
         , repa                          == 3.4.*
         , repa-io                       == 3.4.*
-        , gloss                         == 1.11.*
-        , gloss-raster                  == 1.11.*
+        , gloss                         == 1.12.*
+        , gloss-raster                  == 1.12.*
 
   ghc-options:
         -Wall
@@ -413,8 +413,8 @@ Executable gloss-pulse
 
   Build-depends:
           base                          >= 4.8 && < 4.12
-        , gloss                         == 1.11.*
-        , gloss-raster                  == 1.11.*
+        , gloss                         == 1.12.*
+        , gloss-raster                  == 1.12.*
 
   ghc-options:
         -Wall
@@ -439,8 +439,8 @@ Executable gloss-wave
   Build-depends:
           base                          >= 4.8 && < 4.12
         , ghc-prim
-        , gloss                         == 1.11.*
-        , gloss-raster                  == 1.11.*
+        , gloss                         == 1.12.*
+        , gloss-raster                  == 1.12.*
         , vector                        >= 0.11 && < 0.13
 
   ghc-options:
@@ -471,7 +471,7 @@ Executable gloss-wave
 --         repa            == 3.4.*
 --         repa-io         == 3.4.*
 --         repa-algorithms == 3.4.*
---         gloss           == 1.11.*
+--         gloss           == 1.12.*
 --   Main-is:        Main.hs
 --   other-modules:
 --         Args Config FieldElt Model UserEvent
@@ -498,7 +498,7 @@ Executable gloss-snow
 
   Build-depends:
           base                          >= 4.8 && < 4.12
-        , gloss                         == 1.11.*
+        , gloss                         == 1.12.*
         , repa                          == 3.4.*
         , repa-algorithms               == 3.4.*
 
@@ -527,7 +527,7 @@ Executable gloss-mandel
 
   Build-depends:
           base                          >= 4.8 && < 4.12
-        , gloss                         == 1.11.*
+        , gloss                         == 1.12.*
         , repa                          == 3.4.*
 
   ghc-options:
@@ -553,7 +553,7 @@ Executable gloss-graph
   Build-depends:
           base                          >= 4.8 && < 4.12
         , containers                    == 0.5.*
-        , gloss                         == 1.11.*
+        , gloss                         == 1.12.*
 
   ghc-options:
         -O2
@@ -569,7 +569,7 @@ Executable gloss-gravity
   Build-depends:
           base                          >= 4.8 && < 4.12
         , containers                    == 0.5.*
-        , gloss                         == 1.11.*
+        , gloss                         == 1.12.*
 
   ghc-options:
         -O2
@@ -583,8 +583,8 @@ Executable gloss-gravity
 --   Build-depends:
 --         base            >= 4.8 && < 4.12
 --         containers      == 0.5.*
---         gloss           == 1.11.*
---         gloss-rendering == 1.11.*
+--         gloss           == 1.12.*
+--         gloss-rendering == 1.12.*
 --         GLFW-b
 --   Main-is:        Main.hs
 --   hs-source-dirs: picture/Render
