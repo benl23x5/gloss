@@ -22,7 +22,7 @@ source-repository head
 
 Library
   Build-Depends:
-          base                          >= 4.8 && < 4.11
+          base                          >= 4.8 && < 4.12
         , containers                    == 0.5.*
         , ghc-prim
         , gloss                         == 1.11.*

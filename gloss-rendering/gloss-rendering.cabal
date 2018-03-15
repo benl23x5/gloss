@@ -28,7 +28,7 @@ library
         Graphics.Gloss.Internals.Rendering.State
 
   build-depends:
-          base                          >= 4.8 && < 4.11
+          base                          >= 4.8 && < 4.12
         , bmp                           == 1.2.*
         , bytestring                    == 0.10.*
         , containers                    == 0.5.*

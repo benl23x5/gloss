@@ -32,7 +32,7 @@ Executable gloss-bitmap
   Main-is:        Main.hs
   hs-source-dirs: picture/Bitmap
   Build-depends:
-          base                          >= 4.8 && < 4.11
+          base                          >= 4.8 && < 4.12
         , bytestring                    == 0.10.*
         , bmp                           == 1.2.*
         , gloss                         == 1.11.*
@@ -53,7 +53,7 @@ Executable gloss-boids
         KDTree2d
 
   Build-depends:
-          base                          >= 4.8 && < 4.11
+          base                          >= 4.8 && < 4.12
         , gloss                         == 1.11.*
 
   ghc-options:
@@ -68,7 +68,7 @@ Executable gloss-clock
   hs-source-dirs: picture/Clock
 
   Build-depends:
-          base                          >= 4.8 && < 4.11
+          base                          >= 4.8 && < 4.12
         , gloss                         == 1.11.*
 
   ghc-options:
@@ -83,7 +83,7 @@ Executable gloss-color
   hs-source-dirs: picture/Color
 
   Build-depends:
-          base                          >= 4.8 && < 4.11
+          base                          >= 4.8 && < 4.12
         , gloss                         == 1.11.*
         , vector                        >= 0.11 && < 0.13
 
@@ -103,7 +103,7 @@ Executable gloss-conway
         World
 
   Build-depends:
-          base                          >= 4.8 && < 4.11
+          base                          >= 4.8 && < 4.12
         , gloss                         == 1.11.*
         , vector                        >= 0.11 && < 0.13
 
@@ -119,7 +119,7 @@ Executable gloss-draw
   hs-source-dirs: picture/Draw
 
   Build-depends:
-          base                          >= 4.8 && < 4.11
+          base                          >= 4.8 && < 4.12
         , gloss                         == 1.11.*
 
   ghc-options:
@@ -134,7 +134,7 @@ Executable gloss-easy
   hs-source-dirs: picture/Easy
 
   Build-depends:
-          base                          >= 4.8 && < 4.11
+          base                          >= 4.8 && < 4.12
         , gloss                         == 1.11.*
 
   ghc-options:
@@ -154,7 +154,7 @@ Executable gloss-eden
         World
 
   Build-depends:
-          base                          >= 4.8 && < 4.11
+          base                          >= 4.8 && < 4.12
         , gloss                         == 1.11.*
         , random                        == 1.1.*
 
@@ -170,7 +170,7 @@ Executable gloss-flake
   hs-source-dirs: picture/Flake
 
   Build-depends:
-          base                          >= 4.8 && < 4.11
+          base                          >= 4.8 && < 4.12
         , gloss                         == 1.11.*
 
   ghc-options:
@@ -185,7 +185,7 @@ Executable gloss-gameevent
   hs-source-dirs: picture/GameEvent
 
   Build-depends:
-          base                          >= 4.8 && < 4.11
+          base                          >= 4.8 && < 4.12
         , gloss                         == 1.11.*
 
   ghc-options:
@@ -200,7 +200,7 @@ Executable gloss-hello
   hs-source-dirs: picture/Hello
 
   Build-depends:
-          base                          >= 4.8 && < 4.11
+          base                          >= 4.8 && < 4.12
         , gloss                         == 1.11.*
 
   ghc-options:
@@ -220,7 +220,7 @@ Executable gloss-lifespan
         World
 
   Build-depends:
-          base                          >= 4.8 && < 4.11
+          base                          >= 4.8 && < 4.12
         , gloss                         == 1.11.*
         , random                        == 1.1.*
 
@@ -236,7 +236,7 @@ Executable gloss-machina
   hs-source-dirs: picture/Machina
 
   Build-depends:
-          base                          >= 4.8 && < 4.11
+          base                          >= 4.8 && < 4.12
         , gloss                         == 1.11.*
 
   ghc-options:
@@ -257,7 +257,7 @@ Executable gloss-occlusion
         Data
 
   Build-depends:
-          base                          >= 4.8 && < 4.11
+          base                          >= 4.8 && < 4.12
         , gloss                         == 1.11.*
         , gloss-algorithms              == 1.11.*
 
@@ -282,7 +282,7 @@ Executable gloss-styrene
         World
 
   Build-depends:
-          base                          >= 4.8 && < 4.11
+          base                          >= 4.8 && < 4.12
         , containers                    == 0.5.*
         , ghc-prim
         , gloss                         == 1.11.*
@@ -299,7 +299,7 @@ Executable gloss-tree
   hs-source-dirs: picture/Tree
 
   Build-depends:
-          base                          >= 4.8 && < 4.11
+          base                          >= 4.8 && < 4.12
         , gloss                         == 1.11.*
 
   ghc-options:
@@ -322,7 +322,7 @@ Executable gloss-visibility
         World
 
   Build-depends:
-          base                          >= 4.8 && < 4.11
+          base                          >= 4.8 && < 4.12
         , gloss                         == 1.11.*
         , vector                        >= 0.11 && < 0.13
 
@@ -338,7 +338,7 @@ Executable gloss-zen
   hs-source-dirs: picture/Zen
 
   Build-depends:
-          base                          >= 4.8 && < 4.11
+          base                          >= 4.8 && < 4.12
         , gloss                         == 1.11.*
 
   ghc-options:
@@ -353,7 +353,7 @@ Executable gloss-crystal
   hs-source-dirs: raster/Crystal
 
   Build-depends:
-          base                          >= 4.8 && < 4.11
+          base                          >= 4.8 && < 4.12
         , gloss                         == 1.11.*
         , gloss-raster                  == 1.11.*
 
@@ -385,7 +385,7 @@ Executable gloss-ray
         World
 
   Build-depends:
-          base                          >= 4.8 && < 4.11
+          base                          >= 4.8 && < 4.12
         , repa                          == 3.4.*
         , repa-io                       == 3.4.*
         , gloss                         == 1.11.*
@@ -412,7 +412,7 @@ Executable gloss-pulse
   hs-source-dirs: raster/Pulse
 
   Build-depends:
-          base                          >= 4.8 && < 4.11
+          base                          >= 4.8 && < 4.12
         , gloss                         == 1.11.*
         , gloss-raster                  == 1.11.*
 
@@ -437,7 +437,7 @@ Executable gloss-wave
   hs-source-dirs: raster/Wave
 
   Build-depends:
-          base                          >= 4.8 && < 4.11
+          base                          >= 4.8 && < 4.12
         , ghc-prim
         , gloss                         == 1.11.*
         , gloss-raster                  == 1.11.*
@@ -465,7 +465,7 @@ Executable gloss-wave
 --
 -- Executable gloss-fluid
 --   Build-depends:
---         base            >= 4.8 && < 4.11
+--         base            >= 4.8 && < 4.12
 --         ghc-prim
 --         vector          == 0.11.*
 --         repa            == 3.4.*
@@ -497,7 +497,7 @@ Executable gloss-snow
   hs-source-dirs: raster/Snow
 
   Build-depends:
-          base                          >= 4.8 && < 4.11
+          base                          >= 4.8 && < 4.12
         , gloss                         == 1.11.*
         , repa                          == 3.4.*
         , repa-algorithms               == 3.4.*
@@ -526,7 +526,7 @@ Executable gloss-mandel
         Solver
 
   Build-depends:
-          base                          >= 4.8 && < 4.11
+          base                          >= 4.8 && < 4.12
         , gloss                         == 1.11.*
         , repa                          == 3.4.*
 
@@ -551,7 +551,7 @@ Executable gloss-graph
   hs-source-dirs: picture/Graph
 
   Build-depends:
-          base                          >= 4.8 && < 4.11
+          base                          >= 4.8 && < 4.12
         , containers                    == 0.5.*
         , gloss                         == 1.11.*
 
@@ -567,7 +567,7 @@ Executable gloss-gravity
   hs-source-dirs: picture/Gravity
 
   Build-depends:
-          base                          >= 4.8 && < 4.11
+          base                          >= 4.8 && < 4.12
         , containers                    == 0.5.*
         , gloss                         == 1.11.*
 
@@ -581,7 +581,7 @@ Executable gloss-gravity
 -- Disabled on 8/11/2016 as GLFW-b does not build on OSX.
 -- Executable gloss-render
 --   Build-depends:
---         base            >= 4.8 && < 4.11
+--         base            >= 4.8 && < 4.12
 --         containers      == 0.5.*
 --         gloss           == 1.11.*
 --         gloss-rendering == 1.11.*
