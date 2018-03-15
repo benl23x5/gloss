@@ -17,26 +17,27 @@ Synopsis:
         Parallel rendering of raster images.
 
 Flag llvm
-  Description:  Compile via LLVM. This produces much better object code,
+  Description:  Compile via LLVM. This produces much better object code
                 but your GHC needs to have been built against the LLVM compiler.
 
   Default:      False
 
 source-repository head
-        type:           git
-        location:       https://github.com/benl23x5/gloss
+  type:         git
+  location:     https://github.com/benl23x5/gloss
 
 Library
   Build-Depends:
-        base            >= 4.8 && < 4.11,
-        ghc-prim        >= 0.4 && < 0.6,
-        containers      == 0.5.*,
-        repa            == 3.4.*,
-        gloss           == 1.11.*,
-        gloss-rendering == 1.11.*
+          base                          >= 4.8 && < 4.11
+        , containers                    == 0.5.*
+        , ghc-prim
+        , gloss                         == 1.11.*
+        , gloss-rendering               == 1.11.*
+        , repa                          == 3.4.*
 
   ghc-options:
-        -Odph -fno-liberate-case
+        -Odph
+        -fno-liberate-case
 
   Exposed-modules:
         Graphics.Gloss.Raster.Field

@@ -17,18 +17,19 @@ Synopsis:
         Data structures and algorithms for working with 2D graphics.
 
 source-repository head
-        type:           git
-        location:       https://github.com/benl23x5/gloss
+  type:           git
+  location:       https://github.com/benl23x5/gloss
 
 Library
-  Build-Depends: 
-        base       >= 4.8 && < 4.11,
-        ghc-prim   >= 0.4 && < 0.6,
-        containers == 0.5.*,
-        gloss      == 1.11.*
+  Build-Depends:
+          base                          >= 4.8 && < 4.11
+        , containers                    == 0.5.*
+        , ghc-prim
+        , gloss                         == 1.11.*
 
   ghc-options:
-        -O2 -Wall
+        -O2
+        -Wall
 
   Exposed-modules:
         Graphics.Gloss.Algorithms.RayCast
