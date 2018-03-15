@@ -20,7 +20,7 @@ import Graphics.Gloss.Geometry.Angle
 
 -- | The magnitude of a vector.
 magV :: Vector -> Float
-magV (x, y)     
+magV (x, y)
         = sqrt (x * x + y * y)
 {-# INLINE magV #-}
 
@@ -48,7 +48,7 @@ detV (x1, y1) (x2, y2)
 
 -- | Multiply a vector by a scalar.
 mulSV :: Float -> Vector -> Vector
-mulSV s (x, y)          
+mulSV s (x, y)
         = (s * x, s * y)
 {-# INLINE mulSV #-}
 
@@ -69,7 +69,7 @@ angleVV p1 p2
         d       = p1 `dotV` p2
         aDiff   = acos $ d / (m1 * m2)
 
-   in   aDiff   
+   in   aDiff
 {-# INLINE angleVV #-}
 
 

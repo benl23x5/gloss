@@ -26,7 +26,7 @@ module Graphics.Gloss.Data.Color
 
           -- *** Secondary
         , yellow,     cyan,       magenta
-        
+
           -- *** Tertiary
         , rose,   violet, azure, aquamarine, chartreuse, orange
         )
@@ -37,7 +37,7 @@ import Graphics.Gloss.Rendering
 
 -- Color functions ------------------------------------------------------------
 -- | Mix two colors with the given ratios.
-mixColors 
+mixColors
         :: Float        -- ^ Proportion of first color.
         -> Float        -- ^ Proportion of second color.
         -> Color        -- ^ First color.
@@ -67,14 +67,14 @@ mixColors m1 m2 c1 c2
 
 
 -- | Add RGB components of a color component-wise,
---   then normalise them to the highest resulting one. 
+--   then normalise them to the highest resulting one.
 --   The alpha components are averaged.
 addColors :: Color -> Color -> Color
 addColors c1 c2
  = let  (r1, g1, b1, a1) = rgbaOfColor c1
         (r2, g2, b2, a2) = rgbaOfColor c2
 
-   in   normalizeColor 
+   in   normalizeColor
                 (r1 + r2)
                 (g1 + g2)
                 (b1 + b2)
@@ -87,7 +87,7 @@ dim c
  = let  (r, g, b, a)    = rgbaOfColor c
    in   makeColor (r / 1.2) (g / 1.2) (b / 1.2) a
 
-        
+
 -- | Make a brighter version of a color, scaling towards white.
 bright :: Color -> Color
 bright c
@@ -100,8 +100,8 @@ light :: Color -> Color
 light c
  = let  (r, g, b, a)    = rgbaOfColor c
    in   makeColor (r + 0.2) (g + 0.2) (b + 0.2) a
-        
-        
+
+
 -- | Darken a color, adding black.
 dark :: Color -> Color
 dark c
@@ -140,7 +140,7 @@ withAlpha a c
 
 -- Pre-defined Colors ---------------------------------------------------------
 -- | A greyness of a given order.
--- 
+--
 --   Range is 0 = black, to 1 = white.
 greyN   :: Float -> Color
 greyN n         = makeRawColor n   n   n   1.0

@@ -2,7 +2,7 @@
 -- 8 Coats of GLOSS -----------------------------------------------------------
 
 Gloss hides the pain of drawing simple vector graphics behind a nice
-data type and a few display functions. 
+data type and a few display functions.
 
 EXAMPLE
     Getting something on the screen is as easy as:
@@ -13,10 +13,10 @@ EXAMPLE
 
 USAGE
     Once the window is open you can use the following:
-      * Quit            
+      * Quit
         - esc-key.
 
-      * Move Viewport   
+      * Move Viewport
         - arrow keys
         - left-click drag
 
@@ -84,14 +84,14 @@ Release Notes:
 
  For 1.4.0:
    * Added texture caching.
-   Thanks to Christiaan Baaij: 
+   Thanks to Christiaan Baaij:
    * Refactoring of Gloss internals to support multiple window manager backends.
    * Support for using GLFW as the window library instead of GLUT.
        GLUT is still the default, but to use GLFW install gloss with:
           cabal install gloss --flags=\"GLFW -GLUT\"
-    
+
  For 1.3.0:
-   * Various wibbles for GHC 7.1   
+   * Various wibbles for GHC 7.1
    Thanks to Ben Lambert-Smith:
    * New support for displaying bitmap files.
 
@@ -109,5 +109,5 @@ Release Notes:
    * Added game mode.
    * Added QuadTree and Extent structures.
    * Added simple ray casting.
-    
-    
+
+

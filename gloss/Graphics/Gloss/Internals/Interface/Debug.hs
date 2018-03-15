@@ -8,7 +8,7 @@ module Graphics.Gloss.Internals.Interface.Debug
 where
 import qualified Graphics.Rendering.OpenGL.GL   as GL
 import Graphics.Rendering.OpenGL                (get)
-                
+
 -- | Dump internal state of the OpenGL framebuffer
 dumpFramebufferState :: IO ()
 dumpFramebufferState
@@ -21,16 +21,16 @@ dumpFramebufferState
         stencilBits     <- get GL.stencilBits
         depthBits       <- get GL.depthBits
         accumBits       <- get GL.accumBits
-        
+
         clearColor      <- get GL.clearColor
         clearStencil    <- get GL.clearStencil
         clearDepth      <- get GL.clearDepth
         clearAccum      <- get GL.clearAccum
-        
+
         colorMask       <- get GL.colorMask
         stencilMask     <- get GL.stencilMask
         depthMask       <- get GL.depthMask
-        
+
         putStr  $  "* dumpFramebufferState\n"
                 ++ "  auxBuffers         = " ++ show auxBuffers         ++ "\n"
                 ++ "  doubleBuffer       = " ++ show doubleBuffer       ++ "\n"
@@ -50,7 +50,7 @@ dumpFramebufferState
                 ++ "             stencil = " ++ show stencilMask        ++ "\n"
                 ++ "             depth   = " ++ show depthMask          ++ "\n"
                 ++ "\n"
-                
+
 
 -- | Dump internal state of the fragment renderer.
 dumpFragmentState :: IO ()
@@ -59,7 +59,7 @@ dumpFragmentState
         blend           <- get GL.blend
         blendEquation   <- get GL.blendEquation
         blendFunc       <- get GL.blendFunc
-        
+
         putStr  $  "* dumpFragmentState\n"
                 ++ "  blend              = " ++ show blend              ++ "\n"
                 ++ "  blend equation     = " ++ show blendEquation      ++ "\n"

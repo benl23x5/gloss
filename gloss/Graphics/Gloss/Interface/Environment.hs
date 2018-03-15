@@ -7,12 +7,13 @@ import Data.IORef
 
 -- | Get the size of the screen, in pixels.
 --
---   This will be the size of the rendered gloss image when 
+--   This will be the size of the rendered gloss image when
 --   fullscreen mode is enabled.
 --
 getScreenSize :: IO (Int, Int)
-getScreenSize 
+getScreenSize
  = do   backendStateRef         <- newIORef glutStateInit
         initializeGLUT backendStateRef False
         GL.Size width height    <- GLUT.get GLUT.screenSize
         return (fromIntegral width, fromIntegral height)
+

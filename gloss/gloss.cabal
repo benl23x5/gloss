@@ -97,10 +97,6 @@ Library
         Graphics.Gloss.Internals.Interface.Game
         Graphics.Gloss.Internals.Interface.Backend
 
-  Extensions:
-        DeriveDataTypeable
-        PatternGuards
-
   If flag(GLUT)
     CPP-Options: -DWITHGLUT
     Other-modules:
