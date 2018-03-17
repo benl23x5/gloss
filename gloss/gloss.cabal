@@ -1,5 +1,5 @@
 Name:                gloss
-Version:             1.11.1.1
+Version:             1.12.0.0
 License:             MIT
 License-file:        LICENSE
 Author:              Ben Lippmeier
@@ -11,43 +11,49 @@ Category:            Graphics
 Homepage:            http://gloss.ouroborus.net
 Bug-reports:         gloss@ouroborus.net
 Description:
-	Gloss hides the pain of drawing simple vector graphics behind a nice data type and
-	a few display functions. Gloss uses OpenGL under the hood, but you won't need to
-	worry about any of that. Get something cool on the screen in under 10 minutes.
+        Gloss hides the pain of drawing simple vector graphics behind a nice data type and
+        a few display functions. Gloss uses OpenGL under the hood, but you won't need to
+        worry about any of that. Get something cool on the screen in under 10 minutes.
 
 Synopsis:
         Painless 2D vector graphics, animations and simulations.
 
 source-repository head
-        type:           git
-        location:       https://github.com/benl23x5/gloss
+  type:         git
+  location:     https://github.com/benl23x5/gloss
+
+source-repository this
+  type:         git
+  tag:          v1.12.0.0
+  location:     https://github.com/benl23x5/gloss
 
 Flag GLUT
-  Description: Enable the GLUT backend
-  Default:     True
+  Description:  Enable the GLUT backend
+  Default:      True
 
 Flag GLFW
-  Description: Enable the GLFW backend
-  Default:     False
+  Description:  Enable the GLFW backend
+  Default:      False
 
 Flag ExplicitBackend
-  Description: Expose versions of 'display' and friends that allow
-               you to choose what window manager backend to use.
-  Default:     False
+  Description:  Expose versions of 'display' and friends that allow
+                you to choose what window manager backend to use.
+  Default:      False
 
 Library
   Build-Depends:
-        base       >= 4.8 && < 4.11,
-        ghc-prim   >= 0.4 && < 0.6,
-        containers == 0.5.*,
-        bytestring == 0.10.*,
-        OpenGL     >= 2.12 && < 3.1,
-        GLUT       == 2.7.*,
-        bmp        == 1.2.*,
-        gloss-rendering == 1.11.*
+          base                          >= 4.8 && < 4.12
+        , bmp                           == 1.2.*
+        , bytestring                    == 0.10.*
+        , containers                    == 0.5.*
+        , ghc-prim
+        , gloss-rendering               == 1.12.*
+        , GLUT                          == 2.7.*
+        , OpenGL                        >= 2.12 && < 3.1
 
   ghc-options:
-        -O2 -Wall
+        -O2
+        -Wall
 
   Exposed-modules:
         Graphics.Gloss
@@ -57,6 +63,7 @@ Library
         Graphics.Gloss.Data.Display
         Graphics.Gloss.Data.Picture
         Graphics.Gloss.Data.Point
+        Graphics.Gloss.Data.Point.Arithmetic
         Graphics.Gloss.Data.Vector
         Graphics.Gloss.Data.ViewPort
         Graphics.Gloss.Data.ViewState
@@ -68,10 +75,11 @@ Library
         Graphics.Gloss.Interface.Pure.Game
         Graphics.Gloss.Interface.IO.Animate
         Graphics.Gloss.Interface.IO.Display
+        Graphics.Gloss.Interface.IO.Interact
         Graphics.Gloss.Interface.IO.Simulate
         Graphics.Gloss.Interface.IO.Game
         Graphics.Gloss.Interface.Environment
-        
+
   Other-modules:
         Graphics.Gloss.Internals.Color
         Graphics.Gloss.Internals.Interface.Animate.State
@@ -89,13 +97,10 @@ Library
         Graphics.Gloss.Internals.Interface.Window
         Graphics.Gloss.Internals.Interface.Display
         Graphics.Gloss.Internals.Interface.Animate
+        Graphics.Gloss.Internals.Interface.Interact
         Graphics.Gloss.Internals.Interface.Simulate
         Graphics.Gloss.Internals.Interface.Game
         Graphics.Gloss.Internals.Interface.Backend
-
-  Extensions:
-        DeriveDataTypeable
-        PatternGuards
 
   If flag(GLUT)
     CPP-Options: -DWITHGLUT

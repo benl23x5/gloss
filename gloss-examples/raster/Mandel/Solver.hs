@@ -1,5 +1,8 @@
-{-# LANGUAGE BangPatterns, ScopedTypeVariables #-}
-module Solver 
+{-# LANGUAGE BangPatterns        #-}
+{-# LANGUAGE PatternGuards       #-}
+{-# LANGUAGE ScopedTypeVariables #-}
+
+module Solver
         ( mandelPicture
         , mandelArray
         , f2d
@@ -75,12 +78,12 @@ makePicture !winSizeX !winSizeY !zoomX !zoomY !makePixel
         sizeX = winSizeX `div` zoomX
         sizeY = winSizeY `div` zoomY
 
-        {-# INLINE conv #-} 
+        {-# INLINE conv #-}
         conv (r, g, b)
          = let  r'      = fromIntegral r
                 g'      = fromIntegral g
                 b'      = fromIntegral b
-                a       = 255 
+                a       = 255
 
                 !w      =   unsafeShiftL r' 24
                         .|. unsafeShiftL g' 16
@@ -93,12 +96,12 @@ makePicture !winSizeX !winSizeY !zoomX !zoomY !makePixel
         -- Define the image, and extract out just the RGB color components.
         -- We don't need the alpha because we're only drawing one image.
         (arrRGB :: Array F DIM2 Word32)
-                <- R.computeP  
+                <- R.computeP
                 $ R.map conv
                 $ makeFrame winSizeX winSizeY zoomX zoomY makePixel
 
         -- Wrap the ForeignPtr from the Array as a gloss picture.
-        let picture     
+        let picture
                 = Scale (fromIntegral zoomX) (fromIntegral zoomY)
                 $ bitmapOfForeignPtr
                         sizeX sizeY     -- raw image size
@@ -145,14 +148,14 @@ makeFrame !winSizeX !winSizeY !zoomX !zoomY !makePixel
            in   makePixel x' y'
 
    in   R.hintInterleave
-         $ R.map unpackColor 
+         $ R.map unpackColor
          $ R.fromFunction (Z :. sizeY  :. sizeX)
          $ pixelOfIndex
 {-# INLINE makeFrame #-}
 
 
 -- Mandel ---------------------------------------------------------------------
-mandelPixel 
+mandelPixel
         :: Double               -- Scale X
         -> Double               -- Scale Y
         -> Double               -- Offset X
@@ -163,7 +166,7 @@ mandelPixel
         -> Double               -- X (Real)
         -> Double               -- Y (Imaginary)
         -> Color
-mandelPixel scaleX scaleY x0 y0 zoom cMax rMax x y 
+mandelPixel scaleX scaleY x0 y0 zoom cMax rMax x y
  = let
         !x'     = x0 + x * zoom * scaleX
         !y'     = y0 + y * zoom * scaleY
@@ -188,7 +191,7 @@ mandelRun countMax rMax cr ci
    | count >= countMax                 = count
    | sqrt (zr * zr + zi * zi) > rMax   = count
 
-   | otherwise                          
+   | otherwise
    = let !z2r     = zr*zr - zi*zi
          !z2i     = 2 * zr * zi
          !yr      = z2r + cr
@@ -212,7 +215,7 @@ d2f = double2Float
 --   doesn't have enout specialisations and goes via Integer.
 word8OfFloat :: Float -> Word8
 word8OfFloat f
-        = fromIntegral (truncate f :: Int) 
+        = fromIntegral (truncate f :: Int)
 {-# INLINE word8OfFloat #-}
 
 

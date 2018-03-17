@@ -1,8 +1,8 @@
-
 {-# LANGUAGE BangPatterns #-}
+
 module Vec2 where
 
-data Vec2 
+data Vec2
         = Vec2 {-# UNPACK #-}!Double {-# UNPACK #-}!Double
         deriving Show
 

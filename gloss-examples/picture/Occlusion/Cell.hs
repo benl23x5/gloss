@@ -1,7 +1,7 @@
 
 module Cell
         ( Cell (..)
-        , readCell 
+        , readCell
         , pictureOfCell
         , cellShape)
 where
@@ -27,15 +27,14 @@ readCell c
 -- | The basic shape of a cell.
 cellShape :: Int -> Int -> Int -> Picture
 cellShape cellSize posXi posYi
- = let  cs      = fromIntegral cellSize
-        posX    = fromIntegral posXi
+ = let  posX    = fromIntegral posXi
         posY    = fromIntegral posYi
         x1      = posX
         x2      = posX + 1
-        y1      = posY 
+        y1      = posY
         y2      = posY + 1
    in   Polygon [(x1, y1), (x1, y2), (x2, y2), (x2, y1)]
-                
+
 
 -- | Convert a cell to a picture, based on a primitive shape.
 --      We pass the shape in to avoid recomputing it for each cell.

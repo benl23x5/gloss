@@ -1,4 +1,5 @@
 {-# LANGUAGE BangPatterns #-}
+
 module Stage.Project
         (project)
 where
@@ -13,25 +14,25 @@ import Prelude                  as P
 project :: Int -> Field (Float, Float) -> IO (Field (Float, Float))
 project iters field
  = {-# SCC project #-}
-   field `deepSeqArray` 
+   field `deepSeqArray`
    do   let _ :. height :. width = extent field
 
         divergence <- {-# SCC "project.genDiv" #-}
-                      computeUnboxedP 
+                      computeUnboxedP
                    $  fromFunction (Z:. height :. width) (genDivergence width height field)
 
         p          <- {-# SCC "project.linearSolver" #-}
                       linearSolver divergence divergence 1 4 iters
 
         f'         <- {-# SCC "project.apply" #-}
-                      computeUnboxedP 
+                      computeUnboxedP
                 $     unsafeTraverse field id (projectElem width height p)
 
         return f'
 {-# NOINLINE project #-}
 
 
--- | Subtract a gradient field from the regular field to 
+-- | Subtract a gradient field from the regular field to
 --   create a mass-conserving field.
 projectElem
         :: Int                          -- ^ Width of model.

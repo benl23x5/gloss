@@ -6,24 +6,24 @@ module Graphics.Gloss.Internals.Interface.Simulate.State
 where
 
 -- | Simulation state
-data State      
+data State
  =      State
         { -- | The iteration number we're up to.
           stateIteration        :: !Integer
 
         -- | How many simulation setps to take for each second of real time
-        , stateResolution       :: !Int 
-        
+        , stateResolution       :: !Int
+
         -- | How many seconds worth of simulation we've done so far
         , stateSimTime          :: !Float  }
-        
+
 
 -- | Initial control state
 stateInit :: Int -> State
 stateInit resolution
         = State
         { stateIteration                = 0
-        , stateResolution               = resolution 
+        , stateResolution               = resolution
         , stateSimTime                  = 0 }
-        
-        
+
+

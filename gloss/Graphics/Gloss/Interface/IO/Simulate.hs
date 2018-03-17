@@ -1,6 +1,6 @@
 {-# LANGUAGE RankNTypes #-}
 
--- We export this stuff separately so we don't clutter up the 
+-- We export this stuff separately so we don't clutter up the
 -- API of the Graphics.Gloss module.
 
 -- | Simulate mode is for producing an animation of some model who's picture
@@ -27,8 +27,8 @@ simulateIO :: forall model
         -> Int                   -- ^ Number of simulation steps to take for each second of real time.
         -> model                 -- ^ The initial model.
         -> (model -> IO Picture) -- ^ A function to convert the model to a picture.
-        -> (ViewPort -> Float -> model -> IO model) 
-                                 -- ^ A function to step the model one iteration. It is passed the 
+        -> (ViewPort -> Float -> model -> IO model)
+                                 -- ^ A function to step the model one iteration. It is passed the
                                  --     current viewport and the amount of time for this simulation
                                  --     step (in seconds).
         -> IO ()

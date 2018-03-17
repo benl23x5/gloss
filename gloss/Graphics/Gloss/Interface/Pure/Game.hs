@@ -1,6 +1,6 @@
 {-# LANGUAGE ExplicitForAll #-}
 
--- We export this stuff separately so we don't clutter up the 
+-- We export this stuff separately so we don't clutter up the
 -- API of the Graphics.Gloss module.
 
 -- | This game mode lets you manage your own input. Pressing ESC will still abort the program,
@@ -25,7 +25,7 @@ play    :: Display              -- ^ Display mode.
         -> Int                  -- ^ Number of simulation steps to take for each second of real time.
         -> world                -- ^ The initial world.
         -> (world -> Picture)   -- ^ A function to convert the world a picture.
-        -> (Event -> world -> world)    
+        -> (Event -> world -> world)
                 -- ^ A function to handle input events.
         -> (Float -> world -> world)
                 -- ^ A function to step the world one iteration.
@@ -35,9 +35,9 @@ play    :: Display              -- ^ Display mode.
 play    display backColor simResolution
         worldStart worldToPicture worldHandleEvent worldAdvance
 
- = do   _       <- playWithBackendIO defaultBackendState 
+ = do   _       <- playWithBackendIO defaultBackendState
                         display backColor simResolution
-                        worldStart 
+                        worldStart
                         (return . worldToPicture)
                         (\event world -> return $ worldHandleEvent event world)
                         (\time  world -> return $ worldAdvance     time  world)

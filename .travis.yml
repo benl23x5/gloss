@@ -28,10 +28,9 @@ addons:
       # - llvm-toolchain-precise-3.6
       - llvm-toolchain-precise-3.7
       # - llvm-toolchain-precise-3.8
-      # - llvm-toolchain-precise-3.9
-      # - llvm-toolchain-precise-4.0  # not white-listed yet
-      - sourceline: 'deb http://apt.llvm.org/trusty/ llvm-toolchain-trusty-4.0 main'
-        key_url: 'http://apt.llvm.org/llvm-snapshot.gpg.key'
+      # - llvm-toolchain-trusty-3.9
+      - llvm-toolchain-trusty-4.0
+      - llvm-toolchain-trusty-5.0
 
     packages: &apt_packages
       - alex-3.1.7
@@ -65,7 +64,7 @@ matrix:
             - cabal-install-1.24
             - llvm-3.7-dev
 
-    - env: GHC=8.2.1 CABAL=2.0 LLVM=4.0.1
+    - env: GHC=8.2.2 CABAL=2.0 LLVM=4.0.1
       compiler: "GHC 8.2"
       addons:
         apt:
@@ -75,6 +74,16 @@ matrix:
             - cabal-install-2.0
             - llvm-4.0-dev
 
+    - env: GHC=8.4.1 CABAL=2.0 LLVM=5.0.0
+      compiler: "GHC 8.4"
+      addons:
+        apt:
+          sources: *apt_sources
+          packages:
+            - *apt_packages
+            - cabal-install-2.0
+            - llvm-5.0-dev
+
 before_install:
   - export PATH=/opt/cabal/$CABAL/bin:/opt/alex/3.1.7/bin:/opt/happy/1.19.5/bin:$HOME/.cabal/bin:$PATH
   - source .travis/install-stack.sh
@@ -83,21 +92,12 @@ install:
   - echo "$(stack exec ghc -- --version) [$(stack exec ghc -- --print-project-git-commit-id 2> /dev/null || echo '?')]"
   - cabal --version
   - stack --version
-  - llc --version; true
-  - opt --version; true
-  - |
-      if [ ${GHC} == head -o ! -e stack.yaml ]; then
-        travis_retry cabal install --only-dependencies || exit 1
-      else
-        travis_retry stack build --only-dependencies --fast --no-terminal --no-haddock-deps --ghc-options="-j +RTS -A128M -n4m -RTS" || exit 1
-      fi
+  - llc-${LLVM:0:3} --version; true
+  - opt-${LLVM:0:3} --version; true
+
+  - stack build --dry-run
+  - travis_retry stack build --only-dependencies --fast --no-terminal
 
 script:
-  - |
-      if [ ${GHC} == head -o ! -e stack.yaml ]; then
-        travis_retry cabal install || exit 1
-        travis_retry cabal haddock || exit 1
-      else
-        travis_retry stack build --fast --no-terminal --haddock --no-haddock-deps --ghc-options="-j +RTS -A128M -n4m -RTS" || exit 1
-      fi
+  - travis_retry stack build --fast --no-terminal --haddock --no-haddock-deps
 

@@ -1,3 +1,4 @@
+{-# LANGUAGE DeriveDataTypeable #-}
 {-# OPTIONS_HADDOCK hide #-}
 
 -- | Helper functions for rendering bitmaps
@@ -16,7 +17,7 @@ data BitmapData
         = BitmapData
         { bitmapDataLength :: Int  -- length (in bytes)
         , bitmapFormat     :: BitmapFormat
-        , bitmapPointer    :: (ForeignPtr Word8) } 
+        , bitmapPointer    :: (ForeignPtr Word8) }
         deriving (Eq, Data, Typeable)
 
 
@@ -25,7 +26,7 @@ data BitmapData
 --   * Prior version of Gloss assumed `BitmapFormat BottomToTop PxAGBR`
 --
 data BitmapFormat
-        = BitmapFormat 
+        = BitmapFormat
         { rowOrder    :: RowOrder
         , pixelFormat :: PixelFormat }
         deriving (Eq, Data, Typeable, Show, Ord)
@@ -37,7 +38,7 @@ data BitmapFormat
 --   * `BottomToTop` - the bottom row followed by the next-higher row and so on.
 --
 data RowOrder
-        = TopToBottom 
+        = TopToBottom
         | BottomToTop
         deriving (Eq, Data, Typeable, Show, Ord, Enum, Bounded)
 

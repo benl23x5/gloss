@@ -1,3 +1,4 @@
+{-# LANGUAGE DeriveDataTypeable #-}
 {-# OPTIONS_HADDOCK hide #-}
 
 -- | Data type for representing colors.
@@ -42,7 +43,7 @@ instance Num Color where
  signum (RGBA r1 g1 b1 _)
         = RGBA (signum r1) (signum g1) (signum b1) 1
  {-# INLINE signum #-}
-        
+
  fromInteger i
   = let f = fromInteger i
     in  RGBA f f f 1
@@ -50,7 +51,7 @@ instance Num Color where
 
 
 -- | Make a custom color. All components are clamped to the range  [0..1].
-makeColor 
+makeColor
         :: Float        -- ^ Red component.
         -> Float        -- ^ Green component.
         -> Float        -- ^ Blue component.
@@ -58,7 +59,7 @@ makeColor
         -> Color
 
 makeColor r g b a
-        = clampColor 
+        = clampColor
         $ RGBA r g b a
 {-# INLINE makeColor #-}
 
@@ -66,20 +67,20 @@ makeColor r g b a
 -- | Make a custom color. All components are clamped to the range [0..255].
 makeColorI :: Int -> Int -> Int -> Int -> Color
 makeColorI r g b a
-        = clampColor 
-        $ RGBA  (fromIntegral r / 255) 
+        = clampColor
+        $ RGBA  (fromIntegral r / 255)
                 (fromIntegral g / 255)
                 (fromIntegral b / 255)
                 (fromIntegral a / 255)
 {-# INLINE makeColorI #-}
 
 
--- | Make a custom color. 
+-- | Make a custom color.
 --
 --   Using this function over `makeColor` avoids clamping the components,
 --   which saves time. However, if the components are out of range then
 --   this will result in integer overflow at rendering time, and the actual
---   picture you get will be implementation dependent. 
+--   picture you get will be implementation dependent.
 --
 --   You'll only need to use this function when using the @gloss-raster@
 --   package that builds a new color for every pixel. If you're just working
@@ -94,7 +95,7 @@ makeRawColor r g b a
 -- | Make a custom color, taking pre-clamped components.
 makeRawColorI :: Int -> Int -> Int -> Int -> Color
 makeRawColorI r g b a
-        = RGBA  (fromIntegral r / 255) 
+        = RGBA  (fromIntegral r / 255)
                 (fromIntegral g / 255)
                 (fromIntegral b / 255)
                 (fromIntegral a / 255)
@@ -105,7 +106,7 @@ makeRawColorI r g b a
 rgbaOfColor :: Color -> (Float, Float, Float, Float)
 rgbaOfColor (RGBA r g b a)      = (r, g, b, a)
 {-# INLINE rgbaOfColor #-}
-              
+
 
 -- | Clamp components of a raw color into the required range.
 clampColor :: Color -> Color

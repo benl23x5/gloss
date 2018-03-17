@@ -1,7 +1,7 @@
 {-# OPTIONS_HADDOCK hide #-}
 
 module Graphics.Gloss.Internals.Interface.Animate.State
-        ( State (..) 
+        ( State (..)
         , stateInit )
 where
 
@@ -28,13 +28,13 @@ data State
         -- | Clamp the minimum time between frames to this value (in seconds)
         --      Setting this to < 10ms probably isn't worthwhile.
         , stateDisplayTimeClamp         :: !Double
-                                                        
+
         -- | The time when the last call to the users render function finished.
         , stateGateTimeStart            :: !Double
 
         -- | The time when displayInWindow last finished (after sleeping to clamp fps).
         , stateGateTimeEnd              :: !Double
-        
+
         -- | How long it took to draw this frame
         , stateGateTimeElapsed          :: !Double }
 
@@ -47,8 +47,8 @@ stateInit
         , stateAnimateStart             = True
         , stateAnimateTime              = 0
         , stateDisplayTime              = 0
-        , stateDisplayTimeLast          = 0 
+        , stateDisplayTimeLast          = 0
         , stateDisplayTimeClamp         = 0.01
         , stateGateTimeStart            = 0
-        , stateGateTimeEnd              = 0 
+        , stateGateTimeEnd              = 0
         , stateGateTimeElapsed          = 0 }

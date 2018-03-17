@@ -10,7 +10,7 @@ import Graphics.Gloss.Interface.Pure.Game       as G
 -- | Handle user events for the Gloss `playIO` wrapper.
 userEvent :: Config -> Event -> Model -> Model
 userEvent config
-        (EventKey key keyState mods (x, y)) 
+        (EventKey key keyState mods (x, y))
         model
 
         -- Add velocity ---------------------------------------------
@@ -40,7 +40,7 @@ userEvent config
         -- Add density ----------------------------------------------
         | MouseButton G.LeftButton <- key
         , Down                          <- keyState
-        , (x',y')                       <- windowToModel config (x, y) 
+        , (x',y')                       <- windowToModel config (x, y)
         = model { densitySource  = Just (SourceDensity (Z:.y':.x') 1)
                 , currButton     = M.LeftButton }
 
@@ -48,7 +48,7 @@ userEvent config
         , Up                       <- keyState
         = model { currButton = M.None }
 
-        -- Reset model 
+        -- Reset model
         | Char 'r' <- key
         , Down     <- keyState
         = initModel (configInitialDensity config)
@@ -59,7 +59,7 @@ userEvent config
         , Down     <- keyState
         = model { drawVelocity = not $ drawVelocity model }
 
-        -- Quit program 
+        -- Quit program
         | Char 'q' <- key
         , Down     <- keyState
         = error "Quitting"
@@ -67,7 +67,7 @@ userEvent config
 
 userEvent config (EventMotion (x, y)) model
         | M.LeftButton  <- currButton model
-        , (x',y')       <- windowToModel config (x, y) 
+        , (x',y')       <- windowToModel config (x, y)
         = model { densitySource  = Just (SourceDensity (Z:.y':.x') 1)
                 , currButton     = M.LeftButton
                 }
