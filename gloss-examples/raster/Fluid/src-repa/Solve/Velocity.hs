@@ -9,25 +9,25 @@ import Stage.Project
 import Model
 import Config
 
--- The pass that sets boundary conditions is buggy and 
+-- The pass that sets boundary conditions is buggy and
 -- currently disabled.
 -- import Stage.Boundary
-velocitySteps 
+velocitySteps
         :: Config
         -> Int
-        -> VelocityField 
-        -> Maybe (SourceDensity (Float, Float)) 
+        -> VelocityField
+        -> Maybe (SourceDensity (Float, Float))
         -> IO VelocityField
 
-velocitySteps config _step vf vs 
+velocitySteps config _step vf vs
  = {-# SCC "Solve.velocitySteps" #-}
-   do   
-        vf1     <- addSources   (configDelta config) (configVelocity config)  
+   do
+        vf1     <- addSources   (configDelta config) (configVelocity config)
                                 vs vf
 
         let diffSolver = DiffStable (configIters config)
-        vf2     <- diffusion    diffSolver (configDelta config) (configVisc config) 
-                                vf1 
+        vf2     <- diffusion    diffSolver (configDelta config) (configVisc config)
+                                vf1
 --      vf3     <- setBoundary vf2
 
         vf4     <- project      (configIters config) vf2

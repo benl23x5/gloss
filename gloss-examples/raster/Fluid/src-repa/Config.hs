@@ -1,5 +1,5 @@
 
-module Config 
+module Config
         ( Config (..)
         , configWindowSize)
 where
@@ -49,14 +49,14 @@ data Config
         , configDensity         :: !Float
 
           -- | Magnitude of velocity to add with user interface.
-        , configVelocity        :: !(Float, Float) 
+        , configVelocity        :: !(Float, Float)
 
           -- | Initial density array
         , configInitialDensity  :: !(Array U DIM2 Float)
 
           -- | BMP file to use as the initial velocity
         , configInitialVelocity :: !(Array U DIM2 (Float, Float))
-        } 
+        }
 
 configWindowSize :: Config -> (Int, Int)
 configWindowSize config

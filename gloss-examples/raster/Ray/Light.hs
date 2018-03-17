@@ -1,6 +1,6 @@
 {-# LANGUAGE BangPatterns #-}
 
-module Light 
+module Light
         ( Light(..)
         , translateLight
         , applyLights)
@@ -46,7 +46,7 @@ applyLight
         :: [Object]     -- possible occluding objects, used for shadows.
         -> Vec3         -- point which is being lit
         -> Vec3         -- surface normal at this point
-        -> Light 
+        -> Light
         -> Color
 
 applyLight !objs !point !normal !(Light lpoint color)
@@ -65,5 +65,5 @@ applyLight !objs !point !normal !(Light lpoint color)
                 -- the light that is reflected
                 !refl   = color `mulsV3` mag
             in refl
-{-# INLINE applyLight #-}                
-               
+{-# INLINE applyLight #-}
+

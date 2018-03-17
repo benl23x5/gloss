@@ -1,7 +1,7 @@
 
 module Graphics.Gloss.Internals.Interface.Animate
         (animateWithBackendIO)
-where   
+where
 import Graphics.Gloss.Data.Color
 import Graphics.Gloss.Data.Controller
 import Graphics.Gloss.Data.Picture
@@ -37,8 +37,8 @@ animateWithBackendIO
 animateWithBackendIO
         backend pannable display backColor
         frameOp eatController
- = do   
-        -- 
+ = do
+        --
         viewSR          <- newIORef viewStateInit
         animateSR       <- newIORef AN.stateInit
         renderS_        <- initState
@@ -72,22 +72,22 @@ animateWithBackendIO
                 , Callback.Display      displayFun
                 , Callback.Display      (animateEnd   animateSR)
                 , Callback.Idle         (\s -> postRedisplay s)
-                , callback_exit () 
+                , callback_exit ()
                 , callback_viewState_motion viewSR
                 , callback_viewState_reshape ]
- 
-             ++ (if pannable 
+
+             ++ (if pannable
                   then [callback_viewState_keyMouse viewSR]
                   else [])
 
-        createWindow backend display backColor callbacks 
+        createWindow backend display backColor callbacks
            $ \ backendRef
            ->  eatController
                 $ Controller
                 { controllerSetRedraw
                    = postRedisplay backendRef
 
-                , controllerModifyViewPort 
+                , controllerModifyViewPort
                    = \modViewPort
                      -> do viewState       <- readIORef viewSR
                            port'           <- modViewPort $ viewStateViewPort viewState

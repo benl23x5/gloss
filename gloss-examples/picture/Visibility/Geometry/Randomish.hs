@@ -1,7 +1,7 @@
 {-# LANGUAGE BangPatterns #-}
 
 module Geometry.Randomish
-        ( randomishPoints 
+        ( randomishPoints
         , randomishInts
         , randomishDoubles)
 where
@@ -29,20 +29,20 @@ randomishPoints seed' n pointMin pointMax
 --   numbers with reasonable statistical properties. By "reasonable" we mean good
 --   enough for games and test data, but not cryptography or anything where the
 --   quality of the randomness really matters.
--- 
+--
 --   From "Random Number Generators: Good ones are hard to find"
 --   Stephen K. Park and Keith W. Miller.
 --   Communications of the ACM, Oct 1988, Volume 31, Number 10.
 --
-randomishInts 
+randomishInts
         :: Int                  -- Length of vector.
         -> Int                  -- Minumum value in output.
         -> Int                  -- Maximum value in output.
-        -> Int                  -- Random seed. 
+        -> Int                  -- Random seed.
         -> V.Vector Int         -- Vector of random numbers.
 
 randomishInts !len !valMin' !valMax' !seed'
-        
+
  = let  -- a magic number (don't change it)
         multiplier :: Word64
         multiplier = 16807
@@ -52,7 +52,7 @@ randomishInts !len !valMin' !valMax' !seed'
         modulus = 2^(31 :: Integer) - 1
 
         -- if the seed is 0 all the numbers in the sequence are also 0.
-        seed    
+        seed
          | seed' == 0   = 1
          | otherwise    = seed'
 
@@ -62,11 +62,11 @@ randomishInts !len !valMin' !valMax' !seed'
 
         {-# INLINE f #-}
         f x             = multiplier * x `mod` modulus
- in G.create 
-     $ do       
+ in G.create
+     $ do
         vec             <- MV.new len
 
-        let go !ix !x 
+        let go !ix !x
                 | ix == len     = return ()
                 | otherwise
                 = do    let x'  = f x
@@ -79,7 +79,7 @@ randomishInts !len !valMin' !valMax' !seed'
 
 -- | Generate some randomish doubles with terrible statistical properties.
 --   This is good enough for test data, but not much else.
-randomishDoubles 
+randomishDoubles
         :: Int                  -- Length of vector
         -> Double               -- Minimum value in output
         -> Double               -- Maximum value in output
@@ -92,7 +92,7 @@ randomishDoubles !len !valMin !valMax !seed
         mx      = 2^(30 :: Integer) - 1
         mxf     = fromIntegral mx
         ints    = randomishInts len 0 mx seed
-        
+
    in   V.map (\n -> valMin + (fromIntegral n / mxf) * range) ints
 
 
@@ -111,5 +111,5 @@ randomishFloats !len !valMin !valMax !seed
         mx      = 2^(30 :: Integer) - 1
         mxf     = fromIntegral mx
         ints    = randomishInts len 0 mx seed
-        
+
    in   V.map (\n -> valMin + (fromIntegral n / mxf) * range) ints

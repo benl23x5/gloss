@@ -1,4 +1,6 @@
-{-# LANGUAGE BangPatterns, FlexibleInstances #-}
+{-# LANGUAGE BangPatterns      #-}
+{-# LANGUAGE FlexibleInstances #-}
+
 module Stage.Sources
         (addSources)
 where
@@ -10,30 +12,30 @@ import Data.Vector.Unboxed      (Unbox)
 
 
 -- | Addition of forces stage for simulation
-addSources 
+addSources
         :: (FieldSource a, Unbox a)
         => Delta                -- ^ Time delta.
         -> a                    -- ^ Value to insert.
-        -> Maybe (SourceDensity a) 
-        -> Field a 
+        -> Maybe (SourceDensity a)
+        -> Field a
         -> IO (Field a)
 
 addSources !delta !value (Just (SourceDensity aim mul)) field
  = {-# SCC addSources #-}
-   field `deepSeqArray` 
+   field `deepSeqArray`
    do   computeP $ unsafeTraverse field id (insertSource delta value aim mul)
 
 addSources _ _ Nothing field
    = return field
 
 
-insertSource 
-        :: (FieldSource a) 
+insertSource
+        :: (FieldSource a)
         => Delta
         -> a            -- ^ Value to insert
-        -> DIM2 -> a 
-        -> (DIM2 -> a) 
-        -> DIM2 
+        -> DIM2 -> a
+        -> (DIM2 -> a)
+        -> DIM2
         -> a
 
 insertSource !delta !value !aim !mul locate !pos
@@ -42,18 +44,18 @@ insertSource !delta !value !aim !mul locate !pos
 {-# INLINE insertSource #-}
 
 
-{-# SPECIALIZE addSources 
-        :: Delta 
+{-# SPECIALIZE addSources
+        :: Delta
         -> Float
         -> Maybe (SourceDensity Float)
-        -> Field Float 
+        -> Field Float
         -> IO (Field Float) #-}
 
-{-# SPECIALIZE addSources 
+{-# SPECIALIZE addSources
         :: Delta
         -> (Float, Float)
         -> Maybe (SourceDensity (Float, Float))
-        -> Field (Float, Float) 
+        -> Field (Float, Float)
         -> IO (Field (Float, Float)) #-}
 
 
@@ -62,7 +64,7 @@ class FieldSource a where
         addSource :: Delta -> a -> a -> a -> a
 
 instance FieldSource Float where
-        addSource !delta !value !a !mul 
+        addSource !delta !value !a !mul
          =  a ~+~ (value * delta * mul)
         {-# INLINE addSource #-}
 

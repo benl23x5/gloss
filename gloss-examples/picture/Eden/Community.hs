@@ -8,7 +8,7 @@ type Community = [Cell]
 -- does a (newly spawned) cell fit in the community?
 -- that is, does it overlap with any others?
 fits :: Cell -> Community -> Bool
-fits cell cells 
+fits cell cells
         = not $ any (overlap cell) cells
 
 -- For each member of a community, produce one offspring
@@ -29,11 +29,11 @@ survive (cell:cells) comm
 
 -- The next generation of a community
 generation :: Community ->  [Float] -> [Float] -> Community
-generation comm angles scales 
+generation comm angles scales
         = survive (spawn comm angles scales) comm
 
 render :: Community -> Picture
-render comm 
+render comm
         = Pictures $ map Cell.render comm
 
 initial :: Community

@@ -6,10 +6,8 @@ module Geometry.Segment
         , splitSegmentsOnX
         , chooseSplitX)
 where
-import Graphics.Gloss
 import Graphics.Gloss.Geometry.Line
 import Data.Maybe
-import Data.Function
 import qualified Data.Vector.Unboxed    as V
 
 -- | A line segement in the 2D plane.
@@ -20,16 +18,16 @@ type Segment    = (Int, (Float, Float), (Float, Float))
 translateSegment :: Float -> Float -> Segment -> Segment
 translateSegment tx ty (n, (x1, y1), (x2, y2))
         = (n, (x1 + tx, y1 + ty), (x2 + tx, y2 + ty))
-        
+
 
 -- | Split segments that cross the line y = y0, for some y0.
 splitSegmentsOnY :: Float -> V.Vector Segment -> V.Vector Segment
 splitSegmentsOnY y0 segs
- = let  
+ = let
         -- TODO: we only need to know IF the seg crosse the line here,
         --       not the actual intersection point. Do a faster test.
         (segsCross, segsOther)
-                = V.unstablePartition 
+                = V.unstablePartition
                         (\(_, p1, p2) -> isJust $ intersectSegHorzLine p1 p2 y0)
                         segs
 
@@ -38,19 +36,19 @@ splitSegmentsOnY y0 segs
         splitCrossingSeg (n, p1, p2)
          = let  Just pCross     = intersectSegHorzLine p1 p2 y0
            in   V.fromList [(n, p1, pCross), (n, pCross, p2)]
-        
-        -- TODO: vector append requires a copy. 
+
+        -- TODO: vector append requires a copy.
    in   segsOther V.++ (V.concat $ map splitCrossingSeg $ V.toList segsCross)
 
 
 -- | Split segments that cross the line x = x0, for some x0.
 splitSegmentsOnX :: Float -> V.Vector Segment -> V.Vector Segment
 splitSegmentsOnX x0 segs
- = let  
+ = let
         -- TODO: we only need to know IF the seg crosse the line here,
         --       not the actual intersection point. Do a faster test.
         (segsCross, segsOther)
-                = V.unstablePartition 
+                = V.unstablePartition
                         (\(_, p1, p2) -> isJust $ intersectSegVertLine p1 p2 x0)
                         segs
 
@@ -59,8 +57,8 @@ splitSegmentsOnX x0 segs
         splitCrossingSeg (n, p1, p2)
          = let  Just pCross     = intersectSegVertLine p1 p2 x0
            in   V.fromList [(n, p1, pCross), (n, pCross, p2)]
-        
-        -- TODO: vector append requires a copy. 
+
+        -- TODO: vector append requires a copy.
    in   segsOther V.++ (V.concat $ map splitCrossingSeg $ V.toList segsCross)
 
 

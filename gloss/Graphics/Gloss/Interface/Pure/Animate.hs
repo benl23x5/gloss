@@ -19,14 +19,14 @@ import Graphics.Gloss.Internals.Interface.Backend
 --
 animate :: Display              -- ^ Display mode.
         -> Color                -- ^ Background color.
-        -> (Float -> Picture)   -- ^ Function to produce the next frame of animation. 
+        -> (Float -> Picture)   -- ^ Function to produce the next frame of animation.
                                 --      It is passed the time in seconds since the program started.
         -> IO ()
 
 animate display backColor frameFun
-        = animateWithBackendIO 
+        = animateWithBackendIO
                 defaultBackendState
                 True            -- pannable
                 display backColor
-                (return . frameFun) 
+                (return . frameFun)
                 (const (return ()))

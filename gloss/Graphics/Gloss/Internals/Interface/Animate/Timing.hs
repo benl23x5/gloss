@@ -4,11 +4,11 @@
 -- | Handles timing of animation.
 --      The main point is that we want to restrict the framerate to something
 --      sensible, instead of just displaying at the machines maximum possible
---      rate and soaking up 100% cpu. 
+--      rate and soaking up 100% cpu.
 --
 --      We also keep track of the elapsed time since the start of the program,
 --      so we can pass this to the user's animation function.
--- 
+--
 module Graphics.Gloss.Internals.Interface.Animate.Timing
         ( animateBegin
         , animateEnd )
@@ -29,8 +29,8 @@ animateBegin stateRef backendRef
         displayTimeLast         <- stateRef `getsIORef` stateDisplayTime
         let displayTimeElapsed  = displayTime - displayTimeLast
 
-        modifyIORef' stateRef $ \s -> s 
-                { stateDisplayTime      = displayTime 
+        modifyIORef' stateRef $ \s -> s
+                { stateDisplayTime      = displayTime
                 , stateDisplayTimeLast  = displayTimeLast }
 
         -- increment the animation time
@@ -44,11 +44,11 @@ animateBegin stateRef backendRef
                     ++ "  displayTimeLast    = " ++ show displayTimeLast            ++ "\n"
                     ++ "  displayTimeElapsed = " ++ show displayTimeElapsed         ++ "\n"
                     ++ "  fps                = " ++ show (truncate $ 1 / displayTimeElapsed)   ++ "\n"
--}      
+-}
         when (animate && not animateStart)
          $ modifyIORef' stateRef $ \s -> s
                { stateAnimateTime       = animateTime + displayTimeElapsed }
-                        
+
         when animate
          $ modifyIORef' stateRef $ \s -> s
                { stateAnimateCount      = animateCount + 1
@@ -65,10 +65,10 @@ animateEnd stateRef backendRef
         timeClamp       <- stateRef `getsIORef` stateDisplayTimeClamp
 
         -- the start of this gate
-        gateTimeStart   <- elapsedTime backendRef                       
+        gateTimeStart   <- elapsedTime backendRef
 
         -- end of the previous gate
-        gateTimeEnd     <- stateRef `getsIORef` stateGateTimeEnd        
+        gateTimeEnd     <- stateRef `getsIORef` stateGateTimeEnd
         let gateTimeElapsed = gateTimeStart - gateTimeEnd
 
         when (gateTimeElapsed < timeClamp)
@@ -76,8 +76,8 @@ animateEnd stateRef backendRef
 
         gateTimeFinal   <- elapsedTime backendRef
 
-        modifyIORef' stateRef $ \s -> s 
-                { stateGateTimeEnd      = gateTimeFinal 
+        modifyIORef' stateRef $ \s -> s
+                { stateGateTimeEnd      = gateTimeFinal
                 , stateGateTimeElapsed  = gateTimeElapsed }
 
 

@@ -12,7 +12,7 @@ data State
         , stateModeInterface    :: ModeInterface
         , stateModeDisplay      :: ModeDisplay
         , stateModeOverlay      :: ModeOverlay
-        , stateViewPos          :: Point 
+        , stateViewPos          :: Point
         , stateTargetPos        :: Maybe Point }
 
 
@@ -40,7 +40,7 @@ data ModeDisplay
 data ModeOverlay
         -- | No overlay
         = ModeOverlayNone
-        
+
         -- | Brute force, approximate visibility
         | ModeOverlayVisApprox
         deriving (Show, Eq)
@@ -54,6 +54,6 @@ initialState world
         , stateModeInterface    = ModeInterfaceIdle
         , stateModeDisplay      = ModeDisplayWorld
         , stateModeOverlay      = ModeOverlayVisApprox
-        , stateViewPos          = (0, 0) 
+        , stateViewPos          = (0, 0)
         , stateTargetPos        = Nothing }
 

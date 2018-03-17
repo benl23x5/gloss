@@ -125,7 +125,7 @@ int main ( int argc, char ** argv )
                 for (i = 0; i < mode_max_steps; i++) {
                         get_from_UI (model);
 
-                        vel_step    
+                        vel_step
                                 ( i
                                 , state_solver_method
                                 , state_solver_iters
@@ -155,5 +155,5 @@ int main ( int argc, char ** argv )
         }
 
 
-	exit (0);
+        exit (0);
 }

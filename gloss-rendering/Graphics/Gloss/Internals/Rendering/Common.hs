@@ -1,6 +1,6 @@
 {-# OPTIONS_HADDOCK hide #-}
 
-module Graphics.Gloss.Internals.Rendering.Common 
+module Graphics.Gloss.Internals.Rendering.Common
         ( gf, gsizei
         , withModelview
         , withClearBuffer)
@@ -14,7 +14,7 @@ import qualified Graphics.Rendering.OpenGL.GL   as GL
 
 -- | The OpenGL library doesn't seem to provide a nice way convert
 --      a Float to a GLfloat, even though they're the same thing
---      under the covers.  
+--      under the covers.
 --
 --  Using realToFrac is too slow, as it doesn't get fused in at
 --      least GHC 6.12.1
@@ -46,25 +46,25 @@ withModelview (sizeX, sizeY) action
                 GL.loadIdentity
                 let (sx, sy)    = (fromIntegral sizeX / 2, fromIntegral sizeY / 2)
                 GL.ortho (-sx) sx (-sy) sy 0 (-100)
-        
+
                 -- draw the world
                 GL.matrixMode   $= GL.Modelview 0
                 action
 
                 GL.matrixMode   $= GL.Projection
-        
+
         GL.matrixMode   $= GL.Modelview 0
 
 
--- | Clear the OpenGL buffer with the given background color and run 
+-- | Clear the OpenGL buffer with the given background color and run
 --   an action to draw the model.
-withClearBuffer 
+withClearBuffer
         :: Color        -- ^ Background color
         -> IO ()        -- ^ Action to perform
         -> IO ()
 
 withClearBuffer clearColor action
- = do   
+ = do
         -- initialization (done every time in this case)
         -- we don't need the depth buffer for 2d.
         GL.depthFunc    GL.$= Just GL.Always

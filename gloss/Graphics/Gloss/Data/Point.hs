@@ -17,11 +17,11 @@ import Graphics.Gloss.Data.Picture
 --       +-------+ P1
 -- @
 --
-pointInBox 
-        :: Point 
-        -> Point 
+pointInBox
+        :: Point
+        -> Point
         -> Point -> Bool
-        
+
 pointInBox (x0, y0) (x1, y1) (x2, y2)
         =  x0 >= min x1 x2
         && x0 <= max x1 x2

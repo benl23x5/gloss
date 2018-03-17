@@ -18,19 +18,19 @@ import System.IO.Unsafe
 -- get the screenzie, and then do GLUT.exit. This avoids the use of
 -- global variables. Unfortunately, there is no failsafe way to check
 -- whether glut is initialized in some older versions of glut, which is
--- what we'd use instead of the global variable to get the required info.  
+-- what we'd use instead of the global variable to get the required info.
 glutInitialized :: IORef Bool
 {-# NOINLINE glutInitialized #-}
 glutInitialized = unsafePerformIO $ do newIORef False
 
 -- | State information for the GLUT backend.
-data GLUTState 
+data GLUTState
         = GLUTState
         { -- Count of total number of frames that we have drawn.
           glutStateFrameCount   :: !Int
 
           -- Bool to remember if we've set the timeout callback.
-        , glutStateHasTimeout   :: Bool 
+        , glutStateHasTimeout   :: Bool
 
           -- Bool to remember if we've set the idle callback.
         , glutStateHasIdle      :: Bool }
@@ -39,7 +39,7 @@ data GLUTState
 
 -- | Initial GLUT state.
 glutStateInit :: GLUTState
-glutStateInit  
+glutStateInit
         = GLUTState
         { glutStateFrameCount   = 0
         , glutStateHasTimeout   = False
@@ -92,20 +92,20 @@ initializeGLUT
         -> Bool
         -> IO ()
 
-initializeGLUT _ debug 
+initializeGLUT _ debug
   = do initialized <- readIORef glutInitialized
        if not initialized
          then do  (_progName, _args)  <- GLUT.getArgsAndInitialize
                   glutVersion         <- get GLUT.glutVersion
                   when debug
                     $ putStr  $ "  glutVersion        = " ++ show glutVersion   ++ "\n"
-                  
+
                   GLUT.initialDisplayMode
                     $= [ GLUT.RGBMode
                        , GLUT.DoubleBuffered]
 
                   writeIORef glutInitialized True
-                  
+
                   -- See if our requested display mode is possible
                   displayMode         <- get GLUT.initialDisplayMode
                   displayModePossible <- get GLUT.displayModePossible
@@ -114,7 +114,7 @@ initializeGLUT _ debug
                                 ++ "       possible      = " ++ show displayModePossible ++ "\n"
                                 ++ "\n"
          else when debug (putStrLn "Already initialized")
-         
+
 -- Open Window ----------------------------------------------------------------
 openWindowGLUT
         :: IORef GLUTState
@@ -128,7 +128,7 @@ openWindowGLUT _ display
        -- createWindow. If we don't do this we get wierd half-created
        -- windows some of the time.
         case display of
-          InWindow windowName (sizeX, sizeY) (posX, posY) -> 
+          InWindow windowName (sizeX, sizeY) (posX, posY) ->
             do GLUT.initialWindowSize
                      $= GL.Size
                           (fromIntegral sizeX)
@@ -146,7 +146,7 @@ openWindowGLUT _ display
                           (fromIntegral sizeX)
                           (fromIntegral sizeY)
 
-          FullScreen -> 
+          FullScreen ->
             do size <- get GLUT.screenSize
                GLUT.initialWindowSize $= size
                _ <- GLUT.createWindow "Gloss Application"
@@ -159,11 +159,11 @@ openWindowGLUT _ display
 
 
 -- Dump State -----------------------------------------------------------------
-dumpStateGLUT 
+dumpStateGLUT
         :: IORef GLUTState
         -> IO ()
 
-dumpStateGLUT _ 
+dumpStateGLUT _
  = do
         wbw             <- get GLUT.windowBorderWidth
         whh             <- get GLUT.windowHeaderHeight
@@ -195,19 +195,19 @@ dumpStateGLUT _
                 ++ "\n"
 
 -- Display Callback -----------------------------------------------------------
-installDisplayCallbackGLUT 
+installDisplayCallbackGLUT
         :: IORef GLUTState -> [Callback]
         -> IO ()
 installDisplayCallbackGLUT ref callbacks
         = GLUT.displayCallback $= callbackDisplay ref callbacks
 
 
-callbackDisplay 
+callbackDisplay
         :: IORef GLUTState -> [Callback]
         -> IO ()
 
-callbackDisplay refState callbacks 
- = do   
+callbackDisplay refState callbacks
+ = do
         -- Clear the display
         GL.clear [GL.ColorBuffer, GL.DepthBuffer]
         GL.color $ GL.Color4 0 0 0 (1 :: GL.GLfloat)
@@ -238,7 +238,7 @@ callbackDisplay refState callbacks
         state   <- readIORef refState
         when (  (not $ glutStateHasTimeout state)
              && (not $ glutStateHasIdle    state))
-         $ do   
+         $ do
                 -- Setting the timer interrupt to 1sec keeps CPU usage for a
                 -- single process to < 0.5% or so on OSX. This is the rate
                 -- that the process is woken up, but GLUT will only actually
@@ -246,7 +246,7 @@ callbackDisplay refState callbacks
                 let msecHeartbeat = 1000
 
                 -- We're installing this callback on the first display
-                -- call because it's a GLUT specific mechanism. 
+                -- call because it's a GLUT specific mechanism.
                 -- We don't do the same thing for other Backends.
                 GLUT.addTimerCallback msecHeartbeat
                  $ timerCallback msecHeartbeat
@@ -257,7 +257,7 @@ callbackDisplay refState callbacks
 
 
     -- Don't report errors by default.
-    -- The windows OpenGL implementation seems to complain for no reason. 
+    -- The windows OpenGL implementation seems to complain for no reason.
     --  GLUT.reportErrors
 
         atomicModifyIORef' refState
@@ -294,7 +294,7 @@ callbackReshape ref callbacks (GLUT.Size sizeX sizeY)
 
 
 -- KeyMouse Callback ----------------------------------------------------------
-installKeyMouseCallbackGLUT 
+installKeyMouseCallbackGLUT
         :: IORef GLUTState -> [Callback]
         -> IO ()
 
@@ -321,7 +321,7 @@ callbackKeyMouse ref callbacks key keystate modifiers (GLUT.Position posX posY)
 
 
 -- Motion Callback ------------------------------------------------------------
-installMotionCallbackGLUT 
+installMotionCallbackGLUT
         :: IORef GLUTState -> [Callback]
         -> IO ()
 
@@ -360,7 +360,7 @@ installIdleCallbackGLUT refState callbacks
 
 
 -- | Call back when glut is idle.
-callbackIdle 
+callbackIdle
         :: IORef GLUTState -> [Callback]
         -> IO ()
 
@@ -372,7 +372,7 @@ callbackIdle ref callbacks
 -------------------------------------------------------------------------------
 -- | Convert GLUTs key codes to our internal ones.
 glutKeyToKey :: GLUT.Key -> Key
-glutKeyToKey key 
+glutKeyToKey key
  = case key of
         GLUT.Char '\32'                            -> SpecialKey KeySpace
         GLUT.Char '\13'                            -> SpecialKey KeyEnter
@@ -427,11 +427,11 @@ glutKeyStateToKeyState state
 
 
 -- | Convert GLUTs key states to our internal ones.
-glutModifiersToModifiers 
+glutModifiersToModifiers
         :: GLUT.Modifiers
         -> Modifiers
-        
-glutModifiersToModifiers (GLUT.Modifiers a b c) 
+
+glutModifiersToModifiers (GLUT.Modifiers a b c)
         = Modifiers     (glutKeyStateToKeyState a)
                         (glutKeyStateToKeyState b)
                         (glutKeyStateToKeyState c)

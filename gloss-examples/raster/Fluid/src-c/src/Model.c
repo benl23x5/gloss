@@ -9,7 +9,7 @@
 
 
 // Free a model.
-void 
+void
 model_free (struct Model* model)
 {
         free (model->u);
@@ -22,27 +22,27 @@ model_free (struct Model* model)
 
 
 // Clear all data in a model.
-void 
+void
 model_clear (struct Model* model)
 {
         int i;
         for ( i=0 ; i < model->size ; i++ ) {
-                model->u[i] 
-                 = model->v[i] 
-                 = model->u_prev[i] 
-                 = model->v_prev[i] 
-                 = model->dens[i] 
-                 = model->dens_prev[i] 
+                model->u[i]
+                 = model->v[i]
+                 = model->u_prev[i]
+                 = model->v_prev[i]
+                 = model->dens[i]
+                 = model->dens_prev[i]
                  = 0.0f;
         }
 }
 
 
 // Create a new model.
-struct Model* 
+struct Model*
 model_new (int width, int height)
 {
-        assert (width  > 0); 
+        assert (width  > 0);
         assert (height > 0);
 
         int size         = (width + 2) * (height + 2);
@@ -72,7 +72,7 @@ model_new (int width, int height)
 }
 
 
-void 
+void
 dump_array (int step_count, char* name, int N, float scale, float* d)
 {
         int i, j;
@@ -110,7 +110,7 @@ dump_array (int step_count, char* name, int N, float scale, float* d)
 
 
 // -- Steps -------------------------------------------------------------------
-void dens_step 
+void dens_step
         ( int step
         , int method
         , int iters, int N
@@ -128,7 +128,7 @@ void dens_step
 }
 
 
-void vel_step 
+void vel_step
         ( int step
         , int method
         , int iters,  int N

@@ -1,5 +1,6 @@
+{-# LANGUAGE RankNTypes          #-}
+{-# LANGUAGE ScopedTypeVariables #-}
 {-# OPTIONS_HADDOCK hide #-}
-{-# LANGUAGE ScopedTypeVariables, RankNTypes #-}
 
 module Graphics.Gloss.Internals.Interface.ViewState.Motion
         (callback_viewState_motion)
@@ -13,7 +14,7 @@ import Data.IORef
 
 -- | Callback to handle keyboard and mouse button events
 --      for controlling the viewport.
-callback_viewState_motion 
+callback_viewState_motion
         :: IORef ViewState
         -> Callback
 
@@ -27,7 +28,7 @@ viewState_motion viewStateRef stateRef pos
         ev        <- motionEvent stateRef pos
         case updateViewStateWithEventMaybe ev viewState of
                 Nothing -> return ()
-                Just viewState' 
+                Just viewState'
                  -> do  viewStateRef `writeIORef` viewState'
                         postRedisplay stateRef
 

@@ -25,24 +25,24 @@ callback_simulate_idle
         -- Game) and sometimes a ref to a 'ViewState'.
         -> IORef world                                  -- ^ the current world
         -> (ViewPort -> Float -> world -> IO world)     -- ^ fn to advance the world
-        -> Float                                        -- ^ how much time to advance world by 
+        -> Float                                        -- ^ how much time to advance world by
                                                         --      in single step mode
         -> IdleCallback
-        
+
 callback_simulate_idle simSR animateSR viewSA worldSR worldAdvance _singleStepTime backendRef
  = {-# SCC "callbackIdle" #-}
    do   simulate_run simSR animateSR viewSA worldSR worldAdvance backendRef
- 
+
 
 -- take the number of steps specified by controlWarp
-simulate_run 
+simulate_run
         :: IORef SM.State
         -> IORef AN.State
         -> IO ViewPort
         -> IORef world
         -> (ViewPort -> Float -> world -> IO world)
         -> IdleCallback
-        
+
 simulate_run simSR _ viewSA worldSR worldAdvance backendRef
  = do   viewS           <- viewSA
         simS            <- readIORef simSR
@@ -53,11 +53,11 @@ simulate_run simSR _ viewSA worldSR worldAdvance backendRef
 
         -- get how far along the simulation is
         simTime                 <- simSR `getsIORef` SM.stateSimTime
- 
+
         -- we want to simulate this much extra time to bring the simulation
         --      up to the wall clock.
         let thisTime    = elapsedTime - simTime
-         
+
         -- work out how many steps of simulation this equals
         resolution      <- simSR `getsIORef` SM.stateResolution
         let timePerStep = 1 / fromIntegral resolution
@@ -65,7 +65,7 @@ simulate_run simSR _ viewSA worldSR worldAdvance backendRef
         let thisSteps   = if thisSteps_ < 0 then 0 else thisSteps_
 
         let newSimTime  = simTime + fromIntegral thisSteps * timePerStep
-         
+
 {-      putStr  $  "elapsed time    = " ++ show elapsedTime     ++ "\n"
                 ++ "sim time        = " ++ show simTime         ++ "\n"
                 ++ "this time       = " ++ show thisTime        ++ "\n"
@@ -78,7 +78,7 @@ simulate_run simSR _ viewSA worldSR worldAdvance backendRef
         let nFinal      = nStart + thisSteps
 
         -- keep advancing the world until we get to the final iteration number
-        (_,world') 
+        (_,world')
          <- untilM (\(n, _)        -> n >= nFinal)
                    (\(n, w)        -> liftM (\w' -> (n+1,w')) ( worldAdvance viewS timePerStep w))
                    (nStart, worldS)
@@ -91,7 +91,7 @@ simulate_run simSR _ viewSA worldSR worldAdvance backendRef
         modifyIORef' simSR $ \c -> c
                 { SM.stateIteration     = nFinal
                 , SM.stateSimTime       = newSimTime }
-        
+
         -- tell glut we want to draw the window after returning
         Backend.postRedisplay backendRef
 
@@ -105,4 +105,4 @@ untilM test op i = go i
   where
   go x | test x    = return x
        | otherwise = op x >>= go
-        
+
