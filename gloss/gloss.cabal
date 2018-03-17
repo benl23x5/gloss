@@ -22,6 +22,11 @@ source-repository head
   type:         git
   location:     https://github.com/benl23x5/gloss
 
+source-repository this
+  type:         git
+  tag:          v1.12.0.0
+  location:     https://github.com/benl23x5/gloss
+
 Flag GLUT
   Description:  Enable the GLUT backend
   Default:      True

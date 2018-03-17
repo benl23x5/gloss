@@ -13,6 +13,15 @@ description:
         don't do any window management. If you want gloss to setup your window as
         well then use the plain @gloss@ package.
 
+source-repository head
+  type:         git
+  location:     https://github.com/benl23x5/gloss
+
+source-repository this
+  type:         git
+  tag:          v1.12.0.0
+  location:     https://github.com/benl23x5/gloss
+
 library
   exposed-modules:
         Graphics.Gloss.Rendering
