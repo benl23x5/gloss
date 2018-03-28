@@ -137,17 +137,9 @@ openWindowGLFW ref (InWindow title (sizeX, sizeY) pos)
                 title
                 Nothing
                 Nothing 
-{-}
-        _ <- GLFW.openWindow
-                GLFW.defaultDisplayOptions
-                 { GLFW.displayOptions_width        = sizeX
-                 , GLFW.displayOptions_height       = sizeY
-                 , GLFW.displayOptions_displayMode  = GLFW.Window }
--}
-        modifyIORef' ref (\s -> s { winHdl = fromJust win})
 
+        modifyIORef' ref (\s -> s { winHdl = fromJust win})
         uncurry (GLFW.setWindowPos (fromJust win)) pos
-        -- GLFW.setWindowTitle title
 
         -- Try to enable sync-to-vertical-refresh by setting the number
         -- of buffer swaps per vertical refresh to 1.
@@ -166,11 +158,6 @@ openWindowGLFW ref FullScreen
                 ""
                 mon
                 Nothing 
-                {-
-                GLFW.defaultDisplayOptions
-                 { GLFW.displayOptions_width        = sizeX
-                 , GLFW.displayOptions_height       = sizeY
-                 , GLFW.displayOptions_displayMode  = GLFW.Fullscreen } -}
 
         modifyIORef' ref (\s -> s { winHdl = fromJust win})
 
@@ -506,9 +493,8 @@ runMainLoopGLFW stateRef
 
   go   :: IO ()
   go
-   = --do windowIsOpen <- GLFW.windowIsOpen
-     do putStrLn "GLFW BACKEND!"
-        win <- windowHandle stateRef
+   = 
+     do win <- windowHandle stateRef
         windowIsOpen <- GLFW.windowShouldClose win
         when windowIsOpen
          $ do  GLFW.pollEvents
