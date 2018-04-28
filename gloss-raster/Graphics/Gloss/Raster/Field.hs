@@ -153,12 +153,17 @@ playField !display (zoomX, zoomY) !stepRate
      else  do (winSizeX, winSizeY) <- sizeOfDisplay display
               winSizeX `seq` winSizeY `seq`
                 play display black stepRate
-                   initWorld
-                   (\world ->
-                      world `seq`
-                      makePicture winSizeX winSizeY zoomX zoomY (makePixel world))
-                   handleEvent
-                   stepWorld
+                   ((winSizeX, winSizeY), initWorld)
+                   (\((winSizeX', winSizeY'), world) ->
+                      winSizeX' `seq` winSizeY' `seq` world `seq`
+                      makePicture winSizeX' winSizeY' zoomX zoomY (makePixel world))
+                   (\event (winSize, world) ->
+                      let winSize' =
+                            case event of
+                              EventResize dims -> dims
+                              _                -> winSize
+                      in (winSize', handleEvent event world))
+                   (fmap . stepWorld)
 {-# INLINE playField #-}
 
 
