@@ -1,7 +1,7 @@
 
 module Graphics.Gloss.Internals.Interface.Display
         (displayWithBackend)
-where   
+where
 import Graphics.Gloss.Data.Color
 import Graphics.Gloss.Data.Controller
 import Graphics.Gloss.Data.Picture
@@ -36,14 +36,14 @@ displayWithBackend
  =  do  viewSR          <- newIORef viewStateInit
         renderS         <- initState
         renderSR        <- newIORef renderS
-        
+
         let renderFun backendRef = do
                 port       <- viewStateViewPort <$> readIORef viewSR
                 options    <- readIORef renderSR
                 windowSize <- getWindowDimensions backendRef
                 picture    <- makePicture
 
-                displayPicture 
+                displayPicture
                         windowSize
                         background
                         options
@@ -54,11 +54,11 @@ displayWithBackend
                 performGC
 
         let callbacks
-             =  [ Callback.Display renderFun 
+             =  [ Callback.Display renderFun
 
                 -- Escape exits the program
-                , callback_exit () 
-                
+                , callback_exit ()
+
                 -- Viewport control with mouse
                 , callback_viewState_keyMouse viewSR
                 , callback_viewState_motion   viewSR
@@ -74,7 +74,7 @@ displayWithBackend
                 { controllerSetRedraw
                    = do postRedisplay backendRef
 
-                , controllerModifyViewPort 
+                , controllerModifyViewPort
                    = \modViewPort
                      -> do viewState       <- readIORef viewSR
                            port'           <- modViewPort $ viewStateViewPort viewState

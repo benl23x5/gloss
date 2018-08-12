@@ -41,7 +41,7 @@ type Coord
 
 -- | Construct an extent.
 --      The north value must be > south, and east > west, else `error`.
-makeExtent 
+makeExtent
         :: Int  -- ^ y max (north)
         -> Int  -- ^ y min (south)
         -> Int  -- ^ x max (east)
@@ -51,7 +51,7 @@ makeExtent
 makeExtent n s e w
         | n >= s, e >= w
         = Extent n s e w
-        
+
         | otherwise
         = error "Graphics.Gloss.Geometry.Extent.makeExtent: invalid extent"
 
@@ -94,7 +94,7 @@ pointInExtent (Extent n s e w) (x, y)
         s'      = fromIntegral s
         e'      = fromIntegral e
         w'      = fromIntegral w
-        
+
    in   x >= w' && x <= e'
      && y >= s' && y <= n'
 
@@ -108,7 +108,7 @@ centerCoordOfExtent (Extent n s e w)
 
 -- | Cut one quadrant out of an extent.
 cutQuadOfExtent :: Quad -> Extent -> Extent
-cutQuadOfExtent quad (Extent n s e w)  
+cutQuadOfExtent quad (Extent n s e w)
  = let  hheight = (n - s) `div` 2
         hwidth  = (e - w) `div` 2
    in   case quad of
@@ -116,22 +116,22 @@ cutQuadOfExtent quad (Extent n s e w)
                 NE -> Extent n (s + hheight)  e (w + hwidth)
                 SW -> Extent (n - hheight) s  (e - hwidth) w
                 SE -> Extent (n - hheight) s  e (w + hwidth)
-        
-        
+
+
 -- | Get the quadrant that this coordinate lies in, if any.
 quadOfCoord :: Extent -> Coord -> Maybe Quad
 quadOfCoord extent coord
-        = listToMaybe 
+        = listToMaybe
         $ filter (\q -> coordInExtent (cutQuadOfExtent q extent) coord)
         $ allQuads
 
-        
+
 -- | Constuct a path to a particular coordinate in an extent.
 pathToCoord :: Extent -> Coord -> Maybe [Quad]
 pathToCoord extent coord
-        | isUnitExtent extent   
+        | isUnitExtent extent
         = Just []
-        
+
         | otherwise
         = do    quad    <- quadOfCoord extent coord
                 rest    <- pathToCoord (cutQuadOfExtent quad extent) coord
@@ -149,17 +149,17 @@ pathToCoord extent coord
 --            | /  |
 --            +    |
 --           /------
---         / 
+--         /
 --        P1
 --   @
--- 
+--
 intersectSegExtent :: Point -> Point -> Extent -> Maybe Point
 intersectSegExtent p1@(x1, y1) p2 (Extent n' s' e' w')
         -- starts below extent
         | y1 < s
         , Just pos      <- intersectSegHorzSeg p1 p2 s w e
         = Just pos
-        
+
         -- starts above extent
         | y1 > n
         , Just pos      <- intersectSegHorzSeg p1 p2 n w e
@@ -169,7 +169,7 @@ intersectSegExtent p1@(x1, y1) p2 (Extent n' s' e' w')
         | x1 < w
         , Just pos      <- intersectSegVertSeg p1 p2 w s n
         = Just pos
-        
+
         -- starts right of extent
         | x1 > e
         , Just pos      <- intersectSegVertSeg p1 p2 e s n
@@ -178,7 +178,7 @@ intersectSegExtent p1@(x1, y1) p2 (Extent n' s' e' w')
         -- must be starting inside extent.
         | otherwise
         = Nothing
-        
+
         where   n       = fromIntegral n'
                 s       = fromIntegral s'
                 e       = fromIntegral e'

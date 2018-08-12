@@ -1,5 +1,5 @@
-
 {-# LANGUAGE BangPatterns #-}
+
 module Stage.Boundary
         (setBoundary)
 where
@@ -14,32 +14,32 @@ import FieldElt
 setBoundary :: Config -> VelocityField -> IO VelocityField
 setBoundary config f
  = let  (width, _)      = configModelSize config
-   in   (rebuild width f <=< setBoundary' width <=< grabBorders width) f 
+   in   (rebuild width f <=< setBoundary' width <=< grabBorders width) f
 
 
 -- | Takes the original VelocityField and the array of edges and replaces
 --   edge values with new values
 rebuild :: Int -> VelocityField -> VelocityField -> IO VelocityField
 rebuild width field edges
- = field `deepSeqArray` edges `deepSeqArray` 
+ = field `deepSeqArray` edges `deepSeqArray`
    do   computeUnboxedP $ backpermuteDft field (rebuildPosMap width) edges
 {-# INLINE rebuild #-}
 
 
 rebuildPosMap :: Int -> DIM2 -> Maybe DIM2
 rebuildPosMap !width (Z:.j:.i)
-        | j == 0          
+        | j == 0
         = Just (Z:.0:.i)
 
-        | j == width - 1 
+        | j == width - 1
         = Just (Z:.1:.i)
 
-        | i == 0          
+        | i == 0
         = if j == 0        then Just (Z:. 0 :. 0)
           else if j == end then Just (Z:. 1 :. 0)
                            else Just (Z:. 2 :. j)
 
-        | i == width - 1 
+        | i == width - 1
         = if j == 0        then Just (Z:. 0 :. (width-1))
           else if j == end then Just (Z:. 1 :. (width-1))
                            else Just (Z:. 3 :. j)
@@ -54,7 +54,7 @@ rebuildPosMap !width (Z:.j:.i)
 --   one array, for ease of adding back into the original VelocityField later
 grabBorders :: Int -> VelocityField -> IO VelocityField
 grabBorders width f
- = f `deepSeqArray` 
+ = f `deepSeqArray`
    do   traceEventIO "Fluid: grabBorders"
         computeUnboxedP $ backpermute (Z:. 4 :. width) (edgeCases width) f
 {-# INLINE grabBorders #-}
@@ -75,7 +75,7 @@ edgeCases width (Z:.j:.i)
 
 setBoundary' :: Int -> VelocityField -> IO VelocityField
 setBoundary' width e
- = e `deepSeqArray` 
+ = e `deepSeqArray`
    do   traceEventIO "Fluid: setBoundary'"
         computeUnboxedP $ traverse e id (revBoundary width)
 {-# INLINE setBoundary' #-}
@@ -84,11 +84,11 @@ setBoundary' width e
 -- | Based on position in edges array set the velocity accordingly
 revBoundary :: Int -> (DIM2 -> (Float,Float)) -> DIM2 -> (Float,Float)
 revBoundary width loc pos@(Z:.j:.i)
-        | j == 0    
+        | j == 0
         = if i == 0        then grabCornerCase loc (Z:.2:.1) (Z:.0:.1)
           else if i == end then grabCornerCase loc (Z:.0:.(width-2)) (Z:.3:.1)
                            else (-p1,p2)
-        | j == 1    
+        | j == 1
         = if i == 0        then grabCornerCase loc (Z:.2:.(width-2)) (Z:.1:.1)
           else if i == end then grabCornerCase loc (Z:.1:.(width-2)) (Z:.3:.(width-2))
                            else (-p1,p2)

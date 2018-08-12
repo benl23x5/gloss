@@ -33,7 +33,7 @@ import Graphics.Gloss.Internals.Interface.Backend
 --     between the last redraw, and one second from that.
 --
 --   * Note that calling `controllerSetRedraw` indicates that the picture should
---     be redrawn, but does not cause this to happen immediately, due to 
+--     be redrawn, but does not cause this to happen immediately, due to
 --     limitations in the GLUT and GLFW window managers. The display runs on
 --     a one second timer interrupt, and if there have been no display events
 --     we need to wait for the next timer interrupt before redrawing.
@@ -41,7 +41,7 @@ import Graphics.Gloss.Internals.Interface.Backend
 --     due to the context switches at under 1%.
 --
 --   * Also note that the picture generating action is called for every display
---     event, so if the user pans the display then it will be invoked at 10hz 
+--     event, so if the user pans the display then it will be invoked at 10hz
 --     or more during the pan. If you are generating the picture by reading some
 --     on-disk files then you should track when the files were last updated
 --     and cache the picture between updates. Caching the picture avoids

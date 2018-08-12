@@ -1,13 +1,16 @@
 {-# LANGUAGE PatternGuards #-}
--- | Simple picture drawing application. 
+-- | Simple picture drawing application.
 --   Like MSPaint, but you can only draw lines.
-import Graphics.Gloss.Interface.Pure.Game
+--
+module Main where
+
 import Graphics.Gloss
+import Graphics.Gloss.Interface.Pure.Game
 import Data.Maybe (maybe)
-import Debug.Trace
 
 
-main 
+main :: IO ()
+main
  = do   let state = State Nothing []
         play    (InWindow "Draw" (600, 600) (0,0))
                 white 100 state
@@ -15,7 +18,7 @@ main
 
 
 -- | The game state.
-data State      
+data State
         = State (Maybe Path)    -- The current line being drawn.
                 [Picture]       -- All the lines drawn previously.
 
@@ -36,7 +39,7 @@ handleEvent event state
         -- If the mouse has moved, then extend the current line.
         | EventMotion (x, y)    <- event
         , State (Just ps) ss    <- state
-        = State (Just ((x, y):ps)) ss 
+        = State (Just ((x, y):ps)) ss
 
         -- Start drawing a new line.
         | EventKey (MouseButton LeftButton) Down _ pt@(x,y) <- event

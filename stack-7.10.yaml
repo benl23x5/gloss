@@ -1,23 +1,23 @@
+# For more information, see: http://docs.haskellstack.org/en/stable/yaml_configuration.html
+# vim: nospell
 
-# Specifies the GHC version and set of packages available (e.g., lts-3.5, nightly-2015-09-21, ghc-7.10.2)
-resolver: lts-7.16
+resolver: lts-6.35
 
-# Local packages, usually specified by relative directory name
 packages:
-- gloss/
-- gloss-algorithms/
-- gloss-examples/
-- gloss-raster/
-- gloss-rendering/
+- 'gloss'
+- 'gloss-algorithms'
+- 'gloss-examples'
+- 'gloss-raster'
+- 'gloss-rendering'
 
-# Packages to be pulled from upstream that are not in the resolver (e.g., acme-missiles-0.3)
-extra-deps: []
+# Packages to be pulled from upstream that are not in the resolver
+# extra-deps: []
 
 # Override default flag values for local packages and extra-deps
-flags: {}
+# flags: {}
 
 # Extra package databases containing global packages
-extra-package-dbs: []
+# extra-package-dbs: []
 
 # Control whether we use the GHC we find on the path
 # system-ghc: true

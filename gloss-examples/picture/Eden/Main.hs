@@ -3,11 +3,11 @@
 module Main where
 import qualified World as W
 import Graphics.Gloss
-import Graphics.Gloss.Interface.Pure.Simulate
 import System.Random
 
 -- varying prng sequence
-main 
+main :: IO ()
+main
  = do   gen <- getStdGen
         simulate (InWindow "Eden" (800, 600) (10, 10))
                  (greyN 0.1)     -- background color

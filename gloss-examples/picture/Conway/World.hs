@@ -1,12 +1,14 @@
-{-# LANGUAGE PatternGuards, ParallelListComp, BangPatterns #-}
+{-# LANGUAGE BangPatterns     #-}
+{-# LANGUAGE ParallelListComp #-}
+{-# LANGUAGE PatternGuards    #-}
 
 module World where
 import Cell
 import System.Random
 import Control.Monad
-import Graphics.Gloss
 import Graphics.Gloss.Interface.Pure.Simulate
 import qualified Data.Vector    as Vec
+
 type Vec        = Vec.Vector
 
 -- Index ----------------------------------------------------------------------
@@ -17,21 +19,21 @@ type Index      = Int
 type Coord      = (Int, Int)
 
 indexOfCoord :: World -> Coord -> Index
-indexOfCoord world (x, y)       
+indexOfCoord world (x, y)
         = x + y * (worldWidth world)
 
 coordOfIndex :: World -> Index -> Coord
-coordOfIndex world i            
+coordOfIndex world i
         = ( i `mod` worldWidth world
           , i `div` worldWidth world)
 
 
 -- World ----------------------------------------------------------------------
-data World      
+data World
         = World
-        { worldCells            :: Vec Cell 
-        , worldWidth            :: Int 
-        , worldHeight           :: Int 
+        { worldCells            :: Vec Cell
+        , worldWidth            :: Int
+        , worldHeight           :: Int
 
         -- | Width and height of each cell.
         , worldCellSize         :: Int
@@ -43,8 +45,8 @@ data World
         , worldCellOldAge       :: Int
 
         -- | Seconds to wait between each simulation step.
-        , worldSimulationPeriod :: Float 
-        
+        , worldSimulationPeriod :: Float
+
         -- | Time that has elapsed since we drew the last step
         , worldElapsedTime      :: Float }
 
@@ -52,15 +54,15 @@ data World
 -- | Make a new world of a particular size.
 randomWorld :: (Int, Int) -> IO World
 randomWorld (width, height)
- = do   bools   <- replicateM (width * height) randomIO 
+ = do   bools   <- replicateM (width * height) randomIO
         return  $ World
                 { worldCells            = Vec.fromList $ map cellOfBool bools
                 , worldWidth            = width
                 , worldHeight           = height
                 , worldCellSize         = 5
-                , worldCellSpace        = 1 
+                , worldCellSpace        = 1
                 , worldCellOldAge       = 20
-                , worldSimulationPeriod = 0.1 
+                , worldSimulationPeriod = 0.1
                 , worldElapsedTime      = 0 }
 
 
@@ -78,14 +80,14 @@ getCell world coord@(x, y)
         | x < 0 || x >= worldWidth  world       = CellDead
         | y < 0 || y >= worldHeight world       = CellDead
 
-        | otherwise             
-        = worldCells world Vec.! indexOfCoord world coord 
+        | otherwise
+        = worldCells world Vec.! indexOfCoord world coord
 
 
--- | Get the neighbourhood of cells aroudn this coordinate.
+-- | Get the neighbourhood of cells around this coordinate.
 getNeighbourhood :: World -> Coord -> [Cell]
 getNeighbourhood world (ix, iy)
- = let  indexes = [ (x, y) 
+ = let  indexes = [ (x, y)
                         | x <- [ix - 1 .. ix + 1]
                         , y <- [iy - 1 .. iy + 1]
                         , not (x == ix && y == iy) ]
@@ -108,22 +110,22 @@ stepIndex world index cell
         neigh   = getNeighbourhood world coord
    in   stepCell cell neigh
 
-                
+
 -- | Compute the next world state.
 stepWorld :: World -> World
 stepWorld world
         = world { worldCells = Vec.imap (stepIndex world) (worldCells world) }
 
-                
+
 -- | Simulation function for worlds.
 simulateWorld :: ViewPort -> Float -> World -> World
-simulateWorld _ time world 
+simulateWorld _ time world
 
         -- If enough time has passed then it's time to step the world.
         | worldElapsedTime world >= (worldSimulationPeriod world)
         = let world'    = stepWorld world
           in  world' { worldElapsedTime = 0 }
-        
+
         -- Wait some more.
         | otherwise
         = world { worldElapsedTime = worldElapsedTime world + time }

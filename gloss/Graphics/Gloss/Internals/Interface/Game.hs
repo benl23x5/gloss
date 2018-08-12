@@ -29,11 +29,11 @@ playWithBackendIO
         -> Color        -- ^ Background color.
         -> Int          -- ^ Number of simulation steps to take for each second of real time.
         -> world        -- ^ The initial world.
-        -> (world -> IO Picture)        
+        -> (world -> IO Picture)
                         -- ^ A function to convert the world to a picture.
-        -> (Event -> world -> IO world) 
+        -> (Event -> world -> IO world)
                         -- ^ A function to handle input events.
-        -> (Float -> world -> IO world) 
+        -> (Float -> world -> IO world)
                         -- ^ A function to step the world one iteration.
                         --   It is passed the period of time (in seconds) needing to be advanced.
         -> Bool         -- ^ Whether to use the callback_exit or not.
@@ -69,7 +69,7 @@ playWithBackendIO
                 -- convert the world to a picture
                 world           <- readIORef worldSR
                 picture         <- worldToPicture world
-        
+
                 -- display the picture in the current view
                 renderS         <- readIORef renderSR
                 viewPort        <- readIORef viewSR
@@ -83,7 +83,7 @@ playWithBackendIO
                         renderS
                         (viewPortScale viewPort)
                         (applyViewPortToPicture viewPort picture)
- 
+
                 -- perform GC every frame to try and avoid long pauses
                 performGC
 
@@ -91,7 +91,7 @@ playWithBackendIO
              =  [ Callback.Display      (animateBegin animateSR)
                 , Callback.Display      displayFun
                 , Callback.Display      (animateEnd   animateSR)
-                , Callback.Idle         (callback_simulate_idle 
+                , Callback.Idle         (callback_simulate_idle
                                                 stateSR animateSR (readIORef viewSR)
                                                 worldSR (\_ -> worldAdvance)
                                                 singleStepTime)
@@ -102,17 +102,17 @@ playWithBackendIO
         let exitCallback
                  = if withCallbackExit then [callback_exit ()] else []
 
-        createWindow 
-                backend 
-                display 
-                backgroundColor 
+        createWindow
+                backend
+                display
+                backgroundColor
                 (callbacks ++ exitCallback)
                 (\_ -> return ())
 
 
 
 -- | Callback for KeyMouse events.
-callback_keyMouse 
+callback_keyMouse
         :: IORef world                  -- ^ ref to world state
         -> IORef ViewPort
         -> (Event -> world -> IO world) -- ^ fn to handle input events
@@ -122,7 +122,7 @@ callback_keyMouse worldRef viewRef eventFn
         = KeyMouse (handle_keyMouse worldRef viewRef eventFn)
 
 
-handle_keyMouse 
+handle_keyMouse
         :: IORef a
         -> t
         -> (Event -> a -> IO a)
@@ -145,7 +145,7 @@ callback_motion worldRef eventFn
         = Motion (handle_motion worldRef eventFn)
 
 
-handle_motion 
+handle_motion
         :: IORef a
         -> (Event -> a -> IO a)
         -> MotionCallback

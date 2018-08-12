@@ -1,3 +1,5 @@
+{-# LANGUAGE BangPatterns #-}
+{-# LANGUAGE MagicHash    #-}
 {-# OPTIONS_HADDOCK hide #-}
 
 -- | Fast(ish) rendering of circles.
@@ -11,7 +13,7 @@ import  qualified Graphics.Rendering.OpenGL.GL          as GL
 
 
 -- | Decide how many line segments to use to render the circle.
---   The number of segments we should use to get a nice picture depends on 
+--   The number of segments we should use to get a nice picture depends on
 --   the size of the circle on the screen, not its intrinsic radius.
 --   If the viewport has been zoomed-in then we need to use more segments.
 --
@@ -72,7 +74,7 @@ renderCircleStrip (F# posX) (F# posY) steps r width
         !(F# r2)        = r + width / 2
 
    in   GL.renderPrimitive GL.TriangleStrip
-         $ renderCircleStrip_step posX posY tStep tStop r1 0.0# r2 
+         $ renderCircleStrip_step posX posY tStep tStop r1 0.0# r2
                 (tStep `divideFloat#` 2.0#)
 {-# INLINE renderCircleStrip #-}
 
@@ -94,7 +96,7 @@ renderArc posX posY scaleFactor radius_ a1 a2 thickness_
         | radScreen     <- scaleFactor * (radius + thickness / 2)
         , steps         <- circleSteps radScreen
         = renderArcStrip posX posY steps radius a1 a2 thickness
-  
+
 
 -- | Render an arc as a line.
 renderArcLine :: Float -> Float -> Int -> Float -> Float -> Float -> IO ()
@@ -133,9 +135,9 @@ renderArcStrip (F# posX) (F# posY) steps r a1 a2 width
         !(F# tMid')     = tMid
         !(F# r1')       = r - width / 2
         !(F# r2')       = r + width / 2
-                
+
    in   GL.renderPrimitive GL.TriangleStrip
-         $ do  
+         $ do
                  -- start vector
                  addPointOnCircle posX posY r1' tStart'
                  addPointOnCircle posX posY r2' tStart'
@@ -165,34 +167,34 @@ renderArcStrip (F# posX) (F# posY) steps r a1 a2 width
 renderCircleLine_step
         :: Float# -> Float#
         -> Float# -> Float#
-        -> Float# -> Float# 
+        -> Float# -> Float#
         -> IO ()
 
 renderCircleLine_step posX posY tStep tStop rad tt
         | 1# <- tt `geFloat#` tStop
         = return ()
-        
+
         | otherwise
         = do    addPointOnCircle posX posY rad tt
-                renderCircleLine_step posX posY tStep tStop rad 
+                renderCircleLine_step posX posY tStep tStop rad
                         (tt `plusFloat#` tStep)
 {-# INLINE renderCircleLine_step #-}
 
 
-renderCircleStrip_step 
-        :: Float# -> Float# 
-        -> Float# -> Float# 
+renderCircleStrip_step
+        :: Float# -> Float#
+        -> Float# -> Float#
         -> Float# -> Float#
         -> Float# -> Float# -> IO ()
 
 renderCircleStrip_step posX posY tStep tStop r1 t1 r2 t2
         | 1# <- t1 `geFloat#` tStop
         = return ()
-        
+
         | otherwise
         = do    addPointOnCircle posX posY r1 t1
                 addPointOnCircle posX posY r2 t2
-                renderCircleStrip_step posX posY tStep tStop r1 
+                renderCircleStrip_step posX posY tStep tStop r1
                         (t1 `plusFloat#` tStep) r2 (t2 `plusFloat#` tStep)
 {-# INLINE renderCircleStrip_step #-}
 
@@ -227,7 +229,7 @@ normalizeAngle f = f - 2 * pi * floor' (f / (2 * pi))
 
 {- Unused sector drawing code.
    Sectors are currently drawn as compound Pictures,
-   but we might want this if we end up implementing the ThickSector 
+   but we might want this if we end up implementing the ThickSector
    version as well.
 
 -- | Render a sector as a line.

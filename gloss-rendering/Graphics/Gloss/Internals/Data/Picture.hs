@@ -1,5 +1,6 @@
+{-# LANGUAGE CPP                #-}
+{-# LANGUAGE DeriveDataTypeable #-}
 {-# OPTIONS_HADDOCK hide #-}
-{-# OPTIONS -fno-warn-orphans #-}
 
 -- | Data types for representing pictures.
 module Graphics.Gloss.Internals.Data.Picture
@@ -33,25 +34,13 @@ import System.IO.Unsafe
 import qualified Data.ByteString.Unsafe as BSU
 import Prelude hiding (map)
 
+#if __GLASGOW_HASKELL__ >= 800
+import Data.Semigroup
+import Data.List.NonEmpty
+#endif
 
 -- | A point on the x-y plane.
-type Point      = (Float, Float)                        
-
-
--- | Pretend a point is a number.
---      Vectors aren't real numbers according to Haskell, because they don't
---      support the multiply and divide field operators. We can pretend they
---      are though, and use the (+) and (-) operators as component-wise
---      addition and subtraction.
---
-instance Num Point where
-        (+) (x1, y1) (x2, y2)   = (x1 + x2, y1 + y2)
-        (-) (x1, y1) (x2, y2)   = (x1 - x2, y1 - y2)
-        (*) (x1, y1) (x2, y2)   = (x1 * x2, y1 * y2)
-        signum (x, y)           = (signum x, signum y)
-        abs    (x, y)           = (abs x, abs y)
-        negate (x, y)           = (negate x, negate y)  
-        fromInteger x           = (fromInteger x, fromInteger x)
+type Point      = (Float, Float)
 
 
 -- | A vector can be treated as a point, and vis-versa.
@@ -59,7 +48,7 @@ type Vector     = Point
 
 
 -- | A path through the x-y plane.
-type Path       = [Point]                               
+type Path       = [Point]
 
 
 -- | A 2D picture
@@ -71,7 +60,7 @@ data Picture
 
         -- | A convex polygon filled with a solid color.
         | Polygon       Path
-        
+
         -- | A line along an arbitrary path.
         | Line          Path
 
@@ -82,11 +71,11 @@ data Picture
         --   If the thickness is 0 then this is equivalent to `Circle`.
         | ThickCircle   Float Float
 
-        -- | A circular arc drawn counter-clockwise between two angles 
+        -- | A circular arc drawn counter-clockwise between two angles
         --  (in degrees) at the given radius.
         | Arc           Float Float Float
 
-        -- | A circular arc drawn counter-clockwise between two angles 
+        -- | A circular arc drawn counter-clockwise between two angles
         --  (in degrees), with the given radius  and thickness.
         --   If the thickness is 0 then this is equivalent to `Arc`.
         | ThickArc      Float Float Float Float
@@ -100,7 +89,7 @@ data Picture
         --  The boolean flag controls whether Gloss should cache the data
         --  in GPU memory between frames. If you are programatically generating
         --  the image for each frame then use @False@. If you have loaded it
-        --  from a file then use @True@. 
+        --  from a file then use @True@.
         --  Setting @False@ for static images will make rendering slower
         --  than it needs to be.
         --  Setting @True@  for dynamically generated images will cause a
@@ -142,9 +131,16 @@ data Picture
 
 -- Instances ------------------------------------------------------------------
 instance Monoid Picture where
-        mempty          = Blank
-        mappend a b     = Pictures [a, b]
-        mconcat         = Pictures
+  mempty          = Blank
+  mappend a b     = Pictures [a, b]
+  mconcat         = Pictures
+
+#if __GLASGOW_HASKELL__ >= 800
+instance Semigroup Picture where
+  a <> b          = Pictures [a, b]
+  sconcat         = Pictures . toList
+  stimes          = stimesIdempotent
+#endif
 
 
 -- Bitmaps --------------------------------------------------------------------

@@ -1,4 +1,7 @@
 {-# LANGUAGE BangPatterns #-}
+
+module Main where
+
 import Graphics.Gloss.Raster.Array
 import System.Environment
 import Data.Array.Repa.Algorithms.Randomish
@@ -20,7 +23,7 @@ main
            [ "gloss-snow <sizeX::Int> <sizeY::Int> <scaleX::Int> <scaleY::Int>"
            , "    sizeX, sizeY   - visualisation size        (default 800, 600)"
            , "    scaleX, scaleY - pixel scaling factor      (default 4, 4)" ]
-   
+
 
 run :: Int -> Int -> Int -> Int -> IO ()
 run windowX windowY scaleX scaleY
@@ -42,7 +45,7 @@ run windowX windowY scaleX scaleY
 
                in   R.zipWith makePixel arr1 arr2
 
-        animateArray 
+        animateArray
                 (InWindow "Digital Snow" (windowX, windowY) (10, 10))
                 (scaleX, scaleY)
                 frame

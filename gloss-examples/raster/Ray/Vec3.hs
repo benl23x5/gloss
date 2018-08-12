@@ -40,12 +40,12 @@ magnitudeV3 (Vec3 x y z)
 -- | Normalise a vector to have unit length.
 normaliseV3 :: Vec3 -> Vec3
 normaliseV3 v
-        = v `mulsV3` (1.0 / magnitudeV3 v) 
+        = v `mulsV3` (1.0 / magnitudeV3 v)
 {-# INLINE normaliseV3 #-}
 
 
 -- | Multiply a vector by a scalar.
-mulsV3 :: Vec3 -> Float -> Vec3 
+mulsV3 :: Vec3 -> Float -> Vec3
 mulsV3 (Vec3 x1 y1 z1) s
         = Vec3 (s * x1) (s * y1) (s * z1)
 {-# INLINE mulsV3 #-}
@@ -63,7 +63,7 @@ clampV3 :: Vec3 -> Float -> Float -> Vec3
 clampV3 (Vec3 r g b) minVal maxVal
  = Vec3 (clamp r) (clamp g) (clamp b)
  where {-# INLINE clamp #-}
-       clamp x 
+       clamp x
         | x <= minVal   = minVal
         | x >= maxVal   = maxVal
         | otherwise     = x

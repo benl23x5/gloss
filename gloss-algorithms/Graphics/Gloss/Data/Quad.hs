@@ -3,7 +3,7 @@ module Graphics.Gloss.Data.Quad
         ( Quad(..)
         , allQuads)
 where
-        
+
 -- | Represents a Quadrant in the 2D plane.
 data Quad
         = NW    -- ^ North West

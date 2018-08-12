@@ -81,7 +81,7 @@ type DisplayCallback
         = forall a . Backend a => IORef a -> IO ()
 
 -- | Arguments: KeyType, Key Up \/ Down, Ctrl \/ Alt \/ Shift pressed, latest mouse location.
-type KeyboardMouseCallback 
+type KeyboardMouseCallback
         = forall a . Backend a => IORef a -> Key -> KeyState -> Modifiers -> (Int,Int) -> IO ()
 
 -- | Arguments: (PosX,PosY) in pixels.
@@ -109,7 +109,7 @@ data Callback
 -- | Check if this is an `Idle` callback.
 isIdleCallback :: Callback -> Bool
 isIdleCallback cc
- = case cc of 
+ = case cc of
         Idle _  -> True
         _       -> False
 
@@ -118,7 +118,7 @@ isIdleCallback cc
 -- This is Glosses view of mouse and keyboard events.
 -- The actual events provided by the backends are converted to this form
 -- by the backend module.
- 
+
 data Key
         = Char        Char
         | SpecialKey  SpecialKey

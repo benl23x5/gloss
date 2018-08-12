@@ -1,5 +1,5 @@
 
-module Graphics.Gloss.Rendering 
+module Graphics.Gloss.Rendering
         ( -- * Picture data type
           Picture (..)
         , Point, Vector, Path
@@ -41,11 +41,11 @@ import qualified Graphics.Gloss.Internals.Rendering.State as RS
 
 
 -- | Set up the OpenGL context, clear the buffer, and render the given picture
---   into it. 
+--   into it.
 --
 --   This is the same as `renderPicture` composed with `withModelview`
 --   and `withClearBuffer`. If you want to manage your own OpenGL context then
---   you can just call `renderPicture`. 
+--   you can just call `renderPicture`.
 --
 --   Using this function assumes that you've already opened a window
 --   and set that to the active context. If you don't want to do your own window
@@ -63,3 +63,4 @@ displayPicture windowSize colorClear state scale picture
   = withModelview      windowSize
   $ withClearBuffer    colorClear
   $ renderPicture  state scale picture
+

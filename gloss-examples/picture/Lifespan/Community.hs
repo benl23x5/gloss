@@ -48,8 +48,8 @@ generation comm angles scales =
     survive (spawn comm angles scales (repeat 5)) (age comm)
 
 render :: Community -> Picture
-render comm 
-        = Pictures 
+render comm
+        = Pictures
         $ map Cell.render comm
 
 initial :: Community

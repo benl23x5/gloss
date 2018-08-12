@@ -32,9 +32,9 @@ simulateWithBackendIO
         -> Color        -- ^ Background color.
         -> Int          -- ^ Number of simulation steps to take for each second of real time.
         -> model        -- ^ The initial model.
-        -> (model -> IO Picture)                
+        -> (model -> IO Picture)
                 -- ^ A function to convert the model to a picture.
-        -> (ViewPort -> Float -> model -> IO model) 
+        -> (ViewPort -> Float -> model -> IO model)
                 -- ^ A function to step the model one iteration. It is passed the
                 --     current viewport and the amount of time for this simulation
                 --     step (in seconds).
@@ -82,7 +82,7 @@ simulateWithBackendIO
                         renderS
                         (viewPortScale port)
                         (applyViewPortToPicture port picture)
- 
+
                 -- perform GC every frame to try and avoid long pauses
                 performGC
 
@@ -90,12 +90,12 @@ simulateWithBackendIO
              =  [ Callback.Display      (animateBegin animateSR)
                 , Callback.Display      displayFun
                 , Callback.Display      (animateEnd   animateSR)
-                , Callback.Idle         (callback_simulate_idle 
+                , Callback.Idle         (callback_simulate_idle
                                                 stateSR animateSR
                                                 (viewStateViewPort <$> readIORef viewSR)
                                                 worldSR worldAdvance
                                                 singleStepTime)
-                , callback_exit () 
+                , callback_exit ()
                 , callback_viewState_keyMouse viewSR
                 , callback_viewState_motion   viewSR
                 , callback_viewState_reshape ]

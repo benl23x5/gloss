@@ -1,4 +1,7 @@
-{-# LANGUAGE BangPatterns, MagicHash, PatternGuards, ScopedTypeVariables #-}
+{-# LANGUAGE BangPatterns        #-}
+{-# LANGUAGE MagicHash           #-}
+{-# LANGUAGE PatternGuards       #-}
+{-# LANGUAGE ScopedTypeVariables #-}
 -- | Rendering of Repa arrays as raster images.
 --
 --  Gloss programs should be compiled with @-threaded@, otherwise the GHC runtime
@@ -7,12 +10,12 @@
 --  The performance of programs using this interface is sensitive to how much
 --  boxing and unboxing the GHC simplifier manages to eliminate. For the best
 --  result add INLINE pragmas to all of your numeric functions and use the following
---  compile options.  
+--  compile options.
 --
---  @-threaded -Odph -fno-liberate-case -funfolding-use-threshold1000 
+--  @-threaded -Odph -fno-liberate-case -funfolding-use-threshold1000
 --   -funfolding-keeness-factor1000 -fllvm -optlo-O3@
 --
---  See the examples the @raster@ directory of the @gloss-examples@ package 
+--  See the examples the @raster@ directory of the @gloss-examples@ package
 --  for more details.
 --
 module Graphics.Gloss.Raster.Array
@@ -49,7 +52,7 @@ import Prelude                                  as P
 
 -- Color ----------------------------------------------------------------------
 -- | Construct a color from red, green, blue components.
---  
+--
 --   Each component is clamped to the range [0..1]
 rgb  :: Float -> Float -> Float -> Color
 rgb r g b   = makeColor r g b 1.0
@@ -72,7 +75,7 @@ rgb8w r g b = makeRawColorI (fromIntegral r) (fromIntegral g) (fromIntegral b) 2
 
 -- | Like `rgb`, but take pre-clamped components for speed.
 --
---   If you're building a new color for every pixel then use this version, 
+--   If you're building a new color for every pixel then use this version,
 --   however if your components are out of range then the picture you get will
 --   be implementation dependent.
 rgb' :: Float -> Float -> Float -> Color
@@ -82,7 +85,7 @@ rgb' r g b  = makeRawColor r g b 1.0
 
 -- | Like `rgbI`, but take pre-clamped components for speed.
 --
---   If you're building a new color for every pixel then use this version, 
+--   If you're building a new color for every pixel then use this version,
 --   however if your components are out of range then the picture you get will
 --   be implementation dependent.
 rgbI' :: Int -> Int -> Int -> Color
@@ -93,18 +96,18 @@ rgbI' r g b  = makeRawColorI r g b 255
 -- Animate --------------------------------------------------------------------
 -- | Animate a bitmap generated from a Repa array.
 animateArray
-        :: Display                      
+        :: Display
                 -- ^ Display mode.
         -> (Int, Int)
                 -- ^ Number of pixels to draw per element.
         -> (Float -> Array D DIM2 Color)
                 -- ^ A function to construct a delayed array for the given time.
-                --   The function should return an array of the same extent each 
+                --   The function should return an array of the same extent each
                 --   time it is applied.
                 --
                 --   It is passed the time in seconds since the program started.
         -> IO ()
-        
+
 animateArray display scale@(scaleX, scaleY) makeArray
  = scaleX `seq` scaleY `seq`
  if scaleX < 1 || scaleY < 1
@@ -120,18 +123,18 @@ animateArray display scale@(scaleX, scaleY) makeArray
 -- AnimateIO --------------------------------------------------------------------
 -- | Animate a bitmap generated from a Repa array, via the IO monad.
 animateArrayIO
-        :: Display                      
+        :: Display
                 -- ^ Display mode.
         -> (Int, Int)
                 -- ^ Number of pixels to draw per element.
         -> (Float -> IO (Array D DIM2 Color))
                 -- ^ A function to construct a delayed array for the given time.
-                --   The function should return an array of the same extent each 
+                --   The function should return an array of the same extent each
                 --   time it is applied.
                 --
                 --   It is passed the time in seconds since the program started.
         -> IO ()
-        
+
 animateArrayIO display scale@(scaleX, scaleY) makeArray
  = scaleX `seq` scaleY `seq`
  if scaleX < 1 || scaleY < 1
@@ -147,19 +150,19 @@ animateArrayIO display scale@(scaleX, scaleY) makeArray
 -- Play -----------------------------------------------------------------------
 -- | Play with a bitmap generated from a Repa array.
 playArray
-        :: Display                      
+        :: Display
                 -- ^ Display mode.
-        -> (Int, Int)   
+        -> (Int, Int)
                 -- ^ Number of pixels to draw per element.
         -> Int  -- ^ Number of simulation steps to take
                 --   for each second of real time
-        -> world 
+        -> world
                 -- ^ The initial world.
         -> (world -> Array D DIM2 Color)
                 -- ^ Function to convert the world to an array.
-        -> (Event -> world -> world)    
+        -> (Event -> world -> world)
                 -- ^ Function to handle input events.
-        -> (Float -> world -> world)    
+        -> (Float -> world -> world)
                 -- ^ Function to step the world one iteration.
                 --   It is passed the time in seconds since the program started.
         -> IO ()
@@ -167,13 +170,13 @@ playArray !display scale@(scaleX, scaleY) !stepRate
           !initWorld !makeArray !handleEvent !stepWorld
  = scaleX `seq` scaleY `seq`
    if scaleX < 1 || scaleY < 1
-     then  error $ "Graphics.Gloss.Raster.Array: invalid pixel scale factor " 
+     then  error $ "Graphics.Gloss.Raster.Array: invalid pixel scale factor "
                  P.++ show scale
      else  let  {-# INLINE frame #-}
                 frame !world    = makeFrame scale (makeArray world)
 
            in   play display black
-                        stepRate 
+                        stepRate
                         initWorld
                         frame
                         handleEvent
@@ -184,19 +187,19 @@ playArray !display scale@(scaleX, scaleY) !stepRate
 -- PlayIO -----------------------------------------------------------------------
 -- | Play with a bitmap generated from a Repa array, via the IO monad.
 playArrayIO
-        :: Display                      
+        :: Display
                 -- ^ Display mode.
-        -> (Int, Int)   
+        -> (Int, Int)
                 -- ^ Number of pixels to draw per element.
         -> Int  -- ^ Number of simulation steps to take
                 --   for each second of real time
-        -> world 
+        -> world
                 -- ^ The initial world.
         -> (world -> IO (Array D DIM2 Color))
                 -- ^ Function to convert the world to an array.
-        -> (Event -> world -> IO world)    
+        -> (Event -> world -> IO world)
                 -- ^ Function to handle input events.
-        -> (Float -> world -> IO world)    
+        -> (Float -> world -> IO world)
                 -- ^ Function to step the world one iteration.
                 --   It is passed the time in seconds since the program started.
         -> IO ()
@@ -204,13 +207,13 @@ playArrayIO !display scale@(scaleX, scaleY) !stepRate
             !initWorld !makeArray !handleEvent !stepWorld
  = scaleX `seq` scaleY `seq`
    if scaleX < 1 || scaleY < 1
-     then  error $ "Graphics.Gloss.Raster.Array: invalid pixel scale factor " 
+     then  error $ "Graphics.Gloss.Raster.Array: invalid pixel scale factor "
                  P.++ show scale
      else  let  {-# INLINE frame #-}
                 frame !world    = fmap (makeFrame scale) (makeArray world)
 
            in  playIO display black
-                        stepRate 
+                        stepRate
                         initWorld
                         frame
                         handleEvent
@@ -222,7 +225,7 @@ playArrayIO !display scale@(scaleX, scaleY) !stepRate
 makeFrame :: (Int, Int) -> Array D DIM2 Color -> Picture
 makeFrame (scaleX, scaleY) !array
  = let  -- Size of the array
-        _ :. sizeY :. sizeX 
+        _ :. sizeY :. sizeX
                          = R.extent array
 
         convColor :: Color -> Word32
@@ -231,14 +234,14 @@ makeFrame (scaleX, scaleY) !array
                 r'        = fromIntegral r
                 g'        = fromIntegral g
                 b'        = fromIntegral b
-                a         = 255 
+                a         = 255
 
                 !w        =  unsafeShiftL r' 24
                          .|. unsafeShiftL g' 16
                          .|. unsafeShiftL b' 8
                          .|. a
            in   w
-        {-# INLINE convColor #-} 
+        {-# INLINE convColor #-}
 
    in unsafePerformIO $ do
 
@@ -250,7 +253,7 @@ makeFrame (scaleX, scaleY) !array
         traceEventIO "Gloss.Raster[makeFrame]: done, returning picture."
 
         -- Wrap the ForeignPtr from the Array as a gloss picture.
-        let picture     
+        let picture
                 = Scale (fromIntegral scaleX) (fromIntegral scaleY)
                 $ bitmapOfForeignPtr
                         sizeX sizeY     -- raw image size
@@ -267,7 +270,7 @@ makeFrame (scaleX, scaleY) !array
 --   doesn't have enout specialisations and goes via Integer.
 word8OfFloat :: Float -> Word8
 word8OfFloat f
-        = fromIntegral (truncate f :: Int) 
+        = fromIntegral (truncate f :: Int)
 {-# INLINE word8OfFloat #-}
 
 
