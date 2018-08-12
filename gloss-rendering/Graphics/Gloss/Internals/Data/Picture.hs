@@ -10,15 +10,19 @@ module Graphics.Gloss.Internals.Data.Picture
         , Picture(..)
 
         -- * Bitmaps
+        , Rectangle(..)
         , BitmapData, PixelFormat(..), BitmapFormat(..), RowOrder(..)
+        , bitmapSize
         , bitmapOfForeignPtr
         , bitmapDataOfForeignPtr
         , bitmapOfByteString
         , bitmapDataOfByteString
         , bitmapOfBMP
         , bitmapDataOfBMP
-        , loadBMP)
+        , loadBMP
+        , rectAtOrigin )
 where
+
 import Graphics.Gloss.Internals.Data.Color
 import Graphics.Gloss.Internals.Rendering.Bitmap
 import Codec.BMP
@@ -38,6 +42,7 @@ import Prelude hiding (map)
 import Data.Semigroup
 import Data.List.NonEmpty
 #endif
+
 
 -- | A point on the x-y plane.
 type Point      = (Float, Float)
@@ -83,31 +88,13 @@ data Picture
         -- | Some text to draw with a vector font.
         | Text          String
 
-        -- | A bitmap image with a width, height and some 32-bit RGBA
-        --   bitmap data.
-        --
-        --  The boolean flag controls whether Gloss should cache the data
-        --  in GPU memory between frames. If you are programatically generating
-        --  the image for each frame then use @False@. If you have loaded it
-        --  from a file then use @True@.
-        --  Setting @False@ for static images will make rendering slower
-        --  than it needs to be.
-        --  Setting @True@  for dynamically generated images will cause a
-        --  GPU memory leak.
-        | Bitmap        Int     Int     BitmapData Bool
-        -- | like Bitmap but takes additional parameters to render
-        -- a specific subsection of the image only.
-        -- The last two arguments specify the pos and size of this subsection
-        --
-        --  The boolean flag controls whether Gloss should cache the data
-        --  in GPU memory between frames. If you are programatically generating
-        --  the image for each frame then use @False@. If you have loaded it
-        --  from a file then use @True@. 
-        --  Setting @False@ for static images will make rendering slower
-        --  than it needs to be.
-        --  Setting @True@  for dynamically generated images will cause a
-        --  GPU memory leak.
-        | BitmapSection Int Int BitmapData Bool (Int,Int) (Int,Int)
+        --  | a bitmap image
+        | Bitmap BitmapData
+
+        -- | a subsection of a bitmap image
+        --   first argument selects a sub section in the bitmap
+        --   second argument determines the bitmap data
+        | BitmapSection Rectangle BitmapData
 
         -- Color ------------------------------------------
         -- | A picture drawn with this color.
@@ -153,12 +140,14 @@ instance Semigroup Picture where
 --   from a file then use `True`.
 bitmapOfForeignPtr :: Int -> Int -> BitmapFormat -> ForeignPtr Word8 -> Bool -> Picture
 bitmapOfForeignPtr width height fmt fptr cacheMe =
-  Bitmap width height (bitmapDataOfForeignPtr width height fmt fptr) cacheMe
+  Bitmap $
+    bitmapDataOfForeignPtr width height fmt fptr cacheMe
+  --Bitmap width height (bitmapDataOfForeignPtr width height fmt fptr) cacheMe
 
-bitmapDataOfForeignPtr :: Int -> Int -> BitmapFormat -> ForeignPtr Word8 -> BitmapData
-bitmapDataOfForeignPtr width height fmt fptr
+bitmapDataOfForeignPtr :: Int -> Int -> BitmapFormat -> ForeignPtr Word8 -> Bool -> BitmapData
+bitmapDataOfForeignPtr width height fmt fptr cacheMe
  = let  len     = width * height * 4
-   in   BitmapData len fmt fptr
+   in   BitmapData len fmt (width,height) cacheMe fptr
 
 
 -- | O(size). Copy a `ByteString` of RGBA data into a bitmap with the given
@@ -170,10 +159,11 @@ bitmapDataOfForeignPtr width height fmt fptr
 --   from a file then use `True`.
 bitmapOfByteString :: Int -> Int -> BitmapFormat -> ByteString -> Bool -> Picture
 bitmapOfByteString width height fmt bs cacheMe =
-  Bitmap width height (bitmapDataOfByteString width height fmt bs) cacheMe
+  Bitmap $
+    bitmapDataOfByteString width height fmt bs cacheMe
 
-bitmapDataOfByteString :: Int -> Int -> BitmapFormat -> ByteString -> BitmapData
-bitmapDataOfByteString width height fmt bs
+bitmapDataOfByteString :: Int -> Int -> BitmapFormat -> ByteString -> Bool -> BitmapData
+bitmapDataOfByteString width height fmt bs cacheMe
  = unsafePerformIO
  $ do   let len = width * height * 4
         ptr     <- mallocBytes len
@@ -182,7 +172,7 @@ bitmapDataOfByteString width height fmt bs
         BSU.unsafeUseAsCString bs
          $ \cstr -> copyBytes ptr (castPtr cstr) len
 
-        return $ BitmapData len fmt fptr
+        return $ BitmapData len fmt (width, height) cacheMe fptr
 {-# NOINLINE bitmapDataOfByteString #-}
 
 
@@ -190,8 +180,9 @@ bitmapDataOfByteString width height fmt bs
 bitmapOfBMP :: BMP -> Picture
 bitmapOfBMP bmp =
  let (width, height) = bmpDimensions bmp
- in Bitmap width height (bitmapDataOfBMP bmp) True
-
+ in
+   Bitmap $
+     bitmapDataOfBMP bmp
 
 -- | O(size). Copy a `BMP` file into a bitmap.
 bitmapDataOfBMP :: BMP -> BitmapData
@@ -207,7 +198,7 @@ bitmapDataOfBMP bmp
         BSU.unsafeUseAsCString bs
          $ \cstr -> copyBytes ptr (castPtr cstr) len
 
-        return $ BitmapData len (BitmapFormat BottomToTop PxRGBA) fptr
+        return $ BitmapData len (BitmapFormat BottomToTop PxRGBA) (width,height) True fptr
 {-# NOINLINE bitmapDataOfBMP #-}
 
 -- | Load an uncompressed 24 or 32bit RGBA BMP file as a bitmap.
@@ -218,3 +209,4 @@ loadBMP filePath
          Left err       -> error $ show err
          Right bmp      -> return $ bitmapOfBMP bmp
 
+rectAtOrigin w h = Rectangle (0,0) (w,h)

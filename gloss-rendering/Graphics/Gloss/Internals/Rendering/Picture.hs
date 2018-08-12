@@ -161,55 +161,21 @@ drawPicture state circScale picture
                 let mscale      = max sx sy
                 drawPicture state (circScale * mscale) p
 
-        -- Bitmap -------------------------------
-        Bitmap width height imgData cacheMe
-         -> do
-                let rowInfo =
-                      case rowOrder (bitmapFormat imgData) of
-                         BottomToTop -> [(0,0), (1,0), (1,1), (0,1)]
-                         TopToBottom -> [(0,1), (1,1), (1,0), (0,0)]
+        Bitmap imgData ->
+          let (width, height) = bitmapSize imgData
+          in
+            drawPicture state circScale $
+              BitmapSection (rectAtOrigin width height) imgData
 
-                -- Load the image data into a texture,
-                -- or grab it from the cache if we've already done that before.
-                tex     <- loadTexture (stateTextures state) width height imgData cacheMe
-
-                -- Set up wrap and filtering mode
-                GL.textureWrapMode GL.Texture2D GL.S $= (GL.Repeated, GL.Repeat)
-                GL.textureWrapMode GL.Texture2D GL.T $= (GL.Repeated, GL.Repeat)
-                GL.textureFilter   GL.Texture2D      $= ((GL.Nearest, Nothing), GL.Nearest)
-
-                -- Enable texturing
-                GL.texture GL.Texture2D $= GL.Enabled
-                GL.textureFunction      $= GL.Combine
-
-                -- Set current texture
-                GL.textureBinding GL.Texture2D $= Just (texObject tex)
-
-                -- Set to opaque
-                oldColor <- get GL.currentColor
-                GL.currentColor $= GL.Color4 1.0 1.0 1.0 1.0
-
-                -- Draw textured polygon
-                GL.renderPrimitive GL.Polygon
-                 $ zipWithM_
-                        (\(pX, pY) (tX, tY)
-                          -> do GL.texCoord $ GL.TexCoord2 (gf tX) (gf tY)
-                                GL.vertex   $ GL.Vertex2   (gf pX) (gf pY))
-
-                        (bitmapPath (fromIntegral width) (fromIntegral height))
-                                rowInfo
-
-                -- Restore color
-                GL.currentColor $= oldColor
-
-                -- Disable texturing
-                GL.texture GL.Texture2D $= GL.Disabled
-
-                -- Free uncachable texture objects.
-                freeTexture tex
-
-        -- Subsection of a Bitmap
-        BitmapSection width height imgData cacheMe imgSectionPos imgSectionSize ->
+        BitmapSection
+          Rectangle
+            { rectPos = imgSectionPos
+            , rectSize = imgSectionSize }
+          imgData@BitmapData
+          { bitmapSize = (width, height)
+          , bitmapCacheMe = cacheMe }
+          ->
+        -- width height imgData cacheMe imgSectionPos imgSectionSize ->
           do
             let rowInfo =
                   let defTexCoords =
@@ -227,7 +193,7 @@ drawPicture state circScale picture
 
             -- Load the image data into a texture,
             -- or grab it from the cache if we've already done that before.
-            tex     <- loadTexture (stateTextures state) width height imgData cacheMe
+            tex     <- loadTexture (stateTextures state) imgData cacheMe
 
             -- Set up wrap and filtering mode
             GL.textureWrapMode GL.Texture2D GL.S $= (GL.Repeated, GL.Repeat)
@@ -310,11 +276,11 @@ handleError place err
 --   cache, otherwise load it into OpenGL.
 loadTexture
         :: IORef [Texture]
-        -> Int -> Int -> BitmapData
+        -> BitmapData
         -> Bool
         -> IO Texture
 
-loadTexture refTextures width height imgData cacheMe
+loadTexture refTextures imgData@BitmapData{ bitmapSize=(width,height) } cacheMe
  = do   textures        <- readIORef refTextures
 
         -- Try and find this same texture in the cache.
@@ -330,7 +296,7 @@ loadTexture refTextures width height imgData cacheMe
           ->    return tex
 
          Nothing
-          -> do tex     <- installTexture width height imgData cacheMe
+          -> do tex     <- installTexture imgData
                 when cacheMe
                  $ writeIORef refTextures (tex : textures)
                 return tex
@@ -338,12 +304,10 @@ loadTexture refTextures width height imgData cacheMe
 
 -- | Install a texture into OpenGL.
 installTexture
-        :: Int -> Int
-        -> BitmapData
-        -> Bool
+        :: BitmapData
         -> IO Texture
 
-installTexture width height bitmapData@(BitmapData _ fmt fptr) cacheMe
+installTexture bitmapData@(BitmapData _ fmt (width,height) cacheMe fptr)
  = do
         let glFormat
                 = case pixelFormat fmt of

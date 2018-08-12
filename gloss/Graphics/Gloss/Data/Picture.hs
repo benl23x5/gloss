@@ -11,6 +11,8 @@ module Graphics.Gloss.Data.Picture
         , arc,    thickArc
         , text
         , bitmap
+        , bitmapSection
+        -- , bitmap
         , color
         , translate, rotate, scale
         , pictures
@@ -70,16 +72,15 @@ thickArc = ThickArc
 text :: String -> Picture
 text = Text
 
--- | A bitmap image with a width, height and a Vector holding the
---   32-bit RGBA bitmap data.
---
---  The boolean flag controls whether Gloss should cache the data
---  between frames for speed.
---  If you are programatically generating the image for
---  each frame then use `False`.
---  If you have loaded it from a file then use `True`.
-bitmap  :: Int -> Int -> BitmapData -> Bool -> Picture
-bitmap = Bitmap
+-- | A bitmap image
+bitmap  :: BitmapData -> Picture
+bitmap bitmapData = Bitmap bitmapData
+
+-- | a subsection of a bitmap image
+--   first argument selects a sub section in the bitmap
+--   second argument determines the bitmap data
+bitmapSection  :: Rectangle -> BitmapData -> Picture
+bitmapSection = BitmapSection
 
 -- | A picture drawn with this color.
 color :: Color -> Picture -> Picture
