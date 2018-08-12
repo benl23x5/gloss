@@ -12,17 +12,17 @@ import qualified Data.Map       as Map
 import Data.Map                 (Map)
 
 -- The world ------------------------------------------------------------------
-data World      
+data World
         = World (Map Index Actor)       -- actors
                 (QuadTree Actor)        -- tree
 
 -- | The initial world
 worldInit :: World
-worldInit       
+worldInit
         = World actorMapInit treeInit
 
-actorMapInit    
-        = Map.fromList 
+actorMapInit
+        = Map.fromList
         $ map (\a -> (actorIx a, a))
         $ (walls ++ beads)
 
@@ -44,23 +44,23 @@ box
 
 splitter :: [Actor]
 splitter
- =      [ Wall  0 (-15, -100) (-200, 0) 
+ =      [ Wall  0 (-15, -100) (-200, 0)
         , Wall  0 ( 15, -100) ( 200, 0) ]
 
 
 -- Beads ------------------
 beads :: [Actor]
-beads   
+beads
  = let  -- beads start off with their index just set to 0
         beads_raw
                 = [Bead 0 0 beadRadius (beadPos ix iy) (0, 0)
                         | ix <- [0 .. beadCountX - 1]
                         , iy <- [0 .. beadCountY - 1 ] ]
-        
+
         -- set the unique index on the beads before returning them
    in   zipWith actorSetIndex beads_raw [0..]
-                         
-beadPos ix iy   
+
+beadPos ix iy
  =      ( (ix * beadBoxSize) - (beadBoxSize * beadCountX / 2)
         , (iy * beadBoxSize)  )
 
@@ -85,6 +85,6 @@ insertActor actor tree
                 -- the bottom left and top right of the wall's bounding box.
                 p0      = (min x0 x1, min y0 y1)
                 p1      = (max x0 x1, max y0 y1)
-        
+
           in    treeInsert treeMaxDepth 0 p0 p1 wall tree
-        
+

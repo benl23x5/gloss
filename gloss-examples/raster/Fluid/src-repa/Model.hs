@@ -1,4 +1,6 @@
-{-# LANGUAGE ScopedTypeVariables, BangPatterns #-}
+{-# LANGUAGE BangPatterns        #-}
+{-# LANGUAGE ScopedTypeVariables #-}
+
 module Model
         ( Delta
         , Rate
@@ -36,20 +38,20 @@ type Rate       = Float
 
 
 -- | A 2d field.
-type Field a        
+type Field a
         = Array U DIM2 a
 
 -- | Scalar density field.
-type DensityField   
+type DensityField
         = Field Float
 
 -- | Vector velocity field.
-type VelocityField  
+type VelocityField
         = Field (Float, Float)
 
 
 -- | Button being pressed by the user.
-data CurrentButton  
+data CurrentButton
         = LeftButton
         | RightButton
         | None
@@ -75,7 +77,7 @@ data Model
 
 
 -- | Creates an initial blank model
-initModel 
+initModel
         :: Array U DIM2 Float
         -> Array U DIM2 (Float, Float)
         -> Model
@@ -100,7 +102,7 @@ initModel density velocity
 -- Picture --------------------------------------------------------------------
 -- | Function to convert the Model into a Bitmap for displaying in Gloss
 pictureOfModel :: Monad m => (Float, Float) -> Model -> m G.Picture
-pictureOfModel (scaleX, scaleY) m 
+pictureOfModel (scaleX, scaleY) m
  = let  (Z :. height' :. width') = R.extent $ densityField m
         width           = fromIntegral width'
         height          = fromIntegral height'
@@ -110,7 +112,7 @@ pictureOfModel (scaleX, scaleY) m
          <- computeP $ R.map pixel32OfDensity $ densityField m
 
         let picVel :: G.Picture
-            picVel  
+            picVel
              | drawVelocity m
              = G.Translate (- width / 2) (- height / 2)
                     $ G.Color (G.light $ G.light G.red)
@@ -119,8 +121,8 @@ pictureOfModel (scaleX, scaleY) m
                         | x <- [0, 5 .. width'  - 1]
                         , y <- [0, 5 .. height' - 1]
                         , let xf         = fromIntegral x
-                        , let yf         = fromIntegral y 
-                        , let (vx0, vy0) = velocityField m R.! (Z :. y :. x) 
+                        , let yf         = fromIntegral y
+                        , let (vx0, vy0) = velocityField m R.! (Z :. y :. x)
                         , let vx'        = vx0 * 100
                         , let vy'        = vy0 * 100 ]
 
@@ -150,7 +152,7 @@ pixel32OfDensity f
         !x      = truncate $ fsat * 255
         !a      = 255
 
-    in   unsafeShiftL x 24 .|. unsafeShiftL x 16 
+    in   unsafeShiftL x 24 .|. unsafeShiftL x 16
      .|. unsafeShiftL x  8 .|. a
 {-# INLINE pixel32OfDensity #-}
 
@@ -171,7 +173,7 @@ pixel8OfDensity f
 -- Dump -----------------------------------------------------------------------
 -- Writes bitmap data to test batch-mode ran correctly
 outputBMP :: FilePath -> Int -> DensityField -> IO ()
-outputBMP path step df 
+outputBMP path step df
  = do   arr             <- computeUnboxedP $ R.map pixel8OfDensity df
         let step'       = replicate (6 - length (show step)) '0' P.++ show step
         R.writeImageToBMP (path P.++ step' P.++ ".bmp") arr
@@ -180,7 +182,7 @@ outputBMP path step df
 outputPPM :: Int -> String -> Float -> Array U DIM2 Float -> IO ()
 outputPPM step name scale df
  = do   let (Z :. h :. w) = extent df
-        let step'         
+        let step'
              = replicate (4 - length (show step)) '0' P.++ show step
 
         let getVal x y
@@ -194,7 +196,7 @@ outputPPM step name scale df
         let mx
              =  maximum [getVal x y | x <- [0..w-1], y <- [0..h-1]]
 
-        let out = unlines $ 
+        let out = unlines $
                 [ "P2"
                 , show h P.++ " " P.++ show w
                 , show mx]

@@ -19,7 +19,7 @@ import Data.Maybe
 import System.IO
 
 
-data KDTreeNode a 
+data KDTreeNode a
         = Empty
         | Node !(KDTreeNode a) !Vec2 !a !(KDTreeNode a)
         deriving Show
@@ -42,10 +42,10 @@ mapKDTree (Node l p n r) f      = f n : (mapKDTree l f ++ mapKDTree r f)
 
 
 kdtAddWithDepth :: KDTreeNode a -> Vec2 -> a -> Int -> KDTreeNode a
-kdtAddWithDepth Empty pos dat _ 
+kdtAddWithDepth Empty pos dat _
         = Node Empty pos dat Empty
 
-kdtAddWithDepth (Node left npos ndata right) pos dat d 
+kdtAddWithDepth (Node left npos ndata right) pos dat d
         | vecDimSelect pos d < vecDimSelect npos d
         = Node (kdtAddWithDepth left pos dat d') npos ndata right
 
@@ -55,10 +55,10 @@ kdtAddWithDepth (Node left npos ndata right) pos dat d
 
 
 kdtAddPoint :: KDTreeNode a -> Vec2 -> a -> KDTreeNode a
-kdtAddPoint t p d 
+kdtAddPoint t p d
         = kdtAddWithDepth t p d 0
 
-kdtInBounds p bMin bMax 
+kdtInBounds p bMin bMax
         = vecLessThan p bMax && vecGreaterThan p bMin
 
 
@@ -73,7 +73,7 @@ kdtRangeSearchRecX (Node left npos ndata right) bMin bMax
         = nextfun left bMin bMax
 
         | kdtInBounds npos bMin bMax
-        = (npos, ndata) 
+        = (npos, ndata)
         : (nextfun right bMin bMax ++ nextfun left bMin bMax)
 
         | otherwise
@@ -91,10 +91,10 @@ kdtRangeSearchRecY Empty _ _    = []
 kdtRangeSearchRecY (Node left npos ndata right) bMin bMax
         | nc < mnc
         = nextfun right bMin bMax
-        
+
         | nc > mxc
         = nextfun left bMin bMax
-        
+
         | (kdtInBounds npos bMin bMax)
         = (npos, ndata)
         : (nextfun right bMin bMax ++ nextfun left bMin bMax)
@@ -109,13 +109,13 @@ kdtRangeSearchRecY (Node left npos ndata right) bMin bMax
 
 
 kdtRangeSearch :: (KDTreeNode a) -> Vec2 -> Vec2 -> [(Vec2,a)]
-kdtRangeSearch t bMin bMax 
+kdtRangeSearch t bMin bMax
         = kdtRangeSearchRecX t bMin bMax
 
 
 kdtAddPoints :: [(Vec2,a)] -> (KDTreeNode a) -> (KDTreeNode a)
 kdtAddPoints [] t       = t
-kdtAddPoints ((pt, dat):ps) t 
+kdtAddPoints ((pt, dat):ps) t
         = kdtAddPoints ps $ kdtAddPoint t pt dat
 
 
@@ -123,7 +123,7 @@ singleCollision :: Vec2 -> Vec2 -> Vec2 -> Double -> a -> Maybe (Vec2, a)
 singleCollision pt start a eps dat
         | sqrd_dist < eps * eps
         = Just (vecAdd start p, dat)
-        
+
         | otherwise
         = Nothing
 
@@ -135,8 +135,8 @@ singleCollision pt start a eps dat
 
 
 kdtCollisionDetect :: KDTreeNode a -> Vec2 -> Vec2 -> Double -> [(Vec2,a)]
-kdtCollisionDetect root !start !end !eps 
- = colls 
+kdtCollisionDetect root !start !end !eps
+ = colls
  where   Vec2 sx sy = start
          Vec2 ex ey = end
          rmin    = Vec2 (min sx ex - eps) (min sy ey - eps)
@@ -144,12 +144,12 @@ kdtCollisionDetect root !start !end !eps
          pts     = kdtRangeSearch root rmin rmax
          a       = vecSub end start
          colls   = mapMaybe (\(pt,dat) -> singleCollision pt start a eps dat) pts
-      
-      
+
+
 -- Dumping --------------------------------------------------------------------
 -- | Dump a KDTree to a file
 dumpKDTree :: KDTreeNode Int -> FilePath -> IO ()
-dumpKDTree kdt name 
+dumpKDTree kdt name
  = do   h       <- openFile name WriteMode
         hPutStrLn h "n x y z"
         dumpKDTreeInner kdt h
@@ -158,11 +158,11 @@ dumpKDTree kdt name
 
 -- | Dump a KDTree to a handle.
 dumpKDTreeInner :: KDTreeNode Int -> Handle -> IO ()
-dumpKDTreeInner kdt h 
+dumpKDTreeInner kdt h
  = case kdt of
         Empty -> return ()
 
-        Node l v d r 
+        Node l v d r
          -> do  printVec v h d
                 dumpKDTreeInner l h
                 dumpKDTreeInner r h
@@ -170,6 +170,6 @@ dumpKDTreeInner kdt h
 
 -- | Print a vector to a handle.
 printVec :: Vec2 -> Handle -> Int -> IO ()
-printVec (Vec2 x y) h i 
+printVec (Vec2 x y) h i
         = hPutStrLn h $ show i ++ " " ++ show x ++ " " ++ show y
 

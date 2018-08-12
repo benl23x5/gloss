@@ -35,8 +35,8 @@ print_array (int N, float* arr)
 void
 add_source (int N, float * x, float * s, float dt)
 {
-	int i, size=(N+2)*(N+2);
-	for ( i=0 ; i<size ; i++ ) 
+        int i, size=(N+2)*(N+2);
+        for ( i=0 ; i<size ; i++ )
                 x[i] += dt * s[i];
 }
 
@@ -45,18 +45,18 @@ add_source (int N, float * x, float * s, float dt)
 void
 set_bnd_zero ( int N, int b, float * x )
 {
-	int i;
+        int i;
 
-	for ( i = 1 ; i <= N ; i++ ) {
-		x[IX(0  ,i)] = 0;
-		x[IX(N+1,i)] = 0;
-		x[IX(i,0  )] = 0;
-		x[IX(i,N+1)] = 0;
-	}
-	x[IX(0  ,0  )] = 0;
-	x[IX(0  ,N+1)] = 0;
-	x[IX(N+1,0  )] = 0;
-	x[IX(N+1,N+1)] = 0;
+        for ( i = 1 ; i <= N ; i++ ) {
+                x[IX(0  ,i)] = 0;
+                x[IX(N+1,i)] = 0;
+                x[IX(i,0  )] = 0;
+                x[IX(i,N+1)] = 0;
+        }
+        x[IX(0  ,0  )] = 0;
+        x[IX(0  ,N+1)] = 0;
+        x[IX(N+1,0  )] = 0;
+        x[IX(N+1,N+1)] = 0;
 }
 
 
@@ -90,7 +90,7 @@ solve_gauss_seidel (int iters, int N, int b, float* x, float* x0, float a, float
         int i, j, k;
         for (k=0; k < iters; k++) {
                 FOR_EACH_CELL(
-                        x[IX(i,j)] = ( x0[IX(i,j)] 
+                        x[IX(i,j)] = ( x0[IX(i,j)]
                                      + a * (x[IX(i-1,j)]
                                           + x[IX(i+1,j)]
                                           + x[IX(i,j-1)]
@@ -112,7 +112,7 @@ solve_jacobi (int iters, int N, int b, float* x, float* x0, float a, float c)
         set_bnd(N, b, x1);
         for (k = 0; k < iters; k++) {
                 FOR_EACH_CELL(
-                        x2[IX(i, j)] 
+                        x2[IX(i, j)]
                                 = ( x0[IX(i, j)]
                                   + a * (x1[IX(i-1, j)]
                                        + x1[IX(i+1, j)]
@@ -149,8 +149,8 @@ void lin_solve (int method, int iters, int N, int b, float* x, float* x0, float 
 void
 diffuse (int method, int iters, int N, int b, float *x, float *x0, float diff, float dt )
 {
-	float a = dt * diff * N * N;
-	lin_solve (method, iters, N, b, x, x0, a, 1 + 4 * a);
+        float a = dt * diff * N * N;
+        lin_solve (method, iters, N, b, x, x0, a, 1 + 4 * a);
 }
 
 
@@ -160,38 +160,38 @@ advect (int N, int b, float * d, float * d0, float * u, float * v, float dt )
 {
         assert (d); assert (d0); assert (u); assert (v);
 
-	int   i, j, i0, j0, i1, j1;
-	float x, y, s0, t0, s1, t1, dt0;
+        int   i, j, i0, j0, i1, j1;
+        float x, y, s0, t0, s1, t1, dt0;
 
-	dt0 = dt * N;
-        for ( j=1 ; j <= N ; j++ ) 
+        dt0 = dt * N;
+        for ( j=1 ; j <= N ; j++ )
         for ( i=1 ; i <= N ; i++ ) {
 
-		x = i - dt0 * u[IX(i,j)]; 
+                x = i - dt0 * u[IX(i,j)];
                 y = j - dt0 * v[IX(i,j)];
 
-		if (x < 0.5f)   x = 0.5f; 
-                if (x > N+0.5f) x = N+0.5f; 
+                if (x < 0.5f)   x = 0.5f;
+                if (x > N+0.5f) x = N+0.5f;
 
-                i0=(int)x; 
+                i0=(int)x;
                 i1=i0+1;
 
-		if (y < 0.5f)   y = 0.5f; 
-                if (y > N+0.5f) y = N + 0.5f; 
+                if (y < 0.5f)   y = 0.5f;
+                if (y > N+0.5f) y = N + 0.5f;
 
-                j0=(int)y; 
+                j0=(int)y;
                 j1=j0+1;
 
-		s1 = x-i0; 
-                s0 = 1-s1; 
+                s1 = x-i0;
+                s0 = 1-s1;
 
-                t1 = y-j0; 
+                t1 = y-j0;
                 t0 = 1-t1;
 
-		d[IX(i,j)] = s0 * (t0 * d0[IX(i0,j0)] + t1 * d0[IX(i0,j1)])
+                d[IX(i,j)] = s0 * (t0 * d0[IX(i0,j0)] + t1 * d0[IX(i0,j1)])
                            + s1 * (t0 * d0[IX(i1,j0)] + t1 * d0[IX(i1,j1)]);
         }
-	set_bnd ( N, b, d );
+        set_bnd ( N, b, d );
 }
 
 void copy (int N, float * d, float * d0)
@@ -199,7 +199,7 @@ void copy (int N, float * d, float * d0)
         assert (d); assert (d0);
         int i, j;
 
-        for ( i=1 ; i <= N ; i++ ) 
+        for ( i=1 ; i <= N ; i++ )
         for ( j=1 ; j <= N ; j++ ) {
                 d[IX(i,j)] = d0[IX(i,j)];
         }
@@ -209,22 +209,22 @@ void copy (int N, float * d, float * d0)
 // -- Projection --------------------------------------------------------------
 void project (int method, int iters, int N, float * u, float * v, float * p, float * div )
 {
-	int i, j;
+        int i, j;
 
-	FOR_EACH_CELL(
-		div[IX(i,j)] = -0.5f*(u[IX(i+1,j)]-u[IX(i-1,j)]+v[IX(i,j+1)]-v[IX(i,j-1)])/N;
-		p[IX(i,j)]   = div[IX(i,j)];
-	)
-	set_bnd ( N, 0, div );
+        FOR_EACH_CELL(
+                div[IX(i,j)] = -0.5f*(u[IX(i+1,j)]-u[IX(i-1,j)]+v[IX(i,j+1)]-v[IX(i,j-1)])/N;
+                p[IX(i,j)]   = div[IX(i,j)];
+        )
+        set_bnd ( N, 0, div );
         set_bnd ( N, 0, p );
 
-	lin_solve (method, iters, N, 0, p, div, 1, 4 );
+        lin_solve (method, iters, N, 0, p, div, 1, 4 );
 
-	FOR_EACH_CELL(
-		u[IX(i,j)] -= 0.5f*N*(p[IX(i+1,j)]-p[IX(i-1,j)]);
-		v[IX(i,j)] -= 0.5f*N*(p[IX(i,j+1)]-p[IX(i,j-1)]);
-	)
-	set_bnd ( N, 1, u );
+        FOR_EACH_CELL(
+                u[IX(i,j)] -= 0.5f*N*(p[IX(i+1,j)]-p[IX(i-1,j)]);
+                v[IX(i,j)] -= 0.5f*N*(p[IX(i,j+1)]-p[IX(i,j-1)]);
+        )
+        set_bnd ( N, 1, u );
         set_bnd ( N, 2, v );
 }
 

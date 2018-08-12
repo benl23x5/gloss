@@ -16,7 +16,7 @@ import Graphics.Gloss.Internals.Interface.Game
 import Graphics.Gloss.Internals.Interface.Backend
 
 
--- | Play a game in a window, using IO actions to build the pictures. 
+-- | Play a game in a window, using IO actions to build the pictures.
 playIO  :: forall world
         .  Display                      -- ^ Display mode.
         -> Color                        -- ^ Background color.

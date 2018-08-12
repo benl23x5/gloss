@@ -9,32 +9,32 @@ import Graphics.Gloss.Data.QuadTree
 import Graphics.Gloss.Data.Extent
 import System.Environment
 import Data.Maybe
-import Data.List
-import Data.Function
 
-main 
+main :: IO ()
+main
  = do   args    <- getArgs
         case args of
-         [fileName]     
+         [fileName]
           -> do world   <- loadWorld fileName
                 mainWithWorld world
-                
+
          _ -> do
                 let world = readWorld worldData
                 mainWithWorld world
-        
-        
+
+
+mainWithWorld :: World -> IO ()
 mainWithWorld world
  = play (InWindow "Occlusion"
                  (windowSizeOfWorld world) (10, 10))
-        black 
+        black
         10
         (initState world)
         drawState
         (handleInput world)
         (\_ -> id)
-                                
-                                
+
+
 -- | Convert the state to a picture.
 drawState :: State -> Picture
 drawState state
@@ -55,7 +55,7 @@ drawState state
         picCellsAll     = Pictures $ map (uncurry (drawCell False world)) cellsAll
 
         -- The cells visible from the designated point.
-        cellsVisible    
+        cellsVisible
           = [ (coord, cell)
                 | (coord, cell) <- flattenQuadTree (worldExtent world) (worldTree world)
                 , cellAtCoordIsVisibleFromPoint world p1 coord ]
@@ -65,10 +65,10 @@ drawState state
         -- How big to draw the cells.
         scale           = fromIntegral $ worldCellSize world
 
-        (windowSizeX, windowSizeY)      
+        (windowSizeX, windowSizeY)
                 = windowSizeOfWorld
                 $ stateWorld state
-                
+
         -- Shift the cells so they are centered in the window.
         offsetX = - (fromIntegral $ windowSizeX `div` 2)
         offsetY = - (fromIntegral $ windowSizeY `div` 2)
@@ -85,34 +85,34 @@ drawHitCell world (pos@(px, py), extent, cell)
         x               = w
         y               = s
 
-        posX    = fromIntegral x 
+        posX    = fromIntegral x
         posY    = fromIntegral y
-        
+
    in   Pictures [ Color blue $ cellShape 1 posX posY ]
 
 
 -- | Draw the ray defined by the user.
-drawRay :: World -> Point -> Point -> Picture 
+drawRay :: World -> Point -> Point -> Picture
 drawRay world p1@(x, y) p2
  = Pictures
         [ Color red $ Line [p1, p2]
-        , Color cyan 
-                $ Translate x y 
-                $ Pictures 
+        , Color cyan
+                $ Translate x y
+                $ Pictures
                         [ Line [(-0.3, -0.3), (0.3,  0.3)]
                         , Line [(-0.3,  0.3), (0.3, -0.3)] ] ]
 
 
 -- | Draw a cell in the world.
 drawCell :: Bool -> World -> Coord -> Cell -> Picture
-drawCell visible world (x, y) cell 
+drawCell visible world (x, y) cell
  = let  cs      = fromIntegral (worldCellSize world)
-        cp      = fromIntegral (worldCellSpace world)
+     -- cp      = fromIntegral (worldCellSpace world)
 
-        posX    = fromIntegral x 
+        posX    = fromIntegral x
         posY    = fromIntegral y
 
    in   if visible
           then pictureOfCell (worldCellSize world) posX posY cell
           else Color (greyN 0.4) (cellShape cs posX posY)
-        
+

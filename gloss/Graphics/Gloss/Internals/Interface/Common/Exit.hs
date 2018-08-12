@@ -1,5 +1,6 @@
+{-# LANGUAGE PatternGuards #-}
+{-# LANGUAGE RankNTypes    #-}
 {-# OPTIONS_HADDOCK hide #-}
-{-# LANGUAGE PatternGuards, RankNTypes #-}
 
 -- | Callback for exiting the program.
 module Graphics.Gloss.Internals.Interface.Common.Exit
@@ -20,6 +21,6 @@ keyMouse_exit
         | key           == SpecialKey KeyEsc
         , keyState      == Down
         = exitBackend backend
-                
+
         | otherwise
         = return ()

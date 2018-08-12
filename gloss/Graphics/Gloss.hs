@@ -1,6 +1,6 @@
 
 -- | Gloss hides the pain of drawing simple vector graphics behind a nice data type and
---      a few display functions. 
+--      a few display functions.
 --
 --   Getting something on the screen is as easy as:
 --
@@ -12,10 +12,10 @@
 --   Once the window is open you can use the following:
 --
 -- @
--- * Quit            
+-- * Quit
 --   - esc-key
 --
--- * Move Viewport   
+-- * Move Viewport
 --   - arrow keys
 --   - left-click drag
 --
@@ -40,7 +40,7 @@
 --   `simulate`.
 --
 --   If you want to manage your own key\/mouse events then use `play`.
--- 
+--
 --   Gloss uses OpenGL under the hood, but you don't have to worry about any of that.
 --
 --   Gloss programs should be compiled with @-threaded@, otherwise the GHC runtime
@@ -73,7 +73,7 @@
 --
 -- For more information, check out <http://gloss.ouroborus.net>.
 --
-module Graphics.Gloss 
+module Graphics.Gloss
         ( module Graphics.Gloss.Data.Picture
         , module Graphics.Gloss.Data.Color
         , module Graphics.Gloss.Data.Bitmap

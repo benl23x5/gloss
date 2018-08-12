@@ -1,8 +1,10 @@
 gloss
 =====
 
+[![Build Status](https://travis-ci.org/tmcdonell/gloss.svg?branch=master)](https://travis-ci.org/tmcdonell/gloss)
+
 Gloss hides the pain of drawing simple vector graphics behind a nice
-data type and a few display functions. 
+data type and a few display functions.
 
 * Home page and bug tracker are on a [separate site](http://gloss.ouroborus.net).
 
@@ -24,10 +26,10 @@ Usage
 -----
 Once the window is open you can use the following:
 
- * Quit            
+ * Quit
    - esc-key
 
- * Move Viewport   
+ * Move Viewport
    - arrow keys
    - left-click drag
 

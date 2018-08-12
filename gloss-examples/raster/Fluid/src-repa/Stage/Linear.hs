@@ -1,4 +1,6 @@
-{-# LANGUAGE FlexibleContexts, BangPatterns #-}
+{-# LANGUAGE BangPatterns     #-}
+{-# LANGUAGE FlexibleContexts #-}
+
 module Stage.Linear
         ( linearSolver
         , unstableSolver)
@@ -14,7 +16,7 @@ import Prelude as P
 
 
 -------------------------------------------------------------------------------
-linearSolver 
+linearSolver
         :: (FieldElt a, Source U a, Unbox a, Elt a, Num a)
         => Field a      -- ^ Original field.
         -> Field a      -- ^ Current field.
@@ -39,7 +41,7 @@ linearSolver origField curField !a !c !iters
                         = (orig ~+~ (new ~*~ a)) ~*~ c'
 
                 newField <- {-# SCC "linearSolver.mapStencil" #-}
-                           computeUnboxedP 
+                           computeUnboxedP
                          $ R.szipWith zipFunc origField
                          $ mapStencil2 (BoundConst 0) linearSolverStencil curField
 
@@ -48,22 +50,22 @@ linearSolver origField curField !a !c !iters
 
                 linearSolver origField newField a c (iters - 1)
 
-{-# SPECIALIZE linearSolver 
+{-# SPECIALIZE linearSolver
         :: Field Float
-        -> Field Float 
-        -> Float -> Float -> Int 
+        -> Field Float
+        -> Float -> Float -> Int
         -> IO (Field Float) #-}
 
-{-# SPECIALIZE linearSolver 
-        :: Field (Float, Float) 
-        -> Field (Float, Float) 
-        -> Float -> Float -> Int 
+{-# SPECIALIZE linearSolver
+        :: Field (Float, Float)
+        -> Field (Float, Float)
+        -> Float -> Float -> Int
         -> IO (Field (Float, Float)) #-}
 
 
 
 -- | Stencil function for the linear solver.
-linearSolverStencil 
+linearSolverStencil
         :: FieldElt a
         => Stencil DIM2 a
 
@@ -74,7 +76,7 @@ linearSolverStencil
             Nothing    -> acc
             Just coeff -> acc ~+~ (val ~*~ coeff))
 {-# INLINE linearSolverStencil #-}
-         
+
 
 -- | Linear solver stencil kernel.
 linearSolverCoeffs :: DIM2 -> Maybe Float
@@ -88,7 +90,7 @@ linearSolverCoeffs (Z:.j:.i)
 
 
 -- Unstable -------------------------------------------------------------------
-unstableSolver 
+unstableSolver
         :: (FieldElt a, Source U a, Unbox a, Elt a, Num a)
         => Field a      -- ^ Original field.
         -> Field a      -- ^ Current field.
@@ -96,13 +98,13 @@ unstableSolver
         -> IO (Field a)
 
 unstableSolver !origField !curField !a
- = origField `deepSeqArray` curField `deepSeqArray` 
-   do   
+ = origField `deepSeqArray` curField `deepSeqArray`
+   do
         let {-# INLINE zipFunc #-}
             zipFunc !orig !new
                 = orig ~+~ (new ~*~ a)
 
-        newField        
+        newField
                 <- computeUnboxedP
                 $  R.szipWith zipFunc origField
                 $  mapStencil2 (BoundConst 0) unstableSolverStencil curField
@@ -110,15 +112,15 @@ unstableSolver !origField !curField !a
         return newField
 
 
-{-# SPECIALIZE unstableSolver 
+{-# SPECIALIZE unstableSolver
         :: Field Float
-        -> Field Float 
+        -> Field Float
         -> Float
         -> IO (Field Float) #-}
 
-{-# SPECIALIZE unstableSolver 
-        :: Field (Float, Float) 
-        -> Field (Float, Float) 
+{-# SPECIALIZE unstableSolver
+        :: Field (Float, Float)
+        -> Field (Float, Float)
         -> Float
         -> IO (Field (Float, Float)) #-}
 

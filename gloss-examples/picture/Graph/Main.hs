@@ -12,6 +12,7 @@ import Graphics.Gloss.Data.Vector
 import Graphics.Gloss.Data.ViewPort
 import Graphics.Gloss.Data.ViewState
 import Graphics.Gloss.Interface.Pure.Game
+import qualified Graphics.Gloss.Data.Point.Arithmetic as Pt
 
 type Vertex     = Int
 type Edge       = (Vertex, Vertex)
@@ -20,7 +21,7 @@ type Edge       = (Vertex, Vertex)
 -- Graph ----------------------------------------------------------------------
 -- INVARIANT Every `Vertex` present in a set of neighbours is present as
 -- a key in the `Map`.
-newtype Graph 
+newtype Graph
         = Graph {grNeighs :: Map Vertex (Set Vertex)}
 
 -- | An empty graph, with no edges or vertexes.
@@ -30,19 +31,19 @@ emptyGraph = Graph Map.empty
 
 -- | Add a new vertex to the graph.
 addVertex :: Vertex -> Graph -> Graph
-addVertex v (Graph neighs) 
- = Graph 
+addVertex v (Graph neighs)
+ = Graph
  $ case Map.lookup v neighs of
         Nothing -> Map.insert v Set.empty neighs
         Just _  -> neighs
 
 -- | Add a new edge to the graph.
 addEdge :: Edge -> Graph -> Graph
-addEdge (v1, v2) gr 
+addEdge (v1, v2) gr
  = Graph neighs
  where  gr'     = addVertex v1 (addVertex v2 gr)
-        neighs  = Map.insert v1 (Set.insert v2 (vertexNeighs v1 gr')) 
-                $ Map.insert v2 (Set.insert v1 (vertexNeighs v2 gr')) 
+        neighs  = Map.insert v1 (Set.insert v2 (vertexNeighs v1 gr'))
+                $ Map.insert v2 (Set.insert v1 (vertexNeighs v2 gr'))
                 $ grNeighs gr'
 
 
@@ -53,21 +54,21 @@ vertexNeighs v (Graph neighs) = neighs Map.! v
 
 -- | Get the set of edges in a graoh.
 graphEdges :: Graph -> Set Edge
-graphEdges 
+graphEdges
  = Map.foldrWithKey' foldNeighs Set.empty . grNeighs
  where
         -- For each vertex `v1`, insert an edge for each neighbour `v2`.
-        foldNeighs v1 ns es 
+        foldNeighs v1 ns es
          = Set.foldr' (\v2 -> Set.insert (order (v1, v2))) es ns
 
-        order (v1, v2) 
+        order (v1, v2)
          = if v1 > v2 then (v1, v2) else (v2, v1)
 
 
 -- Scene ----------------------------------------------------------------------
 -- INVARIANT The keys in `scGraph` are the same as the keys in `scPoints`.
-data Scene 
-        = Scene 
+data Scene
+        = Scene
         { scGraph     :: Graph
         , scPoints    :: Map Vertex Point
         , scSelected  :: Maybe Vertex
@@ -76,8 +77,8 @@ data Scene
 
 -- | An empty scene.
 emptyScene :: Scene
-emptyScene 
- = Scene 
+emptyScene
+ = Scene
         { scGraph     = emptyGraph
         , scPoints    = Map.empty
         , scSelected  = Nothing
@@ -92,7 +93,7 @@ scAddVertex v pt sc@Scene{scGraph = gr, scPoints = pts} =
 
 -- | Add an edge to a scene.
 scAddEdge :: Edge -> Scene -> Scene
-scAddEdge e@(v1, v2) sc@Scene{scGraph = gr, scPoints = pts} 
+scAddEdge e@(v1, v2) sc@Scene{scGraph = gr, scPoints = pts}
  = if Map.member v1 pts && Map.member v2 pts
         then sc{scGraph = addEdge e gr}
         else error "scAddEdge: non existant point!"
@@ -100,14 +101,14 @@ scAddEdge e@(v1, v2) sc@Scene{scGraph = gr, scPoints = pts}
 
 -- | Randomize the endpoints of some edges, and pack them into a Scene.
 fromEdges :: StdGen -> [Edge] -> Scene
-fromEdges gen es 
+fromEdges gen es
  = foldr scAddEdge (fst (Set.foldr' addv (emptyScene, gen) vs)) es
  where
         vs         = Set.fromList (concat [[v1, v2] | (v1, v2) <- es])
         halfWidth  = fromIntegral (fst windowSize) / 2
         halfHeight = fromIntegral (snd windowSize) / 2
 
-        addv v (sc, gen1) 
+        addv v (sc, gen1)
          = let (x, gen2) = randomR (-halfWidth,  halfWidth ) gen1
                (y, gen3) = randomR (-halfHeight, halfHeight) gen2
            in  (scAddVertex v (x, y) sc, gen3)
@@ -115,7 +116,7 @@ fromEdges gen es
 
 -- Drawing --------------------------------------------------------------------
 vertexPos :: Vertex -> Scene -> Point
-vertexPos v Scene{scPoints = pts} 
+vertexPos v Scene{scPoints = pts}
         = pts Map.! v
 
 
@@ -137,13 +138,13 @@ drawVertex v sc = Translate x y (ThickCircle (vertexRadius / 2) vertexRadius)
 
 
 drawEdge :: Edge -> Scene -> Picture
-drawEdge (v1, v2) sc 
+drawEdge (v1, v2) sc
         = Line [vertexPos v1 sc, vertexPos v2 sc]
 
 
 drawScene :: Scene -> Picture
-drawScene sc@Scene{scGraph = gr, scViewState = ViewState{viewStateViewPort = port}} 
- = applyViewPortToPicture port 
+drawScene sc@Scene{scGraph = gr, scViewState = ViewState{viewStateViewPort = port}}
+ = applyViewPortToPicture port
  $ Pictures [Color edgeColor edges, Color vertexColor vertices]
  where
         vertices = Pictures [drawVertex n sc | n <- Map.keys (grNeighs gr)    ]
@@ -154,16 +155,16 @@ drawScene sc@Scene{scGraph = gr, scViewState = ViewState{viewStateViewPort = por
 charge :: Float
 charge = 100000
 
-pushForce 
+pushForce
         :: Point         -- Vertex we're calculating the force for
         -> Point         -- Vertex pushing the other away
         -> Vector
 
-pushForce v1 v2 
+pushForce v1 v2
  = -- If we are analysing the same vertex, l = 0
-  if l > 0      then (charge / l) `mulSV` normalizeV d 
-                else 0
- where  d = v1 - v2
+  if l > 0      then (charge / l) `mulSV` normalizeV d
+                else (0, 0)
+ where  d = v1 Pt.- v2
         l = magV d ** 2
 
 
@@ -171,19 +172,19 @@ stiffness :: Float
 stiffness = 1 / 2
 
 pullForce :: Point -> Point -> Vector
-pullForce v1 v2 
- = stiffness `mulSV` (v2 - v1)
+pullForce v1 v2
+ = stiffness `mulSV` (v2 Pt.- v1)
 
 
 -- | Apply forces to update the position of a single point.
-updatePosition 
+updatePosition
         :: Float       -- Time since the last update
         -> Vertex      -- Vertex we are analysing
         -> Scene
         -> Point       -- New position
 
-updatePosition dt v1 sc@Scene{scPoints = pts, scGraph = gr} 
- = v1pos + pull + push
+updatePosition dt v1 sc@Scene{scPoints = pts, scGraph = gr}
+ = v1pos Pt.+ pull Pt.+ push
  where
         v1pos  = vertexPos v1 sc
 
@@ -193,19 +194,19 @@ updatePosition dt v1 sc@Scene{scPoints = pts, scGraph = gr}
 
         -- Sum all the pushing and pulling.  All the other vertices push,
         -- the connected vertices pull.
-        push = Map.foldr' (\v2pos -> (getVel pushForce v2pos +)) 0 pts
-        pull = foldr    (\v2pos -> (getVel pullForce v2pos +)) 0
+        push = Map.foldr' (\v2pos -> (getVel pushForce v2pos Pt.+)) (0, 0) pts
+        pull = foldr    (\v2pos -> (getVel pullForce v2pos Pt.+)) (0, 0)
                         [vertexPos v2 sc | v2 <- Set.toList (vertexNeighs v1 gr)]
 
 
 -- | Apply forces to update the position of all the points.
 updatePositions :: Float -> Scene -> Scene
-updatePositions dt sc@Scene{scSelected = sel, scGraph = Graph neighs} 
+updatePositions dt sc@Scene{scSelected = sel, scGraph = Graph neighs}
  = foldr f sc (Map.keys neighs)
  where
-        f n sc' 
-         = let pt = if Just n == sel 
-                        then vertexPos n sc 
+        f n sc'
+         = let pt = if Just n == sel
+                        then vertexPos n sc
                         else updatePosition dt n sc'
            in scAddVertex n pt sc'
 
@@ -215,8 +216,8 @@ inCircle :: Point             -- Where the user has clicked
          -> Float             -- The scaling factor in the ViewPort
          -> Point             -- The position of the vertex
          -> Bool
-inCircle p sca v 
-        = magV (v - p) <= vertexRadius * sca
+inCircle p sca v
+        = magV (v Pt.- p) <= vertexRadius * sca
 
 
 findVertex :: Point -> Float -> Scene -> Maybe Vertex
@@ -228,24 +229,24 @@ findVertex p1 sca Scene{scPoints = pts} = Map.foldrWithKey' f Nothing pts
 
 -- Events ---------------------------------------------------------------------
 handleEvent :: Event -> Scene -> Scene
-handleEvent (EventKey (MouseButton LeftButton) Down Modifiers{shift = Down} pos) sc 
+handleEvent (EventKey (MouseButton LeftButton) Down Modifiers{shift = Down} pos) sc
  = case findVertex (invertViewPort port pos) (viewPortScale port) sc of
         Nothing -> sc
         Just v  -> sc{scSelected = Just v}
  where  viewState = scViewState sc
         port      = viewStateViewPort viewState
 
-handleEvent (EventKey (MouseButton LeftButton) Up _ _) 
-         sc@Scene{scSelected = Just _} 
+handleEvent (EventKey (MouseButton LeftButton) Up _ _)
+         sc@Scene{scSelected = Just _}
  = sc  {scSelected = Nothing}
 
-handleEvent (EventMotion pos) 
-        sc@Scene{scPoints = pts, scSelected = Just v} 
+handleEvent (EventMotion pos)
+        sc@Scene{scPoints = pts, scSelected = Just v}
  = sc{ scPoints = Map.insert v (invertViewPort port pos) pts}
  where
         port = viewStateViewPort (scViewState sc)
 
-handleEvent ev sc 
+handleEvent ev sc
  = sc{ scViewState = updateViewStateWithEvent ev (scViewState sc)}
 
 
@@ -277,12 +278,12 @@ windowSize = (800, 600)
 
 
 sceneWindow :: Scene -> IO ()
-sceneWindow sc 
+sceneWindow sc
  = play (InWindow "Graph Drawing - shift + left mouse button to drag" windowSize (10, 10))
         black 30 sc drawScene handleEvent updatePositions
 
 
 main :: IO ()
-main 
+main
  = do   gen <- getStdGen
         sceneWindow (fromEdges gen sampleGraph)

@@ -1,8 +1,12 @@
 
 -- A fractal consisting of circles and lines which looks a bit like
 --      the workings of a clock.
-import Graphics.Gloss
+module Main where
 
+import Graphics.Gloss
+import Prelude                                  hiding ( lines )
+
+main :: IO ()
 main
  =      animate (InWindow "Clock" (600, 600) (20, 20))
                 black frame
@@ -16,7 +20,7 @@ frame   time
         $ Scale 120 120
         $ Rotate (time * 2*pi)
         $ clockFractal 5 time
-                
+
 
 -- The basic fractal consists of three circles offset from the origin
 -- as follows.
@@ -31,7 +35,7 @@ frame   time
 -- Components at higher iterations also spin faster.
 --
 clockFractal :: Int -> Float -> Picture
-clockFractal 0 s        = Blank
+clockFractal 0 _        = Blank
 clockFractal n s        = Pictures [circ1, circ2, circ3, lines]
  where
         -- y offset from origin to center of circle 1.
@@ -46,27 +50,27 @@ clockFractal n s        = Pictures [circ1, circ2, circ3, lines]
                         else (-50 * s * (log (1 + nf)))
 
         -- each element contains a copy of the (n-1) iteration contained
-        --      within a larger circle, and some text showing the time since 
+        --      within a larger circle, and some text showing the time since
         --      the animation started.
         --
-        circNm1 
+        circNm1
          = Pictures
                 [ circle 1
                 , Scale (a/2.5) (a/2.5) $ clockFractal (n-1) s
                 , if n > 2
-                    then Color cyan     
+                    then Color cyan
                                 $ Translate (-0.15) 1
-                                $ Scale 0.001 0.001 
-                                $ Text (show s) 
+                                $ Scale 0.001 0.001
+                                $ Text (show s)
                     else Blank
                 ]
 
         circ1   = Translate 0 a         $ Rotate rot    circNm1
         circ2   = Translate 1 (-b)      $ Rotate (-rot) circNm1
         circ3   = Translate (-1) (-b)   $ Rotate rot    circNm1
-        
+
         -- join each iteration to the origin with some lines.
-        lines   
+        lines
          = Pictures
                 [ Line [(0, 0), ( 0,  a)]
                 , Line [(0, 0), ( 1, -b)]

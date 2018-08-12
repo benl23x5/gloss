@@ -1,5 +1,5 @@
 
-module Args 
+module Args
         ( parseArgs
         , configDefault)
 where
@@ -20,7 +20,7 @@ parseArgs args config
         = return config
 
         | "-batch" : rest        <- args
-        = parseArgs rest 
+        = parseArgs rest
         $ config { configBatchMode      = True }
 
         | "-frames" : path : rest <- args
@@ -104,7 +104,7 @@ parseArgs args config
         | "-init-checks" : rest <- args
         = do    let (width, height)     = configModelSize config
                 parseArgs rest
-                 $ config { configInitialDensity  = makeDensField_checks width height 
+                 $ config { configInitialDensity  = makeDensField_checks width height
                           , configInitialVelocity = makeVeloField_empty  width height }
 
         | "-init-man" : rest <- args
@@ -144,7 +144,7 @@ printUsage
         , "  -user-dens  <FLOAT>     Magnitude of user inserted density.  (100)"
         , "  -user-velo  <FLOAT>     Magnitude of user inserted velocity. (20)"
         , "  -bmp-dens   <FILE.bmp>  File for initial fluid density."
-        , "  -bmp-velo   <FILE.bmp>  File for initial fluid velocity." 
+        , "  -bmp-velo   <FILE.bmp>  File for initial fluid velocity."
         , ""
         , "  Run this with   +RTS -N -qa -qg   to enable threads."
         , "" ]
@@ -181,7 +181,7 @@ loadDensBMP filePath
                         Right arr'      -> arr'
                         Left  err       -> error $ show err
 
-        density  <- computeUnboxedP 
+        density  <- computeUnboxedP
                  $ R.map floatLuminanceOfRGB8 arr
 
         return density
@@ -196,7 +196,7 @@ loadVeloBMP filePath
                         Left err        -> error $ show err
 
         let {-# INLINE conv #-}
-            conv (r, g, _b) 
+            conv (r, g, _b)
              = let r'   = fromIntegral (-128 + fromIntegral r :: Int)
                    g'   = fromIntegral (-128 + fromIntegral g :: Int)
                in  (r' * 0.0001, g' * 0.0001)
@@ -218,7 +218,7 @@ makeDensField_checks width height
  = let  height' = fromIntegral height
         xc      = fromIntegral (width  `div` 2)
         yc      = fromIntegral (height `div` 2)
-                        
+
    in   R.fromListUnboxed (Z :. height :. width)
          $ [ let x'      = fromIntegral (x - 1)
                  y'      = fromIntegral (y - 1)
@@ -244,7 +244,7 @@ makeVeloField_man width height
  = let  height' = fromIntegral height
         xc      = fromIntegral (width  `div` 2)
         yc      = fromIntegral (height `div` 2)
-                        
+
    in   R.fromListUnboxed (Z :. height :. width)
          $ [ let x'      = fromIntegral x
                  y'      = fromIntegral y
@@ -261,7 +261,7 @@ makeVeloField_elk width height
  = let  height' = fromIntegral height
         xc      = fromIntegral (width  `div` 2)
         yc      = fromIntegral (height `div` 2)
-                        
+
    in   R.fromListUnboxed (Z :. height :. width)
          $ [ let x'      = fromIntegral x
                  y'      = fromIntegral y

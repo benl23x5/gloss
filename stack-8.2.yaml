@@ -1,0 +1,41 @@
+# For more information, see: http://docs.haskellstack.org/en/stable/yaml_configuration.html
+# vim: nospell
+
+resolver: lts-11.0
+
+packages:
+- 'gloss'
+- 'gloss-algorithms'
+- 'gloss-examples'
+- 'gloss-raster'
+- 'gloss-rendering'
+
+# Packages to be pulled from upstream that are not in the resolver
+# extra-deps: []
+
+# Override default flag values for local packages and extra-deps
+# flags: {}
+
+# Extra global and per-package GHC options
+# ghc-options: {}
+
+# Extra package databases containing global packages
+# extra-package-dbs: []
+
+# Control whether we use the GHC we find on the path
+# system-ghc: true
+
+# Require a specific version of stack, using version ranges
+# require-stack-version: -any # Default
+# require-stack-version: >= 1.0.0
+
+# Override the architecture used by stack, especially useful on Windows
+# arch: i386
+# arch: x86_64
+
+# Extra directories used by stack for building
+# extra-include-dirs: [/path/to/dir]
+# extra-lib-dirs: [/path/to/dir]
+
+# Allow a newer minor version of GHC than the snapshot specifies
+# compiler-check: newer-minor

@@ -1,6 +1,7 @@
-{-# LANGUAGE FlexibleInstances, BangPatterns #-}
+{-# LANGUAGE BangPatterns      #-}
+{-# LANGUAGE FlexibleInstances #-}
 
--- | Field operations 
+-- | Field operations
 module FieldElt where
 
 class Show a => FieldElt a where
@@ -82,14 +83,14 @@ instance FieldElt (Float, Float) where
         {-# INLINE (~/~) #-}
 
         addIf True  a b  = a ~+~ b
-        addIf False _ b  = b 
+        addIf False _ b  = b
         {-# INLINE addIf #-}
 
         useIf True  a   = a
         useIf False _   = (0, 0)
         {-# INLINE useIf #-}
 
-        negate (a1, a2) 
+        negate (a1, a2)
          = (~-~) (0, 0) (a1, a2)
         {-# INLINE negate #-}
 

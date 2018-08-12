@@ -23,7 +23,7 @@ import Prelude                     as P
 
 
 main :: IO ()
-main 
+main
  = do   -- Parse the command-line arguments.
         args                    <- getArgs
         config                  <- parseArgs args configDefault
@@ -36,7 +36,7 @@ main
         performGC
         case configBatchMode config of
          False -> runInteractive config model
-         True  
+         True
           -> do (_, elapsed)    <- time $ do   result <- runBatchMode   config model
                                                result `seq` return ()
                 putStrLn $ show $ wallTime milliseconds elapsed
@@ -46,8 +46,8 @@ main
 runInteractive :: Config -> Model -> IO ()
 runInteractive config model0
  = let (scaleX, scaleY)  = configScale config
-   in  playIO  (InWindow "Stam's stable fluid. Use left-click right-drag to add density / velocity." 
-                        (configWindowSize config) 
+   in  playIO  (InWindow "Stam's stable fluid. Use left-click right-drag to add density / velocity."
+                        (configWindowSize config)
                         (20, 20))
                 black
                 (configRate config)
@@ -63,13 +63,13 @@ runBatchMode config model
   | stepsPassed model     >= configMaxSteps config
   =     return ()
 
-  | otherwise     
+  | otherwise
   = do  model'  <- stepFluid config model
 
         case configFramesMode config of
          Nothing -> return ()
          Just path
-          -> do putStrLn $ "frame " ++ show (stepsPassed model) 
+          -> do putStrLn $ "frame " ++ show (stepsPassed model)
                 outputBMP path (stepsPassed model) (densityField model)
 
         runBatchMode config model'
@@ -79,10 +79,10 @@ runBatchMode config model
 stepFluid :: Config -> Model -> IO Model
 stepFluid config m@(Model df ds vf vs cl step dv cb)
   | step                  >= configMaxSteps config
-  , configMaxSteps config >  0  
+  , configMaxSteps config >  0
   = return m
 
-  | otherwise 
+  | otherwise
   = do  performGC
         vf'     <- velocitySteps config step vf vs
         df'     <- densitySteps  config step df ds vf'

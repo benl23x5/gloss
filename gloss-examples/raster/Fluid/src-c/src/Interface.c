@@ -167,7 +167,7 @@ void get_from_UI (struct Model* model)
         if ( !state_mouse_down[0] && !state_mouse_down[2] )
                 return;
 
-        i = (int)((state_mouse_x 
+        i = (int)((state_mouse_x
                 /(float)state_window_width)  * N+1);
 
         j = (int)(((state_window_height - state_mouse_y)
@@ -201,11 +201,11 @@ key_func_up (unsigned char key, int x, int y)
                 case '1':
                         state_mouse_down[0] = 0;
                         break;
-                        
+
                 case '2':
                         state_mouse_down[1] = 0;
                         break;
-                        
+
                 case '3':
                         state_mouse_down[2] = 0;
                         break;
@@ -222,19 +222,19 @@ key_func ( unsigned char key, int x, int y )
                         state_mouse_x = state_mouse_oldx = x;
                         state_mouse_y = state_mouse_oldy = y;
                         break;
-                        
+
                 case '2':
                         state_mouse_down[1] = 1;
                         state_mouse_x = state_mouse_oldx = x;
                         state_mouse_y = state_mouse_oldy = y;
                         break;
-                        
+
                 case '3':
                         state_mouse_down[2] = 1;
                         state_mouse_x = state_mouse_oldx = x;
                         state_mouse_y = state_mouse_oldy = y;
                         break;
-                
+
                 case 'c':
                 case 'C':
                         model_clear (state_model);

@@ -1,4 +1,6 @@
-{-# LANGUAGE BangPatterns, PatternGuards #-}
+{-# LANGUAGE BangPatterns  #-}
+{-# LANGUAGE PatternGuards #-}
+
 import World
 import Trace
 import Light
@@ -15,7 +17,7 @@ import System.Exit
 
 
 main :: IO ()
-main 
+main
  = do   args    <- getArgs
         config  <- parseArgs args defaultConfig
 
@@ -26,13 +28,13 @@ main
                  (configZoom  config)
                  (configFieldOfView config) (configBounces config)
 
-         Just file 
+         Just file
           -> runBmp
                 file
                  (configSizeX config) (configSizeY config)
                  (configFieldOfView config) (configBounces config)
 
-   
+
 -- Config ---------------------------------------------------------------------
 data Config
         = Config
@@ -95,10 +97,10 @@ parseArgs args config
                 exitWith $ ExitFailure 1
 
 printUsage :: IO ()
-printUsage 
+printUsage
  = putStrLn $ unlines
           [ "gloss-ray [flags]"
-           , "    -window  <sizeX::INT> <sizeY::INT> <zoom::INT>  (800, 400, 4)"
+           , "    -window  <sizeX::INT> <sizeY::INT> <zoom::INT>  (800, 600, 4)"
            , "    -bmp     <sizeX::INT> <sizeY::INT> <FILE>"
            , "    -fov     <INT>    Field of view                 (100)"
            , "    -bounces <INT>    Ray bounce limit              (4)"
@@ -110,7 +112,7 @@ printUsage
 -- | World and interface state.
 data State
         = State
-        { stateTime             :: !Float 
+        { stateTime             :: !Float
         , stateEyePos           :: !Vec3
         , stateEyeLoc           :: !Vec3
 
@@ -139,7 +141,7 @@ initState time
         , stateEyePos           = Vec3 50    (-100) (-700)
         , stateEyeLoc           = Vec3 (-50) 200   1296
 
-        , stateLeftClick        = Nothing 
+        , stateLeftClick        = Nothing
 
         , stateMoveSpeed        = 400
         , stateMovingForward    = False
@@ -156,9 +158,9 @@ initState time
 
 -- Run ------------------------------------------------------------------------
 -- | Run the simulation interactively.
-runInteractive :: Int -> Int -> Int -> Int -> Int -> IO ()                     
+runInteractive :: Int -> Int -> Int -> Int -> Int -> IO ()
 runInteractive sizeX sizeY zoom fov bounces
- = G.playField 
+ = G.playField
         (G.InWindow "Ray" (sizeX, sizeY) (10, 10))
         (zoom, zoom)
         100
@@ -173,10 +175,10 @@ runInteractive sizeX sizeY zoom fov bounces
 -- | Write the first frame to a .bmp file
 runBmp :: FilePath -> Int -> Int -> Int -> Int -> IO ()
 runBmp file sizeX sizeY fov bounces
- = do   img     <- R.computeUnboxedP 
+ = do   img     <- R.computeUnboxedP
                 $  G.makeFrame  sizeX sizeY
-                $  tracePixel   sizeX sizeY fov bounces 
-                $  advanceState 1 
+                $  tracePixel   sizeX sizeY fov bounces
+                $  advanceState 1
                 $  initState 0
 
         R.writeImageToBMP file img
@@ -193,13 +195,13 @@ tracePixel !sizeX !sizeY !fov !bounces !state (x, y)
         !fov'    = fromIntegral fov
         !fovX    = fov' * aspect
         !fovY    = fov'
-       
+
         !ambient = Vec3 0.3 0.3 0.3
         !eyePos  = stateEyePos state
         !eyeDir  = normaliseV3 ((Vec3 (x * fovX) ((-y) * fovY) 0) - eyePos)
 
         Vec3 r g b
-          = traceRay    (stateObjectsView state) 
+          = traceRay    (stateObjectsView state)
                         (stateLightsView  state) ambient
                         eyePos eyeDir
                         bounces
@@ -210,14 +212,14 @@ tracePixel !sizeX !sizeY !fov !bounces !state (x, y)
 
 -- | Handle an event from the user interface.
 handleEvent :: G.Event -> State -> State
-handleEvent event state 
+handleEvent event state
         -- Start translation.
-        | G.EventKey (G.MouseButton G.LeftButton) 
+        | G.EventKey (G.MouseButton G.LeftButton)
                      G.Down _ (x, y) <- event
         = state { stateLeftClick = Just (x, y)}
 
         -- End transation.
-        | G.EventKey (G.MouseButton G.LeftButton) 
+        | G.EventKey (G.MouseButton G.LeftButton)
                      G.Up _ _ <- event
         = state { stateLeftClick = Nothing }
 
@@ -259,7 +261,7 @@ handleEvent event state
 
           in    setEyeLoc (Vec3 eyeX' eyeY' eyeZ')
                  $ state { stateLeftClick  = Just (x, y) }
-        
+
         | otherwise
         = state
 {-# NOINLINE handleEvent #-}
@@ -271,7 +273,7 @@ advanceState advTime state
  = let  time'   = stateTime state + advTime
 
         speed   = stateMoveSpeed state
-        move    = (if stateMovingForward state 
+        move    = (if stateMovingForward state
                         then moveEyeLoc (Vec3 0 0 (-speed * advTime))
                         else id)
                 . (if stateMovingBackward state
@@ -293,10 +295,10 @@ setEyeLoc :: Vec3 -> State -> State
 setEyeLoc eyeLoc state
  = let  objects = makeObjects (stateTime state)
         lights  = makeLights  (stateTime state)
-   in state 
+   in state
         { stateEyeLoc           = eyeLoc
         , stateObjectsView      = map (translateObject (stateEyeLoc state)) objects
-        , stateLightsView       = map (translateLight  (stateEyeLoc state)) lights 
+        , stateLightsView       = map (translateLight  (stateEyeLoc state)) lights
         }
 {-# NOINLINE setEyeLoc #-}
 
@@ -319,12 +321,12 @@ setTime   :: Float -> State -> State
 setTime time state
  = let  objects = makeObjects time
         lights  = makeLights  time
-   in state 
+   in state
         { stateTime             = time
         , stateObjects          = objects
         , stateObjectsView      = map (translateObject (stateEyeLoc state)) objects
 
         , stateLights           = lights
-        , stateLightsView       = map (translateLight  (stateEyeLoc state)) lights 
+        , stateLightsView       = map (translateLight  (stateEyeLoc state)) lights
         }
 {-# NOINLINE setTime #-}

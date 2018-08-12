@@ -14,7 +14,7 @@ handleInput (G.EventKey key keyState _ (x, y)) state
         -- move the view position.
         | G.MouseButton G.LeftButton    <- key
         , G.Down                        <- keyState
-        = state { stateModeInterface    = ModeInterfaceMove 
+        = state { stateModeInterface    = ModeInterfaceMove
                 , stateViewPos
                         = ( fromRational $ toRational x
                           , fromRational $ toRational y) }
@@ -61,7 +61,7 @@ handleInput (G.EventKey key keyState _ _) state
         = state { stateModeOverlay
                         = case stateModeOverlay state of
                                 ModeOverlayVisApprox    -> ModeOverlayNone
-                                _                       -> ModeOverlayVisApprox }       
+                                _                       -> ModeOverlayVisApprox }
 
 handleInput _ state
         = state

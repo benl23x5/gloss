@@ -1,9 +1,11 @@
--- Implementation of the Boids flocking algorithm. 
+-- Implementation of the Boids flocking algorithm.
 --   by Matthew Sottile <matt@galois.com> <mjsottile@computer.org>
 --   Described in http://syntacticsalt.com/2011/03/10/functional-flocks/
 --
 -- Read more about Boids here: http://www.red3d.com/cwr/boids/
--- 
+--
+module Main where
+
 import KDTree2d
 import Vec2
 import System.Random
@@ -59,7 +61,7 @@ data Boid
 
 -- Main -----------------------------------------------------------------------
 main :: IO ()
-main 
+main
  = do   let w   = World { width         = maxx - minx
                         , height        = maxy - miny
                         , pixWidth      = 700
@@ -74,7 +76,7 @@ main
 
 -- Coordinate Conversion ------------------------------------------------------
 modelToScreen :: World -> (Double, Double) -> (Float, Float)
-modelToScreen world (x,y) 
+modelToScreen world (x,y)
  = let  xscale = fromIntegral (pixWidth world)  / width world
         yscale = fromIntegral (pixHeight world) / height world
    in   (realToFrac $ x * xscale, realToFrac $ y * yscale)
@@ -97,7 +99,7 @@ renderboids world bs
         = Pictures $ mapKDTree bs (renderboid world)
 
 renderboid :: World -> Boid -> Picture
-renderboid world b 
+renderboid world b
  = let  (Vec2 x y)      = position b
         (Vec2 vx vy)    = velocity b
         v               = velocity b
@@ -111,8 +113,8 @@ renderboid world b
         vxs             = sf * (realToFrac vx) :: Float
         vys             = sf * (realToFrac vy) :: Float
 
-   in Pictures  
-        [ Color boidColor $ 
+   in Pictures
+        [ Color boidColor $
                 Translate xs ys $
                 Circle 2
 
@@ -120,7 +122,7 @@ renderboid world b
                 Translate xs ys $
                 Circle ((realToFrac epsilon) * sf')
 
-        , Color boidColor $          
+        , Color boidColor $
                 Line [(xs, ys), (xs + vxs, ys + vys)]
 
         , Color cohesionColor $
@@ -135,23 +137,23 @@ renderboid world b
 
 -- Initialisation -------------------------------------------------------------
 rnlist :: Int -> IO [Double]
-rnlist n 
+rnlist n
         = mapM (\_ -> randomRIO (0.0,1.0)) [1..n]
 
 
 initialize :: Int -> Double -> Double -> [Boid]
-initialize n sp sv 
- = let  nums    = unsafePerformIO $ rnlist (n*6) 
+initialize n sp sv
+ = let  nums    = unsafePerformIO $ rnlist (n*6)
         nums'   = map (\i -> (0.5 - i) / 2.0) nums
 
         makeboids [] [] = []
-        makeboids (a:b:c:d:e:f:rest) (id:ids) 
+        makeboids (a:b:c:d:e:f:rest) (id:ids)
          = Boid { identifier    = id
                 , velocity      = Vec2 (a*sv) (b*sv)
                 , position      = Vec2 (d*sp) (e*sp)
                 , dbgC          = vecZero
                 , dbgS          = vecZero
-                , dbgA          = vecZero} 
+                , dbgA          = vecZero}
          : makeboids rest ids
 
   in    makeboids nums' [1..n]
@@ -172,7 +174,7 @@ epsvec = Vec2 epsilon epsilon
 
 -- Boids Logic ----------------------------------------------------------------
 
--- three rules: 
+-- three rules:
 --      cohesion   (seek centroid)
 --      separation (avoid neighbors),
 -- and  alignment  (fly same way as neighbors)
@@ -182,7 +184,7 @@ epsvec = Vec2 epsilon epsilon
 --   boid positions scaled by 1/(number of boids)
 findCentroid :: [Boid] -> Vec2
 findCentroid []    = error "Bad centroid"
-findCentroid boids 
+findCentroid boids
  = let  n = length boids
    in   vecScale (foldl1 vecAdd (map position boids))
                  (1.0 / (fromIntegral n))
@@ -194,7 +196,7 @@ cohesion b boids a = vecScale diff a
  where  c    = findCentroid boids
         p    = position b
         diff = vecSub c p
-        
+
 
 -- | separation: avoid neighbours
 separation :: Boid -> [Boid] -> Double -> Vec2
@@ -209,7 +211,7 @@ separation b boids a
 -- | alignment: fly the same way as neighbours
 alignment :: Boid -> [Boid] -> Double -> Vec2
 alignment b [] a = vecZero
-alignment b boids a 
+alignment b boids a
  = let  v       = foldl1 vecAdd (map velocity boids)
         s       = 1.0 / (fromIntegral $ length boids)
         v'      = vecScale v s
@@ -218,7 +220,7 @@ alignment b boids a
 
 -- | Move one boid, with respect to its neighbours.
 oneboid :: Boid -> [Boid] -> Boid
-oneboid b boids 
+oneboid b boids
  = let  c       = cohesion b boids cParam
         s       = separation b boids sParam
         a       = alignment b boids aParam
@@ -254,17 +256,17 @@ oneboid b boids
 --   be very large (approx. the width of the world).
 
 findNeighbors :: KDTreeNode Boid -> Boid -> [Boid]
-findNeighbors w b 
+findNeighbors w b
  = let  p      = position b
-      
+
         -- bounds
         vlo    = vecSub p epsvec
         vhi    = vecAdd p epsvec
-      
+
         -- split the boxes
         splith = splitBoxHoriz (vlo, vhi, 0.0, 0.0)
         splitv = concatMap splitBoxVert splith
-      
+
         -- adjuster for wraparound
         adj1 ax ay (pos, theboid)
          = (vecAdd pos av, theboid { position = vecAdd p av })
@@ -272,53 +274,53 @@ findNeighbors w b
          where av = Vec2 ax ay
                p = position theboid
 
-        adjuster lo hi ax ay 
+        adjuster lo hi ax ay
          = let neighbors = kdtRangeSearch w lo hi
            in  map (adj1 ax ay) neighbors
-      
+
         -- do the sequence of range searches
         ns      = concatMap (\(lo,hi,ax,ay) -> adjuster lo hi ax ay) splitv
-      
+
         -- compute the distances from boid b to members
         dists   = map (\(np,n) -> (vecNorm (vecSub p np), n)) ns
 
   in    b : map snd (filter (\(d,_) -> d <= epsilon) dists)
 
 
-splitBoxHoriz 
-        ::  (Vec2, Vec2, Double, Double) 
+splitBoxHoriz
+        ::  (Vec2, Vec2, Double, Double)
         -> [(Vec2, Vec2, Double, Double)]
-        
-splitBoxHoriz (lo@(Vec2 lx ly), hi@(Vec2 hx hy), ax, ay) 
+
+splitBoxHoriz (lo@(Vec2 lx ly), hi@(Vec2 hx hy), ax, ay)
         | hx-lx > w
         = [(Vec2 minx ly,              Vec2 maxx hy, ax, ay)]
-        
+
         | lx < minx
         = [ (Vec2 minx ly,             Vec2 hx hy, ax, ay)
           , (Vec2 (maxx-(minx-lx)) ly, Vec2 maxx hy, (ax-w), ay)]
-           
+
         | hx > maxx
         = [ (Vec2 lx ly,               Vec2 maxx hy, ax, ay)
           , (Vec2 minx ly,             Vec2 (minx + (hx-maxx)) hy, ax+w, ay)]
-          
+
         | otherwise
         = [(lo, hi, ax, ay)]
 
         where w = maxx-minx
 
 
-splitBoxVert 
+splitBoxVert
         ::  (Vec2, Vec2, Double, Double)
         -> [(Vec2, Vec2, Double, Double)]
 
-splitBoxVert (lo@(Vec2 lx ly), hi@(Vec2 hx hy), ax, ay) 
+splitBoxVert (lo@(Vec2 lx ly), hi@(Vec2 hx hy), ax, ay)
         | hy-ly > h
         = [(Vec2 lx miny,              Vec2 hx maxy, ax, ay)]
-        
+
         | ly < miny
         = [ (Vec2 lx miny,             Vec2 hx hy, ax, ay)
           , (Vec2 lx (maxy-(miny-ly)), Vec2 hx maxy, ax, ay-h) ]
-          
+
         | hy > maxy
         = [ (Vec2 lx ly,               Vec2 hx maxy, ax, ay)
           , (Vec2 lx miny,             Vec2 hx (miny + (hy-maxy)), ax, ay+h) ]
@@ -330,7 +332,7 @@ splitBoxVert (lo@(Vec2 lx ly), hi@(Vec2 hx hy), ax, ay)
 
 
 wraparound :: Vec2 -> Vec2
-wraparound (Vec2 x y) 
+wraparound (Vec2 x y)
  = let  w = maxx-minx
         h = maxy-miny
         x' = if x > maxx then x - w else (if x < minx then x+w else x)
@@ -338,16 +340,16 @@ wraparound (Vec2 x y)
 
    in Vec2 x' y'
 
-    
+
 iteration :: ViewPort -> Float -> KDTreeNode Boid -> KDTreeNode Boid
-iteration vp step w 
+iteration vp step w
  = let  all     = kdtreeToList w
         boids   = mapKDTree w (\i -> oneboid i all)
    in   foldl (\t b -> kdtAddPoint t (position b) b) newKDTree boids
 
 
 iterationkd :: ViewPort -> Float -> KDTreeNode Boid -> KDTreeNode Boid
-iterationkd vp step w 
+iterationkd vp step w
  = let  boids = mapKDTree w (\i -> oneboid i (findNeighbors w i))
    in   foldl (\t b -> kdtAddPoint t (position b) b) newKDTree boids
 

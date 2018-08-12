@@ -20,18 +20,18 @@ import Graphics.Gloss.Internals.Interface.Backend
 --
 --   Once the window is open you can use the same commands as with @display@.
 --
-animateIO 
+animateIO
         :: Display                -- ^ Display mode.
         -> Color                  -- ^ Background color.
-        -> (Float -> IO Picture)  -- ^ Function to produce the next frame of animation. 
+        -> (Float -> IO Picture)  -- ^ Function to produce the next frame of animation.
                                   --      It is passed the time in seconds since the program started.
         -> (Controller -> IO ())  -- ^ Callback to take the display controller.
         -> IO ()
 
 animateIO display backColor
         frameFunIO eatControllerIO
-        = animateWithBackendIO 
-                defaultBackendState 
+        = animateWithBackendIO
+                defaultBackendState
                 True              -- pannable
                 display backColor
                 frameFunIO
@@ -43,16 +43,17 @@ animateIO display backColor
 animateFixedIO
         :: Display                -- ^ Display mode.
         -> Color                  -- ^ Background color.
-        -> (Float -> IO Picture)  -- ^ Function to produce the next frame of animation. 
+        -> (Float -> IO Picture)  -- ^ Function to produce the next frame of animation.
                                   --      It is passed the time in seconds since the program started.
         -> (Controller -> IO ())  -- ^ Callback to take the display controller.
         -> IO ()
 
 animateFixedIO display backColor
         frameFunIO eatControllerIO
-        = animateWithBackendIO 
-                defaultBackendState 
+        = animateWithBackendIO
+                defaultBackendState
                 False
                 display backColor
                 frameFunIO
                 eatControllerIO
+

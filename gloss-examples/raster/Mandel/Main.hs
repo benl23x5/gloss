@@ -1,4 +1,6 @@
-{-# LANGUAGE BangPatterns, ScopedTypeVariables #-}
+{-# LANGUAGE BangPatterns        #-}
+{-# LANGUAGE PatternGuards       #-}
+{-# LANGUAGE ScopedTypeVariables #-}
 
 import Graphics.Gloss.Interface.IO.Game
 import Graphics.Gloss.Interface.Environment
@@ -11,11 +13,11 @@ import Data.Char
 
 
 main :: IO ()
-main 
+main
  = do   args            <- getArgs
         config          <- parseArgs args defaultConfig
 
-        (width,height) 
+        (width,height)
          <- if configDisplay config == FullScreen
              then getScreenSize
              else return (configSizeX config, configSizeY config)
@@ -35,7 +37,7 @@ main
 
          -- Render image and write to .bmp file.
          Just filePath
-          -> do arr     <- mandelArray  
+          -> do arr     <- mandelArray
                                 (worldSizeX world) (worldSizeY  world)
                                 (worldPosX  world) (worldPosY   world)
                                 (worldZoom  world) (worldRadius world)
@@ -45,9 +47,9 @@ main
 
 
 -- Config ---------------------------------------------------------------------
-data Config 
+data Config
         = Config
-        { configDisplay         :: Display 
+        { configDisplay         :: Display
         , configFileName        :: Maybe FilePath
         , configPreset          :: World -> World
         , configPixelsDynamic   :: Int
@@ -58,7 +60,7 @@ data Config
 defaultConfig :: Config
 defaultConfig
         = Config
-        { configDisplay         = InWindow "Mandelbrot" (800, 600) (10, 10) 
+        { configDisplay         = InWindow "Mandelbrot" (800, 600) (10, 10)
         , configFileName        = Nothing
         , configPreset          = id
         , configPixelsDynamic   = 4
@@ -72,7 +74,7 @@ parseArgs args config
         = return config
 
         | "-fullscreen" : rest <- args
-        = parseArgs rest 
+        = parseArgs rest
         $ config { configDisplay = FullScreen }
 
         | "-window" : sizeX : sizeY : rest <- args
@@ -106,15 +108,15 @@ parseArgs args config
         = do    printUsage
                 exitWith $ ExitFailure 1
 
-        
+
 printUsage :: IO ()
 printUsage
- = putStrLn 
+ = putStrLn
         $ unlines
         [ "Usage: gloss-mandel [flags]"
         , "  -fullscreen"
-        , "  -window      <width::INT> <height::INT>" 
-        , "  -bmp         <width::INT> <height::INT> <FILE>" 
+        , "  -window      <width::INT> <height::INT>"
+        , "  -bmp         <width::INT> <height::INT> <FILE>"
         , "  -dynamic     <INT>   Level of detail reduction when zooming and panning. (4) "
         , ""
         , " Controls:"
@@ -140,18 +142,18 @@ data World
         , worldPixelsDynamic    :: Int
 
         , worldPosX             :: Double
-        , worldPosY             :: Double 
+        , worldPosY             :: Double
         , worldZoom             :: Double
 
         , worldIterations       :: Double
         , worldRadius           :: Double
 
-        , worldDragging         :: Maybe (Float, Float) 
-        , worldZooming          :: Maybe Double } 
+        , worldDragging         :: Maybe (Float, Float)
+        , worldZooming          :: Maybe Double }
 
 
 initWorld :: Int -> Int -> World
-initWorld sizeX sizeY 
+initWorld sizeX sizeY
  = World
         { worldPicture          = Blank
 
@@ -161,22 +163,22 @@ initWorld sizeX sizeY
         , worldPixelsDynamic    = 4
 
         , worldPosX             = -0.5
-        , worldPosY             = 0 
+        , worldPosY             = 0
         , worldZoom             = 2
 
         , worldIterations       = 100
         , worldRadius           = 2
-        , worldDragging         = Nothing 
+        , worldDragging         = Nothing
         , worldZooming          = Nothing }
 
 
 draw :: World -> IO Picture
-draw world  
+draw world
         = return $ worldPicture world
 
 
 handle :: Event -> World -> IO World
-handle event world 
+handle event world
 
         -- Pan
         | EventKey (MouseButton LeftButton) Down _ (x, y) <- event
@@ -208,7 +210,7 @@ handle event world
         | EventKey (Char 'd') Down   _ _      <- event
         = return $ world { worldIterations = worldIterations world * 1.2 }
 
-        -- Radius 
+        -- Radius
         | EventKey (Char 'z')  Down   _ _      <- event
         = return $ world { worldRadius = worldRadius world * 0.5 }
 
@@ -246,7 +248,7 @@ handle event world
 
 
 advance :: Float -> World -> IO World
-advance _ world 
+advance _ world
         | Just factor   <- worldZooming world
         = return $ zoomWorld factor world
 
@@ -276,12 +278,12 @@ updateWorld world
          | dynamic      = worldPixels world + worldPixelsDynamic world
          | otherwise    = worldPixels world
 
-   in   world   { worldPicture  
+   in   world   { worldPicture
                 = mandelPicture
                         (worldSizeX world) (worldSizeY world)
                         pixels pixels
                         (worldPosX  world) (worldPosY  world)
-                        (worldZoom  world) 
+                        (worldZoom  world)
                         (worldRadius world)
                         (truncate $ worldIterations world)
                 }
@@ -310,8 +312,8 @@ loadWorld (posX, posY, zoom, iters, radius) world
 
 
 presets :: [World -> World]
-presets 
- = map loadWorld 
+presets
+ = map loadWorld
  $ [ (-0.5, 0, 2, 100, 2)
    , (0.20508818500545423,   0.9014915666351141   * 900/1440,6.375321937544527e-6, 629.3354966759534,  16.0)
    , (0.4510757067879078,    0.6144133202705898   * 900/1440,7.632248223018773e-5, 253.61352386150395, 2.0)

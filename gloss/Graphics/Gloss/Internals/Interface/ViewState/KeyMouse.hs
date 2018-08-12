@@ -12,7 +12,7 @@ import Data.IORef
 
 -- | Callback to handle keyboard and mouse button events
 --      for controlling the 'ViewState'.
-callback_viewState_keyMouse 
+callback_viewState_keyMouse
         :: IORef ViewState
         -> Callback
 
@@ -26,7 +26,7 @@ viewState_keyMouse viewStateRef stateRef key keyState keyMods pos
         ev        <- keyMouseEvent stateRef key keyState keyMods pos
         case updateViewStateWithEventMaybe ev viewState of
                 Nothing -> return ()
-                Just viewState' 
+                Just viewState'
                  -> do  viewStateRef `writeIORef` viewState'
                         postRedisplay stateRef
 

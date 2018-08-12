@@ -1,19 +1,19 @@
 
--- A nifty animated fractal of a tree, superimposed on a background 
+-- A nifty animated fractal of a tree, superimposed on a background
 --      of three red rectangles.
 import Graphics.Gloss
 
 main :: IO ()
-main 
+main
  =      animate (InWindow "Zen" (800, 600) (5, 5))
                 (greyN 0.2)
-                frame   
+                frame
 
 
 -- Produce one frame of the animation.
 frame :: Float -> Picture
 frame timeS
- = Pictures     
+ = Pictures
         -- the red rectangles
         [ Translate 0 150       backRec
         , Translate 0 0         backRec
@@ -26,7 +26,7 @@ frame timeS
 
 -- One of the red backing rectangles, with a white outline.
 backRec :: Picture
-backRec 
+backRec
  = Pictures
         [ Color red     (rectangleSolid 400 100)
         , Color white   (rectangleWire  400 100) ]
@@ -47,18 +47,18 @@ treeColor       = makeColor 0.0 1.0 0.0 0.5
 --  The position of the branches changes depending on the animation time
 --  as well as the iteration number of the fractal.
 treeFrac :: Int -> Float -> Picture
-treeFrac 0 timeS = Blank
+treeFrac 0 _     = Blank
 treeFrac n timeS
  = Pictures
         [ Color treeColor       $ rectangleUpperSolid 20 300
         , Color treeOutline     $ rectangleUpperWire  20 300
         , Translate 0 30
                 $ Rotate  (200 * sin timeS / (fromIntegral n) )
-                $ Scale   0.9 0.9 
+                $ Scale   0.9 0.9
                 $ treeFrac (n-1) timeS
 
         , Translate 0 70
                 $ Rotate  (-200 * sin timeS / (fromIntegral n))
-                $ Scale   0.8 0.8 
+                $ Scale   0.8 0.8
                 $ treeFrac (n-1) timeS
         ]
