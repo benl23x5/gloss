@@ -161,10 +161,16 @@ drawPicture state circScale picture
                 let mscale      = max sx sy
                 drawPicture state (circScale * mscale) p
 
-        Bitmap
-          BitmapSection
-            { bitmapSecPos=imgSectionPos
-            , bitmapSecSize=imgSectionSize }
+        Bitmap imgData ->
+          let (width, height) = bitmapSize imgData
+          in
+            drawPicture state circScale $
+              BitmapSection (rectAtOrigin width height) imgData
+
+        BitmapSection
+          Rectangle
+            { rectPos = imgSectionPos
+            , rectSize = imgSectionSize }
           imgData@BitmapData
           { bitmapSize = (width, height)
           , bitmapCacheMe = cacheMe }

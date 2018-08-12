@@ -4,7 +4,7 @@
 
 -- | Helper functions for rendering bitmaps
 module Graphics.Gloss.Internals.Rendering.Bitmap
-        ( BitmapSection(..)
+        ( Rectangle(..)
         , BitmapData(..)
         , BitmapFormat(..), PixelFormat(..), RowOrder(..)
         , bitmapPath
@@ -14,20 +14,20 @@ import Data.Data
 import Foreign
 
 
-data BitmapSection
-        = BitmapSection
-        { bitmapSecPos :: (Int, Int)
-        , bitmapSecSize :: (Int, Int)
-        -- , bitmapSecData :: BitmapData
+-- | Represents a rectangular section in a bitmap
+data Rectangle
+        = Rectangle
+        { rectPos :: (Int, Int) -- ^ x- and y-pos in the bitmap in pixels
+        , rectSize :: (Int, Int) -- ^ width/height of the area in pixelsi
         }
-        deriving (Eq, Data, Typeable)
+        deriving (Show, Read, Eq, Ord, Data, Typeable)
 
 -- | Abstract 32-bit RGBA bitmap data.
 data BitmapData
         = BitmapData
         { bitmapDataLength :: Int  -- length (in bytes)
         , bitmapFormat     :: BitmapFormat
-        , bitmapSize       :: (Int, Int) -- width, height in pixels
+        , bitmapSize       :: (Int, Int) -- ^ width, height in pixels
         , bitmapCacheMe    :: Bool
         , bitmapPointer    :: (ForeignPtr Word8) }
         deriving (Eq, Data, Typeable)
@@ -59,17 +59,6 @@ data RowOrder
 data PixelFormat
         = PxRGBA | PxABGR
         deriving (Eq, Data, Typeable, Show, Ord, Enum, Bounded)
-
-
-instance Show BitmapSection where
- show BitmapSection{..} =
-   concat $
-      [ "BitmapSection{ bitmapSecPos="
-     , show bitmapSecPos
-      , ", "
-     , show bitmapSecSize
-      , "}"
-     ]
 
 instance Show BitmapData where
  show _ = "BitmapData"
