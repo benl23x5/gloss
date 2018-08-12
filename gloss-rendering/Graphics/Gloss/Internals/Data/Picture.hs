@@ -11,8 +11,11 @@ module Graphics.Gloss.Internals.Data.Picture
         -- * Bitmaps
         , BitmapData, PixelFormat(..), BitmapFormat(..), RowOrder(..)
         , bitmapOfForeignPtr
+        , bitmapDataOfForeignPtr
         , bitmapOfByteString
+        , bitmapDataOfByteString
         , bitmapOfBMP
+        , bitmapDataOfBMP
         , loadBMP)
 where
 import Graphics.Gloss.Internals.Data.Color
@@ -103,6 +106,19 @@ data Picture
         --  Setting @True@  for dynamically generated images will cause a
         --  GPU memory leak.
         | Bitmap        Int     Int     BitmapData Bool
+        -- | like Bitmap but takes additional parameters to render
+        -- a specific subsection of the image only.
+        -- The last two arguments specify the pos and size of this subsection
+        --
+        --  The boolean flag controls whether Gloss should cache the data
+        --  in GPU memory between frames. If you are programatically generating
+        --  the image for each frame then use @False@. If you have loaded it
+        --  from a file then use @True@. 
+        --  Setting @False@ for static images will make rendering slower
+        --  than it needs to be.
+        --  Setting @True@  for dynamically generated images will cause a
+        --  GPU memory leak.
+        | BitmapSection Int Int BitmapData Bool (Int,Int) (Int,Int)
 
         -- Color ------------------------------------------
         -- | A picture drawn with this color.
@@ -140,10 +156,13 @@ instance Monoid Picture where
 --   the image for each frame then use `False`. If you have loaded it
 --   from a file then use `True`.
 bitmapOfForeignPtr :: Int -> Int -> BitmapFormat -> ForeignPtr Word8 -> Bool -> Picture
-bitmapOfForeignPtr width height fmt fptr cacheMe
+bitmapOfForeignPtr width height fmt fptr cacheMe =
+  Bitmap width height (bitmapDataOfForeignPtr width height fmt fptr) cacheMe
+
+bitmapDataOfForeignPtr :: Int -> Int -> BitmapFormat -> ForeignPtr Word8 -> BitmapData
+bitmapDataOfForeignPtr width height fmt fptr
  = let  len     = width * height * 4
-        bdata   = BitmapData len fmt fptr
-   in   Bitmap width height bdata cacheMe
+   in   BitmapData len fmt fptr
 
 
 -- | O(size). Copy a `ByteString` of RGBA data into a bitmap with the given
@@ -154,7 +173,11 @@ bitmapOfForeignPtr width height fmt fptr cacheMe
 --   the image for each frame then use `False`. If you have loaded it
 --   from a file then use `True`.
 bitmapOfByteString :: Int -> Int -> BitmapFormat -> ByteString -> Bool -> Picture
-bitmapOfByteString width height fmt bs cacheMe
+bitmapOfByteString width height fmt bs cacheMe =
+  Bitmap width height (bitmapDataOfByteString width height fmt bs) cacheMe
+
+bitmapDataOfByteString :: Int -> Int -> BitmapFormat -> ByteString -> BitmapData
+bitmapDataOfByteString width height fmt bs
  = unsafePerformIO
  $ do   let len = width * height * 4
         ptr     <- mallocBytes len
@@ -163,14 +186,20 @@ bitmapOfByteString width height fmt bs cacheMe
         BSU.unsafeUseAsCString bs
          $ \cstr -> copyBytes ptr (castPtr cstr) len
 
-        let bdata = BitmapData len fmt fptr
-        return $ Bitmap width height bdata cacheMe
-{-# NOINLINE bitmapOfByteString #-}
+        return $ BitmapData len fmt fptr
+{-# NOINLINE bitmapDataOfByteString #-}
 
 
 -- | O(size). Copy a `BMP` file into a bitmap.
 bitmapOfBMP :: BMP -> Picture
-bitmapOfBMP bmp
+bitmapOfBMP bmp =
+ let (width, height) = bmpDimensions bmp
+ in Bitmap width height (bitmapDataOfBMP bmp) True
+
+
+-- | O(size). Copy a `BMP` file into a bitmap.
+bitmapDataOfBMP :: BMP -> BitmapData
+bitmapDataOfBMP bmp
  = unsafePerformIO
  $ do   let (width, height)     = bmpDimensions bmp
         let bs                  = unpackBMPToRGBA32 bmp
@@ -182,11 +211,8 @@ bitmapOfBMP bmp
         BSU.unsafeUseAsCString bs
          $ \cstr -> copyBytes ptr (castPtr cstr) len
 
-        let bdata = BitmapData len (BitmapFormat BottomToTop PxRGBA) fptr
-
-        return $ Bitmap width height bdata True
-{-# NOINLINE bitmapOfBMP #-}
-
+        return $ BitmapData len (BitmapFormat BottomToTop PxRGBA) fptr
+{-# NOINLINE bitmapDataOfBMP #-}
 
 -- | Load an uncompressed 24 or 32bit RGBA BMP file as a bitmap.
 loadBMP :: FilePath -> IO Picture
