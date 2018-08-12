@@ -1,9 +1,11 @@
 {-# LANGUAGE DeriveDataTypeable #-}
+{-# LANGUAGE RecordWildCards #-}
 {-# OPTIONS_HADDOCK hide #-}
 
 -- | Helper functions for rendering bitmaps
 module Graphics.Gloss.Internals.Rendering.Bitmap
-        ( BitmapData(..)
+        ( BitmapSection(..)
+        , BitmapData(..)
         , BitmapFormat(..), PixelFormat(..), RowOrder(..)
         , bitmapPath
         , freeBitmapData)
@@ -12,11 +14,21 @@ import Data.Data
 import Foreign
 
 
+data BitmapSection
+        = BitmapSection
+        { bitmapSecPos :: (Int, Int)
+        , bitmapSecSize :: (Int, Int)
+        -- , bitmapSecData :: BitmapData
+        }
+        deriving (Eq, Data, Typeable)
+
 -- | Abstract 32-bit RGBA bitmap data.
 data BitmapData
         = BitmapData
         { bitmapDataLength :: Int  -- length (in bytes)
         , bitmapFormat     :: BitmapFormat
+        , bitmapSize       :: (Int, Int) -- width, height in pixels
+        , bitmapCacheMe    :: Bool
         , bitmapPointer    :: (ForeignPtr Word8) }
         deriving (Eq, Data, Typeable)
 
@@ -48,6 +60,16 @@ data PixelFormat
         = PxRGBA | PxABGR
         deriving (Eq, Data, Typeable, Show, Ord, Enum, Bounded)
 
+
+instance Show BitmapSection where
+ show BitmapSection{..} =
+   concat $
+      [ "BitmapSection{ bitmapSecPos="
+     , show bitmapSecPos
+      , ", "
+     , show bitmapSecSize
+      , "}"
+     ]
 
 instance Show BitmapData where
  show _ = "BitmapData"

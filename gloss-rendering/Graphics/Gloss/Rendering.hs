@@ -14,7 +14,8 @@ module Graphics.Gloss.Rendering
         , clampColor
 
           -- * Bitmaps
-        , BitmapData
+        , BitmapSection(..)
+        , BitmapData, bitmapSize
         , BitmapFormat(..), PixelFormat(..), RowOrder(..)
         , bitmapOfForeignPtr
         , bitmapDataOfForeignPtr

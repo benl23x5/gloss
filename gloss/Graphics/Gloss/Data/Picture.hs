@@ -11,6 +11,8 @@ module Graphics.Gloss.Data.Picture
         , arc,    thickArc
         , text
         , bitmap
+        , bitmapSection
+        -- , bitmap
         , color
         , translate, rotate, scale
         , pictures
@@ -70,6 +72,16 @@ thickArc = ThickArc
 text :: String -> Picture
 text = Text
 
+bitmap  :: BitmapData -> Picture
+bitmap bitmapData =
+  let (width, height) = bitmapSize bitmapData
+  in
+    Bitmap (BitmapSection (0,0) (width,height)) bitmapData
+
+bitmapSection  :: BitmapSection -> BitmapData -> Picture
+bitmapSection = Bitmap
+
+{-
 -- | A bitmap image with a width, height and a Vector holding the
 --   32-bit RGBA bitmap data.
 --
@@ -78,8 +90,9 @@ text = Text
 --  If you are programatically generating the image for
 --  each frame then use `False`.
 --  If you have loaded it from a file then use `True`.
-bitmap  :: Int -> Int -> BitmapData -> Bool -> Picture
-bitmap = Bitmap
+bitmap  :: Int -> Int -> BitmapData -> Picture
+bitmap = Image
+-}
 
 -- | A picture drawn with this color.
 color :: Color -> Picture -> Picture

@@ -1,7 +1,9 @@
 
 -- | Functions to load bitmap data from various places.
 module Graphics.Gloss.Data.Bitmap
-        ( BitmapData, BitmapFormat(..), RowOrder(..), PixelFormat(..)
+        ( BitmapSection(..)
+        , BitmapData, bitmapSize
+        , BitmapFormat(..), RowOrder(..), PixelFormat(..)
         , bitmapOfForeignPtr
         , bitmapDataOfForeignPtr
         , bitmapOfByteString

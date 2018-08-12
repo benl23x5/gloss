@@ -10,7 +10,9 @@ module Graphics.Gloss.Internals.Data.Picture
         , Picture(..)
 
         -- * Bitmaps
+        , BitmapSection(..)
         , BitmapData, PixelFormat(..), BitmapFormat(..), RowOrder(..)
+        , bitmapSize
         , bitmapOfForeignPtr
         , bitmapDataOfForeignPtr
         , bitmapOfByteString
@@ -83,6 +85,8 @@ data Picture
         -- | Some text to draw with a vector font.
         | Text          String
 
+        | Bitmap BitmapSection BitmapData
+        {-
         -- | A bitmap image with a width, height and some 32-bit RGBA
         --   bitmap data.
         --
@@ -108,6 +112,7 @@ data Picture
         --  Setting @True@  for dynamically generated images will cause a
         --  GPU memory leak.
         | BitmapSection Int Int BitmapData Bool (Int,Int) (Int,Int)
+        -}
 
         -- Color ------------------------------------------
         -- | A picture drawn with this color.
@@ -153,12 +158,14 @@ instance Semigroup Picture where
 --   from a file then use `True`.
 bitmapOfForeignPtr :: Int -> Int -> BitmapFormat -> ForeignPtr Word8 -> Bool -> Picture
 bitmapOfForeignPtr width height fmt fptr cacheMe =
-  Bitmap width height (bitmapDataOfForeignPtr width height fmt fptr) cacheMe
+  Bitmap (defSection width height) $
+    bitmapDataOfForeignPtr width height fmt fptr cacheMe
+  --Bitmap width height (bitmapDataOfForeignPtr width height fmt fptr) cacheMe
 
-bitmapDataOfForeignPtr :: Int -> Int -> BitmapFormat -> ForeignPtr Word8 -> BitmapData
-bitmapDataOfForeignPtr width height fmt fptr
+bitmapDataOfForeignPtr :: Int -> Int -> BitmapFormat -> ForeignPtr Word8 -> Bool -> BitmapData
+bitmapDataOfForeignPtr width height fmt fptr cacheMe
  = let  len     = width * height * 4
-   in   BitmapData len fmt fptr
+   in   BitmapData len fmt (width,height) cacheMe fptr
 
 
 -- | O(size). Copy a `ByteString` of RGBA data into a bitmap with the given
@@ -170,10 +177,12 @@ bitmapDataOfForeignPtr width height fmt fptr
 --   from a file then use `True`.
 bitmapOfByteString :: Int -> Int -> BitmapFormat -> ByteString -> Bool -> Picture
 bitmapOfByteString width height fmt bs cacheMe =
-  Bitmap width height (bitmapDataOfByteString width height fmt bs) cacheMe
+  Bitmap (defSection width height) $
+    bitmapDataOfByteString width height fmt bs cacheMe
+  -- Bitmap width height (bitmapDataOfByteString width height fmt bs) cacheMe
 
-bitmapDataOfByteString :: Int -> Int -> BitmapFormat -> ByteString -> BitmapData
-bitmapDataOfByteString width height fmt bs
+bitmapDataOfByteString :: Int -> Int -> BitmapFormat -> ByteString -> Bool -> BitmapData
+bitmapDataOfByteString width height fmt bs cacheMe
  = unsafePerformIO
  $ do   let len = width * height * 4
         ptr     <- mallocBytes len
@@ -182,7 +191,7 @@ bitmapDataOfByteString width height fmt bs
         BSU.unsafeUseAsCString bs
          $ \cstr -> copyBytes ptr (castPtr cstr) len
 
-        return $ BitmapData len fmt fptr
+        return $ BitmapData len fmt (width, height) cacheMe fptr
 {-# NOINLINE bitmapDataOfByteString #-}
 
 
@@ -190,7 +199,10 @@ bitmapDataOfByteString width height fmt bs
 bitmapOfBMP :: BMP -> Picture
 bitmapOfBMP bmp =
  let (width, height) = bmpDimensions bmp
- in Bitmap width height (bitmapDataOfBMP bmp) True
+ in
+   Bitmap (defSection width height) $
+     bitmapDataOfBMP bmp
+    --Bitmap width height (bitmapDataOfBMP bmp) True
 
 
 -- | O(size). Copy a `BMP` file into a bitmap.
@@ -207,7 +219,7 @@ bitmapDataOfBMP bmp
         BSU.unsafeUseAsCString bs
          $ \cstr -> copyBytes ptr (castPtr cstr) len
 
-        return $ BitmapData len (BitmapFormat BottomToTop PxRGBA) fptr
+        return $ BitmapData len (BitmapFormat BottomToTop PxRGBA) (width,height) True fptr
 {-# NOINLINE bitmapDataOfBMP #-}
 
 -- | Load an uncompressed 24 or 32bit RGBA BMP file as a bitmap.
@@ -218,3 +230,4 @@ loadBMP filePath
          Left err       -> error $ show err
          Right bmp      -> return $ bitmapOfBMP bmp
 
+defSection w h = BitmapSection (0,0) (w,h)
