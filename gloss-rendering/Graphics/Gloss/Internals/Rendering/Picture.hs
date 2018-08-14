@@ -178,14 +178,32 @@ drawPicture state circScale picture
         -- width height imgData cacheMe imgSectionPos imgSectionSize ->
           do
             let rowInfo =
+                  -- calculate texture coordinates
+                  -- remark:
+                  --   On some hardware, using exact "integer" coordinates causes texture coords
+                  --   with a component == 0  flip to -1. This appears as the texture flickering
+                  --   on the left and sometimes show one additional row of pixels outside the
+                  --   given rectangle
+                  --   To prevent this we add an "epsilon-border".
+                  --   This has been testet to fix the problem.
                   let defTexCoords =
-                        map (\(x,y) -> (fromIntegral x / fromIntegral width, fromIntegral y / fromIntegral height)) $
-                        [ imgSectionPos
-                        , (fst imgSectionPos + fst imgSectionSize, snd imgSectionPos)
-                        , (fst imgSectionPos + fst imgSectionSize, snd imgSectionPos + snd imgSectionSize)
-                        , (fst imgSectionPos, snd imgSectionPos + snd imgSectionSize)
+                        map (\(x,y) -> (x / fromIntegral width, y / fromIntegral height)) $
+                        [ vecMap (+eps) (+eps) $ toFloatVec imgSectionPos
+                        , vecMap (subtract eps) (+eps) $ toFloatVec $
+                            ( fst imgSectionPos + fst imgSectionSize
+                            , snd imgSectionPos )
+                        , vecMap (subtract eps) (subtract eps) $ toFloatVec $
+                            ( fst imgSectionPos + fst imgSectionSize
+                            , snd imgSectionPos + snd imgSectionSize )
+                        , vecMap (+eps) (subtract eps) $ toFloatVec $
+                            ( fst imgSectionPos
+                            , snd imgSectionPos + snd imgSectionSize )
                         ]
                         :: [(Float,Float)]
+                      toFloatVec = vecMap fromIntegral fromIntegral
+                      vecMap :: (a -> c) -> (b -> d) -> (a,b) -> (c,d)
+                      vecMap f g (x,y) = (f x, g y)
+                      eps = 0.001 :: Float
                   in
                     case rowOrder (bitmapFormat imgData) of
                       BottomToTop -> defTexCoords
