@@ -88,12 +88,12 @@ data Picture
         -- | Some text to draw with a vector font.
         | Text          String
 
-        --  | a bitmap image
-        | Bitmap BitmapData
+        -- | A bitmap image.
+        | Bitmap        BitmapData
 
-        -- | a subsection of a bitmap image
-        --   first argument selects a sub section in the bitmap
-        --   second argument determines the bitmap data
+        -- | A subsection of a bitmap image where
+        --   the first argument selects a sub section in the bitmap,
+        --   and second argument determines the bitmap data.
         | BitmapSection Rectangle BitmapData
 
         -- Color ------------------------------------------
@@ -178,11 +178,9 @@ bitmapDataOfByteString width height fmt bs cacheMe
 
 -- | O(size). Copy a `BMP` file into a bitmap.
 bitmapOfBMP :: BMP -> Picture
-bitmapOfBMP bmp =
- let (width, height) = bmpDimensions bmp
- in
-   Bitmap $
-     bitmapDataOfBMP bmp
+bitmapOfBMP bmp
+ = Bitmap $ bitmapDataOfBMP bmp
+
 
 -- | O(size). Copy a `BMP` file into a bitmap.
 bitmapDataOfBMP :: BMP -> BitmapData
@@ -201,6 +199,7 @@ bitmapDataOfBMP bmp
         return $ BitmapData len (BitmapFormat BottomToTop PxRGBA) (width,height) True fptr
 {-# NOINLINE bitmapDataOfBMP #-}
 
+
 -- | Load an uncompressed 24 or 32bit RGBA BMP file as a bitmap.
 loadBMP :: FilePath -> IO Picture
 loadBMP filePath
@@ -209,4 +208,9 @@ loadBMP filePath
          Left err       -> error $ show err
          Right bmp      -> return $ bitmapOfBMP bmp
 
+
+-- | Construct a rectangle of the given width and height,
+--   with the lower left corner at the origin.
+rectAtOrigin :: Int -> Int -> Rectangle
 rectAtOrigin w h = Rectangle (0,0) (w,h)
+
