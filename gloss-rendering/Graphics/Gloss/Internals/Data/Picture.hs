@@ -72,7 +72,7 @@ data Picture
         -- | A circle with the given radius.
         | Circle        Float
 
-        -- | A circle with the given thickness and radius.
+        -- | A circle with the given radius and thickness.
         --   If the thickness is 0 then this is equivalent to `Circle`.
         | ThickCircle   Float Float
 
@@ -81,7 +81,7 @@ data Picture
         | Arc           Float Float Float
 
         -- | A circular arc drawn counter-clockwise between two angles
-        --  (in degrees), with the given radius  and thickness.
+        --  (in degrees), with the given radius and thickness.
         --   If the thickness is 0 then this is equivalent to `Arc`.
         | ThickArc      Float Float Float Float
 
