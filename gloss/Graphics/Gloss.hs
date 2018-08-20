@@ -52,6 +52,16 @@
 -- @
 -- Release Notes:
 --
+--  For 1.13.1:
+--   Thanks to Thaler Jonathan
+--   * Repaired GLFW backend.
+--   Thanks to Samuel Gfrörer
+--   * Support for bitmap sections.
+--
+--  For 1.12.1:
+--   Thanks to Trevor McDonell
+--   * Travis CI integration, general cleanups.
+--
 --  For 1.11.1:
 --   Thanks to Lars Wyssard
 --   * Use default display resolution in full-screen mode.
