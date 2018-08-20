@@ -16,9 +16,10 @@ main
 
 run :: FilePath -> IO ()
 run fileName
- = do   picture@(Bitmap width height _ _)
+ = do   picture@(Bitmap bmpData)
                 <- loadBMP fileName
 
+        let (width,height) = bitmapSize bmpData
         animate (InWindow fileName (width, height) (10,  10))
                 black (frame width height picture)
 
