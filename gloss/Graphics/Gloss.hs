@@ -57,6 +57,8 @@
 --   * Repaired GLFW backend.
 --   Thanks to Samuel Gfrörer
 --   * Support for bitmap sections.
+--   Thanks to Basile Henry
+--   * Handle resize events in playField driver.
 --
 --  For 1.12.1:
 --   Thanks to Trevor McDonell
