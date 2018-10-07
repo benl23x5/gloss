@@ -1,5 +1,5 @@
 Name:                gloss-examples
-Version:             1.13.0.1
+Version:             1.13.0.2
 License:             MIT
 License-file:        LICENSE
 Author:              Ben Lippmeier
@@ -29,7 +29,7 @@ source-repository head
 
 source-repository this
   type:         git
-  tag:          v1.12.0.0
+  tag:          v1.13.0.2
   location:     https://github.com/benl23x5/gloss
 
 Executable gloss-bitmap
