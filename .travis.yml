@@ -23,13 +23,6 @@ addons:
       - hvr-ghc
       - ubuntu-toolchain-r-test
       - llvm-toolchain-trusty
-      - llvm-toolchain-precise-3.5
-      # - llvm-toolchain-precise-3.6
-      - llvm-toolchain-precise-3.7
-      # - llvm-toolchain-precise-3.8
-      # - llvm-toolchain-trusty-3.9
-      - llvm-toolchain-trusty-4.0
-      - llvm-toolchain-trusty-5.0
 
     packages: &apt_packages
       - alex-3.1.7
@@ -43,53 +36,67 @@ addons:
 matrix:
   fast_finish: true
   include:
-    - env: GHC=7.10.3 CABAL=1.22 LLVM=3.5.1
-      compiler: "GHC 7.10"
+    - env: GHC=8.6.1 LLVM=6.0.0
+      compiler: "GHC 8.6"
       addons:
         apt:
-          sources: *apt_sources
+          sources:
+            - *apt_sources
+            - llvm-toolchain-trusty-6.0
           packages:
             - *apt_packages
-            - cabal-install-1.22
-            - llvm-3.5-dev
+            - llvm-6.0-dev
 
-    - env: GHC=8.0.2 CABAL=1.24 LLVM=3.7.1
-      compiler: "GHC 8.0"
-      addons:
-        apt:
-          sources: *apt_sources
-          packages:
-            - *apt_packages
-            - cabal-install-1.24
-            - llvm-3.7-dev
-
-    - env: GHC=8.2.2 CABAL=2.0 LLVM=4.0.1
-      compiler: "GHC 8.2"
-      addons:
-        apt:
-          sources: *apt_sources
-          packages:
-            - *apt_packages
-            - cabal-install-2.0
-            - llvm-4.0-dev
-
-    - env: GHC=8.4.1 CABAL=2.0 LLVM=5.0.0
+    - env: GHC=8.4.1 LLVM=5.0.0
       compiler: "GHC 8.4"
       addons:
         apt:
-          sources: *apt_sources
+          sources:
+            - *apt_sources
+            - llvm-toolchain-trusty-5.0
           packages:
             - *apt_packages
-            - cabal-install-2.0
             - llvm-5.0-dev
 
+    - env: GHC=8.2.2 LLVM=4.0.1
+      compiler: "GHC 8.2"
+      addons:
+        apt:
+          sources:
+            - *apt_sources
+            - llvm-toolchain-trusty-4.0
+          packages:
+            - *apt_packages
+            - llvm-4.0-dev
+
+    - env: GHC=8.0.2 LLVM=3.7.1
+      compiler: "GHC 8.0"
+      addons:
+        apt:
+          sources:
+            - *apt_sources
+            - llvm-toolchain-precise-3.7
+          packages:
+            - *apt_packages
+            - llvm-3.7-dev
+
+    - env: GHC=7.10.3 LLVM=3.5.1
+      compiler: "GHC 7.10"
+      addons:
+        apt:
+          sources:
+            - *apt_sources
+            - llvm-toolchain-precise-3.5
+          packages:
+            - *apt_packages
+            - llvm-3.5-dev
+
 before_install:
-  - export PATH=/opt/cabal/$CABAL/bin:/opt/alex/3.1.7/bin:/opt/happy/1.19.5/bin:$HOME/.cabal/bin:$PATH
+  - export PATH=/opt/alex/3.1.7/bin:/opt/happy/1.19.5/bin:$PATH
   - source .travis/install-stack.sh
 
 install:
   - echo "$(stack exec ghc -- --version) [$(stack exec ghc -- --print-project-git-commit-id 2> /dev/null || echo '?')]"
-  - cabal --version
   - stack --version
   - llc-${LLVM:0:3} --version; true
   - opt-${LLVM:0:3} --version; true
