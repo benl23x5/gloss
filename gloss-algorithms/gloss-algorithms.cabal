@@ -27,8 +27,8 @@ source-repository this
 
 Library
   Build-Depends:
-          base                          >= 4.8 && < 4.12
-        , containers                    == 0.5.*
+          base                          >= 4.8 && < 4.13
+        , containers                    >= 0.5 && < 0.7
         , ghc-prim
         , gloss                         == 1.13.*
 
