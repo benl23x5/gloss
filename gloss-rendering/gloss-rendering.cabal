@@ -37,10 +37,10 @@ library
         Graphics.Gloss.Internals.Rendering.State
 
   build-depends:
-          base                          >= 4.8 && < 4.12
+          base                          >= 4.8 && < 4.13
         , bmp                           == 1.2.*
         , bytestring                    == 0.10.*
-        , containers                    == 0.5.*
+        , containers                    >= 0.5 && < 0.7
         , GLUT                          == 2.7.*
         , OpenGL                        >= 2.12 && < 3.1
 
