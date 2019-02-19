@@ -112,6 +112,7 @@ rgbaOfColor (RGBA r g b a)      = (r, g, b, a)
 clampColor :: Color -> Color
 clampColor cc
  = let  (r, g, b, a)    = rgbaOfColor cc
-   in   RGBA (min 1 r) (min 1 g) (min 1 b) (min 1 a)
+        clamp x         = (min (max x 0.0) 1.0)
+   in   RGBA (clamp r) (clamp g) (clamp b) (clamp a)
 
 
