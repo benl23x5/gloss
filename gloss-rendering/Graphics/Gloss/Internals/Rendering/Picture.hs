@@ -58,7 +58,6 @@ drawPicture state circScale picture
          -> GL.renderPrimitive GL.LineStrip
                 $ vertexPFs path
 
-
         -- polygon (where?)
         Polygon path
          | stateWireframe state
@@ -132,7 +131,6 @@ drawPicture state circScale picture
           $ do  GL.translate (GL.Vector3 (gf tx) (gf ty) 0)
                 drawPicture state circScale p
 
-
         -- Rotation -----------------------------
         -- Easy rotations are done directly to avoid calling GL.perserveMatrix.
         Rotate _   (Circle radius)
@@ -152,7 +150,6 @@ drawPicture state circScale picture
          -> GL.preservingMatrix
           $ do  GL.rotate (gf deg) (GL.Vector3 0 0 (-1))
                 drawPicture state circScale p
-
 
         -- Scale --------------------------------
         Scale sx sy p
@@ -175,8 +172,7 @@ drawPicture state circScale picture
           { bitmapSize = (width, height)
           , bitmapCacheMe = cacheMe }
           ->
-        -- width height imgData cacheMe imgSectionPos imgSectionSize ->
-          do
+           do
             let rowInfo =
                   -- calculate texture coordinates
                   -- remark:
@@ -228,14 +224,15 @@ drawPicture state circScale picture
             -- Set to opaque
             oldColor <- get GL.currentColor
             GL.currentColor $= GL.Color4 1.0 1.0 1.0 1.0
- 
+
             -- Draw textured polygon
             GL.renderPrimitive GL.Polygon $
-              forM_ (bitmapPath (fromIntegral $ fst imgSectionSize) (fromIntegral $ snd imgSectionSize) `zip` rowInfo) $
+              forM_ (bitmapPath (fromIntegral $ fst imgSectionSize)
+                                (fromIntegral $ snd imgSectionSize) `zip` rowInfo) $
               \((polygonCoordX, polygonCoordY), (textureCoordX,textureCoordY)) ->
               do
                 GL.texCoord $ GL.TexCoord2 (gf textureCoordX) (gf textureCoordY)
-                GL.vertex   $ GL.Vertex2 (gf polygonCoordX) (gf polygonCoordY)
+                GL.vertex   $ GL.Vertex2   (gf polygonCoordX) (gf polygonCoordY)
 
             -- Restore color
             GL.currentColor $= oldColor
@@ -289,13 +286,12 @@ handleError place err
 
 
 -- Textures -------------------------------------------------------------------
--- | Load a texture.
---   If we've seen it before then use the pre-installed one from the texture
---   cache, otherwise load it into OpenGL.
+-- | Load a texture into the OpenGL context, or retrieve the existing handle
+--   from our own cache.
 loadTexture
-        :: IORef [Texture]
-        -> BitmapData
-        -> Bool
+        :: IORef [Texture] -- ^ Existing texture cache.
+        -> BitmapData      -- ^ Texture data.
+        -> Bool            -- ^ Force cache for newly loaded textures.
         -> IO Texture
 
 loadTexture refTextures imgData@BitmapData{ bitmapSize=(width,height) } cacheMe
@@ -314,17 +310,15 @@ loadTexture refTextures imgData@BitmapData{ bitmapSize=(width,height) } cacheMe
           ->    return tex
 
          Nothing
-          -> do tex     <- installTexture imgData
+          -> do tex <- installTexture imgData
                 when cacheMe
                  $ writeIORef refTextures (tex : textures)
                 return tex
 
 
--- | Install a texture into OpenGL.
-installTexture
-        :: BitmapData
-        -> IO Texture
-
+-- | Install a texture into the OpenGL context,
+--   returning the new texture handle.
+installTexture :: BitmapData -> IO Texture
 installTexture bitmapData@(BitmapData _ fmt (width,height) cacheMe fptr)
  = do
         let glFormat
@@ -374,7 +368,6 @@ freeTexture tex
  | otherwise            = GL.deleteObjectNames [texObject tex]
 
 
-
 -- Utils ----------------------------------------------------------------------
 -- | Turn alpha blending on or off
 setBlendAlpha :: Bool -> IO ()
@@ -386,6 +379,7 @@ setBlendAlpha state
         | otherwise
         = do    GL.blend        $= GL.Disabled
                 GL.blendFunc    $= (GL.One, GL.Zero)
+
 
 -- | Turn line smoothing on or off
 setLineSmooth :: Bool -> IO ()

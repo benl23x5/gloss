@@ -12,11 +12,11 @@ import  GHC.Exts
 import  qualified Graphics.Rendering.OpenGL.GL          as GL
 
 
+-------------------------------------------------------------------------------
 -- | Decide how many line segments to use to render the circle.
 --   The number of segments we should use to get a nice picture depends on
 --   the size of the circle on the screen, not its intrinsic radius.
 --   If the viewport has been zoomed-in then we need to use more segments.
---
 circleSteps :: Float -> Int
 circleSteps sDiam
         | sDiam < 8     = 8
@@ -81,11 +81,12 @@ renderCircleStrip (F# posX) (F# posY) steps r width
 
 -- Arc ------------------------------------------------------------------------
 -- | Render an arc with the given thickness.
-renderArc :: Float -> Float -> Float -> Float -> Float -> Float -> Float -> IO ()
+renderArc
+ :: Float -> Float -> Float -> Float -> Float -> Float -> Float -> IO ()
 renderArc posX posY scaleFactor radius_ a1 a2 thickness_
  = go (abs radius_) (abs thickness_)
- where go radius thickness
-
+ where
+       go radius thickness
         -- Render zero thickness arcs with lines.
         | thickness == 0
         , radScreen     <- scaleFactor * radius
@@ -99,7 +100,8 @@ renderArc posX posY scaleFactor radius_ a1 a2 thickness_
 
 
 -- | Render an arc as a line.
-renderArcLine :: Float -> Float -> Int -> Float -> Float -> Float -> IO ()
+renderArcLine
+ :: Float -> Float -> Int -> Float -> Float -> Float -> IO ()
 renderArcLine (F# posX) (F# posY) steps (F# rad) a1 a2
  = let  n               = fromIntegral steps
         !(F# tStep)     = (2 * pi) / n
@@ -116,13 +118,17 @@ renderArcLine (F# posX) (F# posY) steps (F# rad) a1 a2
 
 
 -- | Render an arc with a given thickness as a triangle strip
-renderArcStrip :: Float -> Float -> Int -> Float -> Float -> Float -> Float -> IO ()
+renderArcStrip
+ :: Float -> Float -> Int -> Float -> Float -> Float -> Float -> IO ()
 renderArcStrip (F# posX) (F# posY) steps r a1 a2 width
  = let  n               = fromIntegral steps
         tStep           = (2 * pi) / n
 
         t1              = normalizeAngle $ degToRad a1
-        t2              = normalizeAngle $ degToRad a2
+
+        a2'             = normalizeAngle $ degToRad a2
+        t2              = if a2' == 0 then 2*pi else a2'
+
         (tStart, tStop) = if t1 <= t2 then (t1, t2) else (t2, t1)
         tDiff           = tStop - tStart
         tMid            = tStart + tDiff / 2
@@ -137,24 +143,23 @@ renderArcStrip (F# posX) (F# posY) steps r a1 a2 width
         !(F# r2')       = r + width / 2
 
    in   GL.renderPrimitive GL.TriangleStrip
-         $ do
-                 -- start vector
-                 addPointOnCircle posX posY r1' tStart'
-                 addPointOnCircle posX posY r2' tStart'
+         $ do   -- start vector
+                addPointOnCircle posX posY r1' tStart'
+                addPointOnCircle posX posY r2' tStart'
 
-                 -- If we don't have a complete step then just drop a point
-                 -- between the two ending lines.
-                 if tDiff < tStep
-                   then do
+                -- If we don't have a complete step then just drop a point
+                -- between the two ending lines.
+                if tDiff < tStep
+                  then do
                         addPointOnCircle posX posY r1' tMid'
 
                         -- end vectors
                         addPointOnCircle posX posY r2' tStop'
                         addPointOnCircle posX posY r1' tStop'
 
-
-                   else do
-                        renderCircleStrip_step posX posY tStep' tCut' r1' tStart' r2'
+                  else do
+                        renderCircleStrip_step posX posY
+                                tStep' tCut' r1' tStart' r2'
                                 (tStart' `plusFloat#` tStep2')
 
                         -- end vectors
@@ -214,17 +219,17 @@ addPointOnCircle posX posY rad tt =
 
 
 -- | Convert degrees to radians
-{-# INLINE degToRad #-}
 degToRad :: Float -> Float
 degToRad d      = d * pi / 180
+{-# INLINE degToRad #-}
 
 
 -- | Normalise an angle to be between 0 and 2*pi radians
-{-# INLINE normalizeAngle #-}
 normalizeAngle :: Float -> Float
 normalizeAngle f = f - 2 * pi * floor' (f / (2 * pi))
  where  floor' :: Float -> Float
         floor' x = fromIntegral (floor x :: Int)
+{-# INLINE normalizeAngle #-}
 
 
 {- Unused sector drawing code.

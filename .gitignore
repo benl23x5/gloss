@@ -2,3 +2,6 @@
 .stack-work
 /stack.yaml
 dist
+*.o
+*.hi
+Main
