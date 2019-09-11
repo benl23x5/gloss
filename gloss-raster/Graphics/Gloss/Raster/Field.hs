@@ -28,7 +28,9 @@ module Graphics.Gloss.Raster.Field
         , Display       (..)
         , Point
         , animateField
+        , animateFieldIO
         , playField
+        , playFieldIO
 
          -- * Frame creation
         , makePicture
@@ -40,6 +42,7 @@ import Graphics.Gloss.Data.Display
 import Graphics.Gloss.Data.Bitmap
 import Graphics.Gloss.Interface.Pure.Game
 import Graphics.Gloss.Interface.IO.Animate
+import Graphics.Gloss.Interface.IO.Game
 import Graphics.Gloss.Interface.Environment
 import Data.Word
 import System.IO.Unsafe
@@ -125,6 +128,35 @@ animateField display (zoomX, zoomY) makePixel
 {-# INLINE animateField #-}
 --  INLINE so the repa functions fuse with the users client functions.
 
+-- AnimateIO --------------------------------------------------------------------
+-- | Animate a continuous 2D function, via the IO monad.
+animateFieldIO
+        :: Display
+                -- ^ Display mode.
+        -> (Int, Int)
+                -- ^ Number of pixels to draw per point.
+        -> (Float -> IO (Point -> Color))
+                -- ^ Function to compute the color at a particular point.
+                --
+                --   It is passed the time in seconds since the program started,
+                --   and a point between (-1, -1) and (+1, +1).
+        -> IO ()
+
+animateFieldIO display (zoomX, zoomY) makePixel
+ = zoomX `seq` zoomY `seq`
+ if zoomX < 1 || zoomY < 1
+   then error $ "Graphics.Gloss.Raster.Field: invalid pixel scale factor "
+                P.++ show (zoomX, zoomY)
+   else
+    do (winSizeX, winSizeY) <- sizeOfDisplay display
+
+       let  frame !time
+              = makePicture winSizeX winSizeY zoomX zoomY <$> makePixel time
+
+       animateFixedIO display black frame (const $ return ())
+
+{-# INLINE animateFieldIO #-}
+
 -- Play -----------------------------------------------------------------------
 -- | Play a game with a continous 2D function.
 playField
@@ -166,6 +198,46 @@ playField !display (zoomX, zoomY) !stepRate
                    (fmap . stepWorld)
 {-# INLINE playField #-}
 
+-- PlayIO -----------------------------------------------------------------------
+-- | Play a game with a continous 2D function, via the IO monad.
+playFieldIO
+        :: Display
+                -- ^ Display mode.
+        -> (Int, Int)
+                -- ^ Number of pixels to draw per point.
+        -> Int  -- ^ Number of simulation steps to take
+                --   for each second of real time
+        -> world
+                -- ^ The initial world.
+        -> (world -> IO (Point -> Color))
+                -- ^ Function to compute the color of the world at the given point.
+        -> (Event -> world -> IO world)
+                -- ^ Function to handle input events.
+        -> (Float -> world -> IO world)
+                -- ^ Function to step the world one iteration.
+                --   It is passed the time in seconds since the program started.
+        -> IO ()
+playFieldIO !display (zoomX, zoomY) !stepRate
+          !initWorld !makePixel !handleEvent !stepWorld
+ = zoomX `seq` zoomY `seq`
+   if zoomX < 1 || zoomY < 1
+     then  error $ "Graphics.Gloss.Raster.Field: invalid pixel scale factor "
+                 P.++ show (zoomX, zoomY)
+     else  do (winSizeX, winSizeY) <- sizeOfDisplay display
+              winSizeX `seq` winSizeY `seq`
+                playIO display black stepRate
+                   ((winSizeX, winSizeY), initWorld)
+                   (\((winSizeX', winSizeY'), world) ->
+                      winSizeX' `seq` winSizeY' `seq` world `seq`
+                      makePicture winSizeX' winSizeY' zoomX zoomY <$> makePixel world)
+                   (\event (winSize, world) ->
+                      let winSize' =
+                            case event of
+                              EventResize dims -> dims
+                              _                -> winSize
+                      in (,) winSize' <$> handleEvent event world)
+                   (\time (winSize, world) -> (,) winSize <$> stepWorld time world)
+{-# INLINE playFieldIO #-}
 
 sizeOfDisplay :: Display -> IO (Int, Int)
 sizeOfDisplay display
