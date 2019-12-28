@@ -88,7 +88,7 @@ void    gloss_init
 
 
         // ------------------------------------------------
-        // List the available rendererers.
+        // List the available renderers.
         int     numRenderDrivers = SDL_GetNumRenderDrivers();
         for (int i = 0; i < numRenderDrivers; i++)
         {       SDL_RendererInfo info;

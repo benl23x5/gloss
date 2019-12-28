@@ -20,10 +20,10 @@ The current Gloss library suffers from the following problems, which we try to a
 
 7. The Gloss picture type includes a polygon constructor, which allows polygons to be defined by a path, but there is an unchecked precondition that the polygon must be convex. Trying to defined non-convex paths results in undefined behaviour. There was a project to add triangulation support to gloss but the resulting code was deemed too complex to be merged. In the move to CSG we can present primitive triangles and rectangles as polygons and avoid general polygons.
 
-8. The Gloss picture type includes circle and arc constructors. The rasterization code for circles and arcs has been a bug farm over the years, and still has known problems. Moving to CSG/ray tracing style rendering will allow us to draw circles and arcs at full resolution in a way that hopefully avoids rasterization bugs.
+8. The Gloss picture type includes circle and arc constructors. The rasterization code for circles and arcs is a bug farm, and still has known problems. Moving to CSG/ray tracing style rendering will allow us to draw circles and arcs at full resolution in a way that hopefully avoids rasterization bugs.
 
 9. The Gloss interface API provides both "pure" and "IO" versions of top-level functions like "display" and "simulate". If we can separate the picture and rendering API cleanly from the window management functionality then we could provide just the "pure" interfaces for simple use-cases. We would require users to use a lower level IO based API for IO driven applications.
 
-10. Gloss does not have sound support, and there appears to be no simple graphics/sound interface in the Haskell ecosystem. Attempts to combine separate audio libraries with gloss usually end up with latency problems, resulting in auto clicking.
+10. Gloss does not have sound support, and there appears to be no simple graphics/sound interface in the Haskell ecosystem. Attempts to combine separate audio libraries with gloss usually end up with latency problems, resulting in auto clicking. SDL has an integrated audio framework. We should also move generation of simple audio streams out of the domain of the GHC thread scheduler.
 
 
