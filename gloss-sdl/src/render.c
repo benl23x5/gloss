@@ -1,7 +1,7 @@
 #include "main.h"
 
 // Render the image.
-void    gloss_render
+double  gloss_render
         ( size_t sizeX, size_t sizeY
         , void   *pixels
         , size_t  pitch)
@@ -34,5 +34,5 @@ void    gloss_render
          = (double)(counter_end - counter_start)
          / (double)(SDL_GetPerformanceFrequency());
 
-        printf  ("time %f\n", time);
+        return time;
 }

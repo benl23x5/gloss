@@ -4,11 +4,15 @@
 #include <sys/time.h>
 #include "main.h"
 
-void    gloss_render
-        ( size_t sizeX, size_t sizeY
-        , void  *pixels
-        , size_t pitch);
+bool            debug_init                      = false;
+bool            debug_events                    = false;
 
+SDL_Window*     state_window                    = 0;
+SDL_Renderer*   state_renderer                  = 0;
+SDL_Texture*    state_texture                   = 0;
+SDL_Surface*    state_surface                   = 0;
+TTF_Font*       state_font_DejaVuSans           = 0;
+TTF_Font*       state_font_DejaVuSansMono       = 0;
 
 int main(int argc, char** argv)
 {
@@ -19,16 +23,9 @@ int main(int argc, char** argv)
         // Initialize SDL and open the main window.
         size_t bufSizeX          = 0;
         size_t bufSizeY          = 0;
-        SDL_Window*     window   = 0;
-        SDL_Renderer*   renderer = 0;
-        SDL_Texture*    texture  = 0;
-        SDL_Surface*    surface  = 0;
         gloss_init
-                ( false
-                , winSizeX, winSizeY
-                , &bufSizeX, &bufSizeY
-                , &window,  &renderer, &texture, &surface);
-
+                ( winSizeX, winSizeY
+                , &bufSizeX, &bufSizeY);
 
         // ------------------------------------------------
         // The main drawing loop.
@@ -53,43 +50,60 @@ int main(int argc, char** argv)
                   case SDL_WINDOWEVENT:
                     switch (event.window.event)
                     { case SDL_WINDOWEVENT_SHOWN:
-                        printf("  %6d window shown\n", iEvent);
+                        if (debug_events)
+                                printf("  %6d window shown\n", iEvent);
                         break;
 
                       default:
-                        printf("  %6d window unhandled\n", iEvent);
+                        if (debug_events)
+                                printf("  %6d window unhandled\n", iEvent);
                         break;
                     }
                     break;
 
                     default:
-                        printf("  %6d unhandled\n", iEvent);
+                        if (debug_events)
+                                printf("  %6d unhandled\n", iEvent);
                         break;
                   }
 
                 // Lock texture while we're writing to it.
                 SDL_LockTexture
-                        ( texture, 0
-                        , &surface->pixels
-                        , &surface->pitch);
+                        ( state_texture, 0
+                        , &state_surface->pixels
+                        , &state_surface->pitch);
 
-                gloss_render
+                double time
+                 = gloss_render
                         ( bufSizeX, bufSizeY
-                        , surface->pixels
-                        , surface->pitch);
+                        , state_surface->pixels
+                        , state_surface->pitch);
 
                 // Unlock texture now that we've finished writing.
-                SDL_UnlockTexture (texture);
+                SDL_UnlockTexture (state_texture);
+
+                // Write the frame creation time to the buffer.
+                char str[256];
+                snprintf(str, 256, "time %2.6f", time);
+
+                SDL_Color color = { 0xa0, 0xa0, 0xa0 };
+                SDL_Surface *surface_text
+                 = TTF_RenderUTF8_Blended
+                        ( state_font_DejaVuSansMono
+                        , str, color);
+                assert(surface_text != 0);
+
+                SDL_BlitSurface(surface_text, 0, state_surface, 0);
+                SDL_FreeSurface(surface_text);
 
                 // Copy the texture to the display.
-                SDL_RenderClear   (renderer);
-                SDL_RenderCopy    (renderer, texture, 0, 0);
-                SDL_RenderPresent (renderer);
+                SDL_RenderClear   (state_renderer);
+                SDL_RenderCopy    (state_renderer, state_texture, 0, 0);
+                SDL_RenderPresent (state_renderer);
         }
-
         quit:
 
-        SDL_DestroyRenderer(renderer);
+        SDL_DestroyRenderer(state_renderer);
         SDL_Quit();
         return 0;
 }

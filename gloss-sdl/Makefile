@@ -1,7 +1,7 @@
 MAKEFLAGS=--warn-undefined-variables
 
-SDL2_CFLAGS	= `sdl2-config --cflags`
-SDL2_LIBS	= `sdl2-config --libs`
+SDL2_CFLAGS	= -I/usr/local/include/SDL2 -D_THREAD_SAFE
+SDL2_LIBS	= -L/usr/local/lib -lSDL2 -lSDL2_ttf
 
 sources_test_c	= $(shell find src -name "*.c")
 objects_test_c	= $(patsubst %.c,%.o,${sources_test_c})

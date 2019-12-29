@@ -1,29 +1,40 @@
 #include "main.h"
 
 void    gloss_init
-        ( bool    bDebug
-        , size_t  winSizeX, size_t winSizeY
-        , size_t* outBufSizeX, size_t* outBufSizeY
-        , SDL_Window**   outWindow
-        , SDL_Renderer** outRenderer
-        , SDL_Texture**  outTexture
-        , SDL_Surface**  outSurface)
+        ( size_t  winSizeX, size_t winSizeY
+        , size_t* outBufSizeX, size_t* outBufSizeY)
 {
         // ------------------------------------------------
-        // Dump the SDL version for debugging.
-        SDL_version     version;
-        SDL_GetVersion  (&version);
-        if (bDebug)
-        { printf( "SDL version = %d.%d.%d\n"
-                , version.major, version.minor, version.patch);
+        // Dump the SDL versions for debugging.
+        if (debug_init)
+        { SDL_version     version;
+          SDL_GetVersion  (&version);
+          printf ( "SDL version     = %d.%d.%d\n"
+                 , version.major, version.minor, version.patch);
+
+          SDL_TTF_VERSION(&version);
+          printf ( "SDL ttf version = %d.%d.%d\n"
+                 , version.major, version.minor, version.patch);
         }
+
+        // ------------------------------------------------
+        // Initialize SDL_ttf library and load our font.
+        assert(TTF_Init() == 0);
+
+        state_font_DejaVuSans
+         = TTF_OpenFont ("fonts/DejaVuSans.ttf", 24);
+        assert (state_font_DejaVuSans != 0);
+
+        state_font_DejaVuSansMono
+         = TTF_OpenFont ("fonts/DejaVuSansMono.ttf", 24);
+        assert (state_font_DejaVuSansMono != 0);
 
         // ------------------------------------------------
         // Initialize the video subsystem.
         assert (SDL_Init (SDL_INIT_VIDEO) == 0);
         assert (SDL_InitSubSystem (SDL_INIT_VIDEO) == 0);
 
-        if (bDebug)
+        if (debug_init)
         { int numDisplays = SDL_GetNumVideoDisplays();
           for (int iDisplay = 0; iDisplay < numDisplays; iDisplay++)
           {       float ddpi, hdpi, vdpi;
@@ -56,41 +67,49 @@ void    gloss_init
         //   high DPI display to have a larger drawable size than the
         //   abstract "window size" that we have specified in screen
         //   coordinates.
-        SDL_Window* window
+        state_window
          = SDL_CreateWindow
                 ( "Test"                        // window title.
                 , SDL_WINDOWPOS_UNDEFINED       // x position of window.
                 , SDL_WINDOWPOS_UNDEFINED       // y position of window.
                 , winSizeX, winSizeY            // window size.
                 , SDL_WINDOW_ALLOW_HIGHDPI);
-        assert (window != 0);
+        assert (state_window != 0);
 
         // Check reported size of window.
         //   This should match winSizeX/Y, even for high DPI windows.
         int     winSizeReportedX = 0;
         int     winSizeReportedY = 0;
-        SDL_GetWindowSize (window, &winSizeReportedX, &winSizeReportedY);
-        if (bDebug)
+        SDL_GetWindowSize
+                ( state_window
+                , &winSizeReportedX, &winSizeReportedY);
+
+        if (debug_init)
         { printf ("window size\n");
           printf ("  reported = { .w = %d, .h = %d }\n", winSizeReportedX, winSizeReportedY);
         }
+
         assert (  winSizeX == winSizeReportedX
                && winSizeY == winSizeReportedY);
 
-        // Check drawable size of window.
+        // ------------------------------------------------
+        // Check drawable size of the main window window.
         //   If we have a high DPI window then this will be larger than the
         //   winSizeX/Y that we asked for when we created it.
         int     winSizeDrawableX = 0;
         int     winSizeDrawableY = 0;
-        SDL_GL_GetDrawableSize(window, &winSizeDrawableX, &winSizeDrawableY);
-        if (bDebug)
+        SDL_GL_GetDrawableSize
+                ( state_window
+                , &winSizeDrawableX, &winSizeDrawableY);
+
+        if (debug_init)
         { printf( "  drawable = { .w = %d, .h = %d }\n"
                 , winSizeDrawableX, winSizeDrawableY);
         }
 
         // ------------------------------------------------
         // List the available renderers.
-        if (bDebug)
+        if (debug_init)
         { int     numRenderDrivers = SDL_GetNumRenderDrivers();
           for (int i = 0; i < numRenderDrivers; i++)
           {     SDL_RendererInfo info;
@@ -101,13 +120,14 @@ void    gloss_init
         }
 
         // Create a new renderer context for the window.
-        SDL_Renderer* renderer
+        state_renderer
          = SDL_CreateRenderer
-                ( window                        // attach to this window.
+                ( state_window                  // attach to this window.
                 , -1                            // use first available driver.
                 , SDL_RENDERER_ACCELERATED);
-        assert (renderer != 0);
+        assert (state_renderer != 0);
 
+        // ------------------------------------------------
         // Check output size of the renderer.
         //   For high DPI windows this will be either the original winSizeX/Y
         //   or the larger winSizeDrawableX/Y depending on the renderer.
@@ -115,8 +135,10 @@ void    gloss_init
         int     outSizeReportedX = 0;
         int     outSizeReportedY = 0;
         SDL_GetRendererOutputSize
-                (renderer, &outSizeReportedX, &outSizeReportedY);
-        if (bDebug)
+                ( state_renderer
+                , &outSizeReportedX, &outSizeReportedY);
+
+        if (debug_init)
         { printf("output size\n");
           printf("  reported = %d, %d\n"
                 , outSizeReportedX, outSizeReportedY);
@@ -135,16 +157,17 @@ void    gloss_init
         //   The pixel format is set to ARGB8888 as in the current version
         //   of SDL that seems to be the native format for every display mode
         //   (obtained with SDL_GetDisplayMode above).
-        SDL_Texture *texture
+        state_texture
          = SDL_CreateTexture
-                ( renderer
+                ( state_renderer
                 , SDL_PIXELFORMAT_ARGB8888
                 , SDL_TEXTUREACCESS_STREAMING
                 , outSizeReportedX, outSizeReportedY);
-        assert (texture != 0);
+        assert (state_texture != 0);
 
+        // ------------------------------------------------
         // Make a RGB surface that we can write into.
-        SDL_Surface *surface
+        state_surface
          = SDL_CreateRGBSurface
                 ( 0             // flags are unused and set to 0.
                 , outSizeReportedX, outSizeReportedY
@@ -153,12 +176,8 @@ void    gloss_init
                 , 0x0000ff00    // blue mask
                 , 0x000000ff    // green mask
                 , 0xff000000);  // alpha mask
-        assert (surface != 0);
+        assert (state_surface != 0);
 
         *outBufSizeX    = outSizeReportedX;
         *outBufSizeY    = outSizeReportedY;
-        *outWindow      = window;
-        *outRenderer    = renderer;
-        *outTexture     = texture;
-        *outSurface     = surface;
 }
