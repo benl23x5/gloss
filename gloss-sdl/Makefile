@@ -15,6 +15,6 @@ clean:
 	rm -f bin/test
 
 %.o : %.c
-	clang -Wall -Werror -std=c99 -O2 -g ${SDL2_CFLAGS} -c $< -o $@
+	clang -Wall -Werror -std=c99 -O2 ${SDL2_CFLAGS} -c $< -o $@
 
 

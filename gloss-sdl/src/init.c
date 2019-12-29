@@ -1,10 +1,8 @@
-
-#include <assert.h>
-#include <SDL2/SDL.h>
-
+#include "main.h"
 
 void    gloss_init
-        ( size_t  winSizeX, size_t winSizeY
+        ( bool    bDebug
+        , size_t  winSizeX, size_t winSizeY
         , size_t* outBufSizeX, size_t* outBufSizeY
         , SDL_Window**   outWindow
         , SDL_Renderer** outRenderer
@@ -15,28 +13,28 @@ void    gloss_init
         // Dump the SDL version for debugging.
         SDL_version     version;
         SDL_GetVersion  (&version);
-        printf  ( "SDL version = %d.%d.%d\n"
+        if (bDebug)
+        { printf( "SDL version = %d.%d.%d\n"
                 , version.major, version.minor, version.patch);
-
+        }
 
         // ------------------------------------------------
         // Initialize the video subsystem.
         assert (SDL_Init (SDL_INIT_VIDEO) == 0);
         assert (SDL_InitSubSystem (SDL_INIT_VIDEO) == 0);
 
-        int numDisplays = SDL_GetNumVideoDisplays();
-        for (int iDisplay = 0; iDisplay < numDisplays; iDisplay++)
-        {       float ddpi, hdpi, vdpi;
+        if (bDebug)
+        { int numDisplays = SDL_GetNumVideoDisplays();
+          for (int iDisplay = 0; iDisplay < numDisplays; iDisplay++)
+          {       float ddpi, hdpi, vdpi;
                 SDL_Rect bounds;
 
                 assert  (SDL_GetDisplayDPI    (iDisplay, &ddpi, &hdpi, &vdpi) == 0);
                 assert  (SDL_GetDisplayBounds (iDisplay, &bounds) == 0);
 
                 printf  ("display %d\n", iDisplay);
-
                 printf  ("  dpi      = { .ddpi = %3.2f, .hdpi = %3.2f, .vdpi = %3.2f }\n"
                         , ddpi, hdpi, vdpi);
-
                 printf  ("  bounds   = { .x = %d, .y = %d, .w = %d, .h = %d }\n"
                         , bounds.x, bounds.y, bounds.w, bounds.h);
 
@@ -49,8 +47,8 @@ void    gloss_init
                                 , mode.w, mode.h
                                 , SDL_GetPixelFormatName(mode.format));
                 }
+          }
         }
-
 
         // ------------------------------------------------
         // Create the main window.
@@ -72,8 +70,10 @@ void    gloss_init
         int     winSizeReportedX = 0;
         int     winSizeReportedY = 0;
         SDL_GetWindowSize (window, &winSizeReportedX, &winSizeReportedY);
-        printf ("window size\n");
-        printf ("  reported = { .w = %d, .h = %d }\n", winSizeReportedX, winSizeReportedY);
+        if (bDebug)
+        { printf ("window size\n");
+          printf ("  reported = { .w = %d, .h = %d }\n", winSizeReportedX, winSizeReportedY);
+        }
         assert (  winSizeX == winSizeReportedX
                && winSizeY == winSizeReportedY);
 
@@ -83,18 +83,21 @@ void    gloss_init
         int     winSizeDrawableX = 0;
         int     winSizeDrawableY = 0;
         SDL_GL_GetDrawableSize(window, &winSizeDrawableX, &winSizeDrawableY);
-        printf  ( "  drawable = { .w = %d, .h = %d }\n"
+        if (bDebug)
+        { printf( "  drawable = { .w = %d, .h = %d }\n"
                 , winSizeDrawableX, winSizeDrawableY);
-
+        }
 
         // ------------------------------------------------
         // List the available renderers.
-        int     numRenderDrivers = SDL_GetNumRenderDrivers();
-        for (int i = 0; i < numRenderDrivers; i++)
-        {       SDL_RendererInfo info;
+        if (bDebug)
+        { int     numRenderDrivers = SDL_GetNumRenderDrivers();
+          for (int i = 0; i < numRenderDrivers; i++)
+          {     SDL_RendererInfo info;
                 assert  (SDL_GetRenderDriverInfo(i, &info) == 0);
                 printf  ( "renderer %d = \"%s\"\n"
                         , i, info.name);
+          }
         }
 
         // Create a new renderer context for the window.
@@ -113,10 +116,11 @@ void    gloss_init
         int     outSizeReportedY = 0;
         SDL_GetRendererOutputSize
                 (renderer, &outSizeReportedX, &outSizeReportedY);
-        printf  ("output size\n");
-        printf  ("  reported = %d, %d\n"
+        if (bDebug)
+        { printf("output size\n");
+          printf("  reported = %d, %d\n"
                 , outSizeReportedX, outSizeReportedY);
-
+        }
 
         // ------------------------------------------------
         // Make a new texture buffer to back the window.
