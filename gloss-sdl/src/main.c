@@ -16,8 +16,8 @@ TTF_Font*       state_font_DejaVuSansMono       = 0;
 
 int main(int argc, char** argv)
 {
-        size_t  winSizeX        = 600;
-        size_t  winSizeY        = 600;
+        size_t  winSizeX        = 500;
+        size_t  winSizeY        = 500;
 
         // ------------------------------------------------
         // Initialize SDL and open the main window.
