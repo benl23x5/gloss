@@ -1,11 +1,11 @@
 Name:                gloss-examples
-Version:             1.13.0.2
+Version:             1.13.0.3
 License:             MIT
 License-file:        LICENSE
 Author:              Ben Lippmeier
 Maintainer:          benl@ouroborus.net
 Build-Type:          Simple
-Cabal-Version:       >=1.6
+Cabal-Version:       >=1.10
 Stability:           experimental
 Category:            Graphics
 Homepage:            http://gloss.ouroborus.net
@@ -36,10 +36,13 @@ Executable gloss-bitmap
   Main-is:        Main.hs
   hs-source-dirs: picture/Bitmap
   Build-depends:
-          base                          >= 4.8 && < 4.13
+          base                          >= 4.8 && < 5
         , bytestring                    == 0.10.*
         , bmp                           == 1.2.*
         , gloss                         == 1.13.*
+
+  Default-Language:
+        Haskell2010
 
   ghc-options:
         -O2
@@ -57,12 +60,15 @@ Executable gloss-boids
         KDTree2d
 
   Build-depends:
-          base                          >= 4.8 && < 4.13
+          base                          >= 4.8 && < 5
+        , random                        == 1.1.*
         , gloss                         == 1.13.*
+
+  Default-Language:
+        Haskell2010
 
   ghc-options:
         -O2
-        -Wall
         -threaded
         -rtsopts
 
@@ -72,8 +78,11 @@ Executable gloss-clock
   hs-source-dirs: picture/Clock
 
   Build-depends:
-          base                          >= 4.8 && < 4.13
+          base                          >= 4.8 && < 5
         , gloss                         == 1.13.*
+
+  Default-Language:
+        Haskell2010
 
   ghc-options:
         -O2
@@ -87,9 +96,12 @@ Executable gloss-color
   hs-source-dirs: picture/Color
 
   Build-depends:
-          base                          >= 4.8 && < 4.13
+          base                          >= 4.8 && < 5
         , gloss                         == 1.13.*
         , vector                        >= 0.11 && < 0.13
+
+  Default-Language:
+        Haskell2010
 
   ghc-options:
         -O2
@@ -107,9 +119,13 @@ Executable gloss-conway
         World
 
   Build-depends:
-          base                          >= 4.8 && < 4.13
+          base                          >= 4.8 && < 5
+        , random                        == 1.1.*
         , gloss                         == 1.13.*
         , vector                        >= 0.11 && < 0.13
+
+  Default-Language:
+        Haskell2010
 
   ghc-options:
         -O2
@@ -123,8 +139,11 @@ Executable gloss-draw
   hs-source-dirs: picture/Draw
 
   Build-depends:
-          base                          >= 4.8 && < 4.13
+          base                          >= 4.8 && < 5
         , gloss                         == 1.13.*
+
+  Default-Language:
+        Haskell2010
 
   ghc-options:
         -O2
@@ -138,8 +157,11 @@ Executable gloss-easy
   hs-source-dirs: picture/Easy
 
   Build-depends:
-          base                          >= 4.8 && < 4.13
+          base                          >= 4.8 && < 5
         , gloss                         == 1.13.*
+
+  Default-Language:
+        Haskell2010
 
   ghc-options:
         -O2
@@ -158,9 +180,12 @@ Executable gloss-eden
         World
 
   Build-depends:
-          base                          >= 4.8 && < 4.13
+          base                          >= 4.8 && < 5
         , gloss                         == 1.13.*
         , random                        == 1.1.*
+
+  Default-Language:
+        Haskell2010
 
   ghc-options:
         -O2
@@ -174,8 +199,11 @@ Executable gloss-flake
   hs-source-dirs: picture/Flake
 
   Build-depends:
-          base                          >= 4.8 && < 4.13
+          base                          >= 4.8 && < 5
         , gloss                         == 1.13.*
+
+  Default-Language:
+        Haskell2010
 
   ghc-options:
         -O2
@@ -189,8 +217,11 @@ Executable gloss-gameevent
   hs-source-dirs: picture/GameEvent
 
   Build-depends:
-          base                          >= 4.8 && < 4.13
+          base                          >= 4.8 && < 5
         , gloss                         == 1.13.*
+
+  Default-Language:
+        Haskell2010
 
   ghc-options:
         -O2
@@ -204,8 +235,11 @@ Executable gloss-hello
   hs-source-dirs: picture/Hello
 
   Build-depends:
-          base                          >= 4.8 && < 4.13
+          base                          >= 4.8 && < 5
         , gloss                         == 1.13.*
+
+  Default-Language:
+        Haskell2010
 
   ghc-options:
         -O2
@@ -224,9 +258,12 @@ Executable gloss-lifespan
         World
 
   Build-depends:
-          base                          >= 4.8 && < 4.13
+          base                          >= 4.8 && < 5
         , gloss                         == 1.13.*
         , random                        == 1.1.*
+
+  Default-Language:
+        Haskell2010
 
   ghc-options:
         -O2
@@ -240,8 +277,11 @@ Executable gloss-machina
   hs-source-dirs: picture/Machina
 
   Build-depends:
-          base                          >= 4.8 && < 4.13
+          base                          >= 4.8 && < 5
         , gloss                         == 1.13.*
+
+  Default-Language:
+        Haskell2010
 
   ghc-options:
         -O2
@@ -261,13 +301,15 @@ Executable gloss-occlusion
         Data
 
   Build-depends:
-          base                          >= 4.8 && < 4.13
+          base                          >= 4.8 && < 5
         , gloss                         == 1.13.*
         , gloss-algorithms              == 1.13.*
 
+  Default-Language:
+        Haskell2010
+
   ghc-options:
         -O2
-        -Wall
         -threaded
         -rtsopts
 
@@ -286,10 +328,13 @@ Executable gloss-styrene
         World
 
   Build-depends:
-          base                          >= 4.8 && < 4.13
+          base                          >= 4.8 && < 5
         , containers                    >= 0.5 && < 0.7
         , ghc-prim
         , gloss                         == 1.13.*
+
+  Default-Language:
+        Haskell2010
 
   ghc-options:
         -O2
@@ -303,8 +348,11 @@ Executable gloss-tree
   hs-source-dirs: picture/Tree
 
   Build-depends:
-          base                          >= 4.8 && < 4.13
+          base                          >= 4.8 && < 5
         , gloss                         == 1.13.*
+
+  Default-Language:
+        Haskell2010
 
   ghc-options:
         -O2
@@ -326,9 +374,12 @@ Executable gloss-visibility
         World
 
   Build-depends:
-          base                          >= 4.8 && < 4.13
+          base                          >= 4.8 && < 5
         , gloss                         == 1.13.*
         , vector                        >= 0.11 && < 0.13
+
+  Default-Language:
+        Haskell2010
 
   ghc-options:
         -O2
@@ -342,8 +393,11 @@ Executable gloss-zen
   hs-source-dirs: picture/Zen
 
   Build-depends:
-          base                          >= 4.8 && < 4.13
+          base                          >= 4.8 && < 5
         , gloss                         == 1.13.*
+
+  Default-Language:
+        Haskell2010
 
   ghc-options:
         -O2
@@ -357,9 +411,12 @@ Executable gloss-crystal
   hs-source-dirs: raster/Crystal
 
   Build-depends:
-          base                          >= 4.8 && < 4.13
+          base                          >= 4.8 && < 5
         , gloss                         == 1.13.*
         , gloss-raster                  == 1.13.*
+
+  Default-Language:
+        Haskell2010
 
   ghc-options:
         -Wall
@@ -391,11 +448,14 @@ Executable gloss-ray
         World
 
   Build-depends:
-          base                          >= 4.8 && < 4.13
+          base                          >= 4.8 && < 5
         , repa                          == 3.4.*
         , repa-io                       == 3.4.*
         , gloss                         == 1.13.*
         , gloss-raster                  == 1.13.*
+
+  Default-Language:
+        Haskell2010
 
   ghc-options:
         -Wall
@@ -420,7 +480,7 @@ Executable gloss-pulse
   hs-source-dirs: raster/Pulse
 
   Build-depends:
-          base                          >= 4.8 && < 4.13
+          base                          >= 4.8 && < 5
         , gloss                         == 1.13.*
         , gloss-raster                  == 1.13.*
 
@@ -436,6 +496,9 @@ Executable gloss-pulse
         -funfolding-use-threshold1000
         -funfolding-keeness-factor1000
 
+  Default-Language:
+        Haskell2010
+
   if flag(llvm)
     ghc-options:
         -fllvm
@@ -447,11 +510,14 @@ Executable gloss-wave
   hs-source-dirs: raster/Wave
 
   Build-depends:
-          base                          >= 4.8 && < 4.13
+          base                          >= 4.8 && < 5
         , ghc-prim
         , gloss                         == 1.13.*
         , gloss-raster                  == 1.13.*
         , vector                        >= 0.11 && < 0.13
+
+  Default-Language:
+        Haskell2010
 
   ghc-options:
         -Wall
@@ -509,10 +575,14 @@ Executable gloss-snow
   hs-source-dirs: raster/Snow
 
   Build-depends:
-          base                          >= 4.8 && < 4.13
-        , gloss                         == 1.13.*
+          base                          >= 4.8 && < 5
+        , gloss-raster                  == 1.13.*
+        , random                        == 1.1.*
         , repa                          == 3.4.*
         , repa-algorithms               == 3.4.*
+
+  Default-Language:
+        Haskell2010
 
   ghc-options:
         -Wall
@@ -540,9 +610,15 @@ Executable gloss-mandel
         Solver
 
   Build-depends:
-          base                          >= 4.8 && < 4.13
+          base                          >= 4.8 && < 5
+        , gloss-raster                  == 1.13.*
+        , repa-algorithms               == 3.4.*
+        , repa-io                       == 3.4.*
         , gloss                         == 1.13.*
         , repa                          == 3.4.*
+
+  Default-Language:
+        Haskell2010
 
   ghc-options:
         -Wall
@@ -567,9 +643,13 @@ Executable gloss-graph
   hs-source-dirs: picture/Graph
 
   Build-depends:
-          base                          >= 4.8 && < 4.13
+          base                          >= 4.8 && < 5
         , containers                    >= 0.5 && < 0.7
+        , random                        == 1.1.*
         , gloss                         == 1.13.*
+
+  Default-Language:
+        Haskell2010
 
   ghc-options:
         -O2
@@ -583,9 +663,13 @@ Executable gloss-gravity
   hs-source-dirs: picture/Gravity
 
   Build-depends:
-          base                          >= 4.8 && < 4.13
+          base                          >= 4.8 && < 5
         , containers                    >= 0.5 && < 0.7
+        , random                        == 1.1.*
         , gloss                         == 1.13.*
+
+  Default-Language:
+        Haskell2010
 
   ghc-options:
         -O2

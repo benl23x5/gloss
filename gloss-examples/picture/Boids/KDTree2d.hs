@@ -38,7 +38,7 @@ kdtreeToList (Node l _ x r)     = [x] ++ kdtreeToList l ++ kdtreeToList r
 -- | Apply a worker function to all elements of a KDTree.
 mapKDTree :: KDTreeNode a -> (a -> b) -> [b]
 mapKDTree Empty _               = []
-mapKDTree (Node l p n r) f      = f n : (mapKDTree l f ++ mapKDTree r f)
+mapKDTree (Node l _p n r) f     = f n : (mapKDTree l f ++ mapKDTree r f)
 
 
 kdtAddWithDepth :: KDTreeNode a -> Vec2 -> a -> Int -> KDTreeNode a
@@ -58,6 +58,8 @@ kdtAddPoint :: KDTreeNode a -> Vec2 -> a -> KDTreeNode a
 kdtAddPoint t p d
         = kdtAddWithDepth t p d 0
 
+
+kdtInBounds :: Vec2 -> Vec2 -> Vec2 -> Bool
 kdtInBounds p bMin bMax
         = vecLessThan p bMax && vecGreaterThan p bMin
 

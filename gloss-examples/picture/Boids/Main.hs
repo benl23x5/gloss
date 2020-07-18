@@ -10,7 +10,6 @@ import KDTree2d
 import Vec2
 import System.Random
 import System.IO.Unsafe
-import Debug.Trace
 import Graphics.Gloss
 import Graphics.Gloss.Interface.Pure.Simulate
 

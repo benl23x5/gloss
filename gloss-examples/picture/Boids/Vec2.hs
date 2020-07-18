@@ -45,7 +45,7 @@ vecDimSelect :: Vec2 -> Int -> Double
 vecDimSelect (Vec2 a b) n
  = case rem n 2 of
       0 -> a
-      1 -> b
+      _ -> b
 
 
 vecLessThan :: Vec2 -> Vec2 -> Bool

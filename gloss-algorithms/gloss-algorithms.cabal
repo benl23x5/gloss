@@ -1,11 +1,11 @@
 Name:                gloss-algorithms
-Version:             1.13.0.1
+Version:             1.13.0.2
 License:             MIT
 License-file:        LICENSE
 Author:              Ben Lippmeier
 Maintainer:          benl@ouroborus.net
 Build-Type:          Simple
-Cabal-Version:       >=1.6
+Cabal-Version:       >=1.10
 Stability:           stable
 Category:            Graphics
 Homepage:            http://gloss.ouroborus.net
@@ -27,10 +27,13 @@ source-repository this
 
 Library
   Build-Depends:
-          base                          >= 4.8 && < 4.13
+          base                          >= 4.8 && < 5
         , containers                    >= 0.5 && < 0.7
         , ghc-prim
         , gloss                         == 1.13.*
+
+  Default-Language:
+        Haskell2010
 
   ghc-options:
         -O2

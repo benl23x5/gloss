@@ -6,7 +6,6 @@ module Main where
 
 import Graphics.Gloss
 import Graphics.Gloss.Interface.Pure.Game
-import Data.Maybe (maybe)
 
 
 main :: IO ()

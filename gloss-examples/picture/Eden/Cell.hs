@@ -32,7 +32,5 @@ overlap (Cell (x1,y1) r1 _) (Cell (x2,y2) r2 _)
 render :: Cell -> Picture
 render (Cell (x,y) r gen)
  = let  z       = fromIntegral gen * 0.1
-        color   = makeColor 0.0 z 0.5 1.0
-   in   Color color
-                $ Translate x y
-                $ Circle r
+        color'   = makeColor 0.0 z 0.5 1.0
+   in   Color color' $ Translate x y  $ Circle r
