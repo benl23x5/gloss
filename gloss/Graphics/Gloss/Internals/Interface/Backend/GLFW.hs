@@ -133,7 +133,6 @@ exitGLFW ref
         GLUT.exit
 #endif
         win <- windowHandle ref
-        GLFW.destroyWindow win
         GLFW.setWindowShouldClose win True
 
 
@@ -514,37 +513,50 @@ callbackIdle stateRef callbacks
 
 
 -- Main Loop ------------------------------------------------------------------
-runMainLoopGLFW
-        :: IORef GLFWState
-        -> IO ()
 
-runMainLoopGLFW stateRef
- = X.catch go exit
- where
-  exit :: X.SomeException -> IO ()
-  exit e = print e >> exitGLFW stateRef
-
-  go   :: IO ()
-  go
-   =
-     do win <- windowHandle stateRef
-        windowShouldClose <- GLFW.windowShouldClose win
-        unless windowShouldClose
-         $ do  GLFW.pollEvents
-               dirty <- fmap dirtyScreen $ readIORef stateRef
-
-               when dirty
-                $ do   s <- readIORef stateRef
-                       display s
-                       GLFW.swapBuffers win
-
-               modifyIORef' stateRef $ \s -> s
-                        { dirtyScreen = False }
-
-               (readIORef stateRef) >>= (\s -> idle s)
-               threadDelay 1000
-               runMainLoopGLFW stateRef
+runMainLoopGLFW :: IORef GLFWState -> IO ()
+runMainLoopGLFW stateRef = do
+        X.catch go handleException
+        GLFW.destroyWindow =<< windowHandle stateRef
         GLFW.terminate
+
+    where
+        handleException :: X.SomeException -> IO ()
+        handleException = print
+
+        clearDirtyFlag :: IO ()
+        clearDirtyFlag = modifyIORef'
+                                stateRef
+                                (\state -> state { dirtyScreen = False })
+
+        whenDirty :: IO () -> IO ()
+        whenDirty action = do
+                dirty <- dirtyScreen <$> readIORef stateRef
+                when dirty $ do
+                        action
+                        GLFW.swapBuffers =<< windowHandle stateRef
+                        clearDirtyFlag
+
+        display' :: IO ()
+        display' = readIORef stateRef >>= display
+
+        idle' :: IO ()
+        idle' = readIORef stateRef >>= idle
+
+        windowShouldClose :: IO Bool
+        windowShouldClose = windowHandle stateRef >>= GLFW.windowShouldClose
+
+        unlessM :: Monad m => m Bool -> m () -> m ()
+        unlessM testAction action = do
+                sentinel <- testAction
+                unless sentinel action
+
+        go :: IO ()
+        go = do
+                whenDirty display'
+                idle'
+                GLFW.pollEvents
+                unlessM windowShouldClose go
 
 
 -- Redisplay ------------------------------------------------------------------
