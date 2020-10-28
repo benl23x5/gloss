@@ -529,19 +529,14 @@ runMainLoopGLFW stateRef = do
                                 stateRef
                                 (\state -> state { dirtyScreen = False })
 
-        whenDirty :: IO () -> IO ()
-        whenDirty action = do
-                dirty <- dirtyScreen <$> readIORef stateRef
-                when dirty $ do
-                        action
-                        GLFW.swapBuffers =<< windowHandle stateRef
-                        clearDirtyFlag
-
         display' :: IO ()
         display' = readIORef stateRef >>= display
 
         idle' :: IO ()
         idle' = readIORef stateRef >>= idle
+
+        swapBuffers' :: IO ()
+        swapBuffers' = windowHandle stateRef >>= GLFW.swapBuffers
 
         windowShouldClose :: IO Bool
         windowShouldClose = windowHandle stateRef >>= GLFW.windowShouldClose
@@ -553,8 +548,18 @@ runMainLoopGLFW stateRef = do
 
         go :: IO ()
         go = do
-                whenDirty display'
+                -- Perform drawing, clear the dirty flag, do idle processing
+                display'
+                clearDirtyFlag
                 idle'
+
+                -- Swap buffers. This swaps the GL buffers and will block
+                -- until the next v-sync. In GLFW, this effectively pegs the
+                -- maximum frame rate to 60fps, but will also stop the
+                -- application from consuming 100% CPU.
+                swapBuffers'
+
+                -- Poll for GLFW events; quit if necessary.
                 GLFW.pollEvents
                 unlessM windowShouldClose go
 
