@@ -64,6 +64,9 @@ class Backend a where
         -- | Function that returns (width,height) of the window in pixels.
         getWindowDimensions        :: IORef a -> IO (Int,Int)
 
+        -- | Function that returns (width,height) of a fullscreen window in pixels.
+        getScreenSize              :: IORef a -> IO (Int,Int)
+
         -- | Function that reports the time elapsed since the application started.
         --   (in seconds)
         elapsedTime                :: IORef a -> IO Double

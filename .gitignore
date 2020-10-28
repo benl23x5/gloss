@@ -2,6 +2,7 @@
 .stack-work
 /stack.yaml
 dist
+dist-newstyle
 *.o
 *.hi
 Main

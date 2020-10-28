@@ -1,6 +1,7 @@
-
 -- | Display "Hello World" in a window.
 --
+module Main where
+
 import Graphics.Gloss
 
 main :: IO ()
