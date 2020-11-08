@@ -1,7 +1,8 @@
-
 -- | Tree Fractal.
 --      Based on ANUPlot code by Clem Baker-Finch.
 --
+module Main where
+
 import Graphics.Gloss
 
 main :: IO ()

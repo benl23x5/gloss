@@ -35,11 +35,6 @@ Flag GLFW
   Description:  Enable the GLFW backend
   Default:      False
 
-Flag ExplicitBackend
-  Description:  Expose versions of 'display' and friends that allow
-                you to choose what window manager backend to use.
-  Default:      False
-
 Library
   Build-Depends:
           base                          >= 4.8 && < 5
@@ -108,11 +103,13 @@ Library
   If flag(GLUT)
     CPP-Options: -DWITHGLUT
     Other-modules:
-        Graphics.Gloss.Internals.Interface.Backend.GLUT
+      Graphics.Gloss.Internals.Interface.Backend.GLUT
 
+  -- NOTE: GLUT is still required for text rendering, and must be initialized
+  --       on Linux platforms. Thus, the GLFW backend still requires GLUT.
   If flag(GLFW)
     Build-Depends:
-        GLFW-b >= 1.4.1.0 && < 2
+      GLFW-b >= 1.4.1.0 && < 2
     CPP-Options: -DWITHGLFW
     Other-modules:
         Graphics.Gloss.Internals.Interface.Backend.GLFW

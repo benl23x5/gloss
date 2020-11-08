@@ -1,9 +1,9 @@
 module Graphics.Gloss.Interface.Environment where
-import Graphics.Gloss.Internals.Interface.Backend.GLUT
-import qualified Graphics.UI.GLUT as GLUT
-import qualified Graphics.Rendering.OpenGL as GL
-import Data.IORef
 
+import Data.IORef (newIORef)
+
+import qualified Graphics.Gloss.Internals.Interface.Backend.Types as Backend.Types
+import Graphics.Gloss.Internals.Interface.Backend (defaultBackendState)
 
 -- | Get the size of the screen, in pixels.
 --
@@ -11,9 +11,8 @@ import Data.IORef
 --   fullscreen mode is enabled.
 --
 getScreenSize :: IO (Int, Int)
-getScreenSize
- = do   backendStateRef         <- newIORef glutStateInit
-        initializeGLUT backendStateRef False
-        GL.Size width height    <- GLUT.get GLUT.screenSize
-        return (fromIntegral width, fromIntegral height)
+getScreenSize = do
+       backendStateRef <- newIORef defaultBackendState
+       Backend.Types.initializeBackend backendStateRef False
+       Backend.Types.getScreenSize backendStateRef
 

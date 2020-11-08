@@ -1,4 +1,3 @@
-
 -- | Visibility on the 2D plane.
 --   Uses an instance of Warnocks algorithm.
 --   TODO: animate the line segments, make them spin and move around so we can see
@@ -10,6 +9,7 @@
 --  TODO:  To start with just do brute force visibility by dividing field into cells
 --         and doing vis based on center point of cell.
 --
+module Main where
 
 import Interface
 import Draw

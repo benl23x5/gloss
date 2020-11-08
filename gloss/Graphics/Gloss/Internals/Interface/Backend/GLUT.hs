@@ -78,6 +78,10 @@ instance Backend GLUTState where
          = do   GL.Size sizeX sizeY   <- get GLUT.windowSize
                 return (fromEnum sizeX,fromEnum sizeY)
 
+        getScreenSize _
+         = do   GL.Size width height  <- get GLUT.screenSize
+                return (fromIntegral width, fromIntegral height)
+
         elapsedTime _
          = do   t       <- get GLUT.elapsedTime
                 return $ (fromIntegral t) / 1000
