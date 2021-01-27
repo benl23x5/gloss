@@ -117,14 +117,14 @@ circleSolid r
         = thickCircle (r/2) r
 
 
--- | A solid arc, drawn counter-clockwise between two angles at the given radius.
+-- | A solid arc, drawn counter-clockwise between two angles (in degrees) at the given radius.
 arcSolid  :: Float -> Float -> Float -> Picture
 arcSolid a1 a2 r
         = thickArc a1 a2 (r/2) r
 
 
 -- | A wireframe sector of a circle.
---   An arc is draw counter-clockwise from the first to the second angle at
+--   An arc is draw counter-clockwise from the first to the second angle (in degrees) at
 --   the given radius. Lines are drawn from the origin to the ends of the arc.
 ---
 --   NOTE: We take the absolute value of the radius incase it's negative.
