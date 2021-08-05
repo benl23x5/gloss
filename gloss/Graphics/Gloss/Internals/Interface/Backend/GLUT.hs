@@ -54,6 +54,7 @@ instance Backend GLUTState where
         exitBackend                = (\_ -> System.exitWith System.ExitSuccess)
 
         openWindow                 = openWindowGLUT
+        setWindowTitle             = const (GLUT.windowTitle $=)
         dumpBackendState           = dumpStateGLUT
         installDisplayCallback     = installDisplayCallbackGLUT
 

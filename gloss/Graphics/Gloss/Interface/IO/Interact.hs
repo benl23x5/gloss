@@ -25,7 +25,7 @@ interactIO
         :: Display                      -- ^ Display mode.
         -> Color                        -- ^ Background color.
         -> world                        -- ^ Initial world state.
-        -> (world -> IO Picture)        -- ^ A function to produce the current picture.
+        -> (world -> IO (Picture, String))        -- ^ A function to produce the current picture.
         -> (Event -> world -> IO world) -- ^ A function to handle input events.
         -> (Controller -> IO ())        -- ^ Callback to take the display controller.
         -> IO ()
