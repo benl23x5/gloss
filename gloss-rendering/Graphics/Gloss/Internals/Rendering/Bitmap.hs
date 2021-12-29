@@ -35,7 +35,7 @@ data BitmapData
 
 -- | Description of how the bitmap is layed out in memory.
 --
---   * Prior version of Gloss assumed `BitmapFormat BottomToTop PxAGBR`
+--   * Prior version of Gloss assumed `BitmapFormat BottomToTop PxABGR`
 --
 data BitmapFormat
         = BitmapFormat
