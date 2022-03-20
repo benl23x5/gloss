@@ -28,8 +28,8 @@ source-repository this
 Library
   Build-Depends:
           base                          >= 4.8 && < 5
-        , containers                    >= 0.5 && < 0.7
         , ghc-prim
+        , containers                    >= 0.5 && < 0.7
         , gloss                         == 1.13.*
 
   Default-Language:

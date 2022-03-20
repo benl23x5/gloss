@@ -1,5 +1,5 @@
 name:           gloss-rendering
-version:        1.13.1.1
+version:        1.13.1.2
 license:        MIT
 license-file:   LICENSE
 author:         Elise Huard
@@ -39,7 +39,7 @@ library
   build-depends:
           base                          >= 4.8 && < 5
         , bmp                           == 1.2.*
-        , bytestring                    == 0.10.*
+        , bytestring                    == 0.11.*
         , containers                    >= 0.5 && < 0.7
         , GLUT                          == 2.7.*
         , OpenGL                        >= 2.12 && < 3.1

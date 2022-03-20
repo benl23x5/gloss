@@ -1,5 +1,5 @@
 Name:                gloss
-Version:             1.13.2.1
+Version:             1.13.2.2
 License:             MIT
 License-file:        LICENSE
 Author:              Ben Lippmeier
@@ -38,10 +38,10 @@ Flag GLFW
 Library
   Build-Depends:
           base                          >= 4.8 && < 5
-        , bmp                           == 1.2.*
-        , bytestring                    == 0.10.*
-        , containers                    >= 0.5 && < 0.7
         , ghc-prim
+        , bmp                           == 1.2.*
+        , bytestring                    == 0.11.*
+        , containers                    >= 0.5 && < 0.7
         , gloss-rendering               == 1.13.*
         , GLUT                          == 2.7.*
         , OpenGL                        >= 2.12 && < 3.1

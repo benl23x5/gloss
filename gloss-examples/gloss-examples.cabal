@@ -1,5 +1,5 @@
 Name:                gloss-examples
-Version:             1.13.0.3
+Version:             1.13.0.4
 License:             MIT
 License-file:        LICENSE
 Author:              Ben Lippmeier
@@ -37,7 +37,7 @@ Executable gloss-bitmap
   hs-source-dirs: picture/Bitmap
   Build-depends:
           base                          >= 4.8 && < 5
-        , bytestring                    == 0.10.*
+        , bytestring                    >= 0.10 && < 0.12
         , bmp                           == 1.2.*
         , gloss                         == 1.13.*
 
@@ -61,7 +61,7 @@ Executable gloss-boids
 
   Build-depends:
           base                          >= 4.8 && < 5
-        , random                        == 1.1.*
+        , random                        == 1.2.*
         , gloss                         == 1.13.*
 
   Default-Language:
@@ -120,7 +120,7 @@ Executable gloss-conway
 
   Build-depends:
           base                          >= 4.8 && < 5
-        , random                        == 1.1.*
+        , random                        == 1.2.*
         , gloss                         == 1.13.*
         , vector                        >= 0.11 && < 0.13
 
@@ -182,7 +182,7 @@ Executable gloss-eden
   Build-depends:
           base                          >= 4.8 && < 5
         , gloss                         == 1.13.*
-        , random                        == 1.1.*
+        , random                        == 1.2.*
 
   Default-Language:
         Haskell2010
@@ -260,7 +260,7 @@ Executable gloss-lifespan
   Build-depends:
           base                          >= 4.8 && < 5
         , gloss                         == 1.13.*
-        , random                        == 1.1.*
+        , random                        == 1.2.*
 
   Default-Language:
         Haskell2010
@@ -577,7 +577,7 @@ Executable gloss-snow
   Build-depends:
           base                          >= 4.8 && < 5
         , gloss-raster                  == 1.13.*
-        , random                        == 1.1.*
+        , random                        == 1.2.*
         , repa                          == 3.4.*
         , repa-algorithms               == 3.4.*
 
@@ -645,7 +645,7 @@ Executable gloss-graph
   Build-depends:
           base                          >= 4.8 && < 5
         , containers                    >= 0.5 && < 0.7
-        , random                        == 1.1.*
+        , random                        == 1.2.*
         , gloss                         == 1.13.*
 
   Default-Language:
@@ -665,7 +665,7 @@ Executable gloss-gravity
   Build-depends:
           base                          >= 4.8 && < 5
         , containers                    >= 0.5 && < 0.7
-        , random                        == 1.1.*
+        , random                        == 1.2.*
         , gloss                         == 1.13.*
 
   Default-Language:
