@@ -34,6 +34,8 @@ class Backend a where
         -- | Open a window with the given display mode.
         openWindow                 :: IORef a -> Display -> IO ()
 
+        setWindowTitle             :: IORef a -> String -> IO ()
+
         -- | Dump information about the backend to the terminal.
         dumpBackendState           :: IORef a -> IO ()
 

@@ -24,7 +24,7 @@ interactWithBackend
         -> Display                      -- ^ Display config.
         -> Color                        -- ^ Background color.
         -> world                        -- ^ The initial world.
-        -> (world -> IO Picture)        -- ^ A function to produce the current picture.
+        -> (world -> IO (Picture, String))        -- ^ A function to produce the current picture.
         -> (Event -> world -> IO world) -- ^ A function to handle input events.
         -> (Controller -> IO ())        -- ^ Eat the controller
         -> IO ()
@@ -43,7 +43,7 @@ interactWithBackend
 
         let displayFun backendRef = do
                 world      <- readIORef worldSR
-                picture    <- worldToPicture world
+                (picture, windowTitle)    <- worldToPicture world
 
                 renderS'      <- readIORef renderSR
                 viewState     <- readIORef viewSR
@@ -57,6 +57,8 @@ interactWithBackend
                         renderS'
                         (viewPortScale viewPort)
                         (applyViewPortToPicture viewPort picture)
+
+                setWindowTitle backendRef windowTitle
 
                 -- perform GC every frame to try and avoid long pauses
                 performGC
