@@ -344,7 +344,9 @@ callbackKeyboard
         -- -> GLFW.Key -> Bool
         -- -> IO ()
 
-callbackKeyboard stateRef callbacks _win key _scancode keystateglfw _modifiers
+callbackKeyboard _stateRef _callbacks _win _key _scancode GLFW.KeyState'Repeating _modifiers
+ = return ()
+callbackKeyboard stateRef  callbacks  _win key  _scancode keystateglfw            _modifiers
  = do   let keystate = keystateglfw == GLFW.KeyState'Pressed
         (modsSet, GLFWState mods pos _ _ _ _ _)
                 <- setModifiers stateRef key keystate
@@ -415,7 +417,9 @@ callbackMouseButton
         :: IORef GLFWState -> [Callback]
         -> GLFW.MouseButtonCallback -- = Window -> MouseButton -> MouseButtonState -> ModifierKeys -> IO ()
 
-callbackMouseButton stateRef callbacks _win key keystate _modifier
+callbackMouseButton _stateRef _callbacks _win _key GLFW.KeyState'Repeating _modifier
+ = return ()
+callbackMouseButton stateRef  callbacks  _win key  keystate                _modifier
  = do   (GLFWState mods pos _ _ _ _ _) <- readIORef stateRef
         let key'      = fromGLFW key
         let keystate' = if keystate == GLFW.MouseButtonState'Pressed then Down else Up
