@@ -1,0 +1,7 @@
+resolver: lts-16.31
+
+packages:
+- gloss
+- gloss-algorithms
+- gloss-examples
+- gloss-rendering

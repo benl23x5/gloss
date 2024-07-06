@@ -1,8 +1,8 @@
 .DS_Store
-.stack-work
-/stack.yaml
-dist
-dist-newstyle
+.stack-work/
+stack*.yaml.lock
+dist/
+dist-newstyle/
 *.o
 *.hi
 Main

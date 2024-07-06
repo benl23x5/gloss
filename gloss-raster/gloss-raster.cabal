@@ -26,15 +26,10 @@ source-repository head
   type:         git
   location:     https://github.com/benl23x5/gloss
 
-source-repository this
-  type:         git
-  tag:          v1.13.0.2
-  location:     https://github.com/benl23x5/gloss
-
 Library
   Build-Depends:
           base                          >= 4.8 && < 5
-        , containers                    >= 0.5 && < 0.7
+        , containers                    >= 0.5 && < 0.8
         , ghc-prim
         , gloss                         == 1.13.*
         , gloss-rendering               == 1.13.*

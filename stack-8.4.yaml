@@ -1,7 +1,7 @@
 # For more information, see: http://docs.haskellstack.org/en/stable/yaml_configuration.html
 # vim: nospell
 
-resolver: lts-12.11
+resolver: lts-12.26
 
 packages:
 - gloss

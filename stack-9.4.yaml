@@ -1,0 +1,10 @@
+resolver: lts-21.25
+
+packages:
+- gloss
+- gloss-algorithms
+- gloss-examples
+- gloss-rendering
+
+# 2024-07-06: Disable gloss-raster since repa is not maintained.
+# - gloss-raster

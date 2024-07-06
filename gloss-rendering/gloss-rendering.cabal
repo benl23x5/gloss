@@ -13,13 +13,22 @@ description:
         don't do any window management. If you want gloss to setup your window as
         well then use the plain @gloss@ package.
 
+tested-with:
+  GHC == 9.10.1
+  GHC == 9.8.2
+  GHC == 9.6.6
+  GHC == 9.4.8
+  GHC == 9.2.8
+  GHC == 9.0.2
+  GHC == 8.10.7
+  GHC == 8.8.4
+  GHC == 8.6.5
+  GHC == 8.4.4
+  GHC == 8.2.2
+  GHC == 8.0.2
+
 source-repository head
   type:         git
-  location:     https://github.com/benl23x5/gloss
-
-source-repository this
-  type:         git
-  tag:          v1.12.0.0
   location:     https://github.com/benl23x5/gloss
 
 library
@@ -39,8 +48,8 @@ library
   build-depends:
           base                          >= 4.8 && < 5
         , bmp                           == 1.2.*
-        , bytestring                    == 0.11.*
-        , containers                    >= 0.5 && < 0.7
+        , bytestring                    >= 0.10 && < 0.13
+        , containers                    >= 0.5  && < 0.8
         , GLUT                          == 2.7.*
         , OpenGL                        >= 2.12 && < 3.1
 
