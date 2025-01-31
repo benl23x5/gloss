@@ -35,6 +35,7 @@ library
         Graphics.Gloss.Internals.Rendering.Common
         Graphics.Gloss.Internals.Rendering.Picture
         Graphics.Gloss.Internals.Rendering.State
+        Graphics.Gloss.Internals.Rendering.Polygon
 
   build-depends:
           base                          >= 4.8 && < 5

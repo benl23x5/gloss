@@ -7,6 +7,7 @@ where
 import Graphics.Gloss.Internals.Rendering.State
 import Graphics.Gloss.Internals.Rendering.Common
 import Graphics.Gloss.Internals.Rendering.Circle
+import Graphics.Gloss.Internals.Rendering.Polygon
 import Graphics.Gloss.Internals.Rendering.Bitmap
 import Graphics.Gloss.Internals.Data.Picture
 import Graphics.Gloss.Internals.Data.Color
@@ -65,8 +66,7 @@ drawPicture state circScale picture
                 $ vertexPFs path
 
          | otherwise
-         -> GL.renderPrimitive GL.Polygon
-                $ vertexPFs path
+         -> renderComplexPolygon path
 
         -- circle
         Circle radius
