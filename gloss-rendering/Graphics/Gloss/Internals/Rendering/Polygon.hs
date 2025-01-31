@@ -10,8 +10,14 @@ renderComplexPolygon :: [(Float,Float)] -> IO ()
 renderComplexPolygon path = do
   Triangulation ts <- triangulate TessWindingOdd 0 ( GL.Normal3 0 0 1) combiner
     (ComplexPolygon [ComplexContour [AnnotatedVertex (GL.Vertex3 (realToFrac a) (realToFrac b) 0) () | (a,b) <- path]])
-  mapM_ renderTriangle ts
+  GL.renderPrimitive GL.Triangles (trisToGLVertices ts)
   return ()
 
-renderTriangle :: Triangle a -> IO ()
-renderTriangle (Triangle (AnnotatedVertex v1 _) (AnnotatedVertex v2 _) (AnnotatedVertex v3 _)) = GL.renderPrimitive GL.Polygon (mapM_ GL.vertex [v1,v2,v3])
+trisToGLVertices ::    [Triangle a] -> IO ()
+trisToGLVertices []    = return ()
+trisToGLVertices ((Triangle (AnnotatedVertex v1 _) (AnnotatedVertex v2 _) (AnnotatedVertex v3 _)) : rest)
+ = do   GL.vertex $ v1
+        GL.vertex $ v2
+        GL.vertex $ v3
+        trisToGLVertices rest
+{-# INLINE trisToGLVertices #-}
