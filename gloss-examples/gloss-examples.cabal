@@ -37,7 +37,7 @@ Executable gloss-bitmap
   hs-source-dirs: picture/Bitmap
   Build-depends:
           base                          >= 4.8 && < 5
-        , bytestring                    >= 0.10 && < 0.12
+        , bytestring                    >= 0.10 && < 0.13
         , bmp                           == 1.2.*
         , gloss                         == 1.13.*
 
@@ -98,7 +98,7 @@ Executable gloss-color
   Build-depends:
           base                          >= 4.8 && < 5
         , gloss                         == 1.13.*
-        , vector                        >= 0.11 && < 0.13
+        , vector                        >= 0.11 && < 0.14
 
   Default-Language:
         Haskell2010
@@ -122,7 +122,7 @@ Executable gloss-conway
           base                          >= 4.8 && < 5
         , random                        == 1.2.*
         , gloss                         == 1.13.*
-        , vector                        >= 0.11 && < 0.13
+        , vector                        >= 0.11 && < 0.14
 
   Default-Language:
         Haskell2010
@@ -329,7 +329,7 @@ Executable gloss-styrene
 
   Build-depends:
           base                          >= 4.8 && < 5
-        , containers                    >= 0.5 && < 0.7
+        , containers                    >= 0.5 && < 0.8
         , ghc-prim
         , gloss                         == 1.13.*
 
@@ -376,7 +376,7 @@ Executable gloss-visibility
   Build-depends:
           base                          >= 4.8 && < 5
         , gloss                         == 1.13.*
-        , vector                        >= 0.11 && < 0.13
+        , vector                        >= 0.11 && < 0.14
 
   Default-Language:
         Haskell2010
@@ -514,7 +514,7 @@ Executable gloss-wave
         , ghc-prim
         , gloss                         == 1.13.*
         , gloss-raster                  == 1.13.*
-        , vector                        >= 0.11 && < 0.13
+        , vector                        >= 0.11 && < 0.14
 
   Default-Language:
         Haskell2010
@@ -644,7 +644,7 @@ Executable gloss-graph
 
   Build-depends:
           base                          >= 4.8 && < 5
-        , containers                    >= 0.5 && < 0.7
+        , containers                    >= 0.5 && < 0.8
         , random                        == 1.2.*
         , gloss                         == 1.13.*
 
@@ -664,7 +664,7 @@ Executable gloss-gravity
 
   Build-depends:
           base                          >= 4.8 && < 5
-        , containers                    >= 0.5 && < 0.7
+        , containers                    >= 0.5 && < 0.8
         , random                        == 1.2.*
         , gloss                         == 1.13.*
 
