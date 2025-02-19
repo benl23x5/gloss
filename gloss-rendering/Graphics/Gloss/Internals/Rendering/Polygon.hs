@@ -8,9 +8,16 @@ import qualified Graphics.Rendering.OpenGL.GL           as GL
 combiner :: a -> b -> ()
 combiner _ _ = ()
 
+
+-- written this way to measurably improve performance
+zipLoop :: [a] -> [(a,a)]
+zipLoop [] = []
+zipLoop (x:xs) = go x xs where
+  go y [] = [(y,x)]
+  go y (z:rs) = (y,z) : go z rs
+
 zipWithLoop :: (a->a->b) -> [a] -> [b]
-zipWithLoop _ [] = []
-zipWithLoop f (x:xs) = zipWith f (x:xs) (xs++[x])
+zipWithLoop f = map (uncurry f) . zipLoop
 
 -- signed angle between 2 vectors
 -- https://stackoverflow.com/a/16544330/1779797
@@ -63,5 +70,3 @@ vertexPFs ((x, y) : rest)
  = do   GL.vertex $ GL.Vertex2 (gf x) (gf y)
         vertexPFs rest
 {-# INLINE vertexPFs #-}
-circ :: Float -> [(Float,Float)]
-circ csz = [(100*(sin (i*pi/(csz))), 100*(cos (i*pi/(csz))))  | i <- [1..2*csz]]
