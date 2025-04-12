@@ -1,0 +1,8 @@
+
+packages:
+        gloss/gloss.cabal
+        gloss-rendering/gloss-rendering.cabal
+        gloss-algorithms/gloss-algorithms.cabal
+        gloss-examples/gloss-examples.cabal
+        gloss-raster/gloss-raster.cabal
+
