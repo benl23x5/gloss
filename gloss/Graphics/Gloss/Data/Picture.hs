@@ -40,7 +40,7 @@ import Graphics.Gloss.Geometry.Angle
 blank :: Picture
 blank   = Blank
 
--- | A convex polygon filled with a solid color.
+-- | A polygon filled with a solid color.
 polygon :: Path -> Picture
 polygon = Polygon
 
